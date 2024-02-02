@@ -1,0 +1,9 @@
+---
+fmc:
+  name: MyFMC1
+  hostname: 10.62.158.76
+  domain:
+  - name: Global
+    host:
+    - name: MyHost1
+      value: 10.10.10.10
