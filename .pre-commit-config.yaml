@@ -12,6 +12,6 @@ repos:
     rev: v0.16.0
     hooks:
       - id: terraform-docs-system
-        args: ["./examples/network_access_condition"]
+        args: ["./examples/host"]
       - id: terraform-docs-system
         args: ["."]
