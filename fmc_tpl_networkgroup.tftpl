@@ -1,0 +1,54 @@
+locals {
+  map_res_networkgroups = {
+    %{~ for group in networkgroups ~}
+    ${group.name} = {
+      id = fmc_network_group_objects.${group.name}.id
+      type = fmc_network_group_objects.${group.name}.type
+    },
+    %{~ endfor ~}
+  }
+}
+
+%{~ for index, group in networkgroups ~}
+resource "fmc_network_group_objects" "${group.name}" {
+
+  # Mandatory
+  name          = "${group.name}"
+
+  # Optional
+  ${~ try( " description = \"${group.description}\"", " description = \"${defaults.description}\"", "") ~}
+
+  %{~ for nestedgroup in group.objects ~}
+    %{~ if contains([for ng in networkgroups: ng.name], nestedgroup) ~}
+      objects {
+        id = fmc_network_group_objects.${nestedgroup}.id
+        type = fmc_network_group_objects.${nestedgroup}.type
+      }
+    %{~ endif ~}
+  %{~ endfor ~}
+
+  dynamic "objects" {
+    for_each = {for netgrp in local.res_networkgroups[${index}].objects: 
+                  netgrp => netgrp if contains(keys(local.map_networkobjects), netgrp) 
+               }
+    content {
+      id = local.map_networkobjects[objects.value].id
+      type = local.map_networkobjects[objects.value].type
+    }
+  }
+
+  dynamic "literals" {
+    for_each = try(local.res_networkgroups[${index}].literals, {})
+    content {
+      value = literals.value
+      type = can(regex("/", literals.value)) ? "Network" : "Host"
+    }
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+}
+
+%{ endfor ~}

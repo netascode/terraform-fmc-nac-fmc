@@ -1,0 +1,207 @@
+%{~ for accessrules in acps ~}
+%{~ for index, rule in accessrules ~}
+resource "fmc_access_rules" "${rule.key}" {
+
+  count = can(local.accessrules_by_acp["${rule.acp}"][${index}]) ? 1 : 0
+
+  # Mandatory
+  acp       = local.map_accesspolicies[local.accessrules_by_acp["${rule.acp}"][${index}].acp].id
+  name     = "${rule.data.name}"
+  action   = "${rule.data.action}"
+  enabled  = ${ try( "${rule.data.enabled}", "${defaults.enabled}") }
+
+  # Optional
+  ${ try( "category = \"${rule.data.category}\"", "") }
+  ${ try( "enable_syslog = ${rule.data.enable_syslog}", "enable_syslog = ${defaults.enable_syslog}", "") }
+  ${ try( "file_policy = ${rule.data.file_policy}", "") }
+  ips_policy = try(local.map_ipspolicies[local.accessrules_by_acp["${rule.acp}"][${index}].data.ips_policy].id, null)
+  ${ try( "log_begin = ${rule.data.log_connection_begin}", "") }
+  ${ try( "log_end = ${rule.data.log_connection_end}", "") }
+  ${ try( "log_files = ${rule.data.log_files}", "") }
+  ${ try( "new_comments = [\"${rule.data.new_comments}\"]", "") }
+  ${ try( "section = ${rule.data.section}", "") }
+  ${ try( "send_events_to_fmc = ${rule.data.send_events_to_fmc}", "") }
+  ${ try( "syslog_config = ${rule.data.syslog_config}", "") }
+  ${ try( "syslog_severity = ${rule.data.syslog_severity}", "") }
+
+  %{~ if index != 0 ~}
+  # Positioning
+  insert_after = "${index}"
+  depends_on = [
+    %{ for i in range(1, index+1)}
+      fmc_access_rules.${previous[rule.acp][i]},
+    %{~ endfor ~}
+    fmc_access_policies_category.accesspolicy_category]
+  %{~ else ~}
+  depends_on = [fmc_access_policies_category.accesspolicy_category]
+  %{~ endif ~}
+
+  lifecycle {
+    ignore_changes = [insert_after]
+  }
+
+  dynamic "destination_dynamic_objects" {
+    for_each = can(local.accessrules_by_acp["${rule.acp}"][${index}].data.destination_dynamic_objects) == true ? ["1"] : []
+    content {
+      dynamic "destination_dynamic_object" {
+        for_each = local.accessrules_by_acp["${rule.acp}"][${index}].data.destination_dynamic_objects
+        content {
+          id = local.map_dynamicobjects[destination_dynamic_object.value].id
+          type = local.map_dynamicobjects[destination_dynamic_object.value].type
+        } 
+      }
+    }
+  }
+
+  %{~ if can(rule.data.destination_networks) ~}
+    destination_networks {
+      dynamic "destination_network" {
+        for_each = { for net in local.accessrules_by_acp["${rule.acp}"][${index}].data.destination_networks:
+                     net => net if contains(keys(local.map_networkobjects), net)
+                    }
+        content {
+          id = local.map_networkobjects[destination_network.value].id
+          type = local.map_networkobjects[destination_network.value].type
+        }
+      }
+    %{~ for nestedgroup in rule.data.destination_networks ~}
+      %{~ if contains([for ng in networkgroups: ng.name], nestedgroup) ~}
+        destination_network {
+          id = fmc_network_group_objects.${nestedgroup}.id
+          type = fmc_network_group_objects.${nestedgroup}.type
+        }
+      %{ endif }
+    %{~ endfor ~}
+    }
+  %{~ endif ~}
+
+  dynamic "destination_ports" {
+    for_each = can(local.accessrules_by_acp["${rule.acp}"][${index}].data.destination_ports) == true ? ["1"] : []
+    content {
+      dynamic "destination_port" {
+        for_each = local.accessrules_by_acp["${rule.acp}"][${index}].data.destination_ports
+        content {
+          id = local.map_ports[destination_port.value].id
+          type = local.map_ports[destination_port.value].type
+        } 
+      }
+    }
+  }
+
+  dynamic "destination_security_group_tags" {
+    for_each = can(local.accessrules_by_acp["${rule.acp}"][${index}].data.destination_sgts) == true ? ["1"] : []
+    content {
+      dynamic "destination_security_group_tag" {
+        for_each = local.accessrules_by_acp["${rule.acp}"][${index}].data.destination_sgts
+        content {
+          id = local.map_sgts[destination_security_group_tag.value].id
+          type = local.map_sgts[destination_security_group_tag.value].type
+        } 
+      }
+    }
+  }
+
+  dynamic "destination_zones" {
+    for_each = can(local.accessrules_by_acp["${rule.acp}"][${index}].data.destination_zones) == true ? ["1"] : []
+    content {
+      dynamic "destination_zone" {
+        for_each = local.accessrules_by_acp["${rule.acp}"][${index}].data.destination_zones
+        content {
+          id = local.map_securityzones[destination_zone.value].id
+          type = local.map_securityzones[destination_zone.value].type
+        }
+      }
+    }
+  }
+
+  dynamic "source_dynamic_objects" {
+    for_each = can(local.accessrules_by_acp["${rule.acp}"][${index}].data.source_dynamic_objects) == true ? ["1"] : []
+    content {
+      dynamic "source_dynamic_object" {
+        for_each = local.accessrules_by_acp["${rule.acp}"][${index}].data.source_dynamic_objects
+        content {
+          id = local.map_dynamicobjects[source_dynamic_object.value].id
+          type = local.map_dynamicobjects[source_dynamic_object.value].type
+        } 
+      }
+    }
+  }
+
+  %{~ if can(rule.data.source_networks) ~}
+    source_networks {
+      dynamic "source_network" {
+        for_each = { for net in local.accessrules_by_acp["${rule.acp}"][${index}].data.source_networks:
+                     net => net if contains(keys(local.map_networkobjects), net)
+                    }
+        content {
+          id = local.map_networkobjects[source_network.value].id
+          type = local.map_networkobjects[source_network.value].type
+        }
+      }
+    %{~ for nestedgroup in rule.data.source_networks ~}
+      %{~ if contains([for ng in networkgroups: ng.name], nestedgroup) ~}
+        source_network {
+          id = fmc_network_group_objects.${nestedgroup}.id
+          type = fmc_network_group_objects.${nestedgroup}.type
+        }
+      %{ endif }
+    %{~ endfor ~}
+    }
+  %{~ endif ~}
+
+  dynamic "source_ports" {
+    for_each = can(local.accessrules_by_acp["${rule.acp}"][${index}].data.source_ports) == true ? ["1"] : []
+    content {
+      dynamic "source_port" {
+        for_each = local.accessrules_by_acp["${rule.acp}"][${index}].data.source_ports
+        content {
+          id = local.map_ports[source_port.value].id
+          type = local.map_ports[source_port.value].type
+        } 
+      }
+    }
+  }
+
+  dynamic "source_security_group_tags" {
+    for_each = can(local.accessrules_by_acp["${rule.acp}"][${index}].data.source_sgts) == true ? ["1"] : []
+    content {
+      dynamic "source_security_group_tag" {
+        for_each = local.accessrules_by_acp["${rule.acp}"][${index}].data.source_sgts
+        content {
+          id = local.map_sgts[source_security_group_tag.value].id
+          type = local.map_sgts[source_security_group_tag.value].type
+        } 
+      }
+    }
+  }
+
+  dynamic "source_zones" {
+    for_each = can(local.accessrules_by_acp["${rule.acp}"][${index}].data.source_zones) == true ? ["1"] : []
+    content {
+      dynamic "source_zone" {
+        for_each = local.accessrules_by_acp["${rule.acp}"][${index}].data.source_zones
+        content {
+          id = local.map_securityzones[source_zone.value].id
+          type = local.map_securityzones[source_zone.value].type
+        }
+      }
+    }
+  }
+
+  dynamic "urls" {
+    for_each = can(local.accessrules_by_acp["${rule.acp}"][${index}].data.urls) == true ? ["1"] : []
+    content {
+      dynamic "url" {
+        for_each = local.accessrules_by_acp["${rule.acp}"][${index}].data.urls
+        content {
+          id = try(local.map_urls[url.value].id, local.map_urlgroups[url.value].id)
+          type = try(local.map_urls[url.value].type, local.map_urlgroups[url.value].type)
+        } 
+      }
+    }
+  }
+
+}
+
+%{ endfor ~}
+%{ endfor ~}

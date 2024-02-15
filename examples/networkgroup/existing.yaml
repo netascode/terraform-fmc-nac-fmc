@@ -1,0 +1,6 @@
+---
+fmc:
+  domain:
+  - name: Global
+    network:
+    - name: any-ipv4

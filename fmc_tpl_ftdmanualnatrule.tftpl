@@ -1,0 +1,147 @@
+%{~ for ftdmanualnatrules in natpolicies ~}
+%{~ for index, rule in ftdmanualnatrules ~}
+resource "fmc_ftd_manualnat_rules" "${rule.key}" {
+  count = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}]) ? 1 : 0
+
+  # Mandatory
+  nat_policy = local.map_natpolicies[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].nat_policy].id
+  nat_type   = "${rule.data.nat_type}"
+
+  %{~ if contains([for ng in networkgroups: ng.name], rule.data.original_source) ~}
+    original_source {
+      id = fmc_network_group_objects.${rule.data.original_source}.id
+      type = fmc_network_group_objects.${rule.data.original_source}.type
+    }
+  %{~ else ~}
+    dynamic "original_source" {
+      for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_source) == true ? ["1"] : []
+      content {
+        id = local.map_networkobjects[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_source].id
+        type = local.map_networkobjects[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_source].type
+      }
+    }
+  %{~ endif ~}
+
+  # Optional
+  ${ try( "description = \"${rule.data.description}\"", "") }
+  ${ try( "enabled = \"${rule.data.enabled}\"", "enabled = \"${defaults.enabled}\"", "") }
+  ${ try( "fallthrough = \"${rule.data.fallthrough}\"", "fallthrough = \"${defaults.fallthrough}\"", "") }
+  ${ try( "interface_in_original_destination = \"${rule.data.interface_in_original_destination}\"", "interface_in_original_destination = \"${defaults.interface_in_original_destination}\"", "") }
+  ${ try( "interface_in_translated_source = \"${rule.data.interface_in_translated_source}\"", "interface_in_translated_source = \"${defaults.interface_in_translated_source}\"", "") }
+  ${ try( "ipv6 = \"${rule.data.ipv6}\"", "ipv6 = \"${defaults.ipv6}\"", "") }
+  ${ try( "net_to_net = \"${rule.data.net_to_net}\"", "net_to_net = \"${defaults.net_to_net}\"", "") }
+  ${ try( "no_proxy_arp = \"${rule.data.no_proxy_arp}\"", "no_proxy_arp = \"${defaults.no_proxy_arp}\"", "") }
+  ${ try( "perform_route_lookup = \"${rule.data.perform_route_lookup}\"", "perform_route_lookup = \"${defaults.perform_route_lookup}\"", "") }
+  ${ try( "section = \"${rule.data.section}\"", "") }
+  ${ try( "translate_dns = \"${rule.data.translate_dns}\"", "translate_dns = \"${defaults.translate_dns}\"", "") }
+  ${ try( "unidirectional = \"${rule.data.unidirectional}\"", "unidirectional = \"${defaults.unidirectional}\"", "") }
+
+  %{~ if index != 0 ~}
+  # Positioning
+  #target_index = ${index}
+  depends_on = [
+    %{ for i in range(1, index+1)}
+      fmc_ftd_manualnat_rules.${previous[rule.nat_policy][i]},
+    %{~ endfor ~}
+  ]
+  #lifecycle {
+  #  ignore_changes = [target_index]
+  #}
+  %{~ endif ~}
+
+  dynamic "destination_interface" {
+    for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.destination_interface) == true ? ["1"] : []
+    content {
+      id = local.map_securityzones[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.destination_interface].id
+      type = local.map_securityzones[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.destination_interface].type
+    }
+  }
+
+  %{~ if contains([for ng in networkgroups: ng.name], try(rule.data.original_destination, "")) ~}
+    original_destination {
+      id = fmc_network_group_objects.${rule.data.original_destination}.id
+      type = fmc_network_group_objects.${rule.data.original_destination}.type
+    }
+  %{~ else ~}
+    dynamic "original_destination" {
+      for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_destination) == true ? ["1"] : []
+      content {
+        id = local.map_networkobjects[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_destination].id
+        type = local.map_networkobjects[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_destination].type
+      }
+    }
+  %{~ endif ~}
+
+  dynamic "original_destination_port" {
+    for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_destination_port) == true ? ["1"] : []
+    content {
+      id = local.map_ports[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_destination_port].id
+      type = local.map_ports[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_destination_port].type
+    }
+  }
+
+  dynamic "original_source_port" {
+    for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_source_port) == true ? ["1"] : []
+    content {
+      id = local.map_ports[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_source_port].id
+      type = local.map_ports[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_source_port].type
+    }
+  }
+
+  dynamic "source_interface" {
+    for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.source_interface) == true ? ["1"] : []
+    content {
+      id = local.map_securityzones[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.source_interface].id
+      type = local.map_securityzones[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.source_interface].type
+    }
+  }
+
+  %{~ if contains([for ng in networkgroups: ng.name], try(rule.data.translated_destination,"")) ~}
+    translated_destination {
+      id = fmc_network_group_objects.${rule.data.translated_destination}.id
+      type = fmc_network_group_objects.${rule.data.translated_destination}.type
+    }
+  %{~ else ~}
+    dynamic "translated_destination" {
+      for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_destination) == true ? ["1"] : []
+      content {
+        id = local.map_networkobjects[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_destination].id
+        type = local.map_networkobjects[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_destination].type
+      }
+    }
+  %{~ endif ~}
+
+  dynamic "translated_destination_port" {
+    for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_destination_port) == true ? ["1"] : []
+    content {
+      id = local.map_ports[elocal.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_destination_port].id
+      type = local.map_ports[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_destination_port].type
+    }
+  }
+
+  %{~ if contains([for ng in networkgroups: ng.name], try(rule.data.translated_source,"")) ~}
+    translated_source {
+      id = fmc_network_group_objects.${rule.data.translated_source}.id
+      type = fmc_network_group_objects.${rule.data.translated_source}.type
+    }
+  %{~ else ~}
+    dynamic "translated_source" {
+      for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_source) == true ? ["1"] : []
+      content {
+        id = local.map_networkobjects[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_source].id
+        type = local.map_networkobjects[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_source].type
+      }
+    }
+  %{~ endif ~}
+
+  dynamic "translated_source_port" {
+    for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_source_port) == true ? ["1"] : []
+    content {
+      id = local.map_ports[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_source_port].id
+      type = local.map_ports[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_source_port].type
+    }
+  }
+}
+
+%{~ endfor ~}
+%{~ endfor ~}

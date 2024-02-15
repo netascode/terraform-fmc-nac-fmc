@@ -1,0 +1,60 @@
+---
+defaults:
+  fmc:
+    skip_ssl_verify: true
+    deploy:
+      ignore_warning: false
+      force_deploy: false
+    domain:
+      device:
+        physicalinterface:
+          enabled: true
+          mode: "NONE"
+          subinterface:
+            mode: "NONE"
+        ipv4staticroute:
+          metric_value: 1
+      prefilterpolicy:
+        action: "ANALYZE_TUNNELS"
+      accesspolicy:
+        default_action: "BLOCK"
+        log_begin: false
+        log_end: false
+        send_events_to_fmc: false
+        accessrule:
+          enable_syslog: false
+          enabled: true
+      securityzone:
+        interface_type: "ROUTED"
+      ftdnatpolicy:
+          ftdautonatrule:
+              fallthrough: false
+              ipv6: false
+              net_to_net: false
+              no_proxy_arp: false
+              perform_route_lookup: false
+              translate_dns: false
+              translated_network_is_destination_interface: true
+          ftdmanualnatrule:
+              enabled: true
+              fallthrough: false
+              interface_in_original_destination: false
+              interface_in_translated_source: true
+              ipv6: false
+              net_to_net: false
+              no_proxy_arp: false
+              perform_route_lookup: false
+              translate_dns: false
+              unidirectional: false
+      fqdn:
+        dns_resolution: "IPV4_ONLY"
+      dynamicobject:
+        object_type: "IP"
+      host:
+        description: " "
+      network:
+        description: " "
+      range:
+        description: " "
+      networkgroup:
+        description: " "

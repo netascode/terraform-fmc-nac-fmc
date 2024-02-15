@@ -11,20 +11,32 @@ content: |-
 
   This module supports an inventory driven approach, where a complete FMC configuration or parts of it are either modeled in one or more YAML files or natively using Terraform variables.
 
+  The implementation is divided into two steps:
+  Before `terraform apply` Terraform files from templates need to be generated. 
+  The required CLI is listed below:
+
+  ```bash
+  terraform apply \
+    -target=module.fmc.local_file.access_rule \
+    -target=module.fmc.local_file.networkgroups \
+    -target=module.fmc.local_file.ftdmanualnatrule \
+    -target=module.fmc.local_file.deploy
+  ```
+
   ## Examples
 
-  Configuring a Network Access Condition using YAML:
+  Configuring a Network-group Object using YAML:
 
-  #### `host.yaml`
+  #### `fmc.yaml`
 
   ```yaml
-  {{ include "./examples/host/host.yaml" }}
+  {{ include "./examples/networkgroup/fmc.yaml" }}
   ```
 
   #### `main.tf`
 
   ```hcl
-  {{ include "./examples/host/main.tf" }}
+  {{ include "./examples/networkgroup/main.tf" }}
   ```
 
   {{ .Requirements }}

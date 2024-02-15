@@ -1,0 +1,54 @@
+version: ">= 0.14.0"
+
+formatter: markdown table
+
+content: |-
+  # FMC Network Group Object Example
+
+  This example will create a new `MyNetworkGroup1` network-group object that contains two objects:
+  - newly created `MyHost1` host object
+  - already existing `any-ipv4` network object 
+
+  Set environment variables pointing to FMC:
+
+  ```bash
+  export FMC_USERNAME=<username>
+  export FMC_PASSWORD=<password>
+  ```
+
+  To run this example you need to execute:
+
+  ```bash
+  $ terraform init
+  $ terraform plan
+  $ terraform apply \
+    -target=module.fmc.local_file.access_rule \
+    -target=module.fmc.local_file.networkgroups \
+    -target=module.fmc.local_file.ftdmanualnatrule \
+    -target=module.fmc.local_file.deploy
+  $ terraform apply
+  ```
+
+  Note that this example will create resources. Resources can be destroyed with `terraform destroy`.
+
+  #### `data/fmc.yaml`
+
+  ```yaml
+  {{ include "./fmc.yaml" }}
+  ```
+
+  #### `data/existing/existing.yaml`
+
+  ```yaml
+  {{ include "./existing.yaml" }}
+  ```
+
+  #### `main.tf`
+
+  ```hcl
+  {{ include "./main.tf" }}
+  ```
+
+output:
+  file: README.md
+  mode: replace

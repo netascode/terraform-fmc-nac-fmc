@@ -1,0 +1,14 @@
+---
+fmc:
+  name: MyFMC1
+  hostname: 10.1.1.1
+  domain:
+  - name: Global
+    host:
+    - name: MyHost1
+      value: 10.10.10.10
+    networkgroup:
+    - name: MyNetworkGroup1
+      objects:
+      - MyHost1
+      - any-ipv4
