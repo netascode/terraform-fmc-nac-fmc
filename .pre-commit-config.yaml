@@ -12,6 +12,6 @@ repos:
     rev: v0.16.0
     hooks:
       - id: terraform-docs-system
-        args: ["./examples/networkgroup"]
+        args: ["./examples/network_groups"]
       - id: terraform-docs-system
         args: ["."]

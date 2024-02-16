@@ -30,13 +30,13 @@ content: |-
   #### `fmc.yaml`
 
   ```yaml
-  {{ include "./examples/networkgroup/fmc.yaml" }}
+  {{ include "./examples/network_groups/fmc.yaml" }}
   ```
 
   #### `main.tf`
 
   ```hcl
-  {{ include "./examples/networkgroup/main.tf" }}
+  {{ include "./examples/network_groups/main.tf" }}
   ```
 
   {{ .Requirements }}
