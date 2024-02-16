@@ -5,39 +5,39 @@ defaults:
     deploy:
       ignore_warning: false
       force_deploy: false
-    domain:
-      device:
-        physicalinterface:
+    domains:
+      devices:
+        physical_interfaces:
           enabled: true
           mode: "NONE"
-          subinterface:
+          sub_interfaces:
             mode: "NONE"
-        ipv4staticroute:
+        ipv4_static_routes:
           metric_value: 1
-      prefilterpolicy:
+      prefilter_policies:
         action: "ANALYZE_TUNNELS"
-      accesspolicy:
+      access_policies:
         default_action: "BLOCK"
         log_begin: false
         log_end: false
         send_events_to_fmc: false
-        accessrule:
+        access_rules:
           enable_syslog: false
           enabled: true
-      securityzone:
+      security_zones:
         interface_type: "ROUTED"
-      ftdnatpolicy:
-          ftdautonatrule:
-              fallthrough: false
+      ftd_nat_policies:
+          ftd_auto_nat_rules:
+              fall_through: false
               ipv6: false
               net_to_net: false
               no_proxy_arp: false
               perform_route_lookup: false
               translate_dns: false
               translated_network_is_destination_interface: true
-          ftdmanualnatrule:
+          ftd_manual_nat_rules:
               enabled: true
-              fallthrough: false
+              fall_through: false
               interface_in_original_destination: false
               interface_in_translated_source: true
               ipv6: false
@@ -46,15 +46,15 @@ defaults:
               perform_route_lookup: false
               translate_dns: false
               unidirectional: false
-      fqdn:
+      fqdns:
         dns_resolution: "IPV4_ONLY"
-      dynamicobject:
+      dynamic_objects:
         object_type: "IP"
-      host:
+      hosts:
         description: " "
-      network:
+      networks:
         description: " "
-      range:
+      ranges:
         description: " "
-      networkgroup:
+      network_groups:
         description: " "
