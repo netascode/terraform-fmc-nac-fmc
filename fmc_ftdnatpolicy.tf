@@ -45,7 +45,7 @@ resource "fmc_ftd_autonat_rules" "ftdautonatrule" {
 
   # Optional
   description                                 = try(each.value.data.description, null)
-  fallthrough                                 = try(each.value.data.fallthrough, local.defaults.fmc.domains.ftd_nat_policies.ftd_auto_nat_rules.fallthrough, null)
+  fallthrough                                 = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_auto_nat_rules.fall_through, null)
   ipv6                                        = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_auto_nat_rules.ipv6, null)
   net_to_net                                  = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_auto_nat_rules.net_to_net, null)
   no_proxy_arp                                = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_auto_nat_rules.no_proxy_arp, null)

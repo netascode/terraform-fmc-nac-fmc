@@ -25,7 +25,7 @@ resource "fmc_ftd_manualnat_rules" "${rule.key}" {
   # Optional
   ${ try( "description = \"${rule.data.description}\"", "") }
   ${ try( "enabled = \"${rule.data.enabled}\"", "enabled = \"${defaults.enabled}\"", "") }
-  ${ try( "fallthrough = \"${rule.data.fallthrough}\"", "fallthrough = \"${defaults.fallthrough}\"", "") }
+  ${ try( "fallthrough = \"${rule.data.fall_through}\"", "fallthrough = \"${defaults.fall_through}\"", "") }
   ${ try( "interface_in_original_destination = \"${rule.data.interface_in_original_destination}\"", "interface_in_original_destination = \"${defaults.interface_in_original_destination}\"", "") }
   ${ try( "interface_in_translated_source = \"${rule.data.interface_in_translated_source}\"", "interface_in_translated_source = \"${defaults.interface_in_translated_source}\"", "") }
   ${ try( "ipv6 = \"${rule.data.ipv6}\"", "ipv6 = \"${defaults.ipv6}\"", "") }
