@@ -2,7 +2,7 @@
 # SMART LICENSE
 ###
 resource "fmc_smart_license" "license" {
-  count = can(local.model.fmc.smartlicense) ? 1 : 0
+  count = can(local.model.fmc.smart_license) ? 1 : 0
 
   # Mandatory
   registration_type = try(local.model.fmc.smartlicense.registration_type, null)

@@ -3,8 +3,8 @@
 ###
 locals {
   res_prefilterpolicies = flatten([
-    for domains in local.domain : [
-      for object in try(domains.prefilterpolicy, {}) : object
+    for domains in local.domains : [
+      for object in try(domains.prefilter_policies, {}) : object
     ]
   ])
 }
@@ -20,8 +20,8 @@ resource "fmc_prefilter_policy" "prefilterpolicy" {
     #log_end           = try(each.value.log_end, null)         # Not supported by provider
     log_begin          = try(each.value.log_begin, null)
     send_events_to_fmc = try(each.value.send_events_to_fmc, null)
-    action             = try(each.value.action, local.defaults.fmc.domain.prefilterpolicy.action, "ANALYZE_TUNNELS")
+    action             = try(each.value.action, local.defaults.fmc.domains.prefilter_policies.action, "ANALYZE_TUNNELS")
   }
 
-  description = try(each.value.description, local.defaults.fmc.domain.prefilterpolicy.description, null)
+  description = try(each.value.description, local.defaults.fmc.domains.prefilter_policies.description, null)
 }

@@ -12,7 +12,7 @@ locals {
 resource "local_file" "deploy" {
   count = var.deploy_support ? 1 : 0
   content = replace(
-    templatefile("${path.module}/fmc_tpl_deploy.tftpl", local.deploy_template),
+    templatefile("${path.module}/templates/fmc_tpl_deploy.tftpl", local.deploy_template),
     "/(?m)(?s)(^( )*[\r\n])/", ""
   )
   filename = "${path.module}/generated_fmc_deploy.tf"

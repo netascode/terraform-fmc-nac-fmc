@@ -3,8 +3,8 @@
 ###
 locals {
   res_ftdnatpolicies = flatten([
-    for domains in local.domain : [
-      for object in try(domains.ftdnatpolicy, {}) : object if !contains(local.data_ftdnatpolicies, object.name)
+    for domain in local.domains : [
+      for object in try(domain.ftd_nat_policies, {}) : object if !contains(local.data_ftdnatpolicies, object.name)
     ]
   ])
 }
@@ -16,7 +16,7 @@ resource "fmc_ftd_nat_policies" "ftdnatpolicy" {
   name = each.value.name
 
   # Optional  
-  description = try(each.value.description, local.defaults.fmc.domain.ftdnatpolicy.description, null)
+  description = try(each.value.description, local.defaults.fmc.domains.ftd_nat_policy.description, null)
 }
 
 ###
@@ -24,9 +24,9 @@ resource "fmc_ftd_nat_policies" "ftdnatpolicy" {
 ###
 locals {
   res_ftdautonatrules = flatten([
-    for domain in local.domain : [
-      for natpolicy in try(domain.ftdnatpolicy, {}) : [
-        for ftdautonatrule in try(natpolicy.ftdautonatrule, {}) : {
+    for domain in local.domains : [
+      for natpolicy in try(domain.ftd_nat_policies, {}) : [
+        for ftdautonatrule in try(natpolicy.ftd_auto_nat_rules, {}) : {
           key        = "${natpolicy.name}/${ftdautonatrule.name}"
           nat_policy = local.map_natpolicies[natpolicy.name].id
           data       = ftdautonatrule
@@ -45,13 +45,13 @@ resource "fmc_ftd_autonat_rules" "ftdautonatrule" {
 
   # Optional
   description                                 = try(each.value.data.description, null)
-  fallthrough                                 = try(each.value.data.fallthrough, local.defaults.fmc.domain.ftdnatpolicy.ftdautonatrule.fallthrough, null)
-  ipv6                                        = try(each.value.data.ipv6, local.defaults.fmc.domain.ftdnatpolicy.ftdautonatrule.ipv6, null)
-  net_to_net                                  = try(each.value.data.net_to_net, local.defaults.fmc.domain.ftdnatpolicy.ftdautonatrule.net_to_net, null)
-  no_proxy_arp                                = try(each.value.data.no_proxy_arp, local.defaults.fmc.domain.ftdnatpolicy.ftdautonatrule.no_proxy_arp, null)
-  perform_route_lookup                        = try(each.value.data.perform_route_lookup, local.defaults.fmc.domain.ftdnatpolicy.ftdautonatrule.perform_route_lookup, null)
-  translate_dns                               = try(each.value.data.translate_dns, local.defaults.fmc.domain.ftdnatpolicy.ftdautonatrule.translate_dns, null)
-  translated_network_is_destination_interface = try(each.value.data.translated_network_is_destination_interface, local.defaults.fmc.domain.ftdnatpolicy.ftdautonatrule.translated_network_is_destination_interface, null)
+  fallthrough                                 = try(each.value.data.fallthrough, local.defaults.fmc.domains.ftd_nat_policies.ftd_auto_nat_rules.fallthrough, null)
+  ipv6                                        = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_auto_nat_rules.ipv6, null)
+  net_to_net                                  = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_auto_nat_rules.net_to_net, null)
+  no_proxy_arp                                = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_auto_nat_rules.no_proxy_arp, null)
+  perform_route_lookup                        = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_auto_nat_rules.perform_route_lookup, null)
+  translate_dns                               = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_auto_nat_rules.translate_dns, null)
+  translated_network_is_destination_interface = try(each.value.data.translated_network_is_destination_interface, local.defaults.fmc.domains.ftd_nat_policies.ftd_auto_nat_rules.translated_network_is_destination_interface, null)
   translated_port                             = try(each.value.data.translated_port, null)
 
   dynamic "destination_interface" {
@@ -117,9 +117,9 @@ resource "fmc_ftd_autonat_rules" "ftdautonatrule" {
 ###
 locals {
   res_ftdmanualnatrules = flatten([
-    for domain in local.domain : [
-      for natpolicy in try(domain.ftdnatpolicy, []) : [
-        for ftdmanualnatrule in try(natpolicy.ftdmanualnatrule, []) : {
+    for domain in local.domains : [
+      for natpolicy in try(domain.ftd_nat_policies, []) : [
+        for ftdmanualnatrule in try(natpolicy.ftd_manual_nat_rules, []) : {
           key        = replace("${natpolicy.name}_${ftdmanualnatrule.name}", " ", "")
           nat_policy = natpolicy.name
           data       = ftdmanualnatrule
@@ -139,14 +139,14 @@ locals {
   ftdmanualnatrules_template = {
     natpolicies   = local.ftdmanualnatrules_by_policy,
     previous      = local.ftdmanualnatrules_by_policy_prev,
-    defaults      = try(local.defaults.fmc.domain.ftdnatpolicy.ftdmanualnatrule, {}),
+    defaults      = try(local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules, {}),
     networkgroups = local.res_networkgroups
   }
 }
 
 resource "local_file" "ftdmanualnatrule" {
   content = replace(
-    templatefile("${path.module}/fmc_tpl_ftdmanualnatrule.tftpl", local.ftdmanualnatrules_template),
+    templatefile("${path.module}/templates/fmc_tpl_ftdmanualnatrule.tftpl", local.ftdmanualnatrules_template),
     "/(?m)(?s)(^( )*[\r\n])/", ""
   )
   filename = "${path.module}/generated_fmc_ftdmanualnatrule.tf"

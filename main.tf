@@ -1,5 +1,5 @@
 locals {
   fmc           = try(local.model.fmc, {})
-  domain        = try(local.fmc.domain, {})
+  domains       = try(local.fmc.domains, {})
   data_existing = try(yamldecode(file(var.yaml_existing_file)), {})
 }

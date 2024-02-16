@@ -93,7 +93,6 @@ module "fmc" {
 | [fmc_host_objects.host](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/host_objects) | resource |
 | [fmc_icmpv4_objects.icmpv4](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/icmpv4_objects) | resource |
 | [fmc_ips_policies.ips_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/ips_policies) | resource |
-| [fmc_network_group_objects.MyNetworkGroup1](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/network_group_objects) | resource |
 | [fmc_network_objects.network](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/network_objects) | resource |
 | [fmc_policy_devices_assignments.policy_assignment](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/policy_devices_assignments) | resource |
 | [fmc_port_group_objects.portgroup](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/port_group_objects) | resource |

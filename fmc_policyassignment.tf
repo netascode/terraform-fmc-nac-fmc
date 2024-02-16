@@ -4,18 +4,18 @@
 locals {
   res_policyassignments = concat(
     flatten([
-      for policyassignment in try(local.fmc.policyassignment, []) : {
+      for policyassignment in try(local.fmc.policy_assignments, []) : {
         device = policyassignment.device
-        policy = policyassignment.natpolicy
+        policy = policyassignment.nat_policy
         type   = "NAT"
-      } if contains(keys(policyassignment), "natpolicy")
+      } if contains(keys(policyassignment), "nat_policy")
     ]),
     flatten([
-      for policyassignment in try(local.fmc.policyassignment, []) : {
+      for policyassignment in try(local.fmc.policy_assignments, []) : {
         device = policyassignment.device
-        policy = policyassignment.accesspolicy
+        policy = policyassignment.access_policy
         type   = "ACP"
-      } if contains(keys(policyassignment), "accesspolicy")
+      } if contains(keys(policyassignment), "access_policy")
     ])
   )
 }
