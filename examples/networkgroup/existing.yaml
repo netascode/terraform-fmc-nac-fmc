@@ -1,6 +1,6 @@
 ---
 fmc:
-  domain:
+  domains:
   - name: Global
-    network:
+    networks:
     - name: any-ipv4

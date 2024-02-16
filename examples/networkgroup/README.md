@@ -34,12 +34,12 @@ Note that this example will create resources. Resources can be destroyed with `t
 fmc:
   name: MyFMC1
   hostname: 10.1.1.1
-  domain:
+  domains:
   - name: Global
-    host:
+    hosts:
     - name: MyHost1
       value: 10.10.10.10
-    networkgroup:
+    network_groups:
     - name: MyNetworkGroup1
       objects:
       - MyHost1
@@ -51,9 +51,9 @@ fmc:
 ```yaml
 ---
 fmc:
-  domain:
+  domains:
   - name: Global
-    network:
+    networks:
     - name: any-ipv4
 ```
 

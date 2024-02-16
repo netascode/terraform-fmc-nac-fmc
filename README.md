@@ -30,12 +30,12 @@ Configuring a Network-group Object using YAML:
 fmc:
   name: MyFMC1
   hostname: 10.1.1.1
-  domain:
+  domains:
   - name: Global
-    host:
+    hosts:
     - name: MyHost1
       value: 10.10.10.10
-    networkgroup:
+    network_groups:
     - name: MyNetworkGroup1
       objects:
       - MyHost1
