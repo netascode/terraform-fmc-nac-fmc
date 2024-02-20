@@ -30,38 +30,34 @@ resource "fmc_devices" "device" {
 ###
 # PHYSICAL INTERFACE
 ###
-locals {
-  res_physical_interface = flatten([
-    for domain in local.domains : [
-      for device in try(domain.devices, []) : [
-        for physicalinterface in try(device.physical_interfaces, []) : {
-          key                  = "${device.name}/${physicalinterface.interface}"
-          device_id            = local.map_devices[device.name].id
-          device_name          = device.name
-          physicalinterface_id = data.fmc_device_physical_interfaces.physical_interface["${device.name}/${physicalinterface.interface}"].id
-          data                 = physicalinterface
-        }
-      ]
-    ]
-  ])
-}
 
 resource "fmc_device_physical_interfaces" "physical_interface" {
-  for_each = { for physicalinterface in local.res_physical_interface : physicalinterface.key => physicalinterface }
+  for_each = { for physicalinterface in local.map_interfaces : physicalinterface.key => physicalinterface if physicalinterface.resource }
 
   # Mandatory
   name                  = each.value.data.interface
   device_id             = each.value.device_id
-  physical_interface_id = each.value.physicalinterface_id
+  physical_interface_id = data.fmc_device_physical_interfaces.physical_interface[each.value.key].id
 
   # Optional
-  if_name             = try(each.value.data.name, null)
-  security_zone_id    = try(local.map_securityzones[each.value.data.security_zone].id, null)
-  enabled             = try(each.value.data.enabled, local.defaults.fmc.domains.devices.physical_interfaces.enabled)
-  mode                = try(each.value.data.mode, local.defaults.fmc.domains.devices.physical_interfaces.mode)
-  ipv4_static_address = try(each.value.data.ipv4_static_address, null)
-  ipv4_static_netmask = try(each.value.data.ipv4_static_netmask, null)
+  if_name                = try(each.value.data.name, null)
+  security_zone_id       = try(local.map_securityzones[each.value.data.security_zone].id, null)
+  enabled                = try(each.value.data.enabled, local.defaults.fmc.domains.devices.physical_interfaces.enabled)
+  mode                   = try(each.value.data.mode, local.defaults.fmc.domains.devices.physical_interfaces.mode)
+  ipv4_static_address    = try(each.value.data.ipv4_static_address, null)
+  ipv4_static_netmask    = try(each.value.data.ipv4_static_netmask, null)
+  ipv4_dhcp_enabled      = try(each.value.data.ipv4_dhcp_enabled, null)
+  ipv4_dhcp_route_metric = try(each.value.data.ipv4_dhcp_route_metric, null)
+  ipv6_address           = try(each.value.data.ipv6_address, null)
+  ipv6_prefix            = try(each.value.data.ipv6_prefix, null)
+  ipv6_enforce_eui       = try(each.value.data.ipv6_enforce_eui64, null)
+  description            = try(each.value.data.description, local.defaults.fmc.domains.devices.physical_interfaces.description, null)
+
+  depends_on = [
+    data.fmc_device_physical_interfaces.physical_interface
+  ]
 }
+
 
 ###
 # SUBINTERFACE
@@ -110,3 +106,4 @@ resource "fmc_device_subinterfaces" "sub_interfaces" {
   priority               = try(each.value.data.priority, null)
   security_zone_id       = try(local.map_securityzones[each.value.data.security_zone].id, null)
 }
+

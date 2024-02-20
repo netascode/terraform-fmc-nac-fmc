@@ -21,22 +21,6 @@ locals {
   data_sgts           = [for obj in try(local.data_existing.fmc.domains[0].sgts, []) : obj.name]
   data_dynamicobjects = [for obj in try(local.data_existing.fmc.domains[0].dynamic_objects, []) : obj.name]
 
-  data_physical_interfaces = flatten([
-    for device in try(local.data_existing.fmc.domains[0].devices, []) : [
-      for physicalinterface in try(device.physical_interfaces, []) : {
-        key       = "${device.name}/${physicalinterface.interface}"
-        device_id = data.fmc_devices.device[device.name].id
-        interface = physicalinterface.interface
-      }
-    ]
-  ])
-
-  data_physical_interfaces_list = flatten([
-    for device in try(local.data_existing.fmc.domains[0].devices, []) : [
-      for physicalinterface in try(device.physical_interfaces, []) : "${device.name}/${physicalinterface.interface}"
-    ]
-  ])
-
   data_sub_interfces = flatten([
     for device in try(local.data_existing.fmc.domains[0].devices, []) : [
       for physicalinterface in try(device.physical_interfaces, []) : [
@@ -145,12 +129,16 @@ data "fmc_devices" "device" {
 
   name = each.key
 }
-
 data "fmc_device_physical_interfaces" "physical_interface" {
-  for_each = { for object in local.data_physical_interfaces : object.key => object }
+  for_each = local.map_interfaces
 
   device_id = each.value.device_id
-  name      = each.value.interface
+  name      = each.value.data.interface
+
+  depends_on = [
+    fmc_devices.device,
+    data.fmc_devices.device
+  ]
 }
 
 data "fmc_device_subinterfaces" "sub_interfaces" {

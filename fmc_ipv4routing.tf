@@ -11,7 +11,7 @@ locals {
           gateway_id        = local.map_networkobjects[ipv4staticroute.gateway].id
           gateway_type      = local.map_networkobjects[ipv4staticroute.gateway].type
           gateway_name      = ipv4staticroute.gateway
-          interface_name    = local.map_interfaces["${device.name}/${ipv4staticroute.interface}"].name
+          interface_name    = ipv4staticroute.interface
           selected_networks = ipv4staticroute.selected_networks
         }
       ]
@@ -41,5 +41,12 @@ resource "fmc_staticIPv4_route" "ipv4staticroute" {
     }
   }
   # Optional
-  is_tunneled = try(each.value.tunneled, local.defaults.fmc.domain.device.ipv4staticroute.tunneled, null)
+  is_tunneled = try(each.value.tunneled, local.defaults.fmc.domains.devices.ipv4_static_routes.tunneled, null)
+
+  depends_on = [
+    fmc_device_physical_interfaces.physical_interface,
+    data.fmc_device_physical_interfaces.physical_interface,
+    fmc_device_subinterfaces.sub_interfaces,
+    data.data.fmc_device_subinterfaces.sub_interfaces
+  ]
 }

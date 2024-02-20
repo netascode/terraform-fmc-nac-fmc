@@ -98,7 +98,7 @@ locals {
   ])
 
   networkgroup_template = {
-    defaults      = try(local.defaults.fmc.domain.networkgroup, {}),
+    defaults      = try(local.defaults.fmc.domains.network_groups, {}),
     networkgroups = local.res_networkgroups
   }
 

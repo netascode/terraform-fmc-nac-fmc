@@ -65,20 +65,32 @@ locals {
     }
   )
 
-  map_interfaces = merge({
-    for phy_int in local.res_physical_interface :
-    "${phy_int.device_name}/${phy_int.data.name}" => {
-      id   = fmc_device_physical_interfaces.physical_interface[phy_int.key].id
-      name = fmc_device_physical_interfaces.physical_interface[phy_int.key].if_name
-    }
-    },
-    {
-      for sub_int in local.res_sub_interface :
-      "${sub_int.device_name}/${sub_int.data.name}" => {
-        id   = fmc_device_subinterfaces.sub_interfaces[sub_int.key].id
-        name = fmc_device_subinterfaces.sub_interfaces[sub_int.key].name
+  map_interfaces = merge(concat(
+    flatten([
+      for domain in local.domains : [
+        for device in try(domain.devices, []) : {
+          for physicalinterface in try(device.physical_interfaces, []) : "${device.name}/${physicalinterface.interface}" => {
+            key         = "${device.name}/${physicalinterface.interface}"
+            device_id   = local.map_devices[device.name].id
+            device_name = device.name
+            data        = physicalinterface
+            resource    = true
+          }
+        }
+      ]
+    ]),
+    flatten([
+      for device in try(local.data_existing.fmc.domains[0].devices, []) : {
+        for physicalinterface in try(device.physical_interfaces, []) : "${device.name}/${physicalinterface.interface}" => {
+          key         = "${device.name}/${physicalinterface.interface}"
+          device_id   = local.map_devices[device.name].id
+          device_name = device.name
+          data        = physicalinterface
+          resource    = false
+        }
       }
-    }
+    ])
+    )...
   )
 
   map_securityzones = merge({
