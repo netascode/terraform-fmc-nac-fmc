@@ -47,6 +47,6 @@ resource "fmc_staticIPv4_route" "ipv4staticroute" {
     fmc_device_physical_interfaces.physical_interface,
     data.fmc_device_physical_interfaces.physical_interface,
     fmc_device_subinterfaces.sub_interfaces,
-    data.data.fmc_device_subinterfaces.sub_interfaces
+    data.fmc_device_subinterfaces.sub_interfaces
   ]
 }

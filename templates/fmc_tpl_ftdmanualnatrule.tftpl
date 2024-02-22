@@ -114,7 +114,7 @@ resource "fmc_ftd_manualnat_rules" "${rule.key}" {
   dynamic "translated_destination_port" {
     for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_destination_port) == true ? ["1"] : []
     content {
-      id = local.map_ports[elocal.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_destination_port].id
+      id = local.map_ports[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_destination_port].id
       type = local.map_ports[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_destination_port].type
     }
   }
