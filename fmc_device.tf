@@ -22,7 +22,7 @@ resource "fmc_devices" "device" {
   }
 
   # Optional  
-  license_caps     = try(each.value.license)
+  license_caps     = try(each.value.licenses)
   nat_id           = try(each.value.nat_id, local.defaults.fmc.domains.devices.nat_id, null)
   performance_tier = try(each.value.performance_tier, local.defaults.fmc.domains.devices.performance_tier, null)
 }
@@ -46,7 +46,7 @@ resource "fmc_device_physical_interfaces" "physical_interface" {
   mode                   = try(each.value.data.mode, local.defaults.fmc.domains.devices.physical_interfaces.mode)
   ipv4_static_address    = try(each.value.data.ipv4_static_address, null)
   ipv4_static_netmask    = try(each.value.data.ipv4_static_netmask, null)
-  ipv4_dhcp_enabled      = try(each.value.data.ipv4_dhcp_enabled, null)
+  ipv4_dhcp_enabled      = try(each.value.data.ipv4_dhcp, null)
   ipv4_dhcp_route_metric = try(each.value.data.ipv4_dhcp_route_metric, null)
   ipv6_address           = try(each.value.data.ipv6_address, null)
   ipv6_prefix            = try(each.value.data.ipv6_prefix, null)
@@ -93,7 +93,7 @@ resource "fmc_device_subinterfaces" "sub_interfaces" {
   vlan_id                = try(each.value.data.vlan, null)
   enable_ipv6            = try(each.value.data.enable_ipv6, null)
   enabled                = try(each.value.data.enable_ipv6, null)
-  ipv4_dhcp_enabled      = try(each.value.data.ipv4_dhcp_enabled, null)
+  ipv4_dhcp_enabled      = try(each.value.data.ipv4_dhcp, null)
   ipv4_dhcp_route_metric = try(each.value.data.ipv4_dhcp_route_metric, null)
   ipv4_static_address    = try(each.value.data.ipv4_static_address, null)
   ipv4_static_netmask    = try(each.value.data.ipv4_static_netmask, null)

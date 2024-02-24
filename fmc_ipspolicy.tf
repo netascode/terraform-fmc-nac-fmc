@@ -17,7 +17,7 @@ resource "fmc_ips_policies" "ips_policy" {
 
   # Optional  
   inspection_mode = try(each.value.inspection_mode, local.defaults.fmc.domains.ips_policies.inspection_mode, null)
-  basepolicy_id   = try(data.fmc_ips_policies.ips_policy[each.value.base_policy].id, "dupa", null)
+  basepolicy_id   = try(data.fmc_ips_policies.ips_policy[each.value.base_policy].id, null)
 
   depends_on = [
     data.fmc_ips_policies.ips_policy

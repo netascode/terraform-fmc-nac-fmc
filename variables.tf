@@ -45,3 +45,9 @@ variable "FMC_PASSWORD" {
   type        = string
   default     = null
 }
+
+variable "FMC_HOSTNAME" {
+  description = "FMC Hostname"
+  type        = string
+  default     = null
+}

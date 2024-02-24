@@ -14,7 +14,7 @@ resource "fmc_host_objects" "host" {
 
   # Mandatory
   name  = each.value.name
-  value = each.value.value
+  value = each.value.ip
 
   # Optional
   description = try(each.value.description, local.defaults.fmc.domains.hosts.description, null)
@@ -36,7 +36,7 @@ resource "fmc_network_objects" "network" {
 
   # Mandatory
   name  = each.value.name
-  value = each.value.value
+  value = each.value.prefix
 
   # Optional
   description = try(each.value.description, local.defaults.fmc.domains.networks.description, null)
@@ -58,7 +58,7 @@ resource "fmc_range_objects" "range" {
 
   # Mandatory
   name  = each.value.name
-  value = each.value.value
+  value = each.value.ip_range
 
   # Optional
   description = try(each.value.description, local.defaults.fmc.domains.ranges.description, null)
@@ -80,7 +80,7 @@ resource "fmc_fqdn_objects" "fqdn" {
 
   # Mandatory
   name           = each.value.name
-  value          = each.value.value
+  value          = each.value.fqdn
   dns_resolution = try(each.value.dns_resolution, local.defaults.fmc.domains.fqdns.dns_resolution)
 
   # Optional

@@ -10,5 +10,5 @@ resource "fmc_smart_license" "license" {
   # Optional
   token  = try(local.model.fmc.smart_license.token, null)
   retain = try(local.model.fmc.smart_license.retain, local.defaults.fmc.smart_license.retain, null)
-  force  = try(local.model.fmc.force, local.defaults.fmc.smart_license.force, null)
+  force  = try(local.model.fmc.smart_license.force, local.defaults.fmc.smart_license.force, null)
 }

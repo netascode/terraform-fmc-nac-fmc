@@ -14,6 +14,7 @@ content: |-
   ```bash
   export FMC_USERNAME=<username>
   export FMC_PASSWORD=<password>
+  export FMC_HOSTNAME=<hostname>
   ```
 
   To run this example you need to execute:

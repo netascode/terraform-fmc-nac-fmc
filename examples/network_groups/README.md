@@ -10,6 +10,7 @@ Set environment variables pointing to FMC:
 ```bash
 export FMC_USERNAME=<username>
 export FMC_PASSWORD=<password>
+export FMC_HOSTNAME=<hostname>
 ```
 
 To run this example you need to execute:
@@ -33,12 +34,11 @@ Note that this example will create resources. Resources can be destroyed with `t
 ---
 fmc:
   name: MyFMC1
-  hostname: 10.1.1.1
   domains:
   - name: Global
     hosts:
     - name: MyHost1
-      value: 10.10.10.10
+      ip: 10.10.10.10
     network_groups:
     - name: MyNetworkGroup1
       objects:

@@ -29,12 +29,11 @@ Configuring a Network-group Object using YAML:
 ---
 fmc:
   name: MyFMC1
-  hostname: 10.1.1.1
   domains:
   - name: Global
     hosts:
     - name: MyHost1
-      value: 10.10.10.10
+      ip: 10.10.10.10
     network_groups:
     - name: MyNetworkGroup1
       objects:
@@ -63,6 +62,7 @@ module "fmc" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_FMC_HOSTNAME"></a> [FMC\_HOSTNAME](#input\_FMC\_HOSTNAME) | FMC Hostname | `string` | `null` | no |
 | <a name="input_FMC_PASSWORD"></a> [FMC\_PASSWORD](#input\_FMC\_PASSWORD) | FMC Password | `string` | `null` | no |
 | <a name="input_FMC_USERNAME"></a> [FMC\_USERNAME](#input\_FMC\_USERNAME) | FMC Username | `string` | `null` | no |
 | <a name="input_deploy_support"></a> [deploy\_support](#input\_deploy\_support) | Enables support for FTD deployments | `bool` | `true` | no |
