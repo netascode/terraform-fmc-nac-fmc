@@ -2,7 +2,6 @@
 # POLICY ASSIGNMENT
 ###
 locals {
-
   res_policyassignments = concat(
     flatten([
       for domain in local.domains : [

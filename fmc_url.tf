@@ -4,7 +4,7 @@
 locals {
   res_urls = flatten([
     for domains in local.domains : [
-      for object in try(domains.urls, []) : object if !contains(local.data_urls, object.name)
+      for object in try(domains.objects.urls, []) : object if !contains(local.data_urls, object.name)
     ]
   ])
 }
@@ -17,7 +17,7 @@ resource "fmc_url_objects" "url" {
   url  = each.value.url
 
   # Optional
-  description = try(each.value.description, local.defaults.fmc.domains.urls.description, null)
+  description = try(each.value.description, local.defaults.fmc.domains.objects.urls.description, null)
 }
 
 ###
@@ -26,7 +26,7 @@ resource "fmc_url_objects" "url" {
 locals {
   res_urlgroups = flatten([
     for domains in local.domains : [
-      for object in try(domains.url_groups, []) : object
+      for object in try(domains.objects.url_groups, []) : object
     ]
   ])
 }
@@ -57,5 +57,5 @@ resource "fmc_url_object_group" "urlgroup" {
   }
 
   # Optional
-  description = try(each.value.description, local.defaults.fmc.domains.url_groups.description, null)
+  description = try(each.value.description, local.defaults.fmc.domains.objects.url_groups.description, null)
 }

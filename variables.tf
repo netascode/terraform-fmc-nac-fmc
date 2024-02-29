@@ -33,21 +33,3 @@ variable "yaml_existing_file" {
   type        = string
   default     = "data/existing/existing.yaml"
 }
-
-variable "FMC_USERNAME" {
-  description = "FMC Username"
-  type        = string
-  default     = null
-}
-
-variable "FMC_PASSWORD" {
-  description = "FMC Password"
-  type        = string
-  default     = null
-}
-
-variable "FMC_HOSTNAME" {
-  description = "FMC Hostname"
-  type        = string
-  default     = null
-}

@@ -10,14 +10,13 @@ Set environment variables pointing to FMC:
 ```bash
 export FMC_USERNAME=<username>
 export FMC_PASSWORD=<password>
-export FMC_HOSTNAME=<hostname>
+export FMC_HOST=<hostname>
 ```
 
 To run this example you need to execute:
 
 ```bash
 $ terraform init
-$ terraform plan
 $ terraform apply \
   -target=module.fmc.local_file.access_rule \
   -target=module.fmc.local_file.networkgroups \
@@ -36,14 +35,15 @@ fmc:
   name: MyFMC1
   domains:
   - name: Global
-    hosts:
-    - name: MyHost1
-      ip: 10.10.10.10
-    network_groups:
-    - name: MyNetworkGroup1
-      objects:
-      - MyHost1
-      - any-ipv4
+    objects:
+      hosts:
+      - name: MyHost1
+        ip: 10.10.10.10
+      network_groups:
+      - name: MyNetworkGroup1
+        objects:
+        - MyHost1
+        - any-ipv4
 ```
 
 #### `data/existing/existing.yaml`
@@ -53,8 +53,9 @@ fmc:
 fmc:
   domains:
   - name: Global
-    networks:
-    - name: any-ipv4
+    objects:
+      networks:
+      - name: any-ipv4
 ```
 
 #### `main.tf`

@@ -4,7 +4,7 @@
 locals {
   res_hosts = flatten([
     for domains in local.domains : [
-      for object in try(domains.hosts, []) : object if !contains(local.data_hosts, object.name)
+      for object in try(domains.objects.hosts, []) : object if !contains(local.data_hosts, object.name)
     ]
   ])
 }
@@ -17,7 +17,7 @@ resource "fmc_host_objects" "host" {
   value = each.value.ip
 
   # Optional
-  description = try(each.value.description, local.defaults.fmc.domains.hosts.description, null)
+  description = try(each.value.description, local.defaults.fmc.domains.objects.hosts.description, null)
 }
 
 ###
@@ -26,7 +26,7 @@ resource "fmc_host_objects" "host" {
 locals {
   res_networks = flatten([
     for domains in local.domains : [
-      for object in try(domains.networks, []) : object if !contains(local.data_networks, object.name)
+      for object in try(domains.objects.networks, []) : object if !contains(local.data_networks, object.name)
     ]
   ])
 }
@@ -39,7 +39,7 @@ resource "fmc_network_objects" "network" {
   value = each.value.prefix
 
   # Optional
-  description = try(each.value.description, local.defaults.fmc.domains.networks.description, null)
+  description = try(each.value.description, local.defaults.fmc.domains.objects.networks.description, null)
 }
 
 ###
@@ -48,7 +48,7 @@ resource "fmc_network_objects" "network" {
 locals {
   res_ranges = flatten([
     for domains in local.domains : [
-      for object in try(domains.ranges, []) : object
+      for object in try(domains.objects.ranges, []) : object
     ]
   ])
 }
@@ -61,7 +61,7 @@ resource "fmc_range_objects" "range" {
   value = each.value.ip_range
 
   # Optional
-  description = try(each.value.description, local.defaults.fmc.domains.ranges.description, null)
+  description = try(each.value.description, local.defaults.fmc.domains.objects.ranges.description, null)
 }
 
 ###
@@ -70,7 +70,7 @@ resource "fmc_range_objects" "range" {
 locals {
   res_fqdns = flatten([
     for domains in local.domains : [
-      for object in try(domains.fqdns, []) : object
+      for object in try(domains.objects.fqdns, []) : object
     ]
   ])
 }
@@ -81,10 +81,10 @@ resource "fmc_fqdn_objects" "fqdn" {
   # Mandatory
   name           = each.value.name
   value          = each.value.fqdn
-  dns_resolution = try(each.value.dns_resolution, local.defaults.fmc.domains.fqdns.dns_resolution)
+  dns_resolution = try(each.value.dns_resolution, local.defaults.fmc.domains.objects.fqdns.dns_resolution)
 
   # Optional
-  description = try(each.value.description, local.defaults.fmc.domains.fqdns.description, null)
+  description = try(each.value.description, local.defaults.fmc.domains.objects.fqdns.description, null)
 }
 
 ###
@@ -93,15 +93,14 @@ resource "fmc_fqdn_objects" "fqdn" {
 locals {
   res_networkgroups = flatten([
     for domains in local.domains : [
-      for object in try(domains.network_groups, []) : object if !contains(local.data_networkgroups, object.name)
+      for object in try(domains.objects.network_groups, []) : object if !contains(local.data_networkgroups, object.name)
     ]
   ])
 
   networkgroup_template = {
-    defaults      = try(local.defaults.fmc.domains.network_groups, {}),
+    defaults      = try(local.defaults.fmc.domains.objects.network_groups, {}),
     networkgroups = local.res_networkgroups
   }
-
 }
 
 resource "local_file" "networkgroups" {

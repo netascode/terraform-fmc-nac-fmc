@@ -26,6 +26,7 @@ resource "fmc_staticIPv4_route" "ipv4staticroute" {
   device_id      = each.value.device_id
   interface_name = each.value.interface_name
   metric_value   = try(each.value.metric_value, local.defaults.fmc.domains.devices.ipv4_static_routes.metric_value)
+
   gateway {
     object {
       id   = each.value.gateway_id
@@ -33,6 +34,7 @@ resource "fmc_staticIPv4_route" "ipv4staticroute" {
       name = each.value.gateway_name
     }
   }
+
   dynamic "selected_networks" {
     for_each = { for obj in each.value.selected_networks : obj => obj }
     content {
@@ -40,6 +42,7 @@ resource "fmc_staticIPv4_route" "ipv4staticroute" {
       type = try(local.map_networkobjects[selected_networks.value].type, local.map_res_networkgroups[selected_networks.value].type)
     }
   }
+
   # Optional
   is_tunneled = try(each.value.tunneled, local.defaults.fmc.domains.devices.ipv4_static_routes.tunneled, null)
 

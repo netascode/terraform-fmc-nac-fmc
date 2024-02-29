@@ -1,12 +1,12 @@
 resource "fmc_ftd_deploy" "ftd" {
-  for_each = { for deploymemt in try(local.fmc.deploy, {}) : deploymemt.device => deploymemt }
+  for_each = { for deploymemt in local.res_deploy : deploymemt.device => deploymemt }
 
   # Mandatory  
   device = local.map_devices[each.value.device].id
 
   # Optional      
-  ignore_warning = try(each.value.ignore_warning, local.defaults.fmc.deploy.ignore_warning, null)
-  force_deploy = try(each.value.ignore_warning, local.defaults.fmc.deploy.force_deploy, null)
+  ignore_warning  = each.value.deploy_ignore_warning
+  force_deploy    = each.value.deploy_force
 
   depends_on = [
     fmc_access_policies.accesspolicy,

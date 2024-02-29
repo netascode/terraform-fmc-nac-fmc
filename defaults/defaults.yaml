@@ -1,12 +1,10 @@
 ---
 defaults:
   fmc:
-    skip_ssl_verify: true
-    deploy:
-      ignore_warning: false
-      force_deploy: false
     domains:
       devices:
+        deploy_ignore_warning: false
+        deploy_force: false
         physical_interfaces:
           enabled: true
           mode: "NONE"
@@ -24,37 +22,38 @@ defaults:
         access_rules:
           enable_syslog: false
           enabled: true
-      security_zones:
-        interface_type: "ROUTED"
       ftd_nat_policies:
-          ftd_auto_nat_rules:
-              fall_through: false
-              ipv6: false
-              net_to_net: false
-              no_proxy_arp: false
-              perform_route_lookup: false
-              translate_dns: false
-              translated_network_is_destination_interface: true
-          ftd_manual_nat_rules:
-              enabled: true
-              fall_through: false
-              interface_in_original_destination: false
-              interface_in_translated_source: true
-              ipv6: false
-              net_to_net: false
-              no_proxy_arp: false
-              perform_route_lookup: false
-              translate_dns: false
-              unidirectional: false
-      fqdns:
-        dns_resolution: "IPV4_ONLY"
-      dynamic_objects:
-        object_type: "IP"
-      hosts:
-        description: " "
-      networks:
-        description: " "
-      ranges:
-        description: " "
-      network_groups:
-        description: " "
+        ftd_auto_nat_rules:
+          fall_through: false
+          ipv6: false
+          net_to_net: false
+          no_proxy_arp: false
+          perform_route_lookup: false
+          translate_dns: false
+          translated_network_is_destination_interface: true
+        ftd_manual_nat_rules:
+          enabled: true
+          fall_through: false
+          interface_in_original_destination: false
+          interface_in_translated_source: true
+          ipv6: false
+          net_to_net: false
+          no_proxy_arp: false
+          perform_route_lookup: false
+          translate_dns: false
+          unidirectional: false
+      objects:
+        fqdns:
+          dns_resolution: "IPV4_ONLY"
+        dynamic_objects:
+          object_type: "IP"
+        hosts:
+          description: " "
+        networks:
+          description: " "
+        ranges:
+          description: " "
+        network_groups:
+          description: " "
+        security_zones:
+          interface_type: "ROUTED"

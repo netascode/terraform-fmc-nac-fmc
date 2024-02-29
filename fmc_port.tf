@@ -4,7 +4,7 @@
 locals {
   res_ports = flatten([
     for domains in local.domains : [
-      for object in try(domains.ports, []) : object if !contains(local.data_ports, object.name)
+      for object in try(domains.objects.ports, []) : object if !contains(local.data_ports, object.name)
     ]
   ])
 }
@@ -18,7 +18,7 @@ resource "fmc_port_objects" "port" {
   protocol = each.value.protocol
 
   # Optional
-  overridable = try(each.value.overridable, local.defaults.fmc.domains.ports.overridable, null)
+  overridable = try(each.value.overridable, local.defaults.fmc.domains.objects.ports.overridable, null)
 }
 
 ###
@@ -27,7 +27,7 @@ resource "fmc_port_objects" "port" {
 locals {
   res_icmpv4s = flatten([
     for domains in local.domains : [
-      for object in try(domains.icmpv4s, []) : object
+      for object in try(domains.objects.icmp_v4s, []) : object
     ]
   ])
 }
@@ -40,7 +40,7 @@ resource "fmc_icmpv4_objects" "icmpv4" {
   icmp_type = each.value.icmp_type
 
   # Optional
-  code = try(each.value.code, local.defaults.fmc.domains.icmpv4s.code, null)
+  code = try(each.value.code, local.defaults.fmc.domains.objects.icmp_v4s.code, null)
 }
 
 ###
@@ -49,7 +49,7 @@ resource "fmc_icmpv4_objects" "icmpv4" {
 locals {
   res_portgroups = flatten([
     for domains in local.domains : [
-      for object in try(domains.port_groups, []) : object
+      for object in try(domains.objects.port_groups, []) : object
     ]
   ])
 }
@@ -71,5 +71,5 @@ resource "fmc_port_group_objects" "portgroup" {
   }
 
   # Optional
-  description = try(each.value.description, local.defaults.fmc.domains.port_groups.description, null)
+  description = try(each.value.description, local.defaults.fmc.domains.objects.port_groups.description, null)
 }

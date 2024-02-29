@@ -4,7 +4,7 @@
 locals {
   res_dynamicobjects = flatten([
     for domains in local.domains : [
-      for object in try(domains.dynamic_objects, []) : object if !contains(local.data_dynamicobjects, object.name)
+      for object in try(domains.objects.dynamic_objects, []) : object if !contains(local.data_dynamicobjects, object.name)
     ]
   ])
 }
@@ -14,10 +14,10 @@ resource "fmc_dynamic_objects" "dynamicobject" {
 
   # Mandatory
   name        = each.value.name
-  object_type = try(each.value.object_type, local.defaults.fmc.domains.dynamic_objects.object_type)
+  object_type = try(each.value.object_type, local.defaults.fmc.domains.objects.dynamic_objects.object_type)
 
   # Optional
-  description = try(each.value.description, local.defaults.fmc.domains.hosts.description, null)
+  description = try(each.value.description, local.defaults.fmc.domains.objects.dynamic_objects.description, null)
 }
 
 ###
@@ -26,7 +26,7 @@ resource "fmc_dynamic_objects" "dynamicobject" {
 locals {
   res_sgts = flatten([
     for domains in local.domains : [
-      for object in try(domains.sgts, []) : object if !contains(local.data_sgts, object.name)
+      for object in try(domains.objects.sgts, []) : object if !contains(local.data_sgts, object.name)
     ]
   ])
 }
@@ -40,5 +40,5 @@ resource "fmc_sgt_objects" "sgt" {
 
   # Optional
   type        = "SecurityGroupTag"
-  description = try(each.value.description, local.defaults.fmc.domains.sgts.description, null)
+  description = try(each.value.description, local.defaults.fmc.domains.objects.sgts.description, null)
 }

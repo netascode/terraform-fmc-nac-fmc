@@ -14,14 +14,13 @@ content: |-
   ```bash
   export FMC_USERNAME=<username>
   export FMC_PASSWORD=<password>
-  export FMC_HOSTNAME=<hostname>
+  export FMC_HOST=<hostname>
   ```
 
   To run this example you need to execute:
 
   ```bash
   $ terraform init
-  $ terraform plan
   $ terraform apply \
     -target=module.fmc.local_file.access_rule \
     -target=module.fmc.local_file.networkgroups \

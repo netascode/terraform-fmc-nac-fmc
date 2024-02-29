@@ -3,32 +3,32 @@
 ###
 
 locals {
+  data_devices        = [for obj in try(local.data_existing.fmc.domains[0].devices, []) : obj.name]
   data_accesspolicies = [for obj in try(local.data_existing.fmc.domains[0].access_policies, []) : obj.name]
   data_ftdnatpolicies = [for obj in try(local.data_existing.fmc.domains[0].ftd_nat_policies, []) : obj.name]
   data_ipspolicies    = [for obj in try(local.data_existing.fmc.domains[0].ips_policies, []) : obj.name]
   data_filepolicies   = [for obj in try(local.data_existing.fmc.domains[0].file_policies, []) : obj.name]
-  data_hosts          = [for obj in try(local.data_existing.fmc.domains[0].hosts, []) : obj.name]
-  data_networks       = [for obj in try(local.data_existing.fmc.domains[0].networks, []) : obj.name]
+  data_hosts          = [for obj in try(local.data_existing.fmc.domains[0].objects.hosts, []) : obj.name]
+  data_networks       = [for obj in try(local.data_existing.fmc.domains[0].objects.networks, []) : obj.name]
   #data_ranges        = []
-  data_networkgroups = [for obj in try(local.data_existing.fmc.domains[0].network_groups, []) : obj.name]
-  data_ports         = [for obj in try(local.data_existing.fmc.domains[0].ports, []) : obj.name]
-  data_portgroups    = [for obj in try(local.data_existing.fmc.domains[0].port_groups, []) : obj.name]
-  #data_icmpv4s       = []
-  data_securityzones  = [for obj in try(local.data_existing.fmc.domains[0].security_zones, []) : obj.name]
-  data_devices        = [for obj in try(local.data_existing.fmc.domains[0].devices, []) : obj.name]
-  data_urls           = [for obj in try(local.data_existing.fmc.domains[0].urls, []) : obj.name]
+  data_networkgroups = [for obj in try(local.data_existing.fmc.domains[0].objects.network_groups, []) : obj.name]
+  data_ports         = [for obj in try(local.data_existing.fmc.domains[0].objects.ports, []) : obj.name]
+  data_portgroups    = [for obj in try(local.data_existing.fmc.domains[0].objects.port_groups, []) : obj.name]
+  #data_icmpv_4s       = []
+  data_securityzones  = [for obj in try(local.data_existing.fmc.domains[0].objects.security_zones, []) : obj.name]
+  data_urls           = [for obj in try(local.data_existing.fmc.domains[0].objects.urls, []) : obj.name]
   data_syslogalerts   = []
-  data_sgts           = [for obj in try(local.data_existing.fmc.domains[0].sgts, []) : obj.name]
-  data_dynamicobjects = [for obj in try(local.data_existing.fmc.domains[0].dynamic_objects, []) : obj.name]
+  data_sgts           = [for obj in try(local.data_existing.fmc.domains[0].objects.sgts, []) : obj.name]
+  data_dynamicobjects = [for obj in try(local.data_existing.fmc.domains[0].objects.dynamic_objects, []) : obj.name]
 
   data_sub_interfces = flatten([
     for device in try(local.data_existing.fmc.domains[0].devices, []) : [
       for physicalinterface in try(device.physical_interfaces, []) : [
-        for subinterface in try(physicalinterface.sub_interfaces, []) : {
-          key               = "${device.name}/${physicalinterface.interface}/${subinterface.subinterface_id}"
+        for subinterface in try(physicalinterface.subinterfaces, []) : {
+          key               = "${device.name}/${physicalinterface.interface}/${subinterface.id}"
           device_id         = local.map_devices[device.name].id
           physicalinterface = physicalinterface.interface
-          subinterface_id   = subinterface.subinterface_id
+          subinterface_id   = subinterface.id
         }
       ]
     ]
@@ -37,11 +37,10 @@ locals {
   data_sub_interfces_list = flatten([
     for device in try(local.data_existing.fmc.domains[0].devices, []) : [
       for physicalinterface in try(device.physical_interfaces, []) : [
-        for subinterface in try(physicalinterface.sub_interfaces, []) : "${device.name}/${physicalinterface.interface}/${subinterface.subinterface_id}"
+        for subinterface in try(physicalinterface.subinterfaces, []) : "${device.name}/${physicalinterface.interface}/${subinterface.id}"
       ]
     ]
   ])
-
 }
 
 data "fmc_access_policies" "accesspolicy" {

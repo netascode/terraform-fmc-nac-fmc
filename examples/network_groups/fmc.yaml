@@ -3,11 +3,12 @@ fmc:
   name: MyFMC1
   domains:
   - name: Global
-    hosts:
-    - name: MyHost1
-      ip: 10.10.10.10
-    network_groups:
-    - name: MyNetworkGroup1
-      objects:
-      - MyHost1
-      - any-ipv4
+    objects:
+      hosts:
+      - name: MyHost1
+        ip: 10.10.10.10
+      network_groups:
+      - name: MyNetworkGroup1
+        objects:
+        - MyHost1
+        - any-ipv4

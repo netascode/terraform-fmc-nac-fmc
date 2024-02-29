@@ -1,8 +1,17 @@
+# Log files
 *.log
+
+# Terraform files
 .terraform
 .terraform.lock.hcl
 terraform.tfstate
 terraform.tfstate.backup
-.envrc
 tflint.hcl
+generated_*.tf
+
+# Env files
+.envrc
+.env
+
+# MACOS cache
 .DS_Store

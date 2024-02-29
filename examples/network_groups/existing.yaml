@@ -2,5 +2,6 @@
 fmc:
   domains:
   - name: Global
-    networks:
-    - name: any-ipv4
+    objects:
+      networks:
+      - name: any-ipv4

@@ -2,6 +2,16 @@
 # DEPLOY
 ###
 locals {
+  res_deploy = flatten([
+    for domains in local.domains : [
+      for object in try(domains.devices, []) : {
+        device                = object.name
+        deploy_ignore_warning = try(object.deploy_ignore_warning, local.defaults.fmc.domains.devices.deploy_ignore_warning, null)
+        deploy_force          = try(object.deploy_force, local.defaults.fmc.domains.devices.deploy_force, null)
+      } if try(object.deploy, false)
+    ]
+  ])
+
   deploy_template = {
     accessrules       = local.res_accessrules,
     ftdmanualnatrules = local.res_ftdmanualnatrules,

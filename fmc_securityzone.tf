@@ -4,7 +4,7 @@
 locals {
   res_securityzones = flatten([
     for domains in local.domains : [
-      for object in try(domains.security_zones, []) : object if !contains(local.data_securityzones, object.name)
+      for object in try(domains.objects.security_zones, []) : object if !contains(local.data_securityzones, object.name)
     ]
   ])
 }
@@ -14,5 +14,5 @@ resource "fmc_security_zone" "securityzone" {
 
   # Mandatory  
   name           = each.value.name
-  interface_mode = try(each.value.interface_type, local.defaults.fmc.domains.security_zones.interface_type)
+  interface_mode = try(each.value.interface_type, local.defaults.fmc.domains.objects.security_zones.interface_type)
 }

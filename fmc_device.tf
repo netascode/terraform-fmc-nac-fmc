@@ -25,12 +25,15 @@ resource "fmc_devices" "device" {
   license_caps     = try(each.value.licenses)
   nat_id           = try(each.value.nat_id, local.defaults.fmc.domains.devices.nat_id, null)
   performance_tier = try(each.value.performance_tier, local.defaults.fmc.domains.devices.performance_tier, null)
+
+  lifecycle {
+    ignore_changes = [regkey, access_policy]
+  }
 }
 
 ###
 # PHYSICAL INTERFACE
 ###
-
 resource "fmc_device_physical_interfaces" "physical_interface" {
   for_each = { for physicalinterface in local.map_interfaces : physicalinterface.key => physicalinterface if physicalinterface.resource }
 
@@ -57,7 +60,6 @@ resource "fmc_device_physical_interfaces" "physical_interface" {
     data.fmc_device_physical_interfaces.physical_interface
   ]
 }
-
 
 ###
 # SUBINTERFACE
@@ -106,4 +108,3 @@ resource "fmc_device_subinterfaces" "sub_interfaces" {
   priority               = try(each.value.data.priority, null)
   security_zone_id       = try(local.map_securityzones[each.value.data.security_zone].id, null)
 }
-

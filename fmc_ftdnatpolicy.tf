@@ -55,7 +55,7 @@ resource "fmc_ftd_autonat_rules" "ftdautonatrule" {
   translated_port                             = try(each.value.data.translated_port, null)
 
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) == true ? ["1"] : []
+    for_each = can(each.value.data.destination_interface) ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
@@ -63,7 +63,7 @@ resource "fmc_ftd_autonat_rules" "ftdautonatrule" {
   }
 
   dynamic "original_network" {
-    for_each = can(each.value.data.original_network) == true ? ["1"] : []
+    for_each = can(each.value.data.original_network) ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_network].id
       type = local.map_networkobjects[each.value.data.original_network].type
@@ -71,7 +71,7 @@ resource "fmc_ftd_autonat_rules" "ftdautonatrule" {
   }
 
   dynamic "original_port" {
-    for_each = can(each.value.data.original_port) == true ? ["1"] : []
+    for_each = can(each.value.data.original_port) ? ["1"] : []
     content {
       port     = each.value.data.original_port.port
       protocol = each.value.data.original_port.protocol
@@ -79,14 +79,14 @@ resource "fmc_ftd_autonat_rules" "ftdautonatrule" {
   }
 
   dynamic "pat_options" {
-    for_each = can(each.value.data.pat_options) == true ? ["1"] : []
+    for_each = can(each.value.data.pat_options) ? ["1"] : []
     content {
       extended_pat_table    = try(each.value.data.pat_options.extended_pat_table, null)
       include_reserve_ports = try(each.value.data.pat_options.include_reserve_ports, null)
       interface_pat         = try(each.value.data.pat_options.interface_pat, null)
       round_robin           = try(each.value.data.pat_options.round_robin, null)
       dynamic "pat_pool_address" {
-        for_each = can(each.value.data.pat_options.pat_pool_address) == true ? ["1"] : []
+        for_each = can(each.value.data.pat_options.pat_pool_address) ? ["1"] : []
         content {
           id   = local.map_networkobjects[each.value.data.pat_options.pat_pool_address].id
           type = local.map_networkobjects[each.value.data.pat_options.pat_pool_address].type
@@ -96,7 +96,7 @@ resource "fmc_ftd_autonat_rules" "ftdautonatrule" {
   }
 
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) == true ? ["1"] : []
+    for_each = can(each.value.data.source_interface) ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
@@ -104,7 +104,7 @@ resource "fmc_ftd_autonat_rules" "ftdautonatrule" {
   }
 
   dynamic "translated_network" {
-    for_each = can(each.value.data.translated_network) == true ? ["1"] : []
+    for_each = can(each.value.data.translated_network) ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_network].id
       type = local.map_networkobjects[each.value.data.translated_network].type
