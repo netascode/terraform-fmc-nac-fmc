@@ -18,7 +18,7 @@ locals {
           device = device.name
           policy = device.access_policy
           type   = "ACP"
-        } if (contains(keys(device), "access_policy") && contains(local.data_devices, device.name))
+        } if(contains(keys(device), "access_policy") && contains(local.data_devices, device.name))
       ]
     ])
   )

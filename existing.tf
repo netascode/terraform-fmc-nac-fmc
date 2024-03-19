@@ -4,6 +4,7 @@
 
 locals {
   data_devices        = [for obj in try(local.data_existing.fmc.domains[0].devices, []) : obj.name]
+  data_clusters       = [for obj in try(local.data_existing.fmc.domains[0].clusters, []) : obj.name]
   data_accesspolicies = [for obj in try(local.data_existing.fmc.domains[0].access_policies, []) : obj.name]
   data_ftdnatpolicies = [for obj in try(local.data_existing.fmc.domains[0].ftd_nat_policies, []) : obj.name]
   data_ipspolicies    = [for obj in try(local.data_existing.fmc.domains[0].ips_policies, []) : obj.name]
@@ -21,7 +22,7 @@ locals {
   data_sgts           = [for obj in try(local.data_existing.fmc.domains[0].objects.sgts, []) : obj.name]
   data_dynamicobjects = [for obj in try(local.data_existing.fmc.domains[0].objects.dynamic_objects, []) : obj.name]
 
-  data_sub_interfces = flatten([
+  data_sub_interfaces = flatten([
     for device in try(local.data_existing.fmc.domains[0].devices, []) : [
       for physicalinterface in try(device.physical_interfaces, []) : [
         for subinterface in try(physicalinterface.subinterfaces, []) : {
@@ -41,6 +42,7 @@ locals {
       ]
     ]
   ])
+
 }
 
 data "fmc_access_policies" "accesspolicy" {
@@ -128,6 +130,13 @@ data "fmc_devices" "device" {
 
   name = each.key
 }
+
+data "fmc_device_cluster" "cluster" {
+  for_each = toset(local.data_clusters)
+
+  name = each.key
+}
+
 data "fmc_device_physical_interfaces" "physical_interface" {
   for_each = local.map_interfaces
 
@@ -141,10 +150,15 @@ data "fmc_device_physical_interfaces" "physical_interface" {
 }
 
 data "fmc_device_subinterfaces" "sub_interfaces" {
-  for_each = { for object in local.data_sub_interfces : object.key => object }
+  for_each = { for object in local.data_sub_interfaces : object.key => object }
 
   device_id       = each.value.device_id
   subinterface_id = each.value.subinterface_id
+
+  depends_on = [
+    fmc_devices.device,
+    data.fmc_devices.device
+  ]
 }
 
 data "fmc_sgt_objects" "sgt" {

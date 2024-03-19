@@ -23,7 +23,19 @@ terraform apply \
 
 Configuring a Network-group Object using YAML:
 
-#### `fmc.yaml`
+#### `data/existing/existing.yaml`
+
+```yaml
+---
+fmc:
+  domains:
+  - name: Global
+    objects:
+      networks:
+      - name: any-ipv4
+```
+
+#### `data/fmc.yaml`
 
 ```yaml
 ---
@@ -81,12 +93,18 @@ module "fmc" {
 |------|------|
 | [fmc_access_policies.accesspolicy](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/access_policies) | resource |
 | [fmc_access_policies_category.accesspolicy_category](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/access_policies_category) | resource |
+| [fmc_access_rules.MyAccessPolicyName1_MyAccessRuleName1](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/access_rules) | resource |
+| [fmc_access_rules.MyAccessPolicyName1_MyAccessRuleName2](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/access_rules) | resource |
+| [fmc_device_cluster.cluster](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/device_cluster) | resource |
 | [fmc_device_physical_interfaces.physical_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/device_physical_interfaces) | resource |
 | [fmc_device_subinterfaces.sub_interfaces](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/device_subinterfaces) | resource |
 | [fmc_devices.device](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/devices) | resource |
 | [fmc_dynamic_objects.dynamicobject](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/dynamic_objects) | resource |
 | [fmc_fqdn_objects.fqdn](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/fqdn_objects) | resource |
 | [fmc_ftd_autonat_rules.ftdautonatrule](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/ftd_autonat_rules) | resource |
+| [fmc_ftd_deploy.ftd](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/ftd_deploy) | resource |
+| [fmc_ftd_manualnat_rules.MyFTDNatPolicyName1_MyManualNATRule1](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/ftd_manualnat_rules) | resource |
+| [fmc_ftd_manualnat_rules.MyFTDNatPolicyName1_MyManualNATRule2](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/ftd_manualnat_rules) | resource |
 | [fmc_ftd_nat_policies.ftdnatpolicy](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/ftd_nat_policies) | resource |
 | [fmc_host_objects.host](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/host_objects) | resource |
 | [fmc_icmpv4_objects.icmpv4](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/resources/icmpv4_objects) | resource |
@@ -109,6 +127,7 @@ module "fmc" {
 | [local_file.networkgroups](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_sensitive_file.defaults](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
 | [fmc_access_policies.accesspolicy](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/data-sources/access_policies) | data source |
+| [fmc_device_cluster.cluster](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/data-sources/device_cluster) | data source |
 | [fmc_device_physical_interfaces.physical_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/data-sources/device_physical_interfaces) | data source |
 | [fmc_device_subinterfaces.sub_interfaces](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/data-sources/device_subinterfaces) | data source |
 | [fmc_devices.device](https://registry.terraform.io/providers/CiscoDevNet/fmc/1.4.8/docs/data-sources/devices) | data source |

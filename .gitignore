@@ -15,3 +15,5 @@ generated_*.tf
 
 # MACOS cache
 .DS_Store
+data/
+schema/

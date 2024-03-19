@@ -13,6 +13,7 @@ resource "fmc_ftd_deploy" "ftd" {
     fmc_device_physical_interfaces.physical_interface,
     fmc_device_subinterfaces.sub_interfaces,
     fmc_devices.device,
+    fmc_device_cluster.cluster,
     fmc_dynamic_objects.dynamicobject,
     fmc_fqdn_objects.fqdn,
     fmc_ftd_autonat_rules.ftdautonatrule,

@@ -32,7 +32,77 @@ resource "fmc_devices" "device" {
 }
 
 ###
-# PHYSICAL INTERFACE
+# Cluster
+###
+locals {
+  res_clusters = flatten([
+    for domains in local.domains : [
+      for cluster in try(domains.clusters, []) : {
+        name          = cluster.name
+        ccl_prefix    = cluster.ccl_prefix
+        vni_prefix    = cluster.vni_prefix
+        ccl_interface = cluster.ccl_interface
+        devices = [for dev in cluster.devices : {
+          name         = dev.name
+          ccl_ip       = dev.ccl_ip
+          control_node = try(dev.control_node, false)
+          idx          = index(cluster.devices, dev) + 1
+          }
+        ]
+      } if(!contains(local.data_clusters, cluster.name))
+    ]
+  ])
+}
+
+resource "fmc_device_cluster" "cluster" {
+  for_each = { for cluster in local.res_clusters : cluster.name => cluster }
+
+  # Mandatory  
+  name = each.value.name
+
+  dynamic "control_device" {
+    for_each = { for dev in each.value.devices : dev.name => dev if(try(dev.control_node, false)) == true }
+    content {
+      cluster_node_bootstrap {
+        priority = try(control_device.value.priority, 1)
+        cclip    = control_device.value.ccl_ip
+      }
+      device_details {
+        id   = local.map_devices[control_device.value.name].id
+        name = control_device.value.name
+      }
+    }
+  }
+
+  common_bootstrap {
+    ccl_interface {
+      id   = data.fmc_device_physical_interfaces.physical_interface["${each.value.devices[0].name}/${each.value.ccl_interface}"].id
+      name = data.fmc_device_physical_interfaces.physical_interface["${each.value.devices[0].name}/${each.value.ccl_interface}"].name
+    }
+    ccl_network = each.value.ccl_prefix
+    vni_network = each.value.vni_prefix
+  }
+
+  dynamic "data_devices" {
+    for_each = { for dev in each.value.devices : dev.name => dev if(try(dev.control_node, false)) == false }
+    content {
+      cluster_node_bootstrap {
+        priority = try(data_devices.value.priority, data_devices.value.idx)
+        cclip    = data_devices.value.ccl_ip
+      }
+      device_details {
+        id   = local.map_devices[data_devices.value.name].id
+        name = data_devices.value.name
+      }
+    }
+  }
+
+  depends_on = [
+    fmc_devices.device
+  ]
+}
+###
+# PHYSICAL INTERFACE Standalone/Cluster
 ###
 resource "fmc_device_physical_interfaces" "physical_interface" {
   for_each = { for physicalinterface in local.map_interfaces : physicalinterface.key => physicalinterface if physicalinterface.resource }
@@ -62,7 +132,7 @@ resource "fmc_device_physical_interfaces" "physical_interface" {
 }
 
 ###
-# SUBINTERFACE
+# SUBINTERFACE Standalone/Cluster
 ###
 locals {
   res_sub_interface = flatten([

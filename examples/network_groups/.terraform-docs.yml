@@ -31,16 +31,16 @@ content: |-
 
   Note that this example will create resources. Resources can be destroyed with `terraform destroy`.
 
-  #### `data/fmc.yaml`
-
-  ```yaml
-  {{ include "./fmc.yaml" }}
-  ```
-
   #### `data/existing/existing.yaml`
 
   ```yaml
   {{ include "./existing.yaml" }}
+  ```
+
+  #### `data/fmc.yaml`
+
+  ```yaml
+  {{ include "./fmc.yaml" }}
   ```
 
   #### `main.tf`

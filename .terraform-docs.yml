@@ -27,7 +27,13 @@ content: |-
 
   Configuring a Network-group Object using YAML:
 
-  #### `fmc.yaml`
+  #### `data/existing/existing.yaml`
+
+  ```yaml
+  {{ include "./examples/network_groups/existing.yaml" }}
+  ```
+
+  #### `data/fmc.yaml`
 
   ```yaml
   {{ include "./examples/network_groups/fmc.yaml" }}

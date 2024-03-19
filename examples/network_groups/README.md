@@ -27,6 +27,18 @@ $ terraform apply
 
 Note that this example will create resources. Resources can be destroyed with `terraform destroy`.
 
+#### `data/existing/existing.yaml`
+
+```yaml
+---
+fmc:
+  domains:
+  - name: Global
+    objects:
+      networks:
+      - name: any-ipv4
+```
+
 #### `data/fmc.yaml`
 
 ```yaml
@@ -44,18 +56,6 @@ fmc:
         objects:
         - MyHost1
         - any-ipv4
-```
-
-#### `data/existing/existing.yaml`
-
-```yaml
----
-fmc:
-  domains:
-  - name: Global
-    objects:
-      networks:
-      - name: any-ipv4
 ```
 
 #### `main.tf`
