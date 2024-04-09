@@ -27,9 +27,3 @@ variable "write_default_values_file" {
   type        = string
   default     = ""
 }
-
-variable "yaml_existing_file" {
-  description = "Path to file with the list of pre-configured FMC objects"
-  type        = string
-  default     = "data/existing/existing.yaml"
-}
