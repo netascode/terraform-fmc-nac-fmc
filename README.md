@@ -9,7 +9,7 @@ This module supports an inventory driven approach, where a complete FMC configur
 
 ## Optional
 
-The default number of supported Access Rules and Manual Nat Rules is 30. To change it, please visit to [templates](/templates): 
+The default number of supported Access Rules and Manual Nat Rules is 30. To change it, please visit: [templates](/templates) 
 
 ## Examples
 
