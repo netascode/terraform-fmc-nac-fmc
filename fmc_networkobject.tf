@@ -91,22 +91,257 @@ resource "fmc_fqdn_objects" "fqdn" {
 # NETWORK GROUP
 ###
 locals {
-  res_networkgroups = flatten([
+
+  res_networkgroups_l1_hlp = merge({
+    for domains in local.domains : domains.name => merge(
+      { for object in try(domains.objects.network_groups, []) :
+        object.name => [for obj in try(object.objects, []) : false if !contains(keys(local.map_networkobjects_l1), obj)]
+    })
+  })
+
+  res_networkgroups_l2_hlp = merge({
+    for domains in local.domains : domains.name => merge(
+      { for object in try(domains.objects.network_groups, []) :
+        object.name => [for obj in try(object.objects, []) : false if !contains(keys(local.map_networkobjects_l2), obj)]
+    })
+  })
+
+  res_networkgroups_l3_hlp = merge({
+    for domains in local.domains : domains.name => merge(
+      { for object in try(domains.objects.network_groups, []) :
+        object.name => [for obj in try(object.objects, []) : false if !contains(keys(local.map_networkobjects_l3), obj)]
+    })
+  })
+
+  res_networkgroups_l4_hlp = merge({
+    for domains in local.domains : domains.name => merge(
+      { for object in try(domains.objects.network_groups, []) :
+        object.name => [for obj in try(object.objects, []) : false if !contains(keys(local.map_networkobjects_l4), obj)]
+    })
+  })
+
+  res_networkgroups_l5_hlp = merge({
+    for domains in local.domains : domains.name => merge(
+      { for object in try(domains.objects.network_groups, []) :
+        object.name => [for obj in try(object.objects, []) : false if !contains(keys(local.map_networkobjects_l5), obj)]
+    })
+  })
+
+  res_networkgroups_l1 = flatten([
     for domains in local.domains : [
-      for object in try(domains.objects.network_groups, []) : object if !contains(local.data_networkgroups, object.name)
+      for object in try(domains.objects.network_groups, []) :
+      {
+        name        = object.name
+        description = can(object.description)
+        objects     = try(object.objects, [])
+        literals    = try(object.literals, [])
+      } if !contains(local.res_networkgroups_l1_hlp[domains.name][object.name], false)
     ]
   ])
 
-  networkgroup_template = {
-    defaults      = try(local.defaults.fmc.domains.objects.network_groups, {}),
-    networkgroups = local.res_networkgroups
+  res_networkgroups_l2 = flatten([
+    for domains in local.domains : [
+      for object in try(domains.objects.network_groups, []) :
+      {
+        name        = object.name
+        description = can(object.description)
+        objects     = try(object.objects, [])
+        literals    = try(object.literals, [])
+      } if !contains(keys(local.map_networkobjects_l2), object.name) && !contains(local.res_networkgroups_l2_hlp[domains.name][object.name], false)
+    ]
+  ])
+
+  res_networkgroups_l3 = flatten([
+    for domains in local.domains : [
+      for object in try(domains.objects.network_groups, []) :
+      {
+        name        = object.name
+        description = can(object.description)
+        objects     = try(object.objects, [])
+        literals    = try(object.literals, [])
+      } if !contains(keys(local.map_networkobjects_l3), object.name) && !contains(local.res_networkgroups_l3_hlp[domains.name][object.name], false)
+    ]
+  ])
+
+  res_networkgroups_l4 = flatten([
+    for domains in local.domains : [
+      for object in try(domains.objects.network_groups, []) :
+      {
+        name        = object.name
+        description = can(object.description)
+        objects     = try(object.objects, [])
+        literals    = try(object.literals, [])
+      } if !contains(keys(local.map_networkobjects_l4), object.name) && !contains(local.res_networkgroups_l4_hlp[domains.name][object.name], false)
+    ]
+  ])
+
+  res_networkgroups_l5 = flatten([
+    for domains in local.domains : [
+      for object in try(domains.objects.network_groups, []) :
+      {
+        name        = object.name
+        description = can(object.description)
+        objects     = try(object.objects, [])
+        literals    = try(object.literals, [])
+      } if !contains(keys(local.map_networkobjects_l5), object.name) && !contains(local.res_networkgroups_l5_hlp[domains.name][object.name], false)
+    ]
+  ])
+
+  res_networkgroups = local.res_networkgroups_l1
+
+}
+
+resource "fmc_network_group_objects" "networkgroup_l1" {
+  for_each = { for networkgroup in local.res_networkgroups_l1 : networkgroup.name => networkgroup }
+  # Mandatory
+  name = each.value.name
+
+  dynamic "objects" {
+    for_each = { for netgrpobj in each.value.objects : netgrpobj => netgrpobj }
+
+    content {
+      id   = local.map_networkobjects_l1[objects.value].id
+      type = local.map_networkobjects_l1[objects.value].type
+    }
+  }
+
+  dynamic "literals" {
+    for_each = { for netgrplit in each.value.literals : netgrplit => netgrplit }
+
+    content {
+      value = literals.value
+      type  = can(regex("/", literals.value)) ? "Network" : "Host"
+    }
+  }
+
+  lifecycle {
+    create_before_destroy = false
   }
 }
 
-resource "local_file" "networkgroups" {
-  content = replace(
-    templatefile("${path.module}/templates/fmc_tpl_networkgroup.tftpl", local.networkgroup_template),
-    "/(?m)(?s)(^( )*[\r\n])/", ""
-  )
-  filename = "${path.module}/generated_fmc_networkgroup.tf"
+
+resource "fmc_network_group_objects" "networkgroup_l2" {
+  for_each = { for networkgroup in local.res_networkgroups_l2 : networkgroup.name => networkgroup }
+  # Mandatory
+  name = each.value.name
+
+  dynamic "objects" {
+    for_each = { for netgrpobj in each.value.objects : netgrpobj => netgrpobj }
+
+    content {
+      id   = local.map_networkobjects_l2[objects.value].id
+      type = local.map_networkobjects_l2[objects.value].type
+    }
+  }
+
+  dynamic "literals" {
+    for_each = { for netgrplit in each.value.literals : netgrplit => netgrplit }
+
+    content {
+      value = literals.value
+      type  = can(regex("/", literals.value)) ? "Network" : "Host"
+    }
+  }
+  lifecycle {
+    create_before_destroy = false
+  }
+  depends_on = [
+    fmc_network_group_objects.networkgroup_l1
+  ]
+}
+
+resource "fmc_network_group_objects" "networkgroup_l3" {
+  for_each = { for networkgroup in local.res_networkgroups_l3 : networkgroup.name => networkgroup }
+  # Mandatory
+  name = each.value.name
+
+  dynamic "objects" {
+    for_each = { for netgrpobj in each.value.objects : netgrpobj => netgrpobj }
+
+    content {
+      id   = local.map_networkobjects_l3[objects.value].id
+      type = local.map_networkobjects_l3[objects.value].type
+    }
+  }
+
+  dynamic "literals" {
+    for_each = { for netgrplit in each.value.literals : netgrplit => netgrplit }
+
+    content {
+      value = literals.value
+      type  = can(regex("/", literals.value)) ? "Network" : "Host"
+    }
+  }
+  lifecycle {
+    create_before_destroy = false
+  }
+  depends_on = [
+    fmc_network_group_objects.networkgroup_l1,
+    fmc_network_group_objects.networkgroup_l2
+  ]
+}
+
+resource "fmc_network_group_objects" "networkgroup_l4" {
+  for_each = { for networkgroup in local.res_networkgroups_l4 : networkgroup.name => networkgroup }
+  # Mandatory
+  name = each.value.name
+
+  dynamic "objects" {
+    for_each = { for netgrpobj in each.value.objects : netgrpobj => netgrpobj }
+
+    content {
+      id   = local.map_networkobjects_l4[objects.value].id
+      type = local.map_networkobjects_l4[objects.value].type
+    }
+  }
+
+  dynamic "literals" {
+    for_each = { for netgrplit in each.value.literals : netgrplit => netgrplit }
+
+    content {
+      value = literals.value
+      type  = can(regex("/", literals.value)) ? "Network" : "Host"
+    }
+  }
+  lifecycle {
+    create_before_destroy = false
+  }
+  depends_on = [
+    fmc_network_group_objects.networkgroup_l1,
+    fmc_network_group_objects.networkgroup_l2,
+    fmc_network_group_objects.networkgroup_l3
+  ]
+}
+
+resource "fmc_network_group_objects" "networkgroup_l5" {
+  for_each = { for networkgroup in local.res_networkgroups_l5 : networkgroup.name => networkgroup }
+  # Mandatory
+  name = each.value.name
+
+  dynamic "objects" {
+    for_each = { for netgrpobj in each.value.objects : netgrpobj => netgrpobj }
+
+    content {
+      id   = local.map_networkobjects_l5[objects.value].id
+      type = local.map_networkobjects_l5[objects.value].type
+    }
+  }
+
+  dynamic "literals" {
+    for_each = { for netgrplit in each.value.literals : netgrplit => netgrplit }
+
+    content {
+      value = literals.value
+      type  = can(regex("/", literals.value)) ? "Network" : "Host"
+    }
+  }
+  lifecycle {
+    create_before_destroy = false
+  }
+  depends_on = [
+    fmc_network_group_objects.networkgroup_l1,
+    fmc_network_group_objects.networkgroup_l2,
+    fmc_network_group_objects.networkgroup_l3,
+    fmc_network_group_objects.networkgroup_l4
+  ]
 }

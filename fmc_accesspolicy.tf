@@ -60,32 +60,13 @@ locals {
         for accessrule in try(accesspolicy.access_rules, {}) : {
           key  = replace("${accesspolicy.name}_${accessrule.name}", " ", "")
           acp  = accesspolicy.name
+          idx  = index(accesspolicy.access_rules, accessrule)
           data = accessrule
         }
       ]
     ]
   ])
 
-  unique_acps = distinct([for v in local.res_accessrules : v.acp])
-  accessrules_by_acp = { for k in local.unique_acps :
-    k => [for v in local.res_accessrules : v if v.acp == k]
-  }
-  accessrules_by_acp_prev = { for k in local.unique_acps :
-    k => concat([""], [for v in local.res_accessrules : v.key if v.acp == k])
-  }
-
-  accessrules_template = {
-    acps          = local.accessrules_by_acp,
-    previous      = local.accessrules_by_acp_prev,
-    defaults      = try(local.defaults.fmc.domains.access_policies.access_rules, {})
-    networkgroups = local.res_networkgroups
-  }
 }
 
-resource "local_file" "access_rule" {
-  content = replace(
-    templatefile("${path.module}/templates/fmc_tpl_accessrule.tftpl", local.accessrules_template),
-    "/(?m)(?s)(^( )*[\r\n])/", ""
-  )
-  filename = "${path.module}/generated_fmc_accessrule.tf"
-}
+

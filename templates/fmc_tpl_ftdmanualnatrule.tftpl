@@ -1,143 +1,116 @@
-%{~ for ftdmanualnatrules in natpolicies ~}
-%{~ for index, rule in ftdmanualnatrules ~}
-resource "fmc_ftd_manualnat_rules" "${rule.key}" {
-  count = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}]) ? 1 : 0
+%{~ for index in range(0, number_of_rules) ~}
+resource "fmc_ftd_manualnat_rules" "manualnat_rules_${index}" {
+  for_each = { for rule in local.res_ftdmanualnatrules : rule.key => rule if rule.idx == ${index} }
 
   # Mandatory
-  nat_policy = local.map_natpolicies[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].nat_policy].id
-  nat_type   = "${rule.data.nat_type}"
+  nat_policy = local.map_natpolicies[each.value.nat_policy].id
+  nat_type   = each.value.data.nat_type
 
-  %{~ if contains([for ng in networkgroups: ng.name], rule.data.original_source) ~}
-    original_source {
-      id = fmc_network_group_objects.${rule.data.original_source}.id
-      type = fmc_network_group_objects.${rule.data.original_source}.type
-    }
-  %{~ else ~}
     dynamic "original_source" {
-      for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_source) ? ["1"] : []
+      for_each = can(each.value.data.original_source) ? ["1"] : []
       content {
-        id = local.map_networkobjects[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_source].id
-        type = local.map_networkobjects[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_source].type
+        id = local.map_networkobjects[each.value.data.original_source].id
+        type = local.map_networkobjects[each.value.data.original_source].type
       }
     }
-  %{~ endif ~}
 
   # Optional
-  ${ try( "description = \"${rule.data.description}\"", "") }
-  ${ try( "enabled = \"${rule.data.enabled}\"", "enabled = \"${defaults.enabled}\"", "") }
-  ${ try( "fallthrough = \"${rule.data.fall_through}\"", "fallthrough = \"${defaults.fall_through}\"", "") }
-  ${ try( "interface_in_original_destination = \"${rule.data.interface_in_original_destination}\"", "interface_in_original_destination = \"${defaults.interface_in_original_destination}\"", "") }
-  ${ try( "interface_in_translated_source = \"${rule.data.interface_in_translated_source}\"", "interface_in_translated_source = \"${defaults.interface_in_translated_source}\"", "") }
-  ${ try( "ipv6 = \"${rule.data.ipv6}\"", "ipv6 = \"${defaults.ipv6}\"", "") }
-  ${ try( "net_to_net = \"${rule.data.net_to_net}\"", "net_to_net = \"${defaults.net_to_net}\"", "") }
-  ${ try( "no_proxy_arp = \"${rule.data.no_proxy_arp}\"", "no_proxy_arp = \"${defaults.no_proxy_arp}\"", "") }
-  ${ try( "perform_route_lookup = \"${rule.data.perform_route_lookup}\"", "perform_route_lookup = \"${defaults.perform_route_lookup}\"", "") }
-  ${ try( "section = \"${rule.data.section}\"", "") }
-  ${ try( "translate_dns = \"${rule.data.translate_dns}\"", "translate_dns = \"${defaults.translate_dns}\"", "") }
-  ${ try( "unidirectional = \"${rule.data.unidirectional}\"", "unidirectional = \"${defaults.unidirectional}\"", "") }
+  description                       = try(each.value.data.description, null) 
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null) 
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null) 
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null) 
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null) 
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null) 
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null) 
+  section                           = try(each.value.data.section, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null) 
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null) 
 
   %{~ if index != 0 ~}
   # Positioning
   depends_on = [
-    %{ for i in range(1, index+1)}
-      fmc_ftd_manualnat_rules.${previous[rule.nat_policy][i]},
+    %{ for i in range(0, index)}
+      fmc_ftd_manualnat_rules.manualnat_rules_${i},
     %{~ endfor ~}
+      fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  %{~ else ~}
+  depends_on = [fmc_ftd_nat_policies.ftdnatpolicy]
   %{~ endif ~}
 
   dynamic "destination_interface" {
-    for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.destination_interface) ? ["1"] : []
+    for_each = can(each.value.data.destination_interface) ? ["1"] : []
     content {
-      id = local.map_securityzones[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.destination_interface].id
-      type = local.map_securityzones[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.destination_interface].type
+      id    = local.map_securityzones[each.value.data.destination_interface].id
+      type  = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
 
-  %{~ if contains([for ng in networkgroups: ng.name], try(rule.data.original_destination, "")) ~}
-    original_destination {
-      id = fmc_network_group_objects.${rule.data.original_destination}.id
-      type = fmc_network_group_objects.${rule.data.original_destination}.type
-    }
-  %{~ else ~}
-    dynamic "original_destination" {
-      for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_destination) ? ["1"] : []
-      content {
-        id = local.map_networkobjects[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_destination].id
-        type = local.map_networkobjects[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_destination].type
+  dynamic "original_destination" {
+    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    content {
+      id    = local.map_networkobjects[each.value.data.original_destination].id
+      type  = local.map_networkobjects[each.value.data.original_destination].type
       }
     }
-  %{~ endif ~}
 
   dynamic "original_destination_port" {
-    for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_destination_port) ? ["1"] : []
+    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
     content {
-      id = local.map_ports[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_destination_port].id
-      type = local.map_ports[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_destination_port].type
+      id    = local.map_ports[each.value.data.original_destination_port].id
+      type  = local.map_ports[each.value.data.original_destination_port].type
     }
   }
 
   dynamic "original_source_port" {
-    for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_source_port) ? ["1"] : []
+    for_each = can(each.value.data.original_source_port) ? ["1"] : []
     content {
-      id = local.map_ports[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_source_port].id
-      type = local.map_ports[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.original_source_port].type
+      id    = local.map_ports[each.value.data.original_source_port].id
+      type  = local.map_ports[each.value.data.original_source_port].type
     }
   }
 
   dynamic "source_interface" {
-    for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.source_interface) ? ["1"] : []
+    for_each = can(each.value.data.source_interface) ? ["1"] : []
     content {
-      id = local.map_securityzones[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.source_interface].id
-      type = local.map_securityzones[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.source_interface].type
+      id    = local.map_securityzones[each.value.data.source_interface].id
+      type  = local.map_securityzones[each.value.data.source_interface].type
     }
   }
 
-  %{~ if contains([for ng in networkgroups: ng.name], try(rule.data.translated_destination,"")) ~}
-    translated_destination {
-      id = fmc_network_group_objects.${rule.data.translated_destination}.id
-      type = fmc_network_group_objects.${rule.data.translated_destination}.type
+  dynamic "translated_destination" {
+    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    content {
+      id    = local.map_networkobjects[each.value.data.translated_destination].id
+      type  = local.map_networkobjects[each.value.data.translated_destination].type
     }
-  %{~ else ~}
-    dynamic "translated_destination" {
-      for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_destination) ? ["1"] : []
-      content {
-        id = local.map_networkobjects[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_destination].id
-        type = local.map_networkobjects[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_destination].type
-      }
-    }
-  %{~ endif ~}
+  }
 
   dynamic "translated_destination_port" {
-    for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_destination_port) ? ["1"] : []
+    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
     content {
-      id = local.map_ports[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_destination_port].id
-      type = local.map_ports[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_destination_port].type
+      id    = local.map_ports[each.value.data.translated_destination_port].id
+      type  = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
 
-  %{~ if contains([for ng in networkgroups: ng.name], try(rule.data.translated_source,"")) ~}
-    translated_source {
-      id = fmc_network_group_objects.${rule.data.translated_source}.id
-      type = fmc_network_group_objects.${rule.data.translated_source}.type
+  dynamic "translated_source" {
+    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    content {
+      id    = local.map_networkobjects[each.value.data.translated_source].id
+      type  = local.map_networkobjects[each.value.data.translated_source].type
     }
-  %{~ else ~}
-    dynamic "translated_source" {
-      for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_source) ? ["1"] : []
-      content {
-        id = local.map_networkobjects[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_source].id
-        type = local.map_networkobjects[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_source].type
-      }
-    }
-  %{~ endif ~}
+  }
 
   dynamic "translated_source_port" {
-    for_each = can(local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_source_port) ? ["1"] : []
+    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
     content {
-      id = local.map_ports[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_source_port].id
-      type = local.map_ports[local.ftdmanualnatrules_by_policy["${rule.nat_policy}"][${index}].data.translated_source_port].type
+      id    = local.map_ports[each.value.data.translated_source_port].id
+      type  = local.map_ports[each.value.data.translated_source_port].type
     }
   }
 }
 
-%{~ endfor ~}
 %{~ endfor ~}

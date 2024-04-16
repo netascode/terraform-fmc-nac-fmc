@@ -38,8 +38,8 @@ resource "fmc_staticIPv4_route" "ipv4staticroute" {
   dynamic "selected_networks" {
     for_each = { for obj in each.value.selected_networks : obj => obj }
     content {
-      id   = try(local.map_networkobjects[selected_networks.value].id, local.map_res_networkgroups[selected_networks.value].id)
-      type = try(local.map_networkobjects[selected_networks.value].type, local.map_res_networkgroups[selected_networks.value].type)
+      id   = try(local.map_networkobjects[selected_networks.value].id, null)
+      type = try(local.map_networkobjects[selected_networks.value].type, null)
     }
   }
 

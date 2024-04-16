@@ -1,35 +1,32 @@
-%{~ for accessrules in acps ~}
-%{~ for index, rule in accessrules ~}
-resource "fmc_access_rules" "${rule.key}" {
-
-  count = can(local.accessrules_by_acp["${rule.acp}"][${index}]) ? 1 : 0
+%{~ for index in range(0, number_of_rules) ~}
+resource "fmc_access_rules" "access_rule_${index}" {
+  for_each = { for rule in local.res_accessrules : rule.key => rule if rule.idx == ${index} }
 
   # Mandatory
-  acp       = local.map_accesspolicies[local.accessrules_by_acp["${rule.acp}"][${index}].acp].id
-  name     = "${rule.data.name}"
-  action   = "${rule.data.action}"
-  enabled  = ${ try( "${rule.data.enabled}", "${defaults.enabled}") }
+  acp       = local.map_accesspolicies[each.value.acp].id
+  name      = each.value.data.name
+  action    = each.value.data.action
+  enabled   = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true )
 
   # Optional
-  ${ try( "category = \"${rule.data.category}\"", "") }
-  ${ try( "enable_syslog = ${rule.data.enable_syslog}", "enable_syslog = ${defaults.enable_syslog}", "") }
-  ${ try( "file_policy = ${rule.data.file_policy}", "") }
-  ips_policy = try(local.map_ipspolicies[local.accessrules_by_acp["${rule.acp}"][${index}].data.ips_policy].id, null)
-  ${ try( "log_begin = ${rule.data.log_connection_begin}", "") }
-  ${ try( "log_end = ${rule.data.log_connection_end}", "") }
-  ${ try( "log_files = ${rule.data.log_files}", "") }
-  ${ try( "new_comments = [\"${rule.data.new_comments}\"]", "") }
-  ${ try( "section = ${rule.data.section}", "") }
-  ${ try( "send_events_to_fmc = ${rule.data.send_events_to_fmc}", "") }
-  ${ try( "syslog_config = ${rule.data.syslog_config}", "") }
-  ${ try( "syslog_severity = ${rule.data.syslog_severity}", "") }
+  category            = try(each.value.data.category, null) 
+  enable_syslog       = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null) 
+  file_policy         = try(each.value.data.file_policy, null)
+  ips_policy          = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
+  log_begin           = try(each.value.data.log_connection_begin, null)
+  log_end             = try(each.value.data.log_connection_end, null)
+  log_files           = try(each.value.data.log_files, null)
+  #new_comments        = try(each.value.data.new_comments, null)
+  section             = try(each.value.data.section, null)
+  send_events_to_fmc  = try(each.value.data.send_events_to_fmc, null)
+  syslog_config       = try(each.value.data.syslog_config, null)
+  syslog_severity     = try(each.value.data.syslog_severity, null)
 
   %{~ if index != 0 ~}
   # Positioning
-  insert_after = "${index}"
   depends_on = [
-    %{ for i in range(1, index+1)}
-      fmc_access_rules.${previous[rule.acp][i]},
+    %{ for i in range(0, index)}
+      fmc_access_rules.access_rule_${i},
     %{~ endfor ~}
       fmc_access_policies_category.accesspolicy_category
     ]
@@ -37,15 +34,12 @@ resource "fmc_access_rules" "${rule.key}" {
   depends_on = [fmc_access_policies_category.accesspolicy_category]
   %{~ endif ~}
 
-  lifecycle {
-    ignore_changes = [insert_after]
-  }
 
   dynamic "destination_dynamic_objects" {
-    for_each = can(local.accessrules_by_acp["${rule.acp}"][${index}].data.destination_dynamic_objects) ? ["1"] : []
-    content {
+    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    content {       
       dynamic "destination_dynamic_object" {
-        for_each = local.accessrules_by_acp["${rule.acp}"][${index}].data.destination_dynamic_objects
+        for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj } 
         content {
           id = local.map_dynamicobjects[destination_dynamic_object.value].id
           type = local.map_dynamicobjects[destination_dynamic_object.value].type
@@ -54,33 +48,24 @@ resource "fmc_access_rules" "${rule.key}" {
     }
   }
 
-  %{~ if can(rule.data.destination_networks) ~}
-    destination_networks {
+  dynamic "destination_networks" {
+    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    content {      
       dynamic "destination_network" {
-        for_each = { for net in local.accessrules_by_acp["${rule.acp}"][${index}].data.destination_networks:
-                     net => net if contains(keys(local.map_networkobjects), net)
-                    }
+        for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
         content {
           id = local.map_networkobjects[destination_network.value].id
           type = local.map_networkobjects[destination_network.value].type
         }
       }
-    %{~ for nestedgroup in rule.data.destination_networks ~}
-      %{~ if contains([for ng in networkgroups: ng.name], nestedgroup) ~}
-        destination_network {
-          id = fmc_network_group_objects.${nestedgroup}.id
-          type = fmc_network_group_objects.${nestedgroup}.type
-        }
-      %{ endif }
-    %{~ endfor ~}
     }
-  %{~ endif ~}
+  }
 
   dynamic "destination_ports" {
-    for_each = can(local.accessrules_by_acp["${rule.acp}"][${index}].data.destination_ports) ? ["1"] : []
-    content {
-      dynamic "destination_port" {
-        for_each = local.accessrules_by_acp["${rule.acp}"][${index}].data.destination_ports
+    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    content {   
+    dynamic "destination_port" {
+        for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
         content {
           id = local.map_ports[destination_port.value].id
           type = local.map_ports[destination_port.value].type
@@ -90,10 +75,11 @@ resource "fmc_access_rules" "${rule.key}" {
   }
 
   dynamic "destination_security_group_tags" {
-    for_each = can(local.accessrules_by_acp["${rule.acp}"][${index}].data.destination_sgts) ? ["1"] : []
-    content {
-      dynamic "destination_security_group_tag" {
-        for_each = local.accessrules_by_acp["${rule.acp}"][${index}].data.destination_sgts
+    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    content {       
+    dynamic "destination_security_group_tag" {
+        for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
+
         content {
           id = local.map_sgts[destination_security_group_tag.value].id
           type = local.map_sgts[destination_security_group_tag.value].type
@@ -101,25 +87,25 @@ resource "fmc_access_rules" "${rule.key}" {
       }
     }
   }
-
-  dynamic "destination_zones" {
-    for_each = can(local.accessrules_by_acp["${rule.acp}"][${index}].data.destination_zones) ? ["1"] : []
-    content {
+ 
+   dynamic "destination_zones" { 
+    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    content {        
       dynamic "destination_zone" {
-        for_each = local.accessrules_by_acp["${rule.acp}"][${index}].data.destination_zones
+        for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
         content {
           id = local.map_securityzones[destination_zone.value].id
           type = local.map_securityzones[destination_zone.value].type
         }
       }
     }
-  }
+   }
 
   dynamic "source_dynamic_objects" {
-    for_each = can(local.accessrules_by_acp["${rule.acp}"][${index}].data.source_dynamic_objects) ? ["1"] : []
-    content {
+    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    content {          
       dynamic "source_dynamic_object" {
-        for_each = local.accessrules_by_acp["${rule.acp}"][${index}].data.source_dynamic_objects
+        for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
         content {
           id = local.map_dynamicobjects[source_dynamic_object.value].id
           type = local.map_dynamicobjects[source_dynamic_object.value].type
@@ -128,46 +114,37 @@ resource "fmc_access_rules" "${rule.key}" {
     }
   }
 
-  %{~ if can(rule.data.source_networks) ~}
-    source_networks {
-      dynamic "source_network" {
-        for_each = { for net in local.accessrules_by_acp["${rule.acp}"][${index}].data.source_networks:
-                     net => net if contains(keys(local.map_networkobjects), net)
-                    }
-        content {
-          id = local.map_networkobjects[source_network.value].id
-          type = local.map_networkobjects[source_network.value].type
-        }
-      }
-    %{~ for nestedgroup in rule.data.source_networks ~}
-      %{~ if contains([for ng in networkgroups: ng.name], nestedgroup) ~}
-        source_network {
-          id = fmc_network_group_objects.${nestedgroup}.id
-          type = fmc_network_group_objects.${nestedgroup}.type
-        }
-      %{ endif }
-    %{~ endfor ~}
-    }
-  %{~ endif ~}
-
-  dynamic "source_ports" {
-    for_each = can(local.accessrules_by_acp["${rule.acp}"][${index}].data.source_ports) ? ["1"] : []
-    content {
-      dynamic "source_port" {
-        for_each = local.accessrules_by_acp["${rule.acp}"][${index}].data.source_ports
-        content {
-          id = local.map_ports[source_port.value].id
-          type = local.map_ports[source_port.value].type
-        } 
+  dynamic "source_networks" {
+    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    content {      
+    dynamic "source_network" {
+      for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
+      content {
+        id = local.map_networkobjects[source_network.value].id
+        type = local.map_networkobjects[source_network.value].type
       }
     }
   }
+  }
 
+  dynamic "source_ports" {
+    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    content {    
+    dynamic "source_port" {
+      for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
+      content {
+        id = local.map_ports[source_port.value].id
+        type = local.map_ports[source_port.value].type
+      } 
+    }
+  }
+  }
+  
   dynamic "source_security_group_tags" {
-    for_each = can(local.accessrules_by_acp["${rule.acp}"][${index}].data.source_sgts) ? ["1"] : []
+    for_each = can(each.value.data.source_sgts) ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
-        for_each = local.accessrules_by_acp["${rule.acp}"][${index}].data.source_sgts
+        for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
         content {
           id = local.map_sgts[source_security_group_tag.value].id
           type = local.map_sgts[source_security_group_tag.value].type
@@ -177,10 +154,10 @@ resource "fmc_access_rules" "${rule.key}" {
   }
 
   dynamic "source_zones" {
-    for_each = can(local.accessrules_by_acp["${rule.acp}"][${index}].data.source_zones) ? ["1"] : []
+    for_each = can(each.value.data.source_zones) ? ["1"] : []
     content {
       dynamic "source_zone" {
-        for_each = local.accessrules_by_acp["${rule.acp}"][${index}].data.source_zones
+        for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
         content {
           id = local.map_securityzones[source_zone.value].id
           type = local.map_securityzones[source_zone.value].type
@@ -190,10 +167,10 @@ resource "fmc_access_rules" "${rule.key}" {
   }
 
   dynamic "urls" {
-    for_each = can(local.accessrules_by_acp["${rule.acp}"][${index}].data.urls) ? ["1"] : []
+    for_each = can(each.value.data.urls) ? ["1"] : []
     content {
       dynamic "url" {
-        for_each = local.accessrules_by_acp["${rule.acp}"][${index}].data.urls
+        for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
         content {
           id = try(local.map_urls[url.value].id, local.map_urlgroups[url.value].id)
           type = try(local.map_urls[url.value].type, local.map_urlgroups[url.value].type)
@@ -204,5 +181,4 @@ resource "fmc_access_rules" "${rule.key}" {
 
 }
 
-%{ endfor ~}
 %{ endfor ~}

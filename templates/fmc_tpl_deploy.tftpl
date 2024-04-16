@@ -1,3 +1,20 @@
+###
+# DEPLOY
+###
+locals {
+  res_deploy = flatten([
+    for domains in local.domains : [
+      for object in try(domains.devices, []) : {
+        device                = object.name
+        deploy_ignore_warning = try(object.deploy_ignore_warning, local.defaults.fmc.domains.devices.deploy_ignore_warning, null)
+        deploy_force          = try(object.deploy_force, local.defaults.fmc.domains.devices.deploy_force, null)
+      } if try(object.deploy, false) && var.deploy_support
+    ]
+  ])
+
+
+}
+
 resource "fmc_ftd_deploy" "ftd" {
   for_each = { for deploymemt in local.res_deploy : deploymemt.device => deploymemt }
 
@@ -29,14 +46,10 @@ resource "fmc_ftd_deploy" "ftd" {
     fmc_security_zone.securityzone,
     fmc_staticIPv4_route.ipv4staticroute,
     fmc_url_objects.url,
-    %{~ for rule in accessrules ~}
-    fmc_access_rules.${rule.key},
-    %{~ endfor ~}
-    %{~ for rule in ftdmanualnatrules ~}
-    fmc_ftd_manualnat_rules.${rule.key},
-    %{~ endfor ~}
-    %{~ for grp in networkgroups ~}
-    fmc_network_group_objects.${grp.name},
-    %{~ endfor ~}
+    %{~ for index in range(0, number_of_rules) ~}
+    fmc_access_rules.access_rule_${index},
+    fmc_ftd_manualnat_rules.manualnat_rules_${index},
+    %{~ endfor ~}    
+    fmc_network_group_objects.networkgroup_l5
     ]
 }

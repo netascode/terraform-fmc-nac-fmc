@@ -15,3 +15,11 @@ repos:
         args: ["./examples/network_groups"]
       - id: terraform-docs-system
         args: ["."]
+
+  - repo: https://github.com/terraform-docs/terraform-docs
+    rev: v0.16.0
+    hooks:
+      - id: terraform-docs-system
+        args: ["./templates"]
+      - id: terraform-docs-system
+        args: ["."]

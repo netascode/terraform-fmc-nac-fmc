@@ -3,7 +3,7 @@
 #
 locals {
 
-  map_networkobjects = merge({
+  map_networkobjects_l1 = merge({
     for objecthost1 in local.res_hosts :
     objecthost1.name => {
       id   = fmc_host_objects.host[objecthost1.name].id
@@ -61,6 +61,56 @@ locals {
         id = fmc_fqdn_objects.fqdn[fqdn.name].id
         #type = fmc_fqdn_objects.fqdn["${fqdn.name}"].type
         type = "FQDN" # TF provider does not include 'type' field for fqdn resource
+      }
+    }
+  )
+
+  map_networkobjects_l2 = merge(local.map_networkobjects_l1,
+    {
+      for objectnetgr1 in local.res_networkgroups_l1 :
+      objectnetgr1.name => {
+        id   = fmc_network_group_objects.networkgroup_l1[objectnetgr1.name].id
+        type = fmc_network_group_objects.networkgroup_l1[objectnetgr1.name].type
+      }
+    }
+  )
+
+  map_networkobjects_l3 = merge(local.map_networkobjects_l2,
+    {
+      for objectnetgr1 in local.res_networkgroups_l2 :
+      objectnetgr1.name => {
+        id   = fmc_network_group_objects.networkgroup_l2[objectnetgr1.name].id
+        type = fmc_network_group_objects.networkgroup_l2[objectnetgr1.name].type
+      }
+    }
+  )
+
+  map_networkobjects_l4 = merge(local.map_networkobjects_l3,
+    {
+      for objectnetgr1 in local.res_networkgroups_l3 :
+      objectnetgr1.name => {
+        id   = fmc_network_group_objects.networkgroup_l3[objectnetgr1.name].id
+        type = fmc_network_group_objects.networkgroup_l3[objectnetgr1.name].type
+      }
+    }
+  )
+
+  map_networkobjects_l5 = merge(local.map_networkobjects_l4,
+    {
+      for objectnetgr1 in local.res_networkgroups_l4 :
+      objectnetgr1.name => {
+        id   = fmc_network_group_objects.networkgroup_l4[objectnetgr1.name].id
+        type = fmc_network_group_objects.networkgroup_l4[objectnetgr1.name].type
+      }
+    }
+  )
+
+  map_networkobjects = merge(local.map_networkobjects_l5,
+    {
+      for objectnetgr1 in local.res_networkgroups_l5 :
+      objectnetgr1.name => {
+        id   = fmc_network_group_objects.networkgroup_l5[objectnetgr1.name].id
+        type = fmc_network_group_objects.networkgroup_l5[objectnetgr1.name].type
       }
     }
   )

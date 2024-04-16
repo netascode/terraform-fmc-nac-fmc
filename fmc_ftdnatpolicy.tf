@@ -122,32 +122,10 @@ locals {
         for ftdmanualnatrule in try(natpolicy.ftd_manual_nat_rules, []) : {
           key        = replace("${natpolicy.name}_${ftdmanualnatrule.name}", " ", "")
           nat_policy = natpolicy.name
+          idx        = index(natpolicy.ftd_manual_nat_rules, ftdmanualnatrule)
           data       = ftdmanualnatrule
         }
       ]
     ]
   ])
-
-  unique_ftdnatpolicies = distinct([for v in local.res_ftdmanualnatrules : v.nat_policy])
-  ftdmanualnatrules_by_policy = { for k in local.unique_ftdnatpolicies :
-    k => [for v in local.res_ftdmanualnatrules : v if v.nat_policy == k]
-  }
-  ftdmanualnatrules_by_policy_prev = { for k in local.unique_ftdnatpolicies :
-    k => concat([""], [for v in local.res_ftdmanualnatrules : v.key if v.nat_policy == k])
-  }
-
-  ftdmanualnatrules_template = {
-    natpolicies   = local.ftdmanualnatrules_by_policy,
-    previous      = local.ftdmanualnatrules_by_policy_prev,
-    defaults      = try(local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules, {}),
-    networkgroups = local.res_networkgroups
-  }
-}
-
-resource "local_file" "ftdmanualnatrule" {
-  content = replace(
-    templatefile("${path.module}/templates/fmc_tpl_ftdmanualnatrule.tftpl", local.ftdmanualnatrules_template),
-    "/(?m)(?s)(^( )*[\r\n])/", ""
-  )
-  filename = "${path.module}/generated_fmc_ftdmanualnatrule.tf"
 }
