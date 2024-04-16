@@ -10,7 +10,7 @@ Go to `templates` folder and execute:
 
 ```bash
 terraform init
-terraform apply -var="supported_number_of_rules=100"
+terraform apply -var="supported_number_of_rules=200"
 ```
-Where 100 is the new maximum number of supported rules.
+Where 200 is the new maximum number of supported rules.
 <!-- END_TF_DOCS -->
