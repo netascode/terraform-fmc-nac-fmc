@@ -8,7 +8,7 @@ locals {
         device                = object.name
         deploy_ignore_warning = try(object.deploy_ignore_warning, local.defaults.fmc.domains.devices.deploy_ignore_warning, null)
         deploy_force          = try(object.deploy_force, local.defaults.fmc.domains.devices.deploy_force, null)
-      } if try(object.deploy, false) && var.deploy_support
+      } if try(object.deploy, false) && var.manage_deployment
     ]
   ])
 
