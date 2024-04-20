@@ -36,10 +36,10 @@ Note that this example will create resources. Resources can be destroyed with `t
 existing:
   fmc:
     domains:
-    - name: Global
-      objects:
-        networks:
-        - name: any-ipv4
+      - name: Global
+        objects:
+          networks:
+            - name: any-ipv4
 ```
 
 #### `data/fmc.yaml`
@@ -49,22 +49,22 @@ existing:
 fmc:
   name: MyFMC1
   domains:
-  - name: Global
-    objects:
-      hosts:
-      - name: MyHost1
-        ip: 10.10.10.10
-      - name: MyHost2
-        ip: 20.20.20.20        
-      network_groups:
-      - name: MyNetworkGroup1
-        objects:
-        - MyHost1
-        - any-ipv4
-      - name: MyNetworkGroup2
-        objects:
-        - MyNetworkGroup1
-        - MyHost2
+    - name: Global
+      objects:
+        hosts:
+          - name: MyHost1
+            ip: 10.10.10.10
+          - name: MyHost2
+            ip: 20.20.20.20
+        network_groups:
+          - name: MyNetworkGroup1
+            objects:
+              - MyHost1
+              - any-ipv4
+          - name: MyNetworkGroup2
+            objects:
+              - MyNetworkGroup1
+              - MyHost2
 ```
 
 #### `main.tf`
