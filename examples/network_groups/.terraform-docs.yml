@@ -8,7 +8,7 @@ content: |-
   This example will create a new `MyNetworkGroup1`, `MyNetworkGroup2` network-group objects that contains two objects:
   > `MyNetworkGroup1`:
   - newly created `MyHost1` host object
-  - already existing `any-ipv4` network object 
+  - already existing `any-ipv4` network object
   > `MyNetworkGroup2`:
   - newly created `MyNetworkGroup1` network-group object
   - newly created `MyHost2` host object
