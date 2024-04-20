@@ -186,9 +186,6 @@ locals {
       } if !contains(keys(local.map_networkobjects_l5), object.name) && !contains(local.res_networkgroups_l5_hlp[domains.name][object.name], false)
     ]
   ])
-
-  res_networkgroups = local.res_networkgroups_l1
-
 }
 
 resource "fmc_network_group_objects" "networkgroup_l1" {
