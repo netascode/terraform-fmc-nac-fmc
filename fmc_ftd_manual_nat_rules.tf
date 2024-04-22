@@ -1,3 +1,21 @@
+###
+# FTD MANUAL NAT RULE
+###
+locals {
+  res_ftdmanualnatrules = flatten([
+    for domain in local.domains : [
+      for natpolicy in try(domain.ftd_nat_policies, []) : [
+        for ftdmanualnatrule in try(natpolicy.ftd_manual_nat_rules, []) : {
+          key        = replace("${natpolicy.name}_${ftdmanualnatrule.name}", " ", "")
+          nat_policy = natpolicy.name
+          idx        = index(natpolicy.ftd_manual_nat_rules, ftdmanualnatrule)
+          data       = ftdmanualnatrule
+        }
+      ]
+    ]
+  ])
+}
+
 resource "fmc_ftd_manualnat_rules" "manualnat_rules_0" {
   for_each = { for rule in local.res_ftdmanualnatrules : rule.key => rule if rule.idx == 0 }
   # Mandatory

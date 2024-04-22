@@ -12,6 +12,7 @@ locals {
     ]
   ])
 }
+
 resource "fmc_ftd_deploy" "ftd" {
   for_each = { for deploymemt in local.res_deploy : deploymemt.device => deploymemt }
   # Mandatory  

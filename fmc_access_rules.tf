@@ -1,3 +1,21 @@
+###
+# ACCESS RULE
+###
+locals {
+  res_accessrules = flatten([
+    for domain in local.domains : [
+      for accesspolicy in try(domain.access_policies, {}) : [
+        for accessrule in try(accesspolicy.access_rules, {}) : {
+          key  = replace("${accesspolicy.name}_${accessrule.name}", " ", "")
+          acp  = accesspolicy.name
+          idx  = index(accesspolicy.access_rules, accessrule)
+          data = accessrule
+        }
+      ]
+    ]
+  ])
+}
+
 resource "fmc_access_rules" "access_rule_0" {
   for_each = { for rule in local.res_accessrules : rule.key => rule if rule.idx == 0 }
   # Mandatory

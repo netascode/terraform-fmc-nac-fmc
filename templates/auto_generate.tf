@@ -10,7 +10,7 @@ locals {
 ###
 resource "local_file" "access_rule" {
   content = replace(
-    templatefile("./fmc_tpl_accessrule.tftpl", local.template_data),
+    templatefile("./fmc_access_rules.tftpl", local.template_data),
     "/(?m)(?s)(^( )*[\r\n])/", ""
   )
   filename = "../fmc_access_rules.tf"
@@ -21,10 +21,10 @@ resource "local_file" "access_rule" {
 ###
 resource "local_file" "ftdmanualnatrule" {
   content = replace(
-    templatefile("./fmc_tpl_ftdmanualnatrule.tftpl", local.template_data),
+    templatefile("./fmc_ftd_manual_nat_rulea.tftpl", local.template_data),
     "/(?m)(?s)(^( )*[\r\n])/", ""
   )
-  filename = "../fmc_ftdmanualnatrule.tf"
+  filename = "../fmc_ftd_manual_nat_rules.tf"
 }
 
 ###
@@ -32,7 +32,7 @@ resource "local_file" "ftdmanualnatrule" {
 ###
 resource "local_file" "deploy" {
   content = replace(
-    templatefile("./fmc_tpl_deploy.tftpl", local.template_data),
+    templatefile("./fmc_deploy.tftpl", local.template_data),
     "/(?m)(?s)(^( )*[\r\n])/", ""
   )
   filename = "../fmc_deploy.tf"

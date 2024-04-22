@@ -1,4 +1,49 @@
 ###
+# DYNAMIC OBJECTS
+###
+locals {
+  res_dynamicobjects = flatten([
+    for domains in local.domains : [
+      for object in try(domains.objects.dynamic_objects, []) : object if !contains(local.data_dynamicobjects, object.name)
+    ]
+  ])
+}
+
+resource "fmc_dynamic_objects" "dynamicobject" {
+  for_each = { for dynobj in local.res_dynamicobjects : dynobj.name => dynobj }
+
+  # Mandatory
+  name        = each.value.name
+  object_type = try(each.value.object_type, local.defaults.fmc.domains.objects.dynamic_objects.object_type)
+
+  # Optional
+  description = try(each.value.description, local.defaults.fmc.domains.objects.dynamic_objects.description, null)
+}
+
+###
+# SGT
+###
+locals {
+  res_sgts = flatten([
+    for domains in local.domains : [
+      for object in try(domains.objects.sgts, []) : object if !contains(local.data_sgts, object.name)
+    ]
+  ])
+}
+
+resource "fmc_sgt_objects" "sgt" {
+  for_each = { for sgt in local.res_sgts : sgt.name => sgt }
+
+  # Mandatory
+  name = each.value.name
+  tag  = each.value.tag
+
+  # Optional
+  type        = "SecurityGroupTag"
+  description = try(each.value.description, local.defaults.fmc.domains.objects.sgts.description, null)
+}
+
+###
 # HOST
 ###
 locals {
@@ -341,4 +386,161 @@ resource "fmc_network_group_objects" "networkgroup_l5" {
     fmc_network_group_objects.networkgroup_l3,
     fmc_network_group_objects.networkgroup_l4
   ]
+}
+
+###
+# PORT
+###
+locals {
+  res_ports = flatten([
+    for domains in local.domains : [
+      for object in try(domains.objects.ports, []) : object if !contains(local.data_ports, object.name)
+    ]
+  ])
+}
+
+resource "fmc_port_objects" "port" {
+  for_each = { for port in local.res_ports : port.name => port }
+
+  # Mandatory
+  name     = each.value.name
+  port     = each.value.port
+  protocol = each.value.protocol
+
+  # Optional
+  overridable = try(each.value.overridable, local.defaults.fmc.domains.objects.ports.overridable, null)
+}
+
+###
+# ICMPv4
+###
+locals {
+  res_icmpv4s = flatten([
+    for domains in local.domains : [
+      for object in try(domains.objects.icmp_v4s, []) : object
+    ]
+  ])
+}
+
+resource "fmc_icmpv4_objects" "icmpv4" {
+  for_each = { for icmpv4 in local.res_icmpv4s : icmpv4.name => icmpv4 }
+
+  # Mandatory
+  name      = each.value.name
+  icmp_type = each.value.icmp_type
+
+  # Optional
+  code = try(each.value.code, local.defaults.fmc.domains.objects.icmp_v4s.code, null)
+}
+
+###
+# PORT GROUP
+###
+locals {
+  res_portgroups = flatten([
+    for domains in local.domains : [
+      for object in try(domains.objects.port_groups, []) : object
+    ]
+  ])
+}
+
+resource "fmc_port_group_objects" "portgroup" {
+  for_each = { for portgrp in local.res_portgroups : portgrp.name => portgrp }
+
+  # Mandatory
+  name = each.value.name
+
+  dynamic "objects" {
+    for_each = { for obj in try(each.value.objects, {}) :
+      obj => obj
+    }
+    content {
+      id   = local.map_ports[objects.value].id
+      type = local.map_ports[objects.value].type
+    }
+  }
+
+  # Optional
+  description = try(each.value.description, local.defaults.fmc.domains.objects.port_groups.description, null)
+}
+
+###
+# URL
+###
+locals {
+  res_urls = flatten([
+    for domains in local.domains : [
+      for object in try(domains.objects.urls, []) : object if !contains(local.data_urls, object.name)
+    ]
+  ])
+}
+
+resource "fmc_url_objects" "url" {
+  for_each = { for url in local.res_urls : url.name => url }
+
+  # Mandatory
+  name = each.value.name
+  url  = each.value.url
+
+  # Optional
+  description = try(each.value.description, local.defaults.fmc.domains.objects.urls.description, null)
+}
+
+###
+# URL GROUPS
+###
+locals {
+  res_urlgroups = flatten([
+    for domains in local.domains : [
+      for object in try(domains.objects.url_groups, []) : object
+    ]
+  ])
+}
+
+resource "fmc_url_object_group" "urlgroup" {
+  for_each = { for urlgrp in local.res_urlgroups : urlgrp.name => urlgrp }
+
+  # Mandatory
+  name = each.value.name
+
+  dynamic "objects" {
+    for_each = { for obj in try(each.value.objects, {}) :
+      obj => obj
+    }
+    content {
+      id   = local.map_urls[objects.value].id
+      type = local.map_urls[objects.value].type
+    }
+  }
+
+  dynamic "literals" {
+    for_each = { for obj in try(each.value.literals, {}) :
+      obj => obj
+    }
+    content {
+      url = literals.value
+    }
+  }
+
+  # Optional
+  description = try(each.value.description, local.defaults.fmc.domains.objects.url_groups.description, null)
+}
+
+###
+# SECURITY ZONE
+###
+locals {
+  res_securityzones = flatten([
+    for domains in local.domains : [
+      for object in try(domains.objects.security_zones, []) : object if !contains(local.data_securityzones, object.name)
+    ]
+  ])
+}
+
+resource "fmc_security_zone" "securityzone" {
+  for_each = { for securityzone in local.res_securityzones : securityzone.name => securityzone }
+
+  # Mandatory  
+  name           = each.value.name
+  interface_mode = try(each.value.interface_type, local.defaults.fmc.domains.objects.security_zones.interface_type)
 }

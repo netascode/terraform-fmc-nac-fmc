@@ -11,8 +11,6 @@ locals {
       } if try(object.deploy, false) && var.manage_deployment
     ]
   ])
-
-
 }
 
 resource "fmc_ftd_deploy" "ftd" {
