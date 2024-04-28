@@ -293,9 +293,9 @@ resource "fmc_network_group_objects" "networkgroup_l2" {
   ]
   lifecycle {
     create_before_destroy = false
-    replace_triggered_by = [
-      fmc_network_group_objects.networkgroup_l1
-    ]
+    #replace_triggered_by = [
+    #  fmc_network_group_objects.networkgroup_l1
+    #]
   }
 }
 
@@ -330,10 +330,10 @@ resource "fmc_network_group_objects" "networkgroup_l3" {
   ]
   lifecycle {
     create_before_destroy = false
-    replace_triggered_by = [
-      fmc_network_group_objects.networkgroup_l1,
-      fmc_network_group_objects.networkgroup_l2
-    ]
+    #replace_triggered_by = [
+    #  fmc_network_group_objects.networkgroup_l1,
+    #  fmc_network_group_objects.networkgroup_l2
+    #]
   }
 }
 
@@ -369,11 +369,11 @@ resource "fmc_network_group_objects" "networkgroup_l4" {
   ]
   lifecycle {
     create_before_destroy = false
-    replace_triggered_by = [
-      fmc_network_group_objects.networkgroup_l1,
-      fmc_network_group_objects.networkgroup_l2,
-      fmc_network_group_objects.networkgroup_l3
-    ]
+    #replace_triggered_by = [
+    #  fmc_network_group_objects.networkgroup_l1,
+    #  fmc_network_group_objects.networkgroup_l2,
+    #  fmc_network_group_objects.networkgroup_l3
+    #]
   }
 }
 
@@ -410,12 +410,12 @@ resource "fmc_network_group_objects" "networkgroup_l5" {
   ]
   lifecycle {
     create_before_destroy = false
-    replace_triggered_by = [
-      fmc_network_group_objects.networkgroup_l1,
-      fmc_network_group_objects.networkgroup_l2,
-      fmc_network_group_objects.networkgroup_l3,
-      fmc_network_group_objects.networkgroup_l4
-    ]
+    #replace_triggered_by = [
+    #  fmc_network_group_objects.networkgroup_l1,
+    #  fmc_network_group_objects.networkgroup_l2,
+    #  fmc_network_group_objects.networkgroup_l3,
+    #  fmc_network_group_objects.networkgroup_l4
+    #]
   }
 }
 

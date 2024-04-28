@@ -50,11 +50,11 @@ resource "fmc_access_rules" "access_rule_${index}" {
     ]
   lifecycle {
     create_before_destroy = false
-    replace_triggered_by = [
+    #replace_triggered_by = [
     %{ for i in range(0, index)}
-        fmc_access_rules.access_rule_${i},
+    #    fmc_access_rules.access_rule_${i},
     %{~ endfor ~}
-    ]  
+    #]  
   }  
   %{~ else ~}
   depends_on = [fmc_access_policies_category.accesspolicy_category]
