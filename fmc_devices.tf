@@ -129,6 +129,11 @@ resource "fmc_device_physical_interfaces" "physical_interface" {
   depends_on = [
     data.fmc_device_physical_interfaces.physical_interface
   ]
+  lifecycle {
+    ignore_changes = [
+      physical_interface_id
+    ]
+  }
 }
 
 ###
@@ -192,7 +197,7 @@ locals {
           gateway_id        = local.map_networkobjects[ipv4staticroute.gateway].id
           gateway_type      = local.map_networkobjects[ipv4staticroute.gateway].type
           gateway_name      = ipv4staticroute.gateway
-          interface_name    = ipv4staticroute.interface
+          interface_name    = try(local.map_ipv4_static_route_interfaces[domain.name][device.name][ipv4staticroute.interface], null)
           selected_networks = ipv4staticroute.selected_networks
         }
       ]
@@ -233,45 +238,69 @@ resource "fmc_staticIPv4_route" "ipv4staticroute" {
     fmc_device_subinterfaces.sub_interfaces,
     data.fmc_device_subinterfaces.sub_interfaces
   ]
+
 }
 
 ###
 # POLICY ASSIGNMENT
 ###
 locals {
-  res_policyassignments = concat(
-    flatten([
-      for domain in local.domains : [
-        for device in try(domain.devices, []) : {
-          device = device.name
-          policy = device.nat_policy
-          type   = "NAT"
-        } if contains(keys(device), "nat_policy")
-      ]
-    ]),
-    flatten([
-      for domain in local.domains : [
-        for device in try(domain.devices, []) : {
-          device = device.name
-          policy = device.access_policy
-          type   = "ACP"
-        } if(contains(keys(device), "access_policy") && contains(local.data_devices, device.name))
-      ]
-    ])
-  )
+  res_natpolicyassignments = flatten([
+    for nat_policy in local.res_ftdnatpolicies : {
+      "name" = nat_policy.name
+      "objects" = compact(flatten([
+        for domain in local.domains : [
+          for device in try(domain.devices, []) : contains(keys(device), "nat_policy") && device.nat_policy == nat_policy.name ? device.name : null
+        ]
+      ]))
+    }
+  ])
+
+  res_acppolicyassignments = flatten([
+    for acp_policy in local.res_accesspolicies : {
+      "name" = acp_policy.name
+      "objects" = compact(flatten([
+        for domain in local.domains : [
+          for device in try(domain.devices, []) : contains(keys(device), "access_policy") && device.access_policy == acp_policy.name && contains(local.data_devices, device.name) ? device.name : null
+        ]
+      ]))
+    }
+  ])
+
 }
 
-resource "fmc_policy_devices_assignments" "policy_assignment" {
-  for_each = { for policyassignment in local.res_policyassignments : "${policyassignment.device}/${policyassignment.type}" => policyassignment }
+resource "fmc_policy_devices_assignments" "nat_policy_assignment" {
+  for_each = { for nat in local.res_natpolicyassignments : nat.name => nat if length(nat.objects) > 0 }
 
   # Mandatory
-  target_devices {
-    id   = local.map_devices[each.value.device].id
-    type = local.map_devices[each.value.device].type
+  dynamic "target_devices" {
+    for_each = { for device in each.value.objects : device => device }
+    content {
+      id   = try(local.map_devices[target_devices.value].id, null)
+      type = try(local.map_devices[target_devices.value].type, null)
+    }
+  }
+  policy {
+    id   = try(local.map_natpolicies[each.value.name].id, null)
+    type = try(local.map_natpolicies[each.value.name].type, null)
+  }
+}
+
+resource "fmc_policy_devices_assignments" "access_policy_assignment" {
+  for_each = { for acp in local.res_acppolicyassignments : acp.name => acp if length(acp.objects) > 0 }
+
+
+  # Mandatory
+  dynamic "target_devices" {
+    for_each = { for device in each.value.objects : device => device }
+    content {
+      id   = try(local.map_devices[target_devices.value].id, null)
+      type = try(local.map_devices[target_devices.value].type, null)
+    }
   }
 
   policy {
-    id   = try(local.map_accesspolicies[each.value.policy].id, local.map_natpolicies[each.value.policy].id)
-    type = try(local.map_accesspolicies[each.value.policy].type, local.map_natpolicies[each.value.policy].type)
+    id   = try(local.map_accesspolicies[each.value.name].id, null)
+    type = try(local.map_accesspolicies[each.value.name].type, null)
   }
 }

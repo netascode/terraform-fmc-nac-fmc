@@ -6,7 +6,7 @@ locals {
     for domain in local.domains : [
       for natpolicy in try(domain.ftd_nat_policies, []) : [
         for ftdmanualnatrule in try(natpolicy.ftd_manual_nat_rules, []) : {
-          key        = replace("${natpolicy.name}_${ftdmanualnatrule.name}", " ", "")
+          key        = replace("$${natpolicy.name}_$${ftdmanualnatrule.name}", " ", "")
           nat_policy = natpolicy.name
           idx        = index(natpolicy.ftd_manual_nat_rules, ftdmanualnatrule)
           data       = ftdmanualnatrule
@@ -54,12 +54,23 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_${index}" {
     %{~ endfor ~}
       fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [    
+    %{ for i in range(0, index)}
+        fmc_ftd_manualnat_rules.manualnat_rules_${i},
+    %{~ endfor ~}
+    ]      
+  }
   %{~ else ~}
   depends_on = [fmc_ftd_nat_policies.ftdnatpolicy]
+  lifecycle {
+    create_before_destroy = false
+  }  
   %{~ endif ~}
 
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id    = local.map_securityzones[each.value.data.destination_interface].id
       type  = local.map_securityzones[each.value.data.destination_interface].type
@@ -67,7 +78,7 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_${index}" {
   }
 
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id    = local.map_networkobjects[each.value.data.original_destination].id
       type  = local.map_networkobjects[each.value.data.original_destination].type
@@ -75,7 +86,7 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_${index}" {
     }
 
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id    = local.map_ports[each.value.data.original_destination_port].id
       type  = local.map_ports[each.value.data.original_destination_port].type
@@ -83,7 +94,7 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_${index}" {
   }
 
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id    = local.map_ports[each.value.data.original_source_port].id
       type  = local.map_ports[each.value.data.original_source_port].type
@@ -91,7 +102,7 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_${index}" {
   }
 
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id    = local.map_securityzones[each.value.data.source_interface].id
       type  = local.map_securityzones[each.value.data.source_interface].type
@@ -99,7 +110,7 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_${index}" {
   }
 
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id    = local.map_networkobjects[each.value.data.translated_destination].id
       type  = local.map_networkobjects[each.value.data.translated_destination].type
@@ -107,7 +118,7 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_${index}" {
   }
 
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id    = local.map_ports[each.value.data.translated_destination_port].id
       type  = local.map_ports[each.value.data.translated_destination_port].type
@@ -115,7 +126,7 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_${index}" {
   }
 
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id    = local.map_networkobjects[each.value.data.translated_source].id
       type  = local.map_networkobjects[each.value.data.translated_source].type
@@ -123,7 +134,7 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_${index}" {
   }
 
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id    = local.map_ports[each.value.data.translated_source_port].id
       type  = local.map_ports[each.value.data.translated_source_port].type

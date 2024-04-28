@@ -15,14 +15,13 @@ locals {
     ]
   ])
 }
-
 resource "fmc_access_rules" "access_rule_0" {
   for_each = { for rule in local.res_accessrules : rule.key => rule if rule.idx == 0 }
   # Mandatory
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -37,8 +36,11 @@ resource "fmc_access_rules" "access_rule_0" {
   syslog_config      = try(each.value.data.syslog_config, null)
   syslog_severity    = try(each.value.data.syslog_severity, null)
   depends_on         = [fmc_access_policies_category.accesspolicy_category]
+  lifecycle {
+    create_before_destroy = false
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -50,7 +52,7 @@ resource "fmc_access_rules" "access_rule_0" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -62,7 +64,7 @@ resource "fmc_access_rules" "access_rule_0" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -74,7 +76,7 @@ resource "fmc_access_rules" "access_rule_0" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -86,7 +88,7 @@ resource "fmc_access_rules" "access_rule_0" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -98,7 +100,7 @@ resource "fmc_access_rules" "access_rule_0" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -110,7 +112,7 @@ resource "fmc_access_rules" "access_rule_0" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -122,7 +124,7 @@ resource "fmc_access_rules" "access_rule_0" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -134,7 +136,7 @@ resource "fmc_access_rules" "access_rule_0" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -146,7 +148,7 @@ resource "fmc_access_rules" "access_rule_0" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -158,7 +160,7 @@ resource "fmc_access_rules" "access_rule_0" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -176,7 +178,7 @@ resource "fmc_access_rules" "access_rule_1" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -195,8 +197,14 @@ resource "fmc_access_rules" "access_rule_1" {
     fmc_access_rules.access_rule_0,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -208,7 +216,7 @@ resource "fmc_access_rules" "access_rule_1" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -220,7 +228,7 @@ resource "fmc_access_rules" "access_rule_1" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -232,7 +240,7 @@ resource "fmc_access_rules" "access_rule_1" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -244,7 +252,7 @@ resource "fmc_access_rules" "access_rule_1" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -256,7 +264,7 @@ resource "fmc_access_rules" "access_rule_1" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -268,7 +276,7 @@ resource "fmc_access_rules" "access_rule_1" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -280,7 +288,7 @@ resource "fmc_access_rules" "access_rule_1" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -292,7 +300,7 @@ resource "fmc_access_rules" "access_rule_1" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -304,7 +312,7 @@ resource "fmc_access_rules" "access_rule_1" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -316,7 +324,7 @@ resource "fmc_access_rules" "access_rule_1" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -334,7 +342,7 @@ resource "fmc_access_rules" "access_rule_2" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -354,8 +362,15 @@ resource "fmc_access_rules" "access_rule_2" {
     fmc_access_rules.access_rule_1,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -367,7 +382,7 @@ resource "fmc_access_rules" "access_rule_2" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -379,7 +394,7 @@ resource "fmc_access_rules" "access_rule_2" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -391,7 +406,7 @@ resource "fmc_access_rules" "access_rule_2" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -403,7 +418,7 @@ resource "fmc_access_rules" "access_rule_2" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -415,7 +430,7 @@ resource "fmc_access_rules" "access_rule_2" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -427,7 +442,7 @@ resource "fmc_access_rules" "access_rule_2" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -439,7 +454,7 @@ resource "fmc_access_rules" "access_rule_2" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -451,7 +466,7 @@ resource "fmc_access_rules" "access_rule_2" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -463,7 +478,7 @@ resource "fmc_access_rules" "access_rule_2" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -475,7 +490,7 @@ resource "fmc_access_rules" "access_rule_2" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -493,7 +508,7 @@ resource "fmc_access_rules" "access_rule_3" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -514,8 +529,16 @@ resource "fmc_access_rules" "access_rule_3" {
     fmc_access_rules.access_rule_2,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -527,7 +550,7 @@ resource "fmc_access_rules" "access_rule_3" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -539,7 +562,7 @@ resource "fmc_access_rules" "access_rule_3" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -551,7 +574,7 @@ resource "fmc_access_rules" "access_rule_3" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -563,7 +586,7 @@ resource "fmc_access_rules" "access_rule_3" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -575,7 +598,7 @@ resource "fmc_access_rules" "access_rule_3" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -587,7 +610,7 @@ resource "fmc_access_rules" "access_rule_3" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -599,7 +622,7 @@ resource "fmc_access_rules" "access_rule_3" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -611,7 +634,7 @@ resource "fmc_access_rules" "access_rule_3" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -623,7 +646,7 @@ resource "fmc_access_rules" "access_rule_3" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -635,7 +658,7 @@ resource "fmc_access_rules" "access_rule_3" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -653,7 +676,7 @@ resource "fmc_access_rules" "access_rule_4" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -675,8 +698,17 @@ resource "fmc_access_rules" "access_rule_4" {
     fmc_access_rules.access_rule_3,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -688,7 +720,7 @@ resource "fmc_access_rules" "access_rule_4" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -700,7 +732,7 @@ resource "fmc_access_rules" "access_rule_4" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -712,7 +744,7 @@ resource "fmc_access_rules" "access_rule_4" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -724,7 +756,7 @@ resource "fmc_access_rules" "access_rule_4" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -736,7 +768,7 @@ resource "fmc_access_rules" "access_rule_4" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -748,7 +780,7 @@ resource "fmc_access_rules" "access_rule_4" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -760,7 +792,7 @@ resource "fmc_access_rules" "access_rule_4" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -772,7 +804,7 @@ resource "fmc_access_rules" "access_rule_4" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -784,7 +816,7 @@ resource "fmc_access_rules" "access_rule_4" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -796,7 +828,7 @@ resource "fmc_access_rules" "access_rule_4" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -814,7 +846,7 @@ resource "fmc_access_rules" "access_rule_5" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -837,8 +869,18 @@ resource "fmc_access_rules" "access_rule_5" {
     fmc_access_rules.access_rule_4,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -850,7 +892,7 @@ resource "fmc_access_rules" "access_rule_5" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -862,7 +904,7 @@ resource "fmc_access_rules" "access_rule_5" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -874,7 +916,7 @@ resource "fmc_access_rules" "access_rule_5" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -886,7 +928,7 @@ resource "fmc_access_rules" "access_rule_5" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -898,7 +940,7 @@ resource "fmc_access_rules" "access_rule_5" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -910,7 +952,7 @@ resource "fmc_access_rules" "access_rule_5" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -922,7 +964,7 @@ resource "fmc_access_rules" "access_rule_5" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -934,7 +976,7 @@ resource "fmc_access_rules" "access_rule_5" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -946,7 +988,7 @@ resource "fmc_access_rules" "access_rule_5" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -958,7 +1000,7 @@ resource "fmc_access_rules" "access_rule_5" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -976,7 +1018,7 @@ resource "fmc_access_rules" "access_rule_6" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -1000,8 +1042,19 @@ resource "fmc_access_rules" "access_rule_6" {
     fmc_access_rules.access_rule_5,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -1013,7 +1066,7 @@ resource "fmc_access_rules" "access_rule_6" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -1025,7 +1078,7 @@ resource "fmc_access_rules" "access_rule_6" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -1037,7 +1090,7 @@ resource "fmc_access_rules" "access_rule_6" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -1049,7 +1102,7 @@ resource "fmc_access_rules" "access_rule_6" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -1061,7 +1114,7 @@ resource "fmc_access_rules" "access_rule_6" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -1073,7 +1126,7 @@ resource "fmc_access_rules" "access_rule_6" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -1085,7 +1138,7 @@ resource "fmc_access_rules" "access_rule_6" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -1097,7 +1150,7 @@ resource "fmc_access_rules" "access_rule_6" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -1109,7 +1162,7 @@ resource "fmc_access_rules" "access_rule_6" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -1121,7 +1174,7 @@ resource "fmc_access_rules" "access_rule_6" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -1139,7 +1192,7 @@ resource "fmc_access_rules" "access_rule_7" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -1164,8 +1217,20 @@ resource "fmc_access_rules" "access_rule_7" {
     fmc_access_rules.access_rule_6,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -1177,7 +1242,7 @@ resource "fmc_access_rules" "access_rule_7" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -1189,7 +1254,7 @@ resource "fmc_access_rules" "access_rule_7" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -1201,7 +1266,7 @@ resource "fmc_access_rules" "access_rule_7" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -1213,7 +1278,7 @@ resource "fmc_access_rules" "access_rule_7" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -1225,7 +1290,7 @@ resource "fmc_access_rules" "access_rule_7" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -1237,7 +1302,7 @@ resource "fmc_access_rules" "access_rule_7" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -1249,7 +1314,7 @@ resource "fmc_access_rules" "access_rule_7" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -1261,7 +1326,7 @@ resource "fmc_access_rules" "access_rule_7" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -1273,7 +1338,7 @@ resource "fmc_access_rules" "access_rule_7" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -1285,7 +1350,7 @@ resource "fmc_access_rules" "access_rule_7" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -1303,7 +1368,7 @@ resource "fmc_access_rules" "access_rule_8" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -1329,8 +1394,21 @@ resource "fmc_access_rules" "access_rule_8" {
     fmc_access_rules.access_rule_7,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -1342,7 +1420,7 @@ resource "fmc_access_rules" "access_rule_8" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -1354,7 +1432,7 @@ resource "fmc_access_rules" "access_rule_8" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -1366,7 +1444,7 @@ resource "fmc_access_rules" "access_rule_8" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -1378,7 +1456,7 @@ resource "fmc_access_rules" "access_rule_8" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -1390,7 +1468,7 @@ resource "fmc_access_rules" "access_rule_8" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -1402,7 +1480,7 @@ resource "fmc_access_rules" "access_rule_8" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -1414,7 +1492,7 @@ resource "fmc_access_rules" "access_rule_8" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -1426,7 +1504,7 @@ resource "fmc_access_rules" "access_rule_8" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -1438,7 +1516,7 @@ resource "fmc_access_rules" "access_rule_8" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -1450,7 +1528,7 @@ resource "fmc_access_rules" "access_rule_8" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -1468,7 +1546,7 @@ resource "fmc_access_rules" "access_rule_9" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -1495,8 +1573,22 @@ resource "fmc_access_rules" "access_rule_9" {
     fmc_access_rules.access_rule_8,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -1508,7 +1600,7 @@ resource "fmc_access_rules" "access_rule_9" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -1520,7 +1612,7 @@ resource "fmc_access_rules" "access_rule_9" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -1532,7 +1624,7 @@ resource "fmc_access_rules" "access_rule_9" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -1544,7 +1636,7 @@ resource "fmc_access_rules" "access_rule_9" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -1556,7 +1648,7 @@ resource "fmc_access_rules" "access_rule_9" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -1568,7 +1660,7 @@ resource "fmc_access_rules" "access_rule_9" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -1580,7 +1672,7 @@ resource "fmc_access_rules" "access_rule_9" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -1592,7 +1684,7 @@ resource "fmc_access_rules" "access_rule_9" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -1604,7 +1696,7 @@ resource "fmc_access_rules" "access_rule_9" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -1616,7 +1708,7 @@ resource "fmc_access_rules" "access_rule_9" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -1634,7 +1726,7 @@ resource "fmc_access_rules" "access_rule_10" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -1662,8 +1754,23 @@ resource "fmc_access_rules" "access_rule_10" {
     fmc_access_rules.access_rule_9,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -1675,7 +1782,7 @@ resource "fmc_access_rules" "access_rule_10" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -1687,7 +1794,7 @@ resource "fmc_access_rules" "access_rule_10" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -1699,7 +1806,7 @@ resource "fmc_access_rules" "access_rule_10" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -1711,7 +1818,7 @@ resource "fmc_access_rules" "access_rule_10" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -1723,7 +1830,7 @@ resource "fmc_access_rules" "access_rule_10" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -1735,7 +1842,7 @@ resource "fmc_access_rules" "access_rule_10" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -1747,7 +1854,7 @@ resource "fmc_access_rules" "access_rule_10" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -1759,7 +1866,7 @@ resource "fmc_access_rules" "access_rule_10" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -1771,7 +1878,7 @@ resource "fmc_access_rules" "access_rule_10" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -1783,7 +1890,7 @@ resource "fmc_access_rules" "access_rule_10" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -1801,7 +1908,7 @@ resource "fmc_access_rules" "access_rule_11" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -1830,8 +1937,24 @@ resource "fmc_access_rules" "access_rule_11" {
     fmc_access_rules.access_rule_10,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -1843,7 +1966,7 @@ resource "fmc_access_rules" "access_rule_11" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -1855,7 +1978,7 @@ resource "fmc_access_rules" "access_rule_11" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -1867,7 +1990,7 @@ resource "fmc_access_rules" "access_rule_11" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -1879,7 +2002,7 @@ resource "fmc_access_rules" "access_rule_11" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -1891,7 +2014,7 @@ resource "fmc_access_rules" "access_rule_11" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -1903,7 +2026,7 @@ resource "fmc_access_rules" "access_rule_11" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -1915,7 +2038,7 @@ resource "fmc_access_rules" "access_rule_11" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -1927,7 +2050,7 @@ resource "fmc_access_rules" "access_rule_11" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -1939,7 +2062,7 @@ resource "fmc_access_rules" "access_rule_11" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -1951,7 +2074,7 @@ resource "fmc_access_rules" "access_rule_11" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -1969,7 +2092,7 @@ resource "fmc_access_rules" "access_rule_12" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -1999,8 +2122,25 @@ resource "fmc_access_rules" "access_rule_12" {
     fmc_access_rules.access_rule_11,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -2012,7 +2152,7 @@ resource "fmc_access_rules" "access_rule_12" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -2024,7 +2164,7 @@ resource "fmc_access_rules" "access_rule_12" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -2036,7 +2176,7 @@ resource "fmc_access_rules" "access_rule_12" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -2048,7 +2188,7 @@ resource "fmc_access_rules" "access_rule_12" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -2060,7 +2200,7 @@ resource "fmc_access_rules" "access_rule_12" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -2072,7 +2212,7 @@ resource "fmc_access_rules" "access_rule_12" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -2084,7 +2224,7 @@ resource "fmc_access_rules" "access_rule_12" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -2096,7 +2236,7 @@ resource "fmc_access_rules" "access_rule_12" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -2108,7 +2248,7 @@ resource "fmc_access_rules" "access_rule_12" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -2120,7 +2260,7 @@ resource "fmc_access_rules" "access_rule_12" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -2138,7 +2278,7 @@ resource "fmc_access_rules" "access_rule_13" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -2169,8 +2309,26 @@ resource "fmc_access_rules" "access_rule_13" {
     fmc_access_rules.access_rule_12,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -2182,7 +2340,7 @@ resource "fmc_access_rules" "access_rule_13" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -2194,7 +2352,7 @@ resource "fmc_access_rules" "access_rule_13" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -2206,7 +2364,7 @@ resource "fmc_access_rules" "access_rule_13" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -2218,7 +2376,7 @@ resource "fmc_access_rules" "access_rule_13" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -2230,7 +2388,7 @@ resource "fmc_access_rules" "access_rule_13" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -2242,7 +2400,7 @@ resource "fmc_access_rules" "access_rule_13" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -2254,7 +2412,7 @@ resource "fmc_access_rules" "access_rule_13" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -2266,7 +2424,7 @@ resource "fmc_access_rules" "access_rule_13" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -2278,7 +2436,7 @@ resource "fmc_access_rules" "access_rule_13" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -2290,7 +2448,7 @@ resource "fmc_access_rules" "access_rule_13" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -2308,7 +2466,7 @@ resource "fmc_access_rules" "access_rule_14" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -2340,8 +2498,27 @@ resource "fmc_access_rules" "access_rule_14" {
     fmc_access_rules.access_rule_13,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -2353,7 +2530,7 @@ resource "fmc_access_rules" "access_rule_14" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -2365,7 +2542,7 @@ resource "fmc_access_rules" "access_rule_14" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -2377,7 +2554,7 @@ resource "fmc_access_rules" "access_rule_14" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -2389,7 +2566,7 @@ resource "fmc_access_rules" "access_rule_14" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -2401,7 +2578,7 @@ resource "fmc_access_rules" "access_rule_14" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -2413,7 +2590,7 @@ resource "fmc_access_rules" "access_rule_14" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -2425,7 +2602,7 @@ resource "fmc_access_rules" "access_rule_14" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -2437,7 +2614,7 @@ resource "fmc_access_rules" "access_rule_14" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -2449,7 +2626,7 @@ resource "fmc_access_rules" "access_rule_14" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -2461,7 +2638,7 @@ resource "fmc_access_rules" "access_rule_14" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -2479,7 +2656,7 @@ resource "fmc_access_rules" "access_rule_15" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -2512,8 +2689,28 @@ resource "fmc_access_rules" "access_rule_15" {
     fmc_access_rules.access_rule_14,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -2525,7 +2722,7 @@ resource "fmc_access_rules" "access_rule_15" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -2537,7 +2734,7 @@ resource "fmc_access_rules" "access_rule_15" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -2549,7 +2746,7 @@ resource "fmc_access_rules" "access_rule_15" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -2561,7 +2758,7 @@ resource "fmc_access_rules" "access_rule_15" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -2573,7 +2770,7 @@ resource "fmc_access_rules" "access_rule_15" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -2585,7 +2782,7 @@ resource "fmc_access_rules" "access_rule_15" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -2597,7 +2794,7 @@ resource "fmc_access_rules" "access_rule_15" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -2609,7 +2806,7 @@ resource "fmc_access_rules" "access_rule_15" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -2621,7 +2818,7 @@ resource "fmc_access_rules" "access_rule_15" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -2633,7 +2830,7 @@ resource "fmc_access_rules" "access_rule_15" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -2651,7 +2848,7 @@ resource "fmc_access_rules" "access_rule_16" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -2685,8 +2882,29 @@ resource "fmc_access_rules" "access_rule_16" {
     fmc_access_rules.access_rule_15,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -2698,7 +2916,7 @@ resource "fmc_access_rules" "access_rule_16" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -2710,7 +2928,7 @@ resource "fmc_access_rules" "access_rule_16" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -2722,7 +2940,7 @@ resource "fmc_access_rules" "access_rule_16" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -2734,7 +2952,7 @@ resource "fmc_access_rules" "access_rule_16" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -2746,7 +2964,7 @@ resource "fmc_access_rules" "access_rule_16" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -2758,7 +2976,7 @@ resource "fmc_access_rules" "access_rule_16" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -2770,7 +2988,7 @@ resource "fmc_access_rules" "access_rule_16" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -2782,7 +3000,7 @@ resource "fmc_access_rules" "access_rule_16" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -2794,7 +3012,7 @@ resource "fmc_access_rules" "access_rule_16" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -2806,7 +3024,7 @@ resource "fmc_access_rules" "access_rule_16" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -2824,7 +3042,7 @@ resource "fmc_access_rules" "access_rule_17" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -2859,8 +3077,30 @@ resource "fmc_access_rules" "access_rule_17" {
     fmc_access_rules.access_rule_16,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -2872,7 +3112,7 @@ resource "fmc_access_rules" "access_rule_17" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -2884,7 +3124,7 @@ resource "fmc_access_rules" "access_rule_17" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -2896,7 +3136,7 @@ resource "fmc_access_rules" "access_rule_17" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -2908,7 +3148,7 @@ resource "fmc_access_rules" "access_rule_17" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -2920,7 +3160,7 @@ resource "fmc_access_rules" "access_rule_17" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -2932,7 +3172,7 @@ resource "fmc_access_rules" "access_rule_17" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -2944,7 +3184,7 @@ resource "fmc_access_rules" "access_rule_17" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -2956,7 +3196,7 @@ resource "fmc_access_rules" "access_rule_17" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -2968,7 +3208,7 @@ resource "fmc_access_rules" "access_rule_17" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -2980,7 +3220,7 @@ resource "fmc_access_rules" "access_rule_17" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -2998,7 +3238,7 @@ resource "fmc_access_rules" "access_rule_18" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -3034,8 +3274,31 @@ resource "fmc_access_rules" "access_rule_18" {
     fmc_access_rules.access_rule_17,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -3047,7 +3310,7 @@ resource "fmc_access_rules" "access_rule_18" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -3059,7 +3322,7 @@ resource "fmc_access_rules" "access_rule_18" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -3071,7 +3334,7 @@ resource "fmc_access_rules" "access_rule_18" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -3083,7 +3346,7 @@ resource "fmc_access_rules" "access_rule_18" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -3095,7 +3358,7 @@ resource "fmc_access_rules" "access_rule_18" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -3107,7 +3370,7 @@ resource "fmc_access_rules" "access_rule_18" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -3119,7 +3382,7 @@ resource "fmc_access_rules" "access_rule_18" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -3131,7 +3394,7 @@ resource "fmc_access_rules" "access_rule_18" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -3143,7 +3406,7 @@ resource "fmc_access_rules" "access_rule_18" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -3155,7 +3418,7 @@ resource "fmc_access_rules" "access_rule_18" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -3173,7 +3436,7 @@ resource "fmc_access_rules" "access_rule_19" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -3210,8 +3473,32 @@ resource "fmc_access_rules" "access_rule_19" {
     fmc_access_rules.access_rule_18,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -3223,7 +3510,7 @@ resource "fmc_access_rules" "access_rule_19" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -3235,7 +3522,7 @@ resource "fmc_access_rules" "access_rule_19" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -3247,7 +3534,7 @@ resource "fmc_access_rules" "access_rule_19" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -3259,7 +3546,7 @@ resource "fmc_access_rules" "access_rule_19" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -3271,7 +3558,7 @@ resource "fmc_access_rules" "access_rule_19" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -3283,7 +3570,7 @@ resource "fmc_access_rules" "access_rule_19" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -3295,7 +3582,7 @@ resource "fmc_access_rules" "access_rule_19" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -3307,7 +3594,7 @@ resource "fmc_access_rules" "access_rule_19" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -3319,7 +3606,7 @@ resource "fmc_access_rules" "access_rule_19" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -3331,7 +3618,7 @@ resource "fmc_access_rules" "access_rule_19" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -3349,7 +3636,7 @@ resource "fmc_access_rules" "access_rule_20" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -3387,8 +3674,33 @@ resource "fmc_access_rules" "access_rule_20" {
     fmc_access_rules.access_rule_19,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -3400,7 +3712,7 @@ resource "fmc_access_rules" "access_rule_20" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -3412,7 +3724,7 @@ resource "fmc_access_rules" "access_rule_20" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -3424,7 +3736,7 @@ resource "fmc_access_rules" "access_rule_20" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -3436,7 +3748,7 @@ resource "fmc_access_rules" "access_rule_20" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -3448,7 +3760,7 @@ resource "fmc_access_rules" "access_rule_20" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -3460,7 +3772,7 @@ resource "fmc_access_rules" "access_rule_20" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -3472,7 +3784,7 @@ resource "fmc_access_rules" "access_rule_20" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -3484,7 +3796,7 @@ resource "fmc_access_rules" "access_rule_20" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -3496,7 +3808,7 @@ resource "fmc_access_rules" "access_rule_20" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -3508,7 +3820,7 @@ resource "fmc_access_rules" "access_rule_20" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -3526,7 +3838,7 @@ resource "fmc_access_rules" "access_rule_21" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -3565,8 +3877,34 @@ resource "fmc_access_rules" "access_rule_21" {
     fmc_access_rules.access_rule_20,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -3578,7 +3916,7 @@ resource "fmc_access_rules" "access_rule_21" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -3590,7 +3928,7 @@ resource "fmc_access_rules" "access_rule_21" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -3602,7 +3940,7 @@ resource "fmc_access_rules" "access_rule_21" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -3614,7 +3952,7 @@ resource "fmc_access_rules" "access_rule_21" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -3626,7 +3964,7 @@ resource "fmc_access_rules" "access_rule_21" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -3638,7 +3976,7 @@ resource "fmc_access_rules" "access_rule_21" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -3650,7 +3988,7 @@ resource "fmc_access_rules" "access_rule_21" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -3662,7 +4000,7 @@ resource "fmc_access_rules" "access_rule_21" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -3674,7 +4012,7 @@ resource "fmc_access_rules" "access_rule_21" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -3686,7 +4024,7 @@ resource "fmc_access_rules" "access_rule_21" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -3704,7 +4042,7 @@ resource "fmc_access_rules" "access_rule_22" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -3744,8 +4082,35 @@ resource "fmc_access_rules" "access_rule_22" {
     fmc_access_rules.access_rule_21,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -3757,7 +4122,7 @@ resource "fmc_access_rules" "access_rule_22" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -3769,7 +4134,7 @@ resource "fmc_access_rules" "access_rule_22" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -3781,7 +4146,7 @@ resource "fmc_access_rules" "access_rule_22" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -3793,7 +4158,7 @@ resource "fmc_access_rules" "access_rule_22" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -3805,7 +4170,7 @@ resource "fmc_access_rules" "access_rule_22" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -3817,7 +4182,7 @@ resource "fmc_access_rules" "access_rule_22" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -3829,7 +4194,7 @@ resource "fmc_access_rules" "access_rule_22" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -3841,7 +4206,7 @@ resource "fmc_access_rules" "access_rule_22" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -3853,7 +4218,7 @@ resource "fmc_access_rules" "access_rule_22" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -3865,7 +4230,7 @@ resource "fmc_access_rules" "access_rule_22" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -3883,7 +4248,7 @@ resource "fmc_access_rules" "access_rule_23" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -3924,8 +4289,36 @@ resource "fmc_access_rules" "access_rule_23" {
     fmc_access_rules.access_rule_22,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -3937,7 +4330,7 @@ resource "fmc_access_rules" "access_rule_23" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -3949,7 +4342,7 @@ resource "fmc_access_rules" "access_rule_23" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -3961,7 +4354,7 @@ resource "fmc_access_rules" "access_rule_23" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -3973,7 +4366,7 @@ resource "fmc_access_rules" "access_rule_23" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -3985,7 +4378,7 @@ resource "fmc_access_rules" "access_rule_23" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -3997,7 +4390,7 @@ resource "fmc_access_rules" "access_rule_23" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -4009,7 +4402,7 @@ resource "fmc_access_rules" "access_rule_23" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -4021,7 +4414,7 @@ resource "fmc_access_rules" "access_rule_23" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -4033,7 +4426,7 @@ resource "fmc_access_rules" "access_rule_23" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -4045,7 +4438,7 @@ resource "fmc_access_rules" "access_rule_23" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -4063,7 +4456,7 @@ resource "fmc_access_rules" "access_rule_24" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -4105,8 +4498,37 @@ resource "fmc_access_rules" "access_rule_24" {
     fmc_access_rules.access_rule_23,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -4118,7 +4540,7 @@ resource "fmc_access_rules" "access_rule_24" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -4130,7 +4552,7 @@ resource "fmc_access_rules" "access_rule_24" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -4142,7 +4564,7 @@ resource "fmc_access_rules" "access_rule_24" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -4154,7 +4576,7 @@ resource "fmc_access_rules" "access_rule_24" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -4166,7 +4588,7 @@ resource "fmc_access_rules" "access_rule_24" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -4178,7 +4600,7 @@ resource "fmc_access_rules" "access_rule_24" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -4190,7 +4612,7 @@ resource "fmc_access_rules" "access_rule_24" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -4202,7 +4624,7 @@ resource "fmc_access_rules" "access_rule_24" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -4214,7 +4636,7 @@ resource "fmc_access_rules" "access_rule_24" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -4226,7 +4648,7 @@ resource "fmc_access_rules" "access_rule_24" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -4244,7 +4666,7 @@ resource "fmc_access_rules" "access_rule_25" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -4287,8 +4709,38 @@ resource "fmc_access_rules" "access_rule_25" {
     fmc_access_rules.access_rule_24,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -4300,7 +4752,7 @@ resource "fmc_access_rules" "access_rule_25" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -4312,7 +4764,7 @@ resource "fmc_access_rules" "access_rule_25" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -4324,7 +4776,7 @@ resource "fmc_access_rules" "access_rule_25" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -4336,7 +4788,7 @@ resource "fmc_access_rules" "access_rule_25" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -4348,7 +4800,7 @@ resource "fmc_access_rules" "access_rule_25" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -4360,7 +4812,7 @@ resource "fmc_access_rules" "access_rule_25" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -4372,7 +4824,7 @@ resource "fmc_access_rules" "access_rule_25" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -4384,7 +4836,7 @@ resource "fmc_access_rules" "access_rule_25" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -4396,7 +4848,7 @@ resource "fmc_access_rules" "access_rule_25" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -4408,7 +4860,7 @@ resource "fmc_access_rules" "access_rule_25" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -4426,7 +4878,7 @@ resource "fmc_access_rules" "access_rule_26" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -4470,8 +4922,39 @@ resource "fmc_access_rules" "access_rule_26" {
     fmc_access_rules.access_rule_25,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -4483,7 +4966,7 @@ resource "fmc_access_rules" "access_rule_26" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -4495,7 +4978,7 @@ resource "fmc_access_rules" "access_rule_26" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -4507,7 +4990,7 @@ resource "fmc_access_rules" "access_rule_26" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -4519,7 +5002,7 @@ resource "fmc_access_rules" "access_rule_26" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -4531,7 +5014,7 @@ resource "fmc_access_rules" "access_rule_26" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -4543,7 +5026,7 @@ resource "fmc_access_rules" "access_rule_26" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -4555,7 +5038,7 @@ resource "fmc_access_rules" "access_rule_26" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -4567,7 +5050,7 @@ resource "fmc_access_rules" "access_rule_26" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -4579,7 +5062,7 @@ resource "fmc_access_rules" "access_rule_26" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -4591,7 +5074,7 @@ resource "fmc_access_rules" "access_rule_26" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -4609,7 +5092,7 @@ resource "fmc_access_rules" "access_rule_27" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -4654,8 +5137,40 @@ resource "fmc_access_rules" "access_rule_27" {
     fmc_access_rules.access_rule_26,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -4667,7 +5182,7 @@ resource "fmc_access_rules" "access_rule_27" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -4679,7 +5194,7 @@ resource "fmc_access_rules" "access_rule_27" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -4691,7 +5206,7 @@ resource "fmc_access_rules" "access_rule_27" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -4703,7 +5218,7 @@ resource "fmc_access_rules" "access_rule_27" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -4715,7 +5230,7 @@ resource "fmc_access_rules" "access_rule_27" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -4727,7 +5242,7 @@ resource "fmc_access_rules" "access_rule_27" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -4739,7 +5254,7 @@ resource "fmc_access_rules" "access_rule_27" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -4751,7 +5266,7 @@ resource "fmc_access_rules" "access_rule_27" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -4763,7 +5278,7 @@ resource "fmc_access_rules" "access_rule_27" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -4775,7 +5290,7 @@ resource "fmc_access_rules" "access_rule_27" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -4793,7 +5308,7 @@ resource "fmc_access_rules" "access_rule_28" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -4839,8 +5354,41 @@ resource "fmc_access_rules" "access_rule_28" {
     fmc_access_rules.access_rule_27,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -4852,7 +5400,7 @@ resource "fmc_access_rules" "access_rule_28" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -4864,7 +5412,7 @@ resource "fmc_access_rules" "access_rule_28" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -4876,7 +5424,7 @@ resource "fmc_access_rules" "access_rule_28" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -4888,7 +5436,7 @@ resource "fmc_access_rules" "access_rule_28" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -4900,7 +5448,7 @@ resource "fmc_access_rules" "access_rule_28" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -4912,7 +5460,7 @@ resource "fmc_access_rules" "access_rule_28" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -4924,7 +5472,7 @@ resource "fmc_access_rules" "access_rule_28" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -4936,7 +5484,7 @@ resource "fmc_access_rules" "access_rule_28" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -4948,7 +5496,7 @@ resource "fmc_access_rules" "access_rule_28" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -4960,7 +5508,7 @@ resource "fmc_access_rules" "access_rule_28" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -4978,7 +5526,7 @@ resource "fmc_access_rules" "access_rule_29" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -5025,8 +5573,42 @@ resource "fmc_access_rules" "access_rule_29" {
     fmc_access_rules.access_rule_28,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -5038,7 +5620,7 @@ resource "fmc_access_rules" "access_rule_29" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -5050,7 +5632,7 @@ resource "fmc_access_rules" "access_rule_29" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -5062,7 +5644,7 @@ resource "fmc_access_rules" "access_rule_29" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -5074,7 +5656,7 @@ resource "fmc_access_rules" "access_rule_29" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -5086,7 +5668,7 @@ resource "fmc_access_rules" "access_rule_29" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -5098,7 +5680,7 @@ resource "fmc_access_rules" "access_rule_29" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -5110,7 +5692,7 @@ resource "fmc_access_rules" "access_rule_29" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -5122,7 +5704,7 @@ resource "fmc_access_rules" "access_rule_29" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -5134,7 +5716,7 @@ resource "fmc_access_rules" "access_rule_29" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -5146,7 +5728,7 @@ resource "fmc_access_rules" "access_rule_29" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -5164,7 +5746,7 @@ resource "fmc_access_rules" "access_rule_30" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -5212,8 +5794,43 @@ resource "fmc_access_rules" "access_rule_30" {
     fmc_access_rules.access_rule_29,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -5225,7 +5842,7 @@ resource "fmc_access_rules" "access_rule_30" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -5237,7 +5854,7 @@ resource "fmc_access_rules" "access_rule_30" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -5249,7 +5866,7 @@ resource "fmc_access_rules" "access_rule_30" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -5261,7 +5878,7 @@ resource "fmc_access_rules" "access_rule_30" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -5273,7 +5890,7 @@ resource "fmc_access_rules" "access_rule_30" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -5285,7 +5902,7 @@ resource "fmc_access_rules" "access_rule_30" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -5297,7 +5914,7 @@ resource "fmc_access_rules" "access_rule_30" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -5309,7 +5926,7 @@ resource "fmc_access_rules" "access_rule_30" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -5321,7 +5938,7 @@ resource "fmc_access_rules" "access_rule_30" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -5333,7 +5950,7 @@ resource "fmc_access_rules" "access_rule_30" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -5351,7 +5968,7 @@ resource "fmc_access_rules" "access_rule_31" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -5400,8 +6017,44 @@ resource "fmc_access_rules" "access_rule_31" {
     fmc_access_rules.access_rule_30,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -5413,7 +6066,7 @@ resource "fmc_access_rules" "access_rule_31" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -5425,7 +6078,7 @@ resource "fmc_access_rules" "access_rule_31" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -5437,7 +6090,7 @@ resource "fmc_access_rules" "access_rule_31" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -5449,7 +6102,7 @@ resource "fmc_access_rules" "access_rule_31" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -5461,7 +6114,7 @@ resource "fmc_access_rules" "access_rule_31" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -5473,7 +6126,7 @@ resource "fmc_access_rules" "access_rule_31" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -5485,7 +6138,7 @@ resource "fmc_access_rules" "access_rule_31" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -5497,7 +6150,7 @@ resource "fmc_access_rules" "access_rule_31" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -5509,7 +6162,7 @@ resource "fmc_access_rules" "access_rule_31" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -5521,7 +6174,7 @@ resource "fmc_access_rules" "access_rule_31" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -5539,7 +6192,7 @@ resource "fmc_access_rules" "access_rule_32" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -5589,8 +6242,45 @@ resource "fmc_access_rules" "access_rule_32" {
     fmc_access_rules.access_rule_31,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -5602,7 +6292,7 @@ resource "fmc_access_rules" "access_rule_32" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -5614,7 +6304,7 @@ resource "fmc_access_rules" "access_rule_32" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -5626,7 +6316,7 @@ resource "fmc_access_rules" "access_rule_32" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -5638,7 +6328,7 @@ resource "fmc_access_rules" "access_rule_32" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -5650,7 +6340,7 @@ resource "fmc_access_rules" "access_rule_32" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -5662,7 +6352,7 @@ resource "fmc_access_rules" "access_rule_32" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -5674,7 +6364,7 @@ resource "fmc_access_rules" "access_rule_32" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -5686,7 +6376,7 @@ resource "fmc_access_rules" "access_rule_32" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -5698,7 +6388,7 @@ resource "fmc_access_rules" "access_rule_32" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -5710,7 +6400,7 @@ resource "fmc_access_rules" "access_rule_32" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -5728,7 +6418,7 @@ resource "fmc_access_rules" "access_rule_33" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -5779,8 +6469,46 @@ resource "fmc_access_rules" "access_rule_33" {
     fmc_access_rules.access_rule_32,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -5792,7 +6520,7 @@ resource "fmc_access_rules" "access_rule_33" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -5804,7 +6532,7 @@ resource "fmc_access_rules" "access_rule_33" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -5816,7 +6544,7 @@ resource "fmc_access_rules" "access_rule_33" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -5828,7 +6556,7 @@ resource "fmc_access_rules" "access_rule_33" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -5840,7 +6568,7 @@ resource "fmc_access_rules" "access_rule_33" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -5852,7 +6580,7 @@ resource "fmc_access_rules" "access_rule_33" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -5864,7 +6592,7 @@ resource "fmc_access_rules" "access_rule_33" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -5876,7 +6604,7 @@ resource "fmc_access_rules" "access_rule_33" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -5888,7 +6616,7 @@ resource "fmc_access_rules" "access_rule_33" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -5900,7 +6628,7 @@ resource "fmc_access_rules" "access_rule_33" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -5918,7 +6646,7 @@ resource "fmc_access_rules" "access_rule_34" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -5970,8 +6698,47 @@ resource "fmc_access_rules" "access_rule_34" {
     fmc_access_rules.access_rule_33,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -5983,7 +6750,7 @@ resource "fmc_access_rules" "access_rule_34" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -5995,7 +6762,7 @@ resource "fmc_access_rules" "access_rule_34" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -6007,7 +6774,7 @@ resource "fmc_access_rules" "access_rule_34" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -6019,7 +6786,7 @@ resource "fmc_access_rules" "access_rule_34" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -6031,7 +6798,7 @@ resource "fmc_access_rules" "access_rule_34" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -6043,7 +6810,7 @@ resource "fmc_access_rules" "access_rule_34" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -6055,7 +6822,7 @@ resource "fmc_access_rules" "access_rule_34" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -6067,7 +6834,7 @@ resource "fmc_access_rules" "access_rule_34" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -6079,7 +6846,7 @@ resource "fmc_access_rules" "access_rule_34" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -6091,7 +6858,7 @@ resource "fmc_access_rules" "access_rule_34" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -6109,7 +6876,7 @@ resource "fmc_access_rules" "access_rule_35" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -6162,8 +6929,48 @@ resource "fmc_access_rules" "access_rule_35" {
     fmc_access_rules.access_rule_34,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -6175,7 +6982,7 @@ resource "fmc_access_rules" "access_rule_35" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -6187,7 +6994,7 @@ resource "fmc_access_rules" "access_rule_35" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -6199,7 +7006,7 @@ resource "fmc_access_rules" "access_rule_35" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -6211,7 +7018,7 @@ resource "fmc_access_rules" "access_rule_35" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -6223,7 +7030,7 @@ resource "fmc_access_rules" "access_rule_35" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -6235,7 +7042,7 @@ resource "fmc_access_rules" "access_rule_35" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -6247,7 +7054,7 @@ resource "fmc_access_rules" "access_rule_35" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -6259,7 +7066,7 @@ resource "fmc_access_rules" "access_rule_35" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -6271,7 +7078,7 @@ resource "fmc_access_rules" "access_rule_35" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -6283,7 +7090,7 @@ resource "fmc_access_rules" "access_rule_35" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -6301,7 +7108,7 @@ resource "fmc_access_rules" "access_rule_36" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -6355,8 +7162,49 @@ resource "fmc_access_rules" "access_rule_36" {
     fmc_access_rules.access_rule_35,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -6368,7 +7216,7 @@ resource "fmc_access_rules" "access_rule_36" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -6380,7 +7228,7 @@ resource "fmc_access_rules" "access_rule_36" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -6392,7 +7240,7 @@ resource "fmc_access_rules" "access_rule_36" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -6404,7 +7252,7 @@ resource "fmc_access_rules" "access_rule_36" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -6416,7 +7264,7 @@ resource "fmc_access_rules" "access_rule_36" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -6428,7 +7276,7 @@ resource "fmc_access_rules" "access_rule_36" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -6440,7 +7288,7 @@ resource "fmc_access_rules" "access_rule_36" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -6452,7 +7300,7 @@ resource "fmc_access_rules" "access_rule_36" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -6464,7 +7312,7 @@ resource "fmc_access_rules" "access_rule_36" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -6476,7 +7324,7 @@ resource "fmc_access_rules" "access_rule_36" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -6494,7 +7342,7 @@ resource "fmc_access_rules" "access_rule_37" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -6549,8 +7397,50 @@ resource "fmc_access_rules" "access_rule_37" {
     fmc_access_rules.access_rule_36,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -6562,7 +7452,7 @@ resource "fmc_access_rules" "access_rule_37" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -6574,7 +7464,7 @@ resource "fmc_access_rules" "access_rule_37" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -6586,7 +7476,7 @@ resource "fmc_access_rules" "access_rule_37" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -6598,7 +7488,7 @@ resource "fmc_access_rules" "access_rule_37" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -6610,7 +7500,7 @@ resource "fmc_access_rules" "access_rule_37" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -6622,7 +7512,7 @@ resource "fmc_access_rules" "access_rule_37" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -6634,7 +7524,7 @@ resource "fmc_access_rules" "access_rule_37" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -6646,7 +7536,7 @@ resource "fmc_access_rules" "access_rule_37" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -6658,7 +7548,7 @@ resource "fmc_access_rules" "access_rule_37" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -6670,7 +7560,7 @@ resource "fmc_access_rules" "access_rule_37" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -6688,7 +7578,7 @@ resource "fmc_access_rules" "access_rule_38" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -6744,8 +7634,51 @@ resource "fmc_access_rules" "access_rule_38" {
     fmc_access_rules.access_rule_37,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -6757,7 +7690,7 @@ resource "fmc_access_rules" "access_rule_38" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -6769,7 +7702,7 @@ resource "fmc_access_rules" "access_rule_38" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -6781,7 +7714,7 @@ resource "fmc_access_rules" "access_rule_38" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -6793,7 +7726,7 @@ resource "fmc_access_rules" "access_rule_38" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -6805,7 +7738,7 @@ resource "fmc_access_rules" "access_rule_38" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -6817,7 +7750,7 @@ resource "fmc_access_rules" "access_rule_38" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -6829,7 +7762,7 @@ resource "fmc_access_rules" "access_rule_38" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -6841,7 +7774,7 @@ resource "fmc_access_rules" "access_rule_38" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -6853,7 +7786,7 @@ resource "fmc_access_rules" "access_rule_38" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -6865,7 +7798,7 @@ resource "fmc_access_rules" "access_rule_38" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -6883,7 +7816,7 @@ resource "fmc_access_rules" "access_rule_39" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -6940,8 +7873,52 @@ resource "fmc_access_rules" "access_rule_39" {
     fmc_access_rules.access_rule_38,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -6953,7 +7930,7 @@ resource "fmc_access_rules" "access_rule_39" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -6965,7 +7942,7 @@ resource "fmc_access_rules" "access_rule_39" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -6977,7 +7954,7 @@ resource "fmc_access_rules" "access_rule_39" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -6989,7 +7966,7 @@ resource "fmc_access_rules" "access_rule_39" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -7001,7 +7978,7 @@ resource "fmc_access_rules" "access_rule_39" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -7013,7 +7990,7 @@ resource "fmc_access_rules" "access_rule_39" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -7025,7 +8002,7 @@ resource "fmc_access_rules" "access_rule_39" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -7037,7 +8014,7 @@ resource "fmc_access_rules" "access_rule_39" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -7049,7 +8026,7 @@ resource "fmc_access_rules" "access_rule_39" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -7061,7 +8038,7 @@ resource "fmc_access_rules" "access_rule_39" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -7079,7 +8056,7 @@ resource "fmc_access_rules" "access_rule_40" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -7137,8 +8114,53 @@ resource "fmc_access_rules" "access_rule_40" {
     fmc_access_rules.access_rule_39,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -7150,7 +8172,7 @@ resource "fmc_access_rules" "access_rule_40" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -7162,7 +8184,7 @@ resource "fmc_access_rules" "access_rule_40" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -7174,7 +8196,7 @@ resource "fmc_access_rules" "access_rule_40" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -7186,7 +8208,7 @@ resource "fmc_access_rules" "access_rule_40" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -7198,7 +8220,7 @@ resource "fmc_access_rules" "access_rule_40" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -7210,7 +8232,7 @@ resource "fmc_access_rules" "access_rule_40" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -7222,7 +8244,7 @@ resource "fmc_access_rules" "access_rule_40" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -7234,7 +8256,7 @@ resource "fmc_access_rules" "access_rule_40" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -7246,7 +8268,7 @@ resource "fmc_access_rules" "access_rule_40" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -7258,7 +8280,7 @@ resource "fmc_access_rules" "access_rule_40" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -7276,7 +8298,7 @@ resource "fmc_access_rules" "access_rule_41" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -7335,8 +8357,54 @@ resource "fmc_access_rules" "access_rule_41" {
     fmc_access_rules.access_rule_40,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -7348,7 +8416,7 @@ resource "fmc_access_rules" "access_rule_41" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -7360,7 +8428,7 @@ resource "fmc_access_rules" "access_rule_41" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -7372,7 +8440,7 @@ resource "fmc_access_rules" "access_rule_41" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -7384,7 +8452,7 @@ resource "fmc_access_rules" "access_rule_41" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -7396,7 +8464,7 @@ resource "fmc_access_rules" "access_rule_41" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -7408,7 +8476,7 @@ resource "fmc_access_rules" "access_rule_41" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -7420,7 +8488,7 @@ resource "fmc_access_rules" "access_rule_41" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -7432,7 +8500,7 @@ resource "fmc_access_rules" "access_rule_41" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -7444,7 +8512,7 @@ resource "fmc_access_rules" "access_rule_41" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -7456,7 +8524,7 @@ resource "fmc_access_rules" "access_rule_41" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -7474,7 +8542,7 @@ resource "fmc_access_rules" "access_rule_42" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -7534,8 +8602,55 @@ resource "fmc_access_rules" "access_rule_42" {
     fmc_access_rules.access_rule_41,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -7547,7 +8662,7 @@ resource "fmc_access_rules" "access_rule_42" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -7559,7 +8674,7 @@ resource "fmc_access_rules" "access_rule_42" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -7571,7 +8686,7 @@ resource "fmc_access_rules" "access_rule_42" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -7583,7 +8698,7 @@ resource "fmc_access_rules" "access_rule_42" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -7595,7 +8710,7 @@ resource "fmc_access_rules" "access_rule_42" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -7607,7 +8722,7 @@ resource "fmc_access_rules" "access_rule_42" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -7619,7 +8734,7 @@ resource "fmc_access_rules" "access_rule_42" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -7631,7 +8746,7 @@ resource "fmc_access_rules" "access_rule_42" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -7643,7 +8758,7 @@ resource "fmc_access_rules" "access_rule_42" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -7655,7 +8770,7 @@ resource "fmc_access_rules" "access_rule_42" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -7673,7 +8788,7 @@ resource "fmc_access_rules" "access_rule_43" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -7734,8 +8849,56 @@ resource "fmc_access_rules" "access_rule_43" {
     fmc_access_rules.access_rule_42,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -7747,7 +8910,7 @@ resource "fmc_access_rules" "access_rule_43" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -7759,7 +8922,7 @@ resource "fmc_access_rules" "access_rule_43" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -7771,7 +8934,7 @@ resource "fmc_access_rules" "access_rule_43" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -7783,7 +8946,7 @@ resource "fmc_access_rules" "access_rule_43" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -7795,7 +8958,7 @@ resource "fmc_access_rules" "access_rule_43" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -7807,7 +8970,7 @@ resource "fmc_access_rules" "access_rule_43" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -7819,7 +8982,7 @@ resource "fmc_access_rules" "access_rule_43" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -7831,7 +8994,7 @@ resource "fmc_access_rules" "access_rule_43" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -7843,7 +9006,7 @@ resource "fmc_access_rules" "access_rule_43" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -7855,7 +9018,7 @@ resource "fmc_access_rules" "access_rule_43" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -7873,7 +9036,7 @@ resource "fmc_access_rules" "access_rule_44" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -7935,8 +9098,57 @@ resource "fmc_access_rules" "access_rule_44" {
     fmc_access_rules.access_rule_43,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -7948,7 +9160,7 @@ resource "fmc_access_rules" "access_rule_44" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -7960,7 +9172,7 @@ resource "fmc_access_rules" "access_rule_44" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -7972,7 +9184,7 @@ resource "fmc_access_rules" "access_rule_44" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -7984,7 +9196,7 @@ resource "fmc_access_rules" "access_rule_44" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -7996,7 +9208,7 @@ resource "fmc_access_rules" "access_rule_44" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -8008,7 +9220,7 @@ resource "fmc_access_rules" "access_rule_44" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -8020,7 +9232,7 @@ resource "fmc_access_rules" "access_rule_44" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -8032,7 +9244,7 @@ resource "fmc_access_rules" "access_rule_44" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -8044,7 +9256,7 @@ resource "fmc_access_rules" "access_rule_44" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -8056,7 +9268,7 @@ resource "fmc_access_rules" "access_rule_44" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -8074,7 +9286,7 @@ resource "fmc_access_rules" "access_rule_45" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -8137,8 +9349,58 @@ resource "fmc_access_rules" "access_rule_45" {
     fmc_access_rules.access_rule_44,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -8150,7 +9412,7 @@ resource "fmc_access_rules" "access_rule_45" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -8162,7 +9424,7 @@ resource "fmc_access_rules" "access_rule_45" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -8174,7 +9436,7 @@ resource "fmc_access_rules" "access_rule_45" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -8186,7 +9448,7 @@ resource "fmc_access_rules" "access_rule_45" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -8198,7 +9460,7 @@ resource "fmc_access_rules" "access_rule_45" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -8210,7 +9472,7 @@ resource "fmc_access_rules" "access_rule_45" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -8222,7 +9484,7 @@ resource "fmc_access_rules" "access_rule_45" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -8234,7 +9496,7 @@ resource "fmc_access_rules" "access_rule_45" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -8246,7 +9508,7 @@ resource "fmc_access_rules" "access_rule_45" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -8258,7 +9520,7 @@ resource "fmc_access_rules" "access_rule_45" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -8276,7 +9538,7 @@ resource "fmc_access_rules" "access_rule_46" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -8340,8 +9602,59 @@ resource "fmc_access_rules" "access_rule_46" {
     fmc_access_rules.access_rule_45,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -8353,7 +9666,7 @@ resource "fmc_access_rules" "access_rule_46" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -8365,7 +9678,7 @@ resource "fmc_access_rules" "access_rule_46" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -8377,7 +9690,7 @@ resource "fmc_access_rules" "access_rule_46" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -8389,7 +9702,7 @@ resource "fmc_access_rules" "access_rule_46" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -8401,7 +9714,7 @@ resource "fmc_access_rules" "access_rule_46" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -8413,7 +9726,7 @@ resource "fmc_access_rules" "access_rule_46" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -8425,7 +9738,7 @@ resource "fmc_access_rules" "access_rule_46" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -8437,7 +9750,7 @@ resource "fmc_access_rules" "access_rule_46" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -8449,7 +9762,7 @@ resource "fmc_access_rules" "access_rule_46" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -8461,7 +9774,7 @@ resource "fmc_access_rules" "access_rule_46" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -8479,7 +9792,7 @@ resource "fmc_access_rules" "access_rule_47" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -8544,8 +9857,60 @@ resource "fmc_access_rules" "access_rule_47" {
     fmc_access_rules.access_rule_46,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -8557,7 +9922,7 @@ resource "fmc_access_rules" "access_rule_47" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -8569,7 +9934,7 @@ resource "fmc_access_rules" "access_rule_47" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -8581,7 +9946,7 @@ resource "fmc_access_rules" "access_rule_47" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -8593,7 +9958,7 @@ resource "fmc_access_rules" "access_rule_47" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -8605,7 +9970,7 @@ resource "fmc_access_rules" "access_rule_47" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -8617,7 +9982,7 @@ resource "fmc_access_rules" "access_rule_47" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -8629,7 +9994,7 @@ resource "fmc_access_rules" "access_rule_47" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -8641,7 +10006,7 @@ resource "fmc_access_rules" "access_rule_47" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -8653,7 +10018,7 @@ resource "fmc_access_rules" "access_rule_47" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -8665,7 +10030,7 @@ resource "fmc_access_rules" "access_rule_47" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -8683,7 +10048,7 @@ resource "fmc_access_rules" "access_rule_48" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -8749,8 +10114,61 @@ resource "fmc_access_rules" "access_rule_48" {
     fmc_access_rules.access_rule_47,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -8762,7 +10180,7 @@ resource "fmc_access_rules" "access_rule_48" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -8774,7 +10192,7 @@ resource "fmc_access_rules" "access_rule_48" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -8786,7 +10204,7 @@ resource "fmc_access_rules" "access_rule_48" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -8798,7 +10216,7 @@ resource "fmc_access_rules" "access_rule_48" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -8810,7 +10228,7 @@ resource "fmc_access_rules" "access_rule_48" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -8822,7 +10240,7 @@ resource "fmc_access_rules" "access_rule_48" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -8834,7 +10252,7 @@ resource "fmc_access_rules" "access_rule_48" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -8846,7 +10264,7 @@ resource "fmc_access_rules" "access_rule_48" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -8858,7 +10276,7 @@ resource "fmc_access_rules" "access_rule_48" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -8870,7 +10288,7 @@ resource "fmc_access_rules" "access_rule_48" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -8888,7 +10306,7 @@ resource "fmc_access_rules" "access_rule_49" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -8955,8 +10373,62 @@ resource "fmc_access_rules" "access_rule_49" {
     fmc_access_rules.access_rule_48,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -8968,7 +10440,7 @@ resource "fmc_access_rules" "access_rule_49" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -8980,7 +10452,7 @@ resource "fmc_access_rules" "access_rule_49" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -8992,7 +10464,7 @@ resource "fmc_access_rules" "access_rule_49" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -9004,7 +10476,7 @@ resource "fmc_access_rules" "access_rule_49" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -9016,7 +10488,7 @@ resource "fmc_access_rules" "access_rule_49" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -9028,7 +10500,7 @@ resource "fmc_access_rules" "access_rule_49" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -9040,7 +10512,7 @@ resource "fmc_access_rules" "access_rule_49" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -9052,7 +10524,7 @@ resource "fmc_access_rules" "access_rule_49" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -9064,7 +10536,7 @@ resource "fmc_access_rules" "access_rule_49" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -9076,7 +10548,7 @@ resource "fmc_access_rules" "access_rule_49" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -9094,7 +10566,7 @@ resource "fmc_access_rules" "access_rule_50" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -9162,8 +10634,63 @@ resource "fmc_access_rules" "access_rule_50" {
     fmc_access_rules.access_rule_49,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -9175,7 +10702,7 @@ resource "fmc_access_rules" "access_rule_50" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -9187,7 +10714,7 @@ resource "fmc_access_rules" "access_rule_50" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -9199,7 +10726,7 @@ resource "fmc_access_rules" "access_rule_50" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -9211,7 +10738,7 @@ resource "fmc_access_rules" "access_rule_50" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -9223,7 +10750,7 @@ resource "fmc_access_rules" "access_rule_50" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -9235,7 +10762,7 @@ resource "fmc_access_rules" "access_rule_50" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -9247,7 +10774,7 @@ resource "fmc_access_rules" "access_rule_50" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -9259,7 +10786,7 @@ resource "fmc_access_rules" "access_rule_50" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -9271,7 +10798,7 @@ resource "fmc_access_rules" "access_rule_50" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -9283,7 +10810,7 @@ resource "fmc_access_rules" "access_rule_50" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -9301,7 +10828,7 @@ resource "fmc_access_rules" "access_rule_51" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -9370,8 +10897,64 @@ resource "fmc_access_rules" "access_rule_51" {
     fmc_access_rules.access_rule_50,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -9383,7 +10966,7 @@ resource "fmc_access_rules" "access_rule_51" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -9395,7 +10978,7 @@ resource "fmc_access_rules" "access_rule_51" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -9407,7 +10990,7 @@ resource "fmc_access_rules" "access_rule_51" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -9419,7 +11002,7 @@ resource "fmc_access_rules" "access_rule_51" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -9431,7 +11014,7 @@ resource "fmc_access_rules" "access_rule_51" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -9443,7 +11026,7 @@ resource "fmc_access_rules" "access_rule_51" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -9455,7 +11038,7 @@ resource "fmc_access_rules" "access_rule_51" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -9467,7 +11050,7 @@ resource "fmc_access_rules" "access_rule_51" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -9479,7 +11062,7 @@ resource "fmc_access_rules" "access_rule_51" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -9491,7 +11074,7 @@ resource "fmc_access_rules" "access_rule_51" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -9509,7 +11092,7 @@ resource "fmc_access_rules" "access_rule_52" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -9579,8 +11162,65 @@ resource "fmc_access_rules" "access_rule_52" {
     fmc_access_rules.access_rule_51,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -9592,7 +11232,7 @@ resource "fmc_access_rules" "access_rule_52" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -9604,7 +11244,7 @@ resource "fmc_access_rules" "access_rule_52" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -9616,7 +11256,7 @@ resource "fmc_access_rules" "access_rule_52" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -9628,7 +11268,7 @@ resource "fmc_access_rules" "access_rule_52" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -9640,7 +11280,7 @@ resource "fmc_access_rules" "access_rule_52" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -9652,7 +11292,7 @@ resource "fmc_access_rules" "access_rule_52" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -9664,7 +11304,7 @@ resource "fmc_access_rules" "access_rule_52" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -9676,7 +11316,7 @@ resource "fmc_access_rules" "access_rule_52" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -9688,7 +11328,7 @@ resource "fmc_access_rules" "access_rule_52" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -9700,7 +11340,7 @@ resource "fmc_access_rules" "access_rule_52" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -9718,7 +11358,7 @@ resource "fmc_access_rules" "access_rule_53" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -9789,8 +11429,66 @@ resource "fmc_access_rules" "access_rule_53" {
     fmc_access_rules.access_rule_52,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -9802,7 +11500,7 @@ resource "fmc_access_rules" "access_rule_53" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -9814,7 +11512,7 @@ resource "fmc_access_rules" "access_rule_53" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -9826,7 +11524,7 @@ resource "fmc_access_rules" "access_rule_53" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -9838,7 +11536,7 @@ resource "fmc_access_rules" "access_rule_53" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -9850,7 +11548,7 @@ resource "fmc_access_rules" "access_rule_53" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -9862,7 +11560,7 @@ resource "fmc_access_rules" "access_rule_53" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -9874,7 +11572,7 @@ resource "fmc_access_rules" "access_rule_53" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -9886,7 +11584,7 @@ resource "fmc_access_rules" "access_rule_53" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -9898,7 +11596,7 @@ resource "fmc_access_rules" "access_rule_53" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -9910,7 +11608,7 @@ resource "fmc_access_rules" "access_rule_53" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -9928,7 +11626,7 @@ resource "fmc_access_rules" "access_rule_54" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -10000,8 +11698,67 @@ resource "fmc_access_rules" "access_rule_54" {
     fmc_access_rules.access_rule_53,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -10013,7 +11770,7 @@ resource "fmc_access_rules" "access_rule_54" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -10025,7 +11782,7 @@ resource "fmc_access_rules" "access_rule_54" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -10037,7 +11794,7 @@ resource "fmc_access_rules" "access_rule_54" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -10049,7 +11806,7 @@ resource "fmc_access_rules" "access_rule_54" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -10061,7 +11818,7 @@ resource "fmc_access_rules" "access_rule_54" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -10073,7 +11830,7 @@ resource "fmc_access_rules" "access_rule_54" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -10085,7 +11842,7 @@ resource "fmc_access_rules" "access_rule_54" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -10097,7 +11854,7 @@ resource "fmc_access_rules" "access_rule_54" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -10109,7 +11866,7 @@ resource "fmc_access_rules" "access_rule_54" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -10121,7 +11878,7 @@ resource "fmc_access_rules" "access_rule_54" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -10139,7 +11896,7 @@ resource "fmc_access_rules" "access_rule_55" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -10212,8 +11969,68 @@ resource "fmc_access_rules" "access_rule_55" {
     fmc_access_rules.access_rule_54,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -10225,7 +12042,7 @@ resource "fmc_access_rules" "access_rule_55" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -10237,7 +12054,7 @@ resource "fmc_access_rules" "access_rule_55" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -10249,7 +12066,7 @@ resource "fmc_access_rules" "access_rule_55" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -10261,7 +12078,7 @@ resource "fmc_access_rules" "access_rule_55" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -10273,7 +12090,7 @@ resource "fmc_access_rules" "access_rule_55" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -10285,7 +12102,7 @@ resource "fmc_access_rules" "access_rule_55" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -10297,7 +12114,7 @@ resource "fmc_access_rules" "access_rule_55" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -10309,7 +12126,7 @@ resource "fmc_access_rules" "access_rule_55" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -10321,7 +12138,7 @@ resource "fmc_access_rules" "access_rule_55" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -10333,7 +12150,7 @@ resource "fmc_access_rules" "access_rule_55" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -10351,7 +12168,7 @@ resource "fmc_access_rules" "access_rule_56" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -10425,8 +12242,69 @@ resource "fmc_access_rules" "access_rule_56" {
     fmc_access_rules.access_rule_55,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -10438,7 +12316,7 @@ resource "fmc_access_rules" "access_rule_56" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -10450,7 +12328,7 @@ resource "fmc_access_rules" "access_rule_56" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -10462,7 +12340,7 @@ resource "fmc_access_rules" "access_rule_56" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -10474,7 +12352,7 @@ resource "fmc_access_rules" "access_rule_56" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -10486,7 +12364,7 @@ resource "fmc_access_rules" "access_rule_56" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -10498,7 +12376,7 @@ resource "fmc_access_rules" "access_rule_56" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -10510,7 +12388,7 @@ resource "fmc_access_rules" "access_rule_56" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -10522,7 +12400,7 @@ resource "fmc_access_rules" "access_rule_56" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -10534,7 +12412,7 @@ resource "fmc_access_rules" "access_rule_56" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -10546,7 +12424,7 @@ resource "fmc_access_rules" "access_rule_56" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -10564,7 +12442,7 @@ resource "fmc_access_rules" "access_rule_57" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -10639,8 +12517,70 @@ resource "fmc_access_rules" "access_rule_57" {
     fmc_access_rules.access_rule_56,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -10652,7 +12592,7 @@ resource "fmc_access_rules" "access_rule_57" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -10664,7 +12604,7 @@ resource "fmc_access_rules" "access_rule_57" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -10676,7 +12616,7 @@ resource "fmc_access_rules" "access_rule_57" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -10688,7 +12628,7 @@ resource "fmc_access_rules" "access_rule_57" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -10700,7 +12640,7 @@ resource "fmc_access_rules" "access_rule_57" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -10712,7 +12652,7 @@ resource "fmc_access_rules" "access_rule_57" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -10724,7 +12664,7 @@ resource "fmc_access_rules" "access_rule_57" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -10736,7 +12676,7 @@ resource "fmc_access_rules" "access_rule_57" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -10748,7 +12688,7 @@ resource "fmc_access_rules" "access_rule_57" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -10760,7 +12700,7 @@ resource "fmc_access_rules" "access_rule_57" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -10778,7 +12718,7 @@ resource "fmc_access_rules" "access_rule_58" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -10854,8 +12794,71 @@ resource "fmc_access_rules" "access_rule_58" {
     fmc_access_rules.access_rule_57,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -10867,7 +12870,7 @@ resource "fmc_access_rules" "access_rule_58" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -10879,7 +12882,7 @@ resource "fmc_access_rules" "access_rule_58" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -10891,7 +12894,7 @@ resource "fmc_access_rules" "access_rule_58" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -10903,7 +12906,7 @@ resource "fmc_access_rules" "access_rule_58" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -10915,7 +12918,7 @@ resource "fmc_access_rules" "access_rule_58" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -10927,7 +12930,7 @@ resource "fmc_access_rules" "access_rule_58" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -10939,7 +12942,7 @@ resource "fmc_access_rules" "access_rule_58" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -10951,7 +12954,7 @@ resource "fmc_access_rules" "access_rule_58" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -10963,7 +12966,7 @@ resource "fmc_access_rules" "access_rule_58" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -10975,7 +12978,7 @@ resource "fmc_access_rules" "access_rule_58" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -10993,7 +12996,7 @@ resource "fmc_access_rules" "access_rule_59" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -11070,8 +13073,72 @@ resource "fmc_access_rules" "access_rule_59" {
     fmc_access_rules.access_rule_58,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -11083,7 +13150,7 @@ resource "fmc_access_rules" "access_rule_59" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -11095,7 +13162,7 @@ resource "fmc_access_rules" "access_rule_59" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -11107,7 +13174,7 @@ resource "fmc_access_rules" "access_rule_59" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -11119,7 +13186,7 @@ resource "fmc_access_rules" "access_rule_59" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -11131,7 +13198,7 @@ resource "fmc_access_rules" "access_rule_59" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -11143,7 +13210,7 @@ resource "fmc_access_rules" "access_rule_59" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -11155,7 +13222,7 @@ resource "fmc_access_rules" "access_rule_59" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -11167,7 +13234,7 @@ resource "fmc_access_rules" "access_rule_59" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -11179,7 +13246,7 @@ resource "fmc_access_rules" "access_rule_59" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -11191,7 +13258,7 @@ resource "fmc_access_rules" "access_rule_59" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -11209,7 +13276,7 @@ resource "fmc_access_rules" "access_rule_60" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -11287,8 +13354,73 @@ resource "fmc_access_rules" "access_rule_60" {
     fmc_access_rules.access_rule_59,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -11300,7 +13432,7 @@ resource "fmc_access_rules" "access_rule_60" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -11312,7 +13444,7 @@ resource "fmc_access_rules" "access_rule_60" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -11324,7 +13456,7 @@ resource "fmc_access_rules" "access_rule_60" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -11336,7 +13468,7 @@ resource "fmc_access_rules" "access_rule_60" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -11348,7 +13480,7 @@ resource "fmc_access_rules" "access_rule_60" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -11360,7 +13492,7 @@ resource "fmc_access_rules" "access_rule_60" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -11372,7 +13504,7 @@ resource "fmc_access_rules" "access_rule_60" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -11384,7 +13516,7 @@ resource "fmc_access_rules" "access_rule_60" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -11396,7 +13528,7 @@ resource "fmc_access_rules" "access_rule_60" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -11408,7 +13540,7 @@ resource "fmc_access_rules" "access_rule_60" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -11426,7 +13558,7 @@ resource "fmc_access_rules" "access_rule_61" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -11505,8 +13637,74 @@ resource "fmc_access_rules" "access_rule_61" {
     fmc_access_rules.access_rule_60,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -11518,7 +13716,7 @@ resource "fmc_access_rules" "access_rule_61" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -11530,7 +13728,7 @@ resource "fmc_access_rules" "access_rule_61" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -11542,7 +13740,7 @@ resource "fmc_access_rules" "access_rule_61" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -11554,7 +13752,7 @@ resource "fmc_access_rules" "access_rule_61" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -11566,7 +13764,7 @@ resource "fmc_access_rules" "access_rule_61" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -11578,7 +13776,7 @@ resource "fmc_access_rules" "access_rule_61" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -11590,7 +13788,7 @@ resource "fmc_access_rules" "access_rule_61" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -11602,7 +13800,7 @@ resource "fmc_access_rules" "access_rule_61" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -11614,7 +13812,7 @@ resource "fmc_access_rules" "access_rule_61" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -11626,7 +13824,7 @@ resource "fmc_access_rules" "access_rule_61" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -11644,7 +13842,7 @@ resource "fmc_access_rules" "access_rule_62" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -11724,8 +13922,75 @@ resource "fmc_access_rules" "access_rule_62" {
     fmc_access_rules.access_rule_61,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -11737,7 +14002,7 @@ resource "fmc_access_rules" "access_rule_62" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -11749,7 +14014,7 @@ resource "fmc_access_rules" "access_rule_62" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -11761,7 +14026,7 @@ resource "fmc_access_rules" "access_rule_62" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -11773,7 +14038,7 @@ resource "fmc_access_rules" "access_rule_62" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -11785,7 +14050,7 @@ resource "fmc_access_rules" "access_rule_62" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -11797,7 +14062,7 @@ resource "fmc_access_rules" "access_rule_62" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -11809,7 +14074,7 @@ resource "fmc_access_rules" "access_rule_62" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -11821,7 +14086,7 @@ resource "fmc_access_rules" "access_rule_62" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -11833,7 +14098,7 @@ resource "fmc_access_rules" "access_rule_62" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -11845,7 +14110,7 @@ resource "fmc_access_rules" "access_rule_62" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -11863,7 +14128,7 @@ resource "fmc_access_rules" "access_rule_63" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -11944,8 +14209,76 @@ resource "fmc_access_rules" "access_rule_63" {
     fmc_access_rules.access_rule_62,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -11957,7 +14290,7 @@ resource "fmc_access_rules" "access_rule_63" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -11969,7 +14302,7 @@ resource "fmc_access_rules" "access_rule_63" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -11981,7 +14314,7 @@ resource "fmc_access_rules" "access_rule_63" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -11993,7 +14326,7 @@ resource "fmc_access_rules" "access_rule_63" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -12005,7 +14338,7 @@ resource "fmc_access_rules" "access_rule_63" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -12017,7 +14350,7 @@ resource "fmc_access_rules" "access_rule_63" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -12029,7 +14362,7 @@ resource "fmc_access_rules" "access_rule_63" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -12041,7 +14374,7 @@ resource "fmc_access_rules" "access_rule_63" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -12053,7 +14386,7 @@ resource "fmc_access_rules" "access_rule_63" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -12065,7 +14398,7 @@ resource "fmc_access_rules" "access_rule_63" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -12083,7 +14416,7 @@ resource "fmc_access_rules" "access_rule_64" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -12165,8 +14498,77 @@ resource "fmc_access_rules" "access_rule_64" {
     fmc_access_rules.access_rule_63,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -12178,7 +14580,7 @@ resource "fmc_access_rules" "access_rule_64" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -12190,7 +14592,7 @@ resource "fmc_access_rules" "access_rule_64" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -12202,7 +14604,7 @@ resource "fmc_access_rules" "access_rule_64" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -12214,7 +14616,7 @@ resource "fmc_access_rules" "access_rule_64" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -12226,7 +14628,7 @@ resource "fmc_access_rules" "access_rule_64" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -12238,7 +14640,7 @@ resource "fmc_access_rules" "access_rule_64" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -12250,7 +14652,7 @@ resource "fmc_access_rules" "access_rule_64" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -12262,7 +14664,7 @@ resource "fmc_access_rules" "access_rule_64" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -12274,7 +14676,7 @@ resource "fmc_access_rules" "access_rule_64" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -12286,7 +14688,7 @@ resource "fmc_access_rules" "access_rule_64" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -12304,7 +14706,7 @@ resource "fmc_access_rules" "access_rule_65" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -12387,8 +14789,78 @@ resource "fmc_access_rules" "access_rule_65" {
     fmc_access_rules.access_rule_64,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -12400,7 +14872,7 @@ resource "fmc_access_rules" "access_rule_65" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -12412,7 +14884,7 @@ resource "fmc_access_rules" "access_rule_65" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -12424,7 +14896,7 @@ resource "fmc_access_rules" "access_rule_65" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -12436,7 +14908,7 @@ resource "fmc_access_rules" "access_rule_65" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -12448,7 +14920,7 @@ resource "fmc_access_rules" "access_rule_65" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -12460,7 +14932,7 @@ resource "fmc_access_rules" "access_rule_65" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -12472,7 +14944,7 @@ resource "fmc_access_rules" "access_rule_65" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -12484,7 +14956,7 @@ resource "fmc_access_rules" "access_rule_65" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -12496,7 +14968,7 @@ resource "fmc_access_rules" "access_rule_65" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -12508,7 +14980,7 @@ resource "fmc_access_rules" "access_rule_65" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -12526,7 +14998,7 @@ resource "fmc_access_rules" "access_rule_66" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -12610,8 +15082,79 @@ resource "fmc_access_rules" "access_rule_66" {
     fmc_access_rules.access_rule_65,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -12623,7 +15166,7 @@ resource "fmc_access_rules" "access_rule_66" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -12635,7 +15178,7 @@ resource "fmc_access_rules" "access_rule_66" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -12647,7 +15190,7 @@ resource "fmc_access_rules" "access_rule_66" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -12659,7 +15202,7 @@ resource "fmc_access_rules" "access_rule_66" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -12671,7 +15214,7 @@ resource "fmc_access_rules" "access_rule_66" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -12683,7 +15226,7 @@ resource "fmc_access_rules" "access_rule_66" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -12695,7 +15238,7 @@ resource "fmc_access_rules" "access_rule_66" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -12707,7 +15250,7 @@ resource "fmc_access_rules" "access_rule_66" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -12719,7 +15262,7 @@ resource "fmc_access_rules" "access_rule_66" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -12731,7 +15274,7 @@ resource "fmc_access_rules" "access_rule_66" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -12749,7 +15292,7 @@ resource "fmc_access_rules" "access_rule_67" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -12834,8 +15377,80 @@ resource "fmc_access_rules" "access_rule_67" {
     fmc_access_rules.access_rule_66,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -12847,7 +15462,7 @@ resource "fmc_access_rules" "access_rule_67" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -12859,7 +15474,7 @@ resource "fmc_access_rules" "access_rule_67" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -12871,7 +15486,7 @@ resource "fmc_access_rules" "access_rule_67" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -12883,7 +15498,7 @@ resource "fmc_access_rules" "access_rule_67" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -12895,7 +15510,7 @@ resource "fmc_access_rules" "access_rule_67" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -12907,7 +15522,7 @@ resource "fmc_access_rules" "access_rule_67" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -12919,7 +15534,7 @@ resource "fmc_access_rules" "access_rule_67" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -12931,7 +15546,7 @@ resource "fmc_access_rules" "access_rule_67" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -12943,7 +15558,7 @@ resource "fmc_access_rules" "access_rule_67" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -12955,7 +15570,7 @@ resource "fmc_access_rules" "access_rule_67" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -12973,7 +15588,7 @@ resource "fmc_access_rules" "access_rule_68" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -13059,8 +15674,81 @@ resource "fmc_access_rules" "access_rule_68" {
     fmc_access_rules.access_rule_67,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -13072,7 +15760,7 @@ resource "fmc_access_rules" "access_rule_68" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -13084,7 +15772,7 @@ resource "fmc_access_rules" "access_rule_68" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -13096,7 +15784,7 @@ resource "fmc_access_rules" "access_rule_68" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -13108,7 +15796,7 @@ resource "fmc_access_rules" "access_rule_68" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -13120,7 +15808,7 @@ resource "fmc_access_rules" "access_rule_68" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -13132,7 +15820,7 @@ resource "fmc_access_rules" "access_rule_68" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -13144,7 +15832,7 @@ resource "fmc_access_rules" "access_rule_68" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -13156,7 +15844,7 @@ resource "fmc_access_rules" "access_rule_68" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -13168,7 +15856,7 @@ resource "fmc_access_rules" "access_rule_68" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -13180,7 +15868,7 @@ resource "fmc_access_rules" "access_rule_68" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -13198,7 +15886,7 @@ resource "fmc_access_rules" "access_rule_69" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -13285,8 +15973,82 @@ resource "fmc_access_rules" "access_rule_69" {
     fmc_access_rules.access_rule_68,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -13298,7 +16060,7 @@ resource "fmc_access_rules" "access_rule_69" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -13310,7 +16072,7 @@ resource "fmc_access_rules" "access_rule_69" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -13322,7 +16084,7 @@ resource "fmc_access_rules" "access_rule_69" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -13334,7 +16096,7 @@ resource "fmc_access_rules" "access_rule_69" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -13346,7 +16108,7 @@ resource "fmc_access_rules" "access_rule_69" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -13358,7 +16120,7 @@ resource "fmc_access_rules" "access_rule_69" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -13370,7 +16132,7 @@ resource "fmc_access_rules" "access_rule_69" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -13382,7 +16144,7 @@ resource "fmc_access_rules" "access_rule_69" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -13394,7 +16156,7 @@ resource "fmc_access_rules" "access_rule_69" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -13406,7 +16168,7 @@ resource "fmc_access_rules" "access_rule_69" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -13424,7 +16186,7 @@ resource "fmc_access_rules" "access_rule_70" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -13512,8 +16274,83 @@ resource "fmc_access_rules" "access_rule_70" {
     fmc_access_rules.access_rule_69,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -13525,7 +16362,7 @@ resource "fmc_access_rules" "access_rule_70" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -13537,7 +16374,7 @@ resource "fmc_access_rules" "access_rule_70" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -13549,7 +16386,7 @@ resource "fmc_access_rules" "access_rule_70" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -13561,7 +16398,7 @@ resource "fmc_access_rules" "access_rule_70" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -13573,7 +16410,7 @@ resource "fmc_access_rules" "access_rule_70" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -13585,7 +16422,7 @@ resource "fmc_access_rules" "access_rule_70" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -13597,7 +16434,7 @@ resource "fmc_access_rules" "access_rule_70" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -13609,7 +16446,7 @@ resource "fmc_access_rules" "access_rule_70" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -13621,7 +16458,7 @@ resource "fmc_access_rules" "access_rule_70" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -13633,7 +16470,7 @@ resource "fmc_access_rules" "access_rule_70" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -13651,7 +16488,7 @@ resource "fmc_access_rules" "access_rule_71" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -13740,8 +16577,84 @@ resource "fmc_access_rules" "access_rule_71" {
     fmc_access_rules.access_rule_70,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -13753,7 +16666,7 @@ resource "fmc_access_rules" "access_rule_71" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -13765,7 +16678,7 @@ resource "fmc_access_rules" "access_rule_71" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -13777,7 +16690,7 @@ resource "fmc_access_rules" "access_rule_71" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -13789,7 +16702,7 @@ resource "fmc_access_rules" "access_rule_71" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -13801,7 +16714,7 @@ resource "fmc_access_rules" "access_rule_71" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -13813,7 +16726,7 @@ resource "fmc_access_rules" "access_rule_71" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -13825,7 +16738,7 @@ resource "fmc_access_rules" "access_rule_71" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -13837,7 +16750,7 @@ resource "fmc_access_rules" "access_rule_71" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -13849,7 +16762,7 @@ resource "fmc_access_rules" "access_rule_71" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -13861,7 +16774,7 @@ resource "fmc_access_rules" "access_rule_71" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -13879,7 +16792,7 @@ resource "fmc_access_rules" "access_rule_72" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -13969,8 +16882,85 @@ resource "fmc_access_rules" "access_rule_72" {
     fmc_access_rules.access_rule_71,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -13982,7 +16972,7 @@ resource "fmc_access_rules" "access_rule_72" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -13994,7 +16984,7 @@ resource "fmc_access_rules" "access_rule_72" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -14006,7 +16996,7 @@ resource "fmc_access_rules" "access_rule_72" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -14018,7 +17008,7 @@ resource "fmc_access_rules" "access_rule_72" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -14030,7 +17020,7 @@ resource "fmc_access_rules" "access_rule_72" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -14042,7 +17032,7 @@ resource "fmc_access_rules" "access_rule_72" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -14054,7 +17044,7 @@ resource "fmc_access_rules" "access_rule_72" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -14066,7 +17056,7 @@ resource "fmc_access_rules" "access_rule_72" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -14078,7 +17068,7 @@ resource "fmc_access_rules" "access_rule_72" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -14090,7 +17080,7 @@ resource "fmc_access_rules" "access_rule_72" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -14108,7 +17098,7 @@ resource "fmc_access_rules" "access_rule_73" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -14199,8 +17189,86 @@ resource "fmc_access_rules" "access_rule_73" {
     fmc_access_rules.access_rule_72,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -14212,7 +17280,7 @@ resource "fmc_access_rules" "access_rule_73" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -14224,7 +17292,7 @@ resource "fmc_access_rules" "access_rule_73" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -14236,7 +17304,7 @@ resource "fmc_access_rules" "access_rule_73" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -14248,7 +17316,7 @@ resource "fmc_access_rules" "access_rule_73" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -14260,7 +17328,7 @@ resource "fmc_access_rules" "access_rule_73" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -14272,7 +17340,7 @@ resource "fmc_access_rules" "access_rule_73" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -14284,7 +17352,7 @@ resource "fmc_access_rules" "access_rule_73" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -14296,7 +17364,7 @@ resource "fmc_access_rules" "access_rule_73" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -14308,7 +17376,7 @@ resource "fmc_access_rules" "access_rule_73" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -14320,7 +17388,7 @@ resource "fmc_access_rules" "access_rule_73" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -14338,7 +17406,7 @@ resource "fmc_access_rules" "access_rule_74" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -14430,8 +17498,87 @@ resource "fmc_access_rules" "access_rule_74" {
     fmc_access_rules.access_rule_73,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -14443,7 +17590,7 @@ resource "fmc_access_rules" "access_rule_74" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -14455,7 +17602,7 @@ resource "fmc_access_rules" "access_rule_74" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -14467,7 +17614,7 @@ resource "fmc_access_rules" "access_rule_74" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -14479,7 +17626,7 @@ resource "fmc_access_rules" "access_rule_74" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -14491,7 +17638,7 @@ resource "fmc_access_rules" "access_rule_74" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -14503,7 +17650,7 @@ resource "fmc_access_rules" "access_rule_74" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -14515,7 +17662,7 @@ resource "fmc_access_rules" "access_rule_74" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -14527,7 +17674,7 @@ resource "fmc_access_rules" "access_rule_74" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -14539,7 +17686,7 @@ resource "fmc_access_rules" "access_rule_74" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -14551,7 +17698,7 @@ resource "fmc_access_rules" "access_rule_74" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -14569,7 +17716,7 @@ resource "fmc_access_rules" "access_rule_75" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -14662,8 +17809,88 @@ resource "fmc_access_rules" "access_rule_75" {
     fmc_access_rules.access_rule_74,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -14675,7 +17902,7 @@ resource "fmc_access_rules" "access_rule_75" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -14687,7 +17914,7 @@ resource "fmc_access_rules" "access_rule_75" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -14699,7 +17926,7 @@ resource "fmc_access_rules" "access_rule_75" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -14711,7 +17938,7 @@ resource "fmc_access_rules" "access_rule_75" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -14723,7 +17950,7 @@ resource "fmc_access_rules" "access_rule_75" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -14735,7 +17962,7 @@ resource "fmc_access_rules" "access_rule_75" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -14747,7 +17974,7 @@ resource "fmc_access_rules" "access_rule_75" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -14759,7 +17986,7 @@ resource "fmc_access_rules" "access_rule_75" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -14771,7 +17998,7 @@ resource "fmc_access_rules" "access_rule_75" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -14783,7 +18010,7 @@ resource "fmc_access_rules" "access_rule_75" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -14801,7 +18028,7 @@ resource "fmc_access_rules" "access_rule_76" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -14895,8 +18122,89 @@ resource "fmc_access_rules" "access_rule_76" {
     fmc_access_rules.access_rule_75,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -14908,7 +18216,7 @@ resource "fmc_access_rules" "access_rule_76" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -14920,7 +18228,7 @@ resource "fmc_access_rules" "access_rule_76" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -14932,7 +18240,7 @@ resource "fmc_access_rules" "access_rule_76" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -14944,7 +18252,7 @@ resource "fmc_access_rules" "access_rule_76" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -14956,7 +18264,7 @@ resource "fmc_access_rules" "access_rule_76" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -14968,7 +18276,7 @@ resource "fmc_access_rules" "access_rule_76" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -14980,7 +18288,7 @@ resource "fmc_access_rules" "access_rule_76" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -14992,7 +18300,7 @@ resource "fmc_access_rules" "access_rule_76" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -15004,7 +18312,7 @@ resource "fmc_access_rules" "access_rule_76" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -15016,7 +18324,7 @@ resource "fmc_access_rules" "access_rule_76" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -15034,7 +18342,7 @@ resource "fmc_access_rules" "access_rule_77" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -15129,8 +18437,90 @@ resource "fmc_access_rules" "access_rule_77" {
     fmc_access_rules.access_rule_76,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -15142,7 +18532,7 @@ resource "fmc_access_rules" "access_rule_77" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -15154,7 +18544,7 @@ resource "fmc_access_rules" "access_rule_77" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -15166,7 +18556,7 @@ resource "fmc_access_rules" "access_rule_77" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -15178,7 +18568,7 @@ resource "fmc_access_rules" "access_rule_77" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -15190,7 +18580,7 @@ resource "fmc_access_rules" "access_rule_77" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -15202,7 +18592,7 @@ resource "fmc_access_rules" "access_rule_77" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -15214,7 +18604,7 @@ resource "fmc_access_rules" "access_rule_77" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -15226,7 +18616,7 @@ resource "fmc_access_rules" "access_rule_77" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -15238,7 +18628,7 @@ resource "fmc_access_rules" "access_rule_77" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -15250,7 +18640,7 @@ resource "fmc_access_rules" "access_rule_77" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -15268,7 +18658,7 @@ resource "fmc_access_rules" "access_rule_78" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -15364,8 +18754,91 @@ resource "fmc_access_rules" "access_rule_78" {
     fmc_access_rules.access_rule_77,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -15377,7 +18850,7 @@ resource "fmc_access_rules" "access_rule_78" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -15389,7 +18862,7 @@ resource "fmc_access_rules" "access_rule_78" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -15401,7 +18874,7 @@ resource "fmc_access_rules" "access_rule_78" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -15413,7 +18886,7 @@ resource "fmc_access_rules" "access_rule_78" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -15425,7 +18898,7 @@ resource "fmc_access_rules" "access_rule_78" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -15437,7 +18910,7 @@ resource "fmc_access_rules" "access_rule_78" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -15449,7 +18922,7 @@ resource "fmc_access_rules" "access_rule_78" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -15461,7 +18934,7 @@ resource "fmc_access_rules" "access_rule_78" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -15473,7 +18946,7 @@ resource "fmc_access_rules" "access_rule_78" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -15485,7 +18958,7 @@ resource "fmc_access_rules" "access_rule_78" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -15503,7 +18976,7 @@ resource "fmc_access_rules" "access_rule_79" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -15600,8 +19073,92 @@ resource "fmc_access_rules" "access_rule_79" {
     fmc_access_rules.access_rule_78,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -15613,7 +19170,7 @@ resource "fmc_access_rules" "access_rule_79" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -15625,7 +19182,7 @@ resource "fmc_access_rules" "access_rule_79" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -15637,7 +19194,7 @@ resource "fmc_access_rules" "access_rule_79" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -15649,7 +19206,7 @@ resource "fmc_access_rules" "access_rule_79" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -15661,7 +19218,7 @@ resource "fmc_access_rules" "access_rule_79" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -15673,7 +19230,7 @@ resource "fmc_access_rules" "access_rule_79" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -15685,7 +19242,7 @@ resource "fmc_access_rules" "access_rule_79" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -15697,7 +19254,7 @@ resource "fmc_access_rules" "access_rule_79" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -15709,7 +19266,7 @@ resource "fmc_access_rules" "access_rule_79" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -15721,7 +19278,7 @@ resource "fmc_access_rules" "access_rule_79" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -15739,7 +19296,7 @@ resource "fmc_access_rules" "access_rule_80" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -15837,8 +19394,93 @@ resource "fmc_access_rules" "access_rule_80" {
     fmc_access_rules.access_rule_79,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+      fmc_access_rules.access_rule_79,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -15850,7 +19492,7 @@ resource "fmc_access_rules" "access_rule_80" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -15862,7 +19504,7 @@ resource "fmc_access_rules" "access_rule_80" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -15874,7 +19516,7 @@ resource "fmc_access_rules" "access_rule_80" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -15886,7 +19528,7 @@ resource "fmc_access_rules" "access_rule_80" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -15898,7 +19540,7 @@ resource "fmc_access_rules" "access_rule_80" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -15910,7 +19552,7 @@ resource "fmc_access_rules" "access_rule_80" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -15922,7 +19564,7 @@ resource "fmc_access_rules" "access_rule_80" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -15934,7 +19576,7 @@ resource "fmc_access_rules" "access_rule_80" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -15946,7 +19588,7 @@ resource "fmc_access_rules" "access_rule_80" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -15958,7 +19600,7 @@ resource "fmc_access_rules" "access_rule_80" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -15976,7 +19618,7 @@ resource "fmc_access_rules" "access_rule_81" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -16075,8 +19717,94 @@ resource "fmc_access_rules" "access_rule_81" {
     fmc_access_rules.access_rule_80,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+      fmc_access_rules.access_rule_79,
+      fmc_access_rules.access_rule_80,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -16088,7 +19816,7 @@ resource "fmc_access_rules" "access_rule_81" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -16100,7 +19828,7 @@ resource "fmc_access_rules" "access_rule_81" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -16112,7 +19840,7 @@ resource "fmc_access_rules" "access_rule_81" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -16124,7 +19852,7 @@ resource "fmc_access_rules" "access_rule_81" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -16136,7 +19864,7 @@ resource "fmc_access_rules" "access_rule_81" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -16148,7 +19876,7 @@ resource "fmc_access_rules" "access_rule_81" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -16160,7 +19888,7 @@ resource "fmc_access_rules" "access_rule_81" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -16172,7 +19900,7 @@ resource "fmc_access_rules" "access_rule_81" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -16184,7 +19912,7 @@ resource "fmc_access_rules" "access_rule_81" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -16196,7 +19924,7 @@ resource "fmc_access_rules" "access_rule_81" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -16214,7 +19942,7 @@ resource "fmc_access_rules" "access_rule_82" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -16314,8 +20042,95 @@ resource "fmc_access_rules" "access_rule_82" {
     fmc_access_rules.access_rule_81,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+      fmc_access_rules.access_rule_79,
+      fmc_access_rules.access_rule_80,
+      fmc_access_rules.access_rule_81,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -16327,7 +20142,7 @@ resource "fmc_access_rules" "access_rule_82" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -16339,7 +20154,7 @@ resource "fmc_access_rules" "access_rule_82" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -16351,7 +20166,7 @@ resource "fmc_access_rules" "access_rule_82" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -16363,7 +20178,7 @@ resource "fmc_access_rules" "access_rule_82" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -16375,7 +20190,7 @@ resource "fmc_access_rules" "access_rule_82" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -16387,7 +20202,7 @@ resource "fmc_access_rules" "access_rule_82" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -16399,7 +20214,7 @@ resource "fmc_access_rules" "access_rule_82" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -16411,7 +20226,7 @@ resource "fmc_access_rules" "access_rule_82" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -16423,7 +20238,7 @@ resource "fmc_access_rules" "access_rule_82" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -16435,7 +20250,7 @@ resource "fmc_access_rules" "access_rule_82" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -16453,7 +20268,7 @@ resource "fmc_access_rules" "access_rule_83" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -16554,8 +20369,96 @@ resource "fmc_access_rules" "access_rule_83" {
     fmc_access_rules.access_rule_82,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+      fmc_access_rules.access_rule_79,
+      fmc_access_rules.access_rule_80,
+      fmc_access_rules.access_rule_81,
+      fmc_access_rules.access_rule_82,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -16567,7 +20470,7 @@ resource "fmc_access_rules" "access_rule_83" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -16579,7 +20482,7 @@ resource "fmc_access_rules" "access_rule_83" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -16591,7 +20494,7 @@ resource "fmc_access_rules" "access_rule_83" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -16603,7 +20506,7 @@ resource "fmc_access_rules" "access_rule_83" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -16615,7 +20518,7 @@ resource "fmc_access_rules" "access_rule_83" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -16627,7 +20530,7 @@ resource "fmc_access_rules" "access_rule_83" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -16639,7 +20542,7 @@ resource "fmc_access_rules" "access_rule_83" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -16651,7 +20554,7 @@ resource "fmc_access_rules" "access_rule_83" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -16663,7 +20566,7 @@ resource "fmc_access_rules" "access_rule_83" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -16675,7 +20578,7 @@ resource "fmc_access_rules" "access_rule_83" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -16693,7 +20596,7 @@ resource "fmc_access_rules" "access_rule_84" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -16795,8 +20698,97 @@ resource "fmc_access_rules" "access_rule_84" {
     fmc_access_rules.access_rule_83,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+      fmc_access_rules.access_rule_79,
+      fmc_access_rules.access_rule_80,
+      fmc_access_rules.access_rule_81,
+      fmc_access_rules.access_rule_82,
+      fmc_access_rules.access_rule_83,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -16808,7 +20800,7 @@ resource "fmc_access_rules" "access_rule_84" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -16820,7 +20812,7 @@ resource "fmc_access_rules" "access_rule_84" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -16832,7 +20824,7 @@ resource "fmc_access_rules" "access_rule_84" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -16844,7 +20836,7 @@ resource "fmc_access_rules" "access_rule_84" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -16856,7 +20848,7 @@ resource "fmc_access_rules" "access_rule_84" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -16868,7 +20860,7 @@ resource "fmc_access_rules" "access_rule_84" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -16880,7 +20872,7 @@ resource "fmc_access_rules" "access_rule_84" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -16892,7 +20884,7 @@ resource "fmc_access_rules" "access_rule_84" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -16904,7 +20896,7 @@ resource "fmc_access_rules" "access_rule_84" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -16916,7 +20908,7 @@ resource "fmc_access_rules" "access_rule_84" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -16934,7 +20926,7 @@ resource "fmc_access_rules" "access_rule_85" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -17037,8 +21029,98 @@ resource "fmc_access_rules" "access_rule_85" {
     fmc_access_rules.access_rule_84,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+      fmc_access_rules.access_rule_79,
+      fmc_access_rules.access_rule_80,
+      fmc_access_rules.access_rule_81,
+      fmc_access_rules.access_rule_82,
+      fmc_access_rules.access_rule_83,
+      fmc_access_rules.access_rule_84,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -17050,7 +21132,7 @@ resource "fmc_access_rules" "access_rule_85" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -17062,7 +21144,7 @@ resource "fmc_access_rules" "access_rule_85" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -17074,7 +21156,7 @@ resource "fmc_access_rules" "access_rule_85" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -17086,7 +21168,7 @@ resource "fmc_access_rules" "access_rule_85" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -17098,7 +21180,7 @@ resource "fmc_access_rules" "access_rule_85" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -17110,7 +21192,7 @@ resource "fmc_access_rules" "access_rule_85" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -17122,7 +21204,7 @@ resource "fmc_access_rules" "access_rule_85" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -17134,7 +21216,7 @@ resource "fmc_access_rules" "access_rule_85" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -17146,7 +21228,7 @@ resource "fmc_access_rules" "access_rule_85" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -17158,7 +21240,7 @@ resource "fmc_access_rules" "access_rule_85" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -17176,7 +21258,7 @@ resource "fmc_access_rules" "access_rule_86" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -17280,8 +21362,99 @@ resource "fmc_access_rules" "access_rule_86" {
     fmc_access_rules.access_rule_85,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+      fmc_access_rules.access_rule_79,
+      fmc_access_rules.access_rule_80,
+      fmc_access_rules.access_rule_81,
+      fmc_access_rules.access_rule_82,
+      fmc_access_rules.access_rule_83,
+      fmc_access_rules.access_rule_84,
+      fmc_access_rules.access_rule_85,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -17293,7 +21466,7 @@ resource "fmc_access_rules" "access_rule_86" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -17305,7 +21478,7 @@ resource "fmc_access_rules" "access_rule_86" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -17317,7 +21490,7 @@ resource "fmc_access_rules" "access_rule_86" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -17329,7 +21502,7 @@ resource "fmc_access_rules" "access_rule_86" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -17341,7 +21514,7 @@ resource "fmc_access_rules" "access_rule_86" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -17353,7 +21526,7 @@ resource "fmc_access_rules" "access_rule_86" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -17365,7 +21538,7 @@ resource "fmc_access_rules" "access_rule_86" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -17377,7 +21550,7 @@ resource "fmc_access_rules" "access_rule_86" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -17389,7 +21562,7 @@ resource "fmc_access_rules" "access_rule_86" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -17401,7 +21574,7 @@ resource "fmc_access_rules" "access_rule_86" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -17419,7 +21592,7 @@ resource "fmc_access_rules" "access_rule_87" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -17524,8 +21697,100 @@ resource "fmc_access_rules" "access_rule_87" {
     fmc_access_rules.access_rule_86,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+      fmc_access_rules.access_rule_79,
+      fmc_access_rules.access_rule_80,
+      fmc_access_rules.access_rule_81,
+      fmc_access_rules.access_rule_82,
+      fmc_access_rules.access_rule_83,
+      fmc_access_rules.access_rule_84,
+      fmc_access_rules.access_rule_85,
+      fmc_access_rules.access_rule_86,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -17537,7 +21802,7 @@ resource "fmc_access_rules" "access_rule_87" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -17549,7 +21814,7 @@ resource "fmc_access_rules" "access_rule_87" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -17561,7 +21826,7 @@ resource "fmc_access_rules" "access_rule_87" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -17573,7 +21838,7 @@ resource "fmc_access_rules" "access_rule_87" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -17585,7 +21850,7 @@ resource "fmc_access_rules" "access_rule_87" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -17597,7 +21862,7 @@ resource "fmc_access_rules" "access_rule_87" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -17609,7 +21874,7 @@ resource "fmc_access_rules" "access_rule_87" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -17621,7 +21886,7 @@ resource "fmc_access_rules" "access_rule_87" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -17633,7 +21898,7 @@ resource "fmc_access_rules" "access_rule_87" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -17645,7 +21910,7 @@ resource "fmc_access_rules" "access_rule_87" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -17663,7 +21928,7 @@ resource "fmc_access_rules" "access_rule_88" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -17769,8 +22034,101 @@ resource "fmc_access_rules" "access_rule_88" {
     fmc_access_rules.access_rule_87,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+      fmc_access_rules.access_rule_79,
+      fmc_access_rules.access_rule_80,
+      fmc_access_rules.access_rule_81,
+      fmc_access_rules.access_rule_82,
+      fmc_access_rules.access_rule_83,
+      fmc_access_rules.access_rule_84,
+      fmc_access_rules.access_rule_85,
+      fmc_access_rules.access_rule_86,
+      fmc_access_rules.access_rule_87,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -17782,7 +22140,7 @@ resource "fmc_access_rules" "access_rule_88" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -17794,7 +22152,7 @@ resource "fmc_access_rules" "access_rule_88" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -17806,7 +22164,7 @@ resource "fmc_access_rules" "access_rule_88" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -17818,7 +22176,7 @@ resource "fmc_access_rules" "access_rule_88" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -17830,7 +22188,7 @@ resource "fmc_access_rules" "access_rule_88" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -17842,7 +22200,7 @@ resource "fmc_access_rules" "access_rule_88" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -17854,7 +22212,7 @@ resource "fmc_access_rules" "access_rule_88" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -17866,7 +22224,7 @@ resource "fmc_access_rules" "access_rule_88" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -17878,7 +22236,7 @@ resource "fmc_access_rules" "access_rule_88" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -17890,7 +22248,7 @@ resource "fmc_access_rules" "access_rule_88" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -17908,7 +22266,7 @@ resource "fmc_access_rules" "access_rule_89" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -18015,8 +22373,102 @@ resource "fmc_access_rules" "access_rule_89" {
     fmc_access_rules.access_rule_88,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+      fmc_access_rules.access_rule_79,
+      fmc_access_rules.access_rule_80,
+      fmc_access_rules.access_rule_81,
+      fmc_access_rules.access_rule_82,
+      fmc_access_rules.access_rule_83,
+      fmc_access_rules.access_rule_84,
+      fmc_access_rules.access_rule_85,
+      fmc_access_rules.access_rule_86,
+      fmc_access_rules.access_rule_87,
+      fmc_access_rules.access_rule_88,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -18028,7 +22480,7 @@ resource "fmc_access_rules" "access_rule_89" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -18040,7 +22492,7 @@ resource "fmc_access_rules" "access_rule_89" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -18052,7 +22504,7 @@ resource "fmc_access_rules" "access_rule_89" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -18064,7 +22516,7 @@ resource "fmc_access_rules" "access_rule_89" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -18076,7 +22528,7 @@ resource "fmc_access_rules" "access_rule_89" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -18088,7 +22540,7 @@ resource "fmc_access_rules" "access_rule_89" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -18100,7 +22552,7 @@ resource "fmc_access_rules" "access_rule_89" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -18112,7 +22564,7 @@ resource "fmc_access_rules" "access_rule_89" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -18124,7 +22576,7 @@ resource "fmc_access_rules" "access_rule_89" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -18136,7 +22588,7 @@ resource "fmc_access_rules" "access_rule_89" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -18154,7 +22606,7 @@ resource "fmc_access_rules" "access_rule_90" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -18262,8 +22714,103 @@ resource "fmc_access_rules" "access_rule_90" {
     fmc_access_rules.access_rule_89,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+      fmc_access_rules.access_rule_79,
+      fmc_access_rules.access_rule_80,
+      fmc_access_rules.access_rule_81,
+      fmc_access_rules.access_rule_82,
+      fmc_access_rules.access_rule_83,
+      fmc_access_rules.access_rule_84,
+      fmc_access_rules.access_rule_85,
+      fmc_access_rules.access_rule_86,
+      fmc_access_rules.access_rule_87,
+      fmc_access_rules.access_rule_88,
+      fmc_access_rules.access_rule_89,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -18275,7 +22822,7 @@ resource "fmc_access_rules" "access_rule_90" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -18287,7 +22834,7 @@ resource "fmc_access_rules" "access_rule_90" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -18299,7 +22846,7 @@ resource "fmc_access_rules" "access_rule_90" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -18311,7 +22858,7 @@ resource "fmc_access_rules" "access_rule_90" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -18323,7 +22870,7 @@ resource "fmc_access_rules" "access_rule_90" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -18335,7 +22882,7 @@ resource "fmc_access_rules" "access_rule_90" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -18347,7 +22894,7 @@ resource "fmc_access_rules" "access_rule_90" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -18359,7 +22906,7 @@ resource "fmc_access_rules" "access_rule_90" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -18371,7 +22918,7 @@ resource "fmc_access_rules" "access_rule_90" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -18383,7 +22930,7 @@ resource "fmc_access_rules" "access_rule_90" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -18401,7 +22948,7 @@ resource "fmc_access_rules" "access_rule_91" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -18510,8 +23057,104 @@ resource "fmc_access_rules" "access_rule_91" {
     fmc_access_rules.access_rule_90,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+      fmc_access_rules.access_rule_79,
+      fmc_access_rules.access_rule_80,
+      fmc_access_rules.access_rule_81,
+      fmc_access_rules.access_rule_82,
+      fmc_access_rules.access_rule_83,
+      fmc_access_rules.access_rule_84,
+      fmc_access_rules.access_rule_85,
+      fmc_access_rules.access_rule_86,
+      fmc_access_rules.access_rule_87,
+      fmc_access_rules.access_rule_88,
+      fmc_access_rules.access_rule_89,
+      fmc_access_rules.access_rule_90,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -18523,7 +23166,7 @@ resource "fmc_access_rules" "access_rule_91" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -18535,7 +23178,7 @@ resource "fmc_access_rules" "access_rule_91" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -18547,7 +23190,7 @@ resource "fmc_access_rules" "access_rule_91" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -18559,7 +23202,7 @@ resource "fmc_access_rules" "access_rule_91" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -18571,7 +23214,7 @@ resource "fmc_access_rules" "access_rule_91" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -18583,7 +23226,7 @@ resource "fmc_access_rules" "access_rule_91" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -18595,7 +23238,7 @@ resource "fmc_access_rules" "access_rule_91" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -18607,7 +23250,7 @@ resource "fmc_access_rules" "access_rule_91" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -18619,7 +23262,7 @@ resource "fmc_access_rules" "access_rule_91" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -18631,7 +23274,7 @@ resource "fmc_access_rules" "access_rule_91" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -18649,7 +23292,7 @@ resource "fmc_access_rules" "access_rule_92" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -18759,8 +23402,105 @@ resource "fmc_access_rules" "access_rule_92" {
     fmc_access_rules.access_rule_91,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+      fmc_access_rules.access_rule_79,
+      fmc_access_rules.access_rule_80,
+      fmc_access_rules.access_rule_81,
+      fmc_access_rules.access_rule_82,
+      fmc_access_rules.access_rule_83,
+      fmc_access_rules.access_rule_84,
+      fmc_access_rules.access_rule_85,
+      fmc_access_rules.access_rule_86,
+      fmc_access_rules.access_rule_87,
+      fmc_access_rules.access_rule_88,
+      fmc_access_rules.access_rule_89,
+      fmc_access_rules.access_rule_90,
+      fmc_access_rules.access_rule_91,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -18772,7 +23512,7 @@ resource "fmc_access_rules" "access_rule_92" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -18784,7 +23524,7 @@ resource "fmc_access_rules" "access_rule_92" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -18796,7 +23536,7 @@ resource "fmc_access_rules" "access_rule_92" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -18808,7 +23548,7 @@ resource "fmc_access_rules" "access_rule_92" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -18820,7 +23560,7 @@ resource "fmc_access_rules" "access_rule_92" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -18832,7 +23572,7 @@ resource "fmc_access_rules" "access_rule_92" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -18844,7 +23584,7 @@ resource "fmc_access_rules" "access_rule_92" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -18856,7 +23596,7 @@ resource "fmc_access_rules" "access_rule_92" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -18868,7 +23608,7 @@ resource "fmc_access_rules" "access_rule_92" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -18880,7 +23620,7 @@ resource "fmc_access_rules" "access_rule_92" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -18898,7 +23638,7 @@ resource "fmc_access_rules" "access_rule_93" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -19009,8 +23749,106 @@ resource "fmc_access_rules" "access_rule_93" {
     fmc_access_rules.access_rule_92,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+      fmc_access_rules.access_rule_79,
+      fmc_access_rules.access_rule_80,
+      fmc_access_rules.access_rule_81,
+      fmc_access_rules.access_rule_82,
+      fmc_access_rules.access_rule_83,
+      fmc_access_rules.access_rule_84,
+      fmc_access_rules.access_rule_85,
+      fmc_access_rules.access_rule_86,
+      fmc_access_rules.access_rule_87,
+      fmc_access_rules.access_rule_88,
+      fmc_access_rules.access_rule_89,
+      fmc_access_rules.access_rule_90,
+      fmc_access_rules.access_rule_91,
+      fmc_access_rules.access_rule_92,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -19022,7 +23860,7 @@ resource "fmc_access_rules" "access_rule_93" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -19034,7 +23872,7 @@ resource "fmc_access_rules" "access_rule_93" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -19046,7 +23884,7 @@ resource "fmc_access_rules" "access_rule_93" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -19058,7 +23896,7 @@ resource "fmc_access_rules" "access_rule_93" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -19070,7 +23908,7 @@ resource "fmc_access_rules" "access_rule_93" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -19082,7 +23920,7 @@ resource "fmc_access_rules" "access_rule_93" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -19094,7 +23932,7 @@ resource "fmc_access_rules" "access_rule_93" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -19106,7 +23944,7 @@ resource "fmc_access_rules" "access_rule_93" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -19118,7 +23956,7 @@ resource "fmc_access_rules" "access_rule_93" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -19130,7 +23968,7 @@ resource "fmc_access_rules" "access_rule_93" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -19148,7 +23986,7 @@ resource "fmc_access_rules" "access_rule_94" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -19260,8 +24098,107 @@ resource "fmc_access_rules" "access_rule_94" {
     fmc_access_rules.access_rule_93,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+      fmc_access_rules.access_rule_79,
+      fmc_access_rules.access_rule_80,
+      fmc_access_rules.access_rule_81,
+      fmc_access_rules.access_rule_82,
+      fmc_access_rules.access_rule_83,
+      fmc_access_rules.access_rule_84,
+      fmc_access_rules.access_rule_85,
+      fmc_access_rules.access_rule_86,
+      fmc_access_rules.access_rule_87,
+      fmc_access_rules.access_rule_88,
+      fmc_access_rules.access_rule_89,
+      fmc_access_rules.access_rule_90,
+      fmc_access_rules.access_rule_91,
+      fmc_access_rules.access_rule_92,
+      fmc_access_rules.access_rule_93,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -19273,7 +24210,7 @@ resource "fmc_access_rules" "access_rule_94" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -19285,7 +24222,7 @@ resource "fmc_access_rules" "access_rule_94" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -19297,7 +24234,7 @@ resource "fmc_access_rules" "access_rule_94" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -19309,7 +24246,7 @@ resource "fmc_access_rules" "access_rule_94" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -19321,7 +24258,7 @@ resource "fmc_access_rules" "access_rule_94" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -19333,7 +24270,7 @@ resource "fmc_access_rules" "access_rule_94" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -19345,7 +24282,7 @@ resource "fmc_access_rules" "access_rule_94" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -19357,7 +24294,7 @@ resource "fmc_access_rules" "access_rule_94" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -19369,7 +24306,7 @@ resource "fmc_access_rules" "access_rule_94" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -19381,7 +24318,7 @@ resource "fmc_access_rules" "access_rule_94" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -19399,7 +24336,7 @@ resource "fmc_access_rules" "access_rule_95" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -19512,8 +24449,108 @@ resource "fmc_access_rules" "access_rule_95" {
     fmc_access_rules.access_rule_94,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+      fmc_access_rules.access_rule_79,
+      fmc_access_rules.access_rule_80,
+      fmc_access_rules.access_rule_81,
+      fmc_access_rules.access_rule_82,
+      fmc_access_rules.access_rule_83,
+      fmc_access_rules.access_rule_84,
+      fmc_access_rules.access_rule_85,
+      fmc_access_rules.access_rule_86,
+      fmc_access_rules.access_rule_87,
+      fmc_access_rules.access_rule_88,
+      fmc_access_rules.access_rule_89,
+      fmc_access_rules.access_rule_90,
+      fmc_access_rules.access_rule_91,
+      fmc_access_rules.access_rule_92,
+      fmc_access_rules.access_rule_93,
+      fmc_access_rules.access_rule_94,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -19525,7 +24562,7 @@ resource "fmc_access_rules" "access_rule_95" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -19537,7 +24574,7 @@ resource "fmc_access_rules" "access_rule_95" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -19549,7 +24586,7 @@ resource "fmc_access_rules" "access_rule_95" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -19561,7 +24598,7 @@ resource "fmc_access_rules" "access_rule_95" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -19573,7 +24610,7 @@ resource "fmc_access_rules" "access_rule_95" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -19585,7 +24622,7 @@ resource "fmc_access_rules" "access_rule_95" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -19597,7 +24634,7 @@ resource "fmc_access_rules" "access_rule_95" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -19609,7 +24646,7 @@ resource "fmc_access_rules" "access_rule_95" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -19621,7 +24658,7 @@ resource "fmc_access_rules" "access_rule_95" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -19633,7 +24670,7 @@ resource "fmc_access_rules" "access_rule_95" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -19651,7 +24688,7 @@ resource "fmc_access_rules" "access_rule_96" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -19765,8 +24802,109 @@ resource "fmc_access_rules" "access_rule_96" {
     fmc_access_rules.access_rule_95,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+      fmc_access_rules.access_rule_79,
+      fmc_access_rules.access_rule_80,
+      fmc_access_rules.access_rule_81,
+      fmc_access_rules.access_rule_82,
+      fmc_access_rules.access_rule_83,
+      fmc_access_rules.access_rule_84,
+      fmc_access_rules.access_rule_85,
+      fmc_access_rules.access_rule_86,
+      fmc_access_rules.access_rule_87,
+      fmc_access_rules.access_rule_88,
+      fmc_access_rules.access_rule_89,
+      fmc_access_rules.access_rule_90,
+      fmc_access_rules.access_rule_91,
+      fmc_access_rules.access_rule_92,
+      fmc_access_rules.access_rule_93,
+      fmc_access_rules.access_rule_94,
+      fmc_access_rules.access_rule_95,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -19778,7 +24916,7 @@ resource "fmc_access_rules" "access_rule_96" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -19790,7 +24928,7 @@ resource "fmc_access_rules" "access_rule_96" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -19802,7 +24940,7 @@ resource "fmc_access_rules" "access_rule_96" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -19814,7 +24952,7 @@ resource "fmc_access_rules" "access_rule_96" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -19826,7 +24964,7 @@ resource "fmc_access_rules" "access_rule_96" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -19838,7 +24976,7 @@ resource "fmc_access_rules" "access_rule_96" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -19850,7 +24988,7 @@ resource "fmc_access_rules" "access_rule_96" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -19862,7 +25000,7 @@ resource "fmc_access_rules" "access_rule_96" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -19874,7 +25012,7 @@ resource "fmc_access_rules" "access_rule_96" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -19886,7 +25024,7 @@ resource "fmc_access_rules" "access_rule_96" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -19904,7 +25042,7 @@ resource "fmc_access_rules" "access_rule_97" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -20019,8 +25157,110 @@ resource "fmc_access_rules" "access_rule_97" {
     fmc_access_rules.access_rule_96,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+      fmc_access_rules.access_rule_79,
+      fmc_access_rules.access_rule_80,
+      fmc_access_rules.access_rule_81,
+      fmc_access_rules.access_rule_82,
+      fmc_access_rules.access_rule_83,
+      fmc_access_rules.access_rule_84,
+      fmc_access_rules.access_rule_85,
+      fmc_access_rules.access_rule_86,
+      fmc_access_rules.access_rule_87,
+      fmc_access_rules.access_rule_88,
+      fmc_access_rules.access_rule_89,
+      fmc_access_rules.access_rule_90,
+      fmc_access_rules.access_rule_91,
+      fmc_access_rules.access_rule_92,
+      fmc_access_rules.access_rule_93,
+      fmc_access_rules.access_rule_94,
+      fmc_access_rules.access_rule_95,
+      fmc_access_rules.access_rule_96,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -20032,7 +25272,7 @@ resource "fmc_access_rules" "access_rule_97" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -20044,7 +25284,7 @@ resource "fmc_access_rules" "access_rule_97" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -20056,7 +25296,7 @@ resource "fmc_access_rules" "access_rule_97" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -20068,7 +25308,7 @@ resource "fmc_access_rules" "access_rule_97" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -20080,7 +25320,7 @@ resource "fmc_access_rules" "access_rule_97" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -20092,7 +25332,7 @@ resource "fmc_access_rules" "access_rule_97" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -20104,7 +25344,7 @@ resource "fmc_access_rules" "access_rule_97" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -20116,7 +25356,7 @@ resource "fmc_access_rules" "access_rule_97" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -20128,7 +25368,7 @@ resource "fmc_access_rules" "access_rule_97" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -20140,7 +25380,7 @@ resource "fmc_access_rules" "access_rule_97" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -20158,7 +25398,7 @@ resource "fmc_access_rules" "access_rule_98" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -20274,8 +25514,111 @@ resource "fmc_access_rules" "access_rule_98" {
     fmc_access_rules.access_rule_97,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+      fmc_access_rules.access_rule_79,
+      fmc_access_rules.access_rule_80,
+      fmc_access_rules.access_rule_81,
+      fmc_access_rules.access_rule_82,
+      fmc_access_rules.access_rule_83,
+      fmc_access_rules.access_rule_84,
+      fmc_access_rules.access_rule_85,
+      fmc_access_rules.access_rule_86,
+      fmc_access_rules.access_rule_87,
+      fmc_access_rules.access_rule_88,
+      fmc_access_rules.access_rule_89,
+      fmc_access_rules.access_rule_90,
+      fmc_access_rules.access_rule_91,
+      fmc_access_rules.access_rule_92,
+      fmc_access_rules.access_rule_93,
+      fmc_access_rules.access_rule_94,
+      fmc_access_rules.access_rule_95,
+      fmc_access_rules.access_rule_96,
+      fmc_access_rules.access_rule_97,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -20287,7 +25630,7 @@ resource "fmc_access_rules" "access_rule_98" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -20299,7 +25642,7 @@ resource "fmc_access_rules" "access_rule_98" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -20311,7 +25654,7 @@ resource "fmc_access_rules" "access_rule_98" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -20323,7 +25666,7 @@ resource "fmc_access_rules" "access_rule_98" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -20335,7 +25678,7 @@ resource "fmc_access_rules" "access_rule_98" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -20347,7 +25690,7 @@ resource "fmc_access_rules" "access_rule_98" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -20359,7 +25702,7 @@ resource "fmc_access_rules" "access_rule_98" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -20371,7 +25714,7 @@ resource "fmc_access_rules" "access_rule_98" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -20383,7 +25726,7 @@ resource "fmc_access_rules" "access_rule_98" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -20395,7 +25738,7 @@ resource "fmc_access_rules" "access_rule_98" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }
@@ -20413,7 +25756,7 @@ resource "fmc_access_rules" "access_rule_99" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
   enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
@@ -20530,8 +25873,112 @@ resource "fmc_access_rules" "access_rule_99" {
     fmc_access_rules.access_rule_98,
     fmc_access_policies_category.accesspolicy_category
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_access_rules.access_rule_0,
+      fmc_access_rules.access_rule_1,
+      fmc_access_rules.access_rule_2,
+      fmc_access_rules.access_rule_3,
+      fmc_access_rules.access_rule_4,
+      fmc_access_rules.access_rule_5,
+      fmc_access_rules.access_rule_6,
+      fmc_access_rules.access_rule_7,
+      fmc_access_rules.access_rule_8,
+      fmc_access_rules.access_rule_9,
+      fmc_access_rules.access_rule_10,
+      fmc_access_rules.access_rule_11,
+      fmc_access_rules.access_rule_12,
+      fmc_access_rules.access_rule_13,
+      fmc_access_rules.access_rule_14,
+      fmc_access_rules.access_rule_15,
+      fmc_access_rules.access_rule_16,
+      fmc_access_rules.access_rule_17,
+      fmc_access_rules.access_rule_18,
+      fmc_access_rules.access_rule_19,
+      fmc_access_rules.access_rule_20,
+      fmc_access_rules.access_rule_21,
+      fmc_access_rules.access_rule_22,
+      fmc_access_rules.access_rule_23,
+      fmc_access_rules.access_rule_24,
+      fmc_access_rules.access_rule_25,
+      fmc_access_rules.access_rule_26,
+      fmc_access_rules.access_rule_27,
+      fmc_access_rules.access_rule_28,
+      fmc_access_rules.access_rule_29,
+      fmc_access_rules.access_rule_30,
+      fmc_access_rules.access_rule_31,
+      fmc_access_rules.access_rule_32,
+      fmc_access_rules.access_rule_33,
+      fmc_access_rules.access_rule_34,
+      fmc_access_rules.access_rule_35,
+      fmc_access_rules.access_rule_36,
+      fmc_access_rules.access_rule_37,
+      fmc_access_rules.access_rule_38,
+      fmc_access_rules.access_rule_39,
+      fmc_access_rules.access_rule_40,
+      fmc_access_rules.access_rule_41,
+      fmc_access_rules.access_rule_42,
+      fmc_access_rules.access_rule_43,
+      fmc_access_rules.access_rule_44,
+      fmc_access_rules.access_rule_45,
+      fmc_access_rules.access_rule_46,
+      fmc_access_rules.access_rule_47,
+      fmc_access_rules.access_rule_48,
+      fmc_access_rules.access_rule_49,
+      fmc_access_rules.access_rule_50,
+      fmc_access_rules.access_rule_51,
+      fmc_access_rules.access_rule_52,
+      fmc_access_rules.access_rule_53,
+      fmc_access_rules.access_rule_54,
+      fmc_access_rules.access_rule_55,
+      fmc_access_rules.access_rule_56,
+      fmc_access_rules.access_rule_57,
+      fmc_access_rules.access_rule_58,
+      fmc_access_rules.access_rule_59,
+      fmc_access_rules.access_rule_60,
+      fmc_access_rules.access_rule_61,
+      fmc_access_rules.access_rule_62,
+      fmc_access_rules.access_rule_63,
+      fmc_access_rules.access_rule_64,
+      fmc_access_rules.access_rule_65,
+      fmc_access_rules.access_rule_66,
+      fmc_access_rules.access_rule_67,
+      fmc_access_rules.access_rule_68,
+      fmc_access_rules.access_rule_69,
+      fmc_access_rules.access_rule_70,
+      fmc_access_rules.access_rule_71,
+      fmc_access_rules.access_rule_72,
+      fmc_access_rules.access_rule_73,
+      fmc_access_rules.access_rule_74,
+      fmc_access_rules.access_rule_75,
+      fmc_access_rules.access_rule_76,
+      fmc_access_rules.access_rule_77,
+      fmc_access_rules.access_rule_78,
+      fmc_access_rules.access_rule_79,
+      fmc_access_rules.access_rule_80,
+      fmc_access_rules.access_rule_81,
+      fmc_access_rules.access_rule_82,
+      fmc_access_rules.access_rule_83,
+      fmc_access_rules.access_rule_84,
+      fmc_access_rules.access_rule_85,
+      fmc_access_rules.access_rule_86,
+      fmc_access_rules.access_rule_87,
+      fmc_access_rules.access_rule_88,
+      fmc_access_rules.access_rule_89,
+      fmc_access_rules.access_rule_90,
+      fmc_access_rules.access_rule_91,
+      fmc_access_rules.access_rule_92,
+      fmc_access_rules.access_rule_93,
+      fmc_access_rules.access_rule_94,
+      fmc_access_rules.access_rule_95,
+      fmc_access_rules.access_rule_96,
+      fmc_access_rules.access_rule_97,
+      fmc_access_rules.access_rule_98,
+    ]
+  }
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj }
@@ -20543,7 +25990,7 @@ resource "fmc_access_rules" "access_rule_99" {
     }
   }
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -20555,7 +26002,7 @@ resource "fmc_access_rules" "access_rule_99" {
     }
   }
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -20567,7 +26014,7 @@ resource "fmc_access_rules" "access_rule_99" {
     }
   }
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -20579,7 +26026,7 @@ resource "fmc_access_rules" "access_rule_99" {
     }
   }
   dynamic "destination_zones" {
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -20591,7 +26038,7 @@ resource "fmc_access_rules" "access_rule_99" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -20603,7 +26050,7 @@ resource "fmc_access_rules" "access_rule_99" {
     }
   }
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_network" {
         for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -20615,7 +26062,7 @@ resource "fmc_access_rules" "access_rule_99" {
     }
   }
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_port" {
         for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -20627,7 +26074,7 @@ resource "fmc_access_rules" "access_rule_99" {
     }
   }
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -20639,7 +26086,7 @@ resource "fmc_access_rules" "access_rule_99" {
     }
   }
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -20651,7 +26098,7 @@ resource "fmc_access_rules" "access_rule_99" {
     }
   }
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }

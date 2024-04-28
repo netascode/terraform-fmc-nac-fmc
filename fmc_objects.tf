@@ -255,6 +255,8 @@ resource "fmc_network_group_objects" "networkgroup_l1" {
       type  = can(regex("/", literals.value)) ? "Network" : "Host"
     }
   }
+  # Optional
+  description = try(each.value.description, local.defaults.fmc.domains.objects.networkgroups.description, null)
 
   lifecycle {
     create_before_destroy = false
@@ -284,12 +286,17 @@ resource "fmc_network_group_objects" "networkgroup_l2" {
       type  = can(regex("/", literals.value)) ? "Network" : "Host"
     }
   }
-  lifecycle {
-    create_before_destroy = false
-  }
+  # Optional
+  description = try(each.value.description, local.defaults.fmc.domains.objects.networkgroups.description, null)
   depends_on = [
     fmc_network_group_objects.networkgroup_l1
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_network_group_objects.networkgroup_l1
+    ]
+  }
 }
 
 resource "fmc_network_group_objects" "networkgroup_l3" {
@@ -314,13 +321,20 @@ resource "fmc_network_group_objects" "networkgroup_l3" {
       type  = can(regex("/", literals.value)) ? "Network" : "Host"
     }
   }
-  lifecycle {
-    create_before_destroy = false
-  }
+
+  # Optional
+  description = try(each.value.description, local.defaults.fmc.domains.objects.networkgroups.description, null)
   depends_on = [
     fmc_network_group_objects.networkgroup_l1,
     fmc_network_group_objects.networkgroup_l2
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_network_group_objects.networkgroup_l1,
+      fmc_network_group_objects.networkgroup_l2
+    ]
+  }
 }
 
 resource "fmc_network_group_objects" "networkgroup_l4" {
@@ -345,14 +359,22 @@ resource "fmc_network_group_objects" "networkgroup_l4" {
       type  = can(regex("/", literals.value)) ? "Network" : "Host"
     }
   }
-  lifecycle {
-    create_before_destroy = false
-  }
+
+  # Optional
+  description = try(each.value.description, local.defaults.fmc.domains.objects.networkgroups.description, null)
   depends_on = [
     fmc_network_group_objects.networkgroup_l1,
     fmc_network_group_objects.networkgroup_l2,
     fmc_network_group_objects.networkgroup_l3
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_network_group_objects.networkgroup_l1,
+      fmc_network_group_objects.networkgroup_l2,
+      fmc_network_group_objects.networkgroup_l3
+    ]
+  }
 }
 
 resource "fmc_network_group_objects" "networkgroup_l5" {
@@ -377,15 +399,24 @@ resource "fmc_network_group_objects" "networkgroup_l5" {
       type  = can(regex("/", literals.value)) ? "Network" : "Host"
     }
   }
-  lifecycle {
-    create_before_destroy = false
-  }
+
+  # Optional
+  description = try(each.value.description, local.defaults.fmc.domains.objects.networkgroups.description, null)
   depends_on = [
     fmc_network_group_objects.networkgroup_l1,
     fmc_network_group_objects.networkgroup_l2,
     fmc_network_group_objects.networkgroup_l3,
     fmc_network_group_objects.networkgroup_l4
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_network_group_objects.networkgroup_l1,
+      fmc_network_group_objects.networkgroup_l2,
+      fmc_network_group_objects.networkgroup_l3,
+      fmc_network_group_objects.networkgroup_l4
+    ]
+  }
 }
 
 ###

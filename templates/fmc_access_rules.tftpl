@@ -6,7 +6,7 @@ locals {
     for domain in local.domains : [
       for accesspolicy in try(domain.access_policies, {}) : [
         for accessrule in try(accesspolicy.access_rules, {}) : {
-          key  = replace("${accesspolicy.name}_${accessrule.name}", " ", "")
+          key  = replace("$${accesspolicy.name}_$${accessrule.name}", " ", "")
           acp  = accesspolicy.name
           idx  = index(accesspolicy.access_rules, accessrule)
           data = accessrule
@@ -24,7 +24,7 @@ resource "fmc_access_rules" "access_rule_${index}" {
   acp       = local.map_accesspolicies[each.value.acp].id
   name      = each.value.data.name
   action    = each.value.data.action
-  enabled   = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled, true )
+  enabled   = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
 
   # Optional
   category            = try(each.value.data.category, null) 
@@ -48,13 +48,24 @@ resource "fmc_access_rules" "access_rule_${index}" {
     %{~ endfor ~}
       fmc_access_policies_category.accesspolicy_category
     ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+    %{ for i in range(0, index)}
+        fmc_access_rules.access_rule_${i},
+    %{~ endfor ~}
+    ]  
+  }  
   %{~ else ~}
   depends_on = [fmc_access_policies_category.accesspolicy_category]
+  lifecycle {
+    create_before_destroy = false
+  }
   %{~ endif ~}
 
 
   dynamic "destination_dynamic_objects" {
-    for_each = can(each.value.data.destination_dynamic_objects) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {       
       dynamic "destination_dynamic_object" {
         for_each = { for obj in try(each.value.data.destination_dynamic_objects, []) : obj => obj } 
@@ -67,7 +78,7 @@ resource "fmc_access_rules" "access_rule_${index}" {
   }
 
   dynamic "destination_networks" {
-    for_each = can(each.value.data.destination_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
     content {      
       dynamic "destination_network" {
         for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
@@ -80,7 +91,7 @@ resource "fmc_access_rules" "access_rule_${index}" {
   }
 
   dynamic "destination_ports" {
-    for_each = can(each.value.data.destination_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
     content {   
     dynamic "destination_port" {
         for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
@@ -93,7 +104,7 @@ resource "fmc_access_rules" "access_rule_${index}" {
   }
 
   dynamic "destination_security_group_tags" {
-    for_each = can(each.value.data.destination_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_sgts), 0) != 0 ? ["1"] : []
     content {       
     dynamic "destination_security_group_tag" {
         for_each = { for obj in try(each.value.data.destination_sgts, []) : obj => obj }
@@ -107,7 +118,7 @@ resource "fmc_access_rules" "access_rule_${index}" {
   }
  
    dynamic "destination_zones" { 
-    for_each = can(each.value.data.destination_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_zones), 0) != 0 ? ["1"] : []
     content {        
       dynamic "destination_zone" {
         for_each = { for zone in try(each.value.data.destination_zones, []) : zone => zone }
@@ -120,7 +131,7 @@ resource "fmc_access_rules" "access_rule_${index}" {
    }
 
   dynamic "source_dynamic_objects" {
-    for_each = can(each.value.data.source_netwsource_dynamic_objectsorks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
     content {          
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -133,7 +144,7 @@ resource "fmc_access_rules" "access_rule_${index}" {
   }
 
   dynamic "source_networks" {
-    for_each = can(each.value.data.source_networks) ? ["1"] : []
+    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
     content {      
     dynamic "source_network" {
       for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
@@ -146,7 +157,7 @@ resource "fmc_access_rules" "access_rule_${index}" {
   }
 
   dynamic "source_ports" {
-    for_each = can(each.value.data.source_ports) ? ["1"] : []
+    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
     content {    
     dynamic "source_port" {
       for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
@@ -159,7 +170,7 @@ resource "fmc_access_rules" "access_rule_${index}" {
   }
   
   dynamic "source_security_group_tags" {
-    for_each = can(each.value.data.source_sgts) ? ["1"] : []
+    for_each = try(length(each.value.data.source_sgts), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_security_group_tag" {
         for_each = { for obj in try(each.value.data.source_sgts, []) : obj => obj }
@@ -172,7 +183,7 @@ resource "fmc_access_rules" "access_rule_${index}" {
   }
 
   dynamic "source_zones" {
-    for_each = can(each.value.data.source_zones) ? ["1"] : []
+    for_each = try(length(each.value.data.source_zones), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_zone" {
         for_each = { for obj in try(each.value.data.source_zones, []) : obj => obj }
@@ -185,7 +196,7 @@ resource "fmc_access_rules" "access_rule_${index}" {
   }
 
   dynamic "urls" {
-    for_each = can(each.value.data.urls) ? ["1"] : []
+    for_each = try(length(each.value.data.urls), 0) != 0 ? ["1"] : []
     content {
       dynamic "url" {
         for_each = { for obj in try(each.value.data.urls, []) : obj => obj }

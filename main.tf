@@ -146,6 +146,29 @@ locals {
     )...
   )
 
+  map_ipv4_static_route_interfaces = merge({
+    for domain in local.domains : domain.name => {
+      for device in try(domain.devices, {}) : device.name => merge({
+        for int_name in flatten([
+          for physical_interface in try(device.physical_interfaces, []) : [
+            for subinterface in try(physical_interface.subinterfaces, []) : {
+              "name" : try(subinterface.name, null)
+              "object" : fmc_device_subinterfaces.sub_interfaces["${device.name}/${physical_interface.interface}/${subinterface.id}"].if_name
+            }
+          ]
+        ]) : int_name.name => int_name.object
+        },
+        {
+          for int_name in flatten([
+            for physical_interface in try(device.physical_interfaces, []) : {
+              "name" : try(physical_interface.name, null)
+              "object" : fmc_device_physical_interfaces.physical_interface["${device.name}/${physical_interface.interface}"].if_name
+            }
+          ]) : int_name.name => int_name.object
+      })
+    }
+  })
+
   map_securityzones = merge({
     for securityzone in local.res_securityzones :
     securityzone.name => {

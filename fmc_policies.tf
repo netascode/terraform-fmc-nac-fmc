@@ -31,7 +31,7 @@ resource "fmc_access_policies" "accesspolicy" {
 locals {
   res_accesspolicies_category = flatten([
     for domain in local.domains : [
-      for accesspolicy in try(domain.access_policies, {}) : [
+      for accesspolicy in try(domain.access_policies, []) : [
         for accesspolicy_category in try(accesspolicy.categories, {}) : {
           key  = "${accesspolicy.name}/${accesspolicy_category}"
           acp  = local.map_accesspolicies[accesspolicy.name].id
@@ -105,7 +105,7 @@ resource "fmc_ftd_nat_policies" "ftdnatpolicy" {
 locals {
   res_ftdautonatrules = flatten([
     for domain in local.domains : [
-      for natpolicy in try(domain.ftd_nat_policies, {}) : [
+      for natpolicy in try(domain.ftd_nat_policies, []) : [
         for ftdautonatrule in try(natpolicy.ftd_auto_nat_rules, {}) : {
           key        = "${natpolicy.name}/${ftdautonatrule.name}"
           nat_policy = local.map_natpolicies[natpolicy.name].id
@@ -159,7 +159,7 @@ resource "fmc_ftd_autonat_rules" "ftdautonatrule" {
   }
 
   dynamic "pat_options" {
-    for_each = can(each.value.data.pat_options) ? ["1"] : []
+    for_each = try(length(each.value.data.pat_options), 0) != 0 ? ["1"] : []
     content {
       extended_pat_table    = try(each.value.data.pat_options.extended_pat_table, null)
       include_reserve_ports = try(each.value.data.pat_options.include_reserve_ports, null)

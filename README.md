@@ -311,7 +311,8 @@ module "fmc" {
 | [fmc_network_group_objects.networkgroup_l4](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_group_objects) | resource |
 | [fmc_network_group_objects.networkgroup_l5](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_group_objects) | resource |
 | [fmc_network_objects.network](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_objects) | resource |
-| [fmc_policy_devices_assignments.policy_assignment](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_devices_assignments) | resource |
+| [fmc_policy_devices_assignments.access_policy_assignment](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_devices_assignments) | resource |
+| [fmc_policy_devices_assignments.nat_policy_assignment](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_devices_assignments) | resource |
 | [fmc_port_group_objects.portgroup](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/port_group_objects) | resource |
 | [fmc_port_objects.port](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/port_objects) | resource |
 | [fmc_prefilter_policy.prefilterpolicy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/prefilter_policy) | resource |

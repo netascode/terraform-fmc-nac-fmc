@@ -12,7 +12,6 @@ locals {
     ]
   ])
 }
-
 resource "fmc_ftd_deploy" "ftd" {
   for_each = { for deploymemt in local.res_deploy : deploymemt.device => deploymemt }
   # Mandatory  
@@ -34,7 +33,8 @@ resource "fmc_ftd_deploy" "ftd" {
     fmc_icmpv4_objects.icmpv4,
     fmc_ips_policies.ips_policy,
     fmc_network_objects.network,
-    fmc_policy_devices_assignments.policy_assignment,
+    fmc_policy_devices_assignments.nat_policy_assignment,
+    fmc_policy_devices_assignments.access_policy_assignment,
     fmc_port_objects.port,
     fmc_prefilter_policy.prefilterpolicy,
     fmc_range_objects.range,

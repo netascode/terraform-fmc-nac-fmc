@@ -8,7 +8,7 @@ locals {
 ###
 # ACCESS RULE - AUTO GENERATE
 ###
-resource "local_file" "access_rule" {
+resource "local_file" "accessrule" {
   content = replace(
     templatefile("./fmc_access_rules.tftpl", local.template_data),
     "/(?m)(?s)(^( )*[\r\n])/", ""
@@ -21,10 +21,10 @@ resource "local_file" "access_rule" {
 ###
 resource "local_file" "ftdmanualnatrule" {
   content = replace(
-    templatefile("./fmc_ftd_manual_nat_rulea.tftpl", local.template_data),
+    templatefile("./fmc_ftd_manual_nat_rules.tftpl", local.template_data),
     "/(?m)(?s)(^( )*[\r\n])/", ""
   )
-  filename = "../fmc_ftd_manual_nat_rules.tf"
+  filename = "../fmcftd_manual_nat_rules.tf"
 }
 
 ###

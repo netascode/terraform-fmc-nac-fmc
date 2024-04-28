@@ -15,7 +15,6 @@ locals {
     ]
   ])
 }
-
 resource "fmc_ftd_manualnat_rules" "manualnat_rules_0" {
   for_each = { for rule in local.res_ftdmanualnatrules : rule.key => rule if rule.idx == 0 }
   # Mandatory
@@ -42,64 +41,67 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_0" {
   translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
   unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   depends_on                        = [fmc_ftd_nat_policies.ftdnatpolicy]
+  lifecycle {
+    create_before_destroy = false
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -136,64 +138,70 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_1" {
     fmc_ftd_manualnat_rules.manualnat_rules_0,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -231,64 +239,71 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_2" {
     fmc_ftd_manualnat_rules.manualnat_rules_1,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -327,64 +342,72 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_3" {
     fmc_ftd_manualnat_rules.manualnat_rules_2,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -424,64 +447,73 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_4" {
     fmc_ftd_manualnat_rules.manualnat_rules_3,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -522,64 +554,74 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_5" {
     fmc_ftd_manualnat_rules.manualnat_rules_4,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -621,64 +663,75 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_6" {
     fmc_ftd_manualnat_rules.manualnat_rules_5,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -721,64 +774,76 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_7" {
     fmc_ftd_manualnat_rules.manualnat_rules_6,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -822,64 +887,77 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_8" {
     fmc_ftd_manualnat_rules.manualnat_rules_7,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -924,64 +1002,78 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_9" {
     fmc_ftd_manualnat_rules.manualnat_rules_8,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -1027,64 +1119,79 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_10" {
     fmc_ftd_manualnat_rules.manualnat_rules_9,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -1131,64 +1238,80 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_11" {
     fmc_ftd_manualnat_rules.manualnat_rules_10,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -1236,64 +1359,81 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_12" {
     fmc_ftd_manualnat_rules.manualnat_rules_11,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -1342,64 +1482,82 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_13" {
     fmc_ftd_manualnat_rules.manualnat_rules_12,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -1449,64 +1607,83 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_14" {
     fmc_ftd_manualnat_rules.manualnat_rules_13,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -1557,64 +1734,84 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_15" {
     fmc_ftd_manualnat_rules.manualnat_rules_14,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -1666,64 +1863,85 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_16" {
     fmc_ftd_manualnat_rules.manualnat_rules_15,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -1776,64 +1994,86 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_17" {
     fmc_ftd_manualnat_rules.manualnat_rules_16,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -1887,64 +2127,87 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_18" {
     fmc_ftd_manualnat_rules.manualnat_rules_17,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -1999,64 +2262,88 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_19" {
     fmc_ftd_manualnat_rules.manualnat_rules_18,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -2112,64 +2399,89 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_20" {
     fmc_ftd_manualnat_rules.manualnat_rules_19,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -2226,64 +2538,90 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_21" {
     fmc_ftd_manualnat_rules.manualnat_rules_20,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -2341,64 +2679,91 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_22" {
     fmc_ftd_manualnat_rules.manualnat_rules_21,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -2457,64 +2822,92 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_23" {
     fmc_ftd_manualnat_rules.manualnat_rules_22,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -2574,64 +2967,93 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_24" {
     fmc_ftd_manualnat_rules.manualnat_rules_23,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -2692,64 +3114,94 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_25" {
     fmc_ftd_manualnat_rules.manualnat_rules_24,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -2811,64 +3263,95 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_26" {
     fmc_ftd_manualnat_rules.manualnat_rules_25,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -2931,64 +3414,96 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_27" {
     fmc_ftd_manualnat_rules.manualnat_rules_26,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -3052,64 +3567,97 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_28" {
     fmc_ftd_manualnat_rules.manualnat_rules_27,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -3174,64 +3722,98 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_29" {
     fmc_ftd_manualnat_rules.manualnat_rules_28,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -3297,64 +3879,99 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_30" {
     fmc_ftd_manualnat_rules.manualnat_rules_29,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -3421,64 +4038,100 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_31" {
     fmc_ftd_manualnat_rules.manualnat_rules_30,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -3546,64 +4199,101 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_32" {
     fmc_ftd_manualnat_rules.manualnat_rules_31,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -3672,64 +4362,102 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_33" {
     fmc_ftd_manualnat_rules.manualnat_rules_32,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -3799,64 +4527,103 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_34" {
     fmc_ftd_manualnat_rules.manualnat_rules_33,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -3927,64 +4694,104 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_35" {
     fmc_ftd_manualnat_rules.manualnat_rules_34,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -4056,64 +4863,105 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_36" {
     fmc_ftd_manualnat_rules.manualnat_rules_35,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -4186,64 +5034,106 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_37" {
     fmc_ftd_manualnat_rules.manualnat_rules_36,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -4317,64 +5207,107 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_38" {
     fmc_ftd_manualnat_rules.manualnat_rules_37,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -4449,64 +5382,108 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_39" {
     fmc_ftd_manualnat_rules.manualnat_rules_38,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -4582,64 +5559,109 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_40" {
     fmc_ftd_manualnat_rules.manualnat_rules_39,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -4716,64 +5738,110 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_41" {
     fmc_ftd_manualnat_rules.manualnat_rules_40,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -4851,64 +5919,111 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_42" {
     fmc_ftd_manualnat_rules.manualnat_rules_41,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -4987,64 +6102,112 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_43" {
     fmc_ftd_manualnat_rules.manualnat_rules_42,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -5124,64 +6287,113 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_44" {
     fmc_ftd_manualnat_rules.manualnat_rules_43,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -5262,64 +6474,114 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_45" {
     fmc_ftd_manualnat_rules.manualnat_rules_44,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -5401,64 +6663,115 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_46" {
     fmc_ftd_manualnat_rules.manualnat_rules_45,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -5541,64 +6854,116 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_47" {
     fmc_ftd_manualnat_rules.manualnat_rules_46,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -5682,64 +7047,117 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_48" {
     fmc_ftd_manualnat_rules.manualnat_rules_47,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -5824,64 +7242,118 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_49" {
     fmc_ftd_manualnat_rules.manualnat_rules_48,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -5967,64 +7439,119 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_50" {
     fmc_ftd_manualnat_rules.manualnat_rules_49,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -6111,64 +7638,120 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_51" {
     fmc_ftd_manualnat_rules.manualnat_rules_50,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -6256,64 +7839,121 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_52" {
     fmc_ftd_manualnat_rules.manualnat_rules_51,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -6402,64 +8042,122 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_53" {
     fmc_ftd_manualnat_rules.manualnat_rules_52,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -6549,64 +8247,123 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_54" {
     fmc_ftd_manualnat_rules.manualnat_rules_53,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -6697,64 +8454,124 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_55" {
     fmc_ftd_manualnat_rules.manualnat_rules_54,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -6846,64 +8663,125 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_56" {
     fmc_ftd_manualnat_rules.manualnat_rules_55,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -6996,64 +8874,126 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_57" {
     fmc_ftd_manualnat_rules.manualnat_rules_56,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -7147,64 +9087,127 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_58" {
     fmc_ftd_manualnat_rules.manualnat_rules_57,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -7299,64 +9302,128 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_59" {
     fmc_ftd_manualnat_rules.manualnat_rules_58,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -7452,64 +9519,129 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_60" {
     fmc_ftd_manualnat_rules.manualnat_rules_59,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -7606,64 +9738,130 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_61" {
     fmc_ftd_manualnat_rules.manualnat_rules_60,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -7761,64 +9959,131 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_62" {
     fmc_ftd_manualnat_rules.manualnat_rules_61,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -7917,64 +10182,132 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_63" {
     fmc_ftd_manualnat_rules.manualnat_rules_62,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -8074,64 +10407,133 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_64" {
     fmc_ftd_manualnat_rules.manualnat_rules_63,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -8232,64 +10634,134 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_65" {
     fmc_ftd_manualnat_rules.manualnat_rules_64,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -8391,64 +10863,135 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_66" {
     fmc_ftd_manualnat_rules.manualnat_rules_65,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -8551,64 +11094,136 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_67" {
     fmc_ftd_manualnat_rules.manualnat_rules_66,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -8712,64 +11327,137 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_68" {
     fmc_ftd_manualnat_rules.manualnat_rules_67,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -8874,64 +11562,138 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_69" {
     fmc_ftd_manualnat_rules.manualnat_rules_68,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -9037,64 +11799,139 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_70" {
     fmc_ftd_manualnat_rules.manualnat_rules_69,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -9201,64 +12038,140 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_71" {
     fmc_ftd_manualnat_rules.manualnat_rules_70,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -9366,64 +12279,141 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_72" {
     fmc_ftd_manualnat_rules.manualnat_rules_71,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -9532,64 +12522,142 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_73" {
     fmc_ftd_manualnat_rules.manualnat_rules_72,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -9699,64 +12767,143 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_74" {
     fmc_ftd_manualnat_rules.manualnat_rules_73,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -9867,64 +13014,144 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_75" {
     fmc_ftd_manualnat_rules.manualnat_rules_74,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -10036,64 +13263,145 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_76" {
     fmc_ftd_manualnat_rules.manualnat_rules_75,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -10206,64 +13514,146 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_77" {
     fmc_ftd_manualnat_rules.manualnat_rules_76,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -10377,64 +13767,147 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_78" {
     fmc_ftd_manualnat_rules.manualnat_rules_77,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -10549,64 +14022,148 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_79" {
     fmc_ftd_manualnat_rules.manualnat_rules_78,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -10722,64 +14279,149 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_80" {
     fmc_ftd_manualnat_rules.manualnat_rules_79,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+      fmc_ftd_manualnat_rules.manualnat_rules_79,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -10896,64 +14538,150 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_81" {
     fmc_ftd_manualnat_rules.manualnat_rules_80,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+      fmc_ftd_manualnat_rules.manualnat_rules_79,
+      fmc_ftd_manualnat_rules.manualnat_rules_80,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -11071,64 +14799,151 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_82" {
     fmc_ftd_manualnat_rules.manualnat_rules_81,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+      fmc_ftd_manualnat_rules.manualnat_rules_79,
+      fmc_ftd_manualnat_rules.manualnat_rules_80,
+      fmc_ftd_manualnat_rules.manualnat_rules_81,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -11247,64 +15062,152 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_83" {
     fmc_ftd_manualnat_rules.manualnat_rules_82,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+      fmc_ftd_manualnat_rules.manualnat_rules_79,
+      fmc_ftd_manualnat_rules.manualnat_rules_80,
+      fmc_ftd_manualnat_rules.manualnat_rules_81,
+      fmc_ftd_manualnat_rules.manualnat_rules_82,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -11424,64 +15327,153 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_84" {
     fmc_ftd_manualnat_rules.manualnat_rules_83,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+      fmc_ftd_manualnat_rules.manualnat_rules_79,
+      fmc_ftd_manualnat_rules.manualnat_rules_80,
+      fmc_ftd_manualnat_rules.manualnat_rules_81,
+      fmc_ftd_manualnat_rules.manualnat_rules_82,
+      fmc_ftd_manualnat_rules.manualnat_rules_83,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -11602,64 +15594,154 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_85" {
     fmc_ftd_manualnat_rules.manualnat_rules_84,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+      fmc_ftd_manualnat_rules.manualnat_rules_79,
+      fmc_ftd_manualnat_rules.manualnat_rules_80,
+      fmc_ftd_manualnat_rules.manualnat_rules_81,
+      fmc_ftd_manualnat_rules.manualnat_rules_82,
+      fmc_ftd_manualnat_rules.manualnat_rules_83,
+      fmc_ftd_manualnat_rules.manualnat_rules_84,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -11781,64 +15863,155 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_86" {
     fmc_ftd_manualnat_rules.manualnat_rules_85,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+      fmc_ftd_manualnat_rules.manualnat_rules_79,
+      fmc_ftd_manualnat_rules.manualnat_rules_80,
+      fmc_ftd_manualnat_rules.manualnat_rules_81,
+      fmc_ftd_manualnat_rules.manualnat_rules_82,
+      fmc_ftd_manualnat_rules.manualnat_rules_83,
+      fmc_ftd_manualnat_rules.manualnat_rules_84,
+      fmc_ftd_manualnat_rules.manualnat_rules_85,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -11961,64 +16134,156 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_87" {
     fmc_ftd_manualnat_rules.manualnat_rules_86,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+      fmc_ftd_manualnat_rules.manualnat_rules_79,
+      fmc_ftd_manualnat_rules.manualnat_rules_80,
+      fmc_ftd_manualnat_rules.manualnat_rules_81,
+      fmc_ftd_manualnat_rules.manualnat_rules_82,
+      fmc_ftd_manualnat_rules.manualnat_rules_83,
+      fmc_ftd_manualnat_rules.manualnat_rules_84,
+      fmc_ftd_manualnat_rules.manualnat_rules_85,
+      fmc_ftd_manualnat_rules.manualnat_rules_86,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -12142,64 +16407,157 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_88" {
     fmc_ftd_manualnat_rules.manualnat_rules_87,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+      fmc_ftd_manualnat_rules.manualnat_rules_79,
+      fmc_ftd_manualnat_rules.manualnat_rules_80,
+      fmc_ftd_manualnat_rules.manualnat_rules_81,
+      fmc_ftd_manualnat_rules.manualnat_rules_82,
+      fmc_ftd_manualnat_rules.manualnat_rules_83,
+      fmc_ftd_manualnat_rules.manualnat_rules_84,
+      fmc_ftd_manualnat_rules.manualnat_rules_85,
+      fmc_ftd_manualnat_rules.manualnat_rules_86,
+      fmc_ftd_manualnat_rules.manualnat_rules_87,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -12324,64 +16682,158 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_89" {
     fmc_ftd_manualnat_rules.manualnat_rules_88,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+      fmc_ftd_manualnat_rules.manualnat_rules_79,
+      fmc_ftd_manualnat_rules.manualnat_rules_80,
+      fmc_ftd_manualnat_rules.manualnat_rules_81,
+      fmc_ftd_manualnat_rules.manualnat_rules_82,
+      fmc_ftd_manualnat_rules.manualnat_rules_83,
+      fmc_ftd_manualnat_rules.manualnat_rules_84,
+      fmc_ftd_manualnat_rules.manualnat_rules_85,
+      fmc_ftd_manualnat_rules.manualnat_rules_86,
+      fmc_ftd_manualnat_rules.manualnat_rules_87,
+      fmc_ftd_manualnat_rules.manualnat_rules_88,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -12507,64 +16959,159 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_90" {
     fmc_ftd_manualnat_rules.manualnat_rules_89,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+      fmc_ftd_manualnat_rules.manualnat_rules_79,
+      fmc_ftd_manualnat_rules.manualnat_rules_80,
+      fmc_ftd_manualnat_rules.manualnat_rules_81,
+      fmc_ftd_manualnat_rules.manualnat_rules_82,
+      fmc_ftd_manualnat_rules.manualnat_rules_83,
+      fmc_ftd_manualnat_rules.manualnat_rules_84,
+      fmc_ftd_manualnat_rules.manualnat_rules_85,
+      fmc_ftd_manualnat_rules.manualnat_rules_86,
+      fmc_ftd_manualnat_rules.manualnat_rules_87,
+      fmc_ftd_manualnat_rules.manualnat_rules_88,
+      fmc_ftd_manualnat_rules.manualnat_rules_89,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -12691,64 +17238,160 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_91" {
     fmc_ftd_manualnat_rules.manualnat_rules_90,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+      fmc_ftd_manualnat_rules.manualnat_rules_79,
+      fmc_ftd_manualnat_rules.manualnat_rules_80,
+      fmc_ftd_manualnat_rules.manualnat_rules_81,
+      fmc_ftd_manualnat_rules.manualnat_rules_82,
+      fmc_ftd_manualnat_rules.manualnat_rules_83,
+      fmc_ftd_manualnat_rules.manualnat_rules_84,
+      fmc_ftd_manualnat_rules.manualnat_rules_85,
+      fmc_ftd_manualnat_rules.manualnat_rules_86,
+      fmc_ftd_manualnat_rules.manualnat_rules_87,
+      fmc_ftd_manualnat_rules.manualnat_rules_88,
+      fmc_ftd_manualnat_rules.manualnat_rules_89,
+      fmc_ftd_manualnat_rules.manualnat_rules_90,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -12876,64 +17519,161 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_92" {
     fmc_ftd_manualnat_rules.manualnat_rules_91,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+      fmc_ftd_manualnat_rules.manualnat_rules_79,
+      fmc_ftd_manualnat_rules.manualnat_rules_80,
+      fmc_ftd_manualnat_rules.manualnat_rules_81,
+      fmc_ftd_manualnat_rules.manualnat_rules_82,
+      fmc_ftd_manualnat_rules.manualnat_rules_83,
+      fmc_ftd_manualnat_rules.manualnat_rules_84,
+      fmc_ftd_manualnat_rules.manualnat_rules_85,
+      fmc_ftd_manualnat_rules.manualnat_rules_86,
+      fmc_ftd_manualnat_rules.manualnat_rules_87,
+      fmc_ftd_manualnat_rules.manualnat_rules_88,
+      fmc_ftd_manualnat_rules.manualnat_rules_89,
+      fmc_ftd_manualnat_rules.manualnat_rules_90,
+      fmc_ftd_manualnat_rules.manualnat_rules_91,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -13062,64 +17802,162 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_93" {
     fmc_ftd_manualnat_rules.manualnat_rules_92,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+      fmc_ftd_manualnat_rules.manualnat_rules_79,
+      fmc_ftd_manualnat_rules.manualnat_rules_80,
+      fmc_ftd_manualnat_rules.manualnat_rules_81,
+      fmc_ftd_manualnat_rules.manualnat_rules_82,
+      fmc_ftd_manualnat_rules.manualnat_rules_83,
+      fmc_ftd_manualnat_rules.manualnat_rules_84,
+      fmc_ftd_manualnat_rules.manualnat_rules_85,
+      fmc_ftd_manualnat_rules.manualnat_rules_86,
+      fmc_ftd_manualnat_rules.manualnat_rules_87,
+      fmc_ftd_manualnat_rules.manualnat_rules_88,
+      fmc_ftd_manualnat_rules.manualnat_rules_89,
+      fmc_ftd_manualnat_rules.manualnat_rules_90,
+      fmc_ftd_manualnat_rules.manualnat_rules_91,
+      fmc_ftd_manualnat_rules.manualnat_rules_92,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -13249,64 +18087,163 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_94" {
     fmc_ftd_manualnat_rules.manualnat_rules_93,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+      fmc_ftd_manualnat_rules.manualnat_rules_79,
+      fmc_ftd_manualnat_rules.manualnat_rules_80,
+      fmc_ftd_manualnat_rules.manualnat_rules_81,
+      fmc_ftd_manualnat_rules.manualnat_rules_82,
+      fmc_ftd_manualnat_rules.manualnat_rules_83,
+      fmc_ftd_manualnat_rules.manualnat_rules_84,
+      fmc_ftd_manualnat_rules.manualnat_rules_85,
+      fmc_ftd_manualnat_rules.manualnat_rules_86,
+      fmc_ftd_manualnat_rules.manualnat_rules_87,
+      fmc_ftd_manualnat_rules.manualnat_rules_88,
+      fmc_ftd_manualnat_rules.manualnat_rules_89,
+      fmc_ftd_manualnat_rules.manualnat_rules_90,
+      fmc_ftd_manualnat_rules.manualnat_rules_91,
+      fmc_ftd_manualnat_rules.manualnat_rules_92,
+      fmc_ftd_manualnat_rules.manualnat_rules_93,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -13437,64 +18374,164 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_95" {
     fmc_ftd_manualnat_rules.manualnat_rules_94,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+      fmc_ftd_manualnat_rules.manualnat_rules_79,
+      fmc_ftd_manualnat_rules.manualnat_rules_80,
+      fmc_ftd_manualnat_rules.manualnat_rules_81,
+      fmc_ftd_manualnat_rules.manualnat_rules_82,
+      fmc_ftd_manualnat_rules.manualnat_rules_83,
+      fmc_ftd_manualnat_rules.manualnat_rules_84,
+      fmc_ftd_manualnat_rules.manualnat_rules_85,
+      fmc_ftd_manualnat_rules.manualnat_rules_86,
+      fmc_ftd_manualnat_rules.manualnat_rules_87,
+      fmc_ftd_manualnat_rules.manualnat_rules_88,
+      fmc_ftd_manualnat_rules.manualnat_rules_89,
+      fmc_ftd_manualnat_rules.manualnat_rules_90,
+      fmc_ftd_manualnat_rules.manualnat_rules_91,
+      fmc_ftd_manualnat_rules.manualnat_rules_92,
+      fmc_ftd_manualnat_rules.manualnat_rules_93,
+      fmc_ftd_manualnat_rules.manualnat_rules_94,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -13626,64 +18663,165 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_96" {
     fmc_ftd_manualnat_rules.manualnat_rules_95,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+      fmc_ftd_manualnat_rules.manualnat_rules_79,
+      fmc_ftd_manualnat_rules.manualnat_rules_80,
+      fmc_ftd_manualnat_rules.manualnat_rules_81,
+      fmc_ftd_manualnat_rules.manualnat_rules_82,
+      fmc_ftd_manualnat_rules.manualnat_rules_83,
+      fmc_ftd_manualnat_rules.manualnat_rules_84,
+      fmc_ftd_manualnat_rules.manualnat_rules_85,
+      fmc_ftd_manualnat_rules.manualnat_rules_86,
+      fmc_ftd_manualnat_rules.manualnat_rules_87,
+      fmc_ftd_manualnat_rules.manualnat_rules_88,
+      fmc_ftd_manualnat_rules.manualnat_rules_89,
+      fmc_ftd_manualnat_rules.manualnat_rules_90,
+      fmc_ftd_manualnat_rules.manualnat_rules_91,
+      fmc_ftd_manualnat_rules.manualnat_rules_92,
+      fmc_ftd_manualnat_rules.manualnat_rules_93,
+      fmc_ftd_manualnat_rules.manualnat_rules_94,
+      fmc_ftd_manualnat_rules.manualnat_rules_95,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -13816,64 +18954,166 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_97" {
     fmc_ftd_manualnat_rules.manualnat_rules_96,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+      fmc_ftd_manualnat_rules.manualnat_rules_79,
+      fmc_ftd_manualnat_rules.manualnat_rules_80,
+      fmc_ftd_manualnat_rules.manualnat_rules_81,
+      fmc_ftd_manualnat_rules.manualnat_rules_82,
+      fmc_ftd_manualnat_rules.manualnat_rules_83,
+      fmc_ftd_manualnat_rules.manualnat_rules_84,
+      fmc_ftd_manualnat_rules.manualnat_rules_85,
+      fmc_ftd_manualnat_rules.manualnat_rules_86,
+      fmc_ftd_manualnat_rules.manualnat_rules_87,
+      fmc_ftd_manualnat_rules.manualnat_rules_88,
+      fmc_ftd_manualnat_rules.manualnat_rules_89,
+      fmc_ftd_manualnat_rules.manualnat_rules_90,
+      fmc_ftd_manualnat_rules.manualnat_rules_91,
+      fmc_ftd_manualnat_rules.manualnat_rules_92,
+      fmc_ftd_manualnat_rules.manualnat_rules_93,
+      fmc_ftd_manualnat_rules.manualnat_rules_94,
+      fmc_ftd_manualnat_rules.manualnat_rules_95,
+      fmc_ftd_manualnat_rules.manualnat_rules_96,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -14007,64 +19247,167 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_98" {
     fmc_ftd_manualnat_rules.manualnat_rules_97,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+      fmc_ftd_manualnat_rules.manualnat_rules_79,
+      fmc_ftd_manualnat_rules.manualnat_rules_80,
+      fmc_ftd_manualnat_rules.manualnat_rules_81,
+      fmc_ftd_manualnat_rules.manualnat_rules_82,
+      fmc_ftd_manualnat_rules.manualnat_rules_83,
+      fmc_ftd_manualnat_rules.manualnat_rules_84,
+      fmc_ftd_manualnat_rules.manualnat_rules_85,
+      fmc_ftd_manualnat_rules.manualnat_rules_86,
+      fmc_ftd_manualnat_rules.manualnat_rules_87,
+      fmc_ftd_manualnat_rules.manualnat_rules_88,
+      fmc_ftd_manualnat_rules.manualnat_rules_89,
+      fmc_ftd_manualnat_rules.manualnat_rules_90,
+      fmc_ftd_manualnat_rules.manualnat_rules_91,
+      fmc_ftd_manualnat_rules.manualnat_rules_92,
+      fmc_ftd_manualnat_rules.manualnat_rules_93,
+      fmc_ftd_manualnat_rules.manualnat_rules_94,
+      fmc_ftd_manualnat_rules.manualnat_rules_95,
+      fmc_ftd_manualnat_rules.manualnat_rules_96,
+      fmc_ftd_manualnat_rules.manualnat_rules_97,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
@@ -14199,64 +19542,168 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_99" {
     fmc_ftd_manualnat_rules.manualnat_rules_98,
     fmc_ftd_nat_policies.ftdnatpolicy
   ]
+  lifecycle {
+    create_before_destroy = false
+    replace_triggered_by = [
+      fmc_ftd_manualnat_rules.manualnat_rules_0,
+      fmc_ftd_manualnat_rules.manualnat_rules_1,
+      fmc_ftd_manualnat_rules.manualnat_rules_2,
+      fmc_ftd_manualnat_rules.manualnat_rules_3,
+      fmc_ftd_manualnat_rules.manualnat_rules_4,
+      fmc_ftd_manualnat_rules.manualnat_rules_5,
+      fmc_ftd_manualnat_rules.manualnat_rules_6,
+      fmc_ftd_manualnat_rules.manualnat_rules_7,
+      fmc_ftd_manualnat_rules.manualnat_rules_8,
+      fmc_ftd_manualnat_rules.manualnat_rules_9,
+      fmc_ftd_manualnat_rules.manualnat_rules_10,
+      fmc_ftd_manualnat_rules.manualnat_rules_11,
+      fmc_ftd_manualnat_rules.manualnat_rules_12,
+      fmc_ftd_manualnat_rules.manualnat_rules_13,
+      fmc_ftd_manualnat_rules.manualnat_rules_14,
+      fmc_ftd_manualnat_rules.manualnat_rules_15,
+      fmc_ftd_manualnat_rules.manualnat_rules_16,
+      fmc_ftd_manualnat_rules.manualnat_rules_17,
+      fmc_ftd_manualnat_rules.manualnat_rules_18,
+      fmc_ftd_manualnat_rules.manualnat_rules_19,
+      fmc_ftd_manualnat_rules.manualnat_rules_20,
+      fmc_ftd_manualnat_rules.manualnat_rules_21,
+      fmc_ftd_manualnat_rules.manualnat_rules_22,
+      fmc_ftd_manualnat_rules.manualnat_rules_23,
+      fmc_ftd_manualnat_rules.manualnat_rules_24,
+      fmc_ftd_manualnat_rules.manualnat_rules_25,
+      fmc_ftd_manualnat_rules.manualnat_rules_26,
+      fmc_ftd_manualnat_rules.manualnat_rules_27,
+      fmc_ftd_manualnat_rules.manualnat_rules_28,
+      fmc_ftd_manualnat_rules.manualnat_rules_29,
+      fmc_ftd_manualnat_rules.manualnat_rules_30,
+      fmc_ftd_manualnat_rules.manualnat_rules_31,
+      fmc_ftd_manualnat_rules.manualnat_rules_32,
+      fmc_ftd_manualnat_rules.manualnat_rules_33,
+      fmc_ftd_manualnat_rules.manualnat_rules_34,
+      fmc_ftd_manualnat_rules.manualnat_rules_35,
+      fmc_ftd_manualnat_rules.manualnat_rules_36,
+      fmc_ftd_manualnat_rules.manualnat_rules_37,
+      fmc_ftd_manualnat_rules.manualnat_rules_38,
+      fmc_ftd_manualnat_rules.manualnat_rules_39,
+      fmc_ftd_manualnat_rules.manualnat_rules_40,
+      fmc_ftd_manualnat_rules.manualnat_rules_41,
+      fmc_ftd_manualnat_rules.manualnat_rules_42,
+      fmc_ftd_manualnat_rules.manualnat_rules_43,
+      fmc_ftd_manualnat_rules.manualnat_rules_44,
+      fmc_ftd_manualnat_rules.manualnat_rules_45,
+      fmc_ftd_manualnat_rules.manualnat_rules_46,
+      fmc_ftd_manualnat_rules.manualnat_rules_47,
+      fmc_ftd_manualnat_rules.manualnat_rules_48,
+      fmc_ftd_manualnat_rules.manualnat_rules_49,
+      fmc_ftd_manualnat_rules.manualnat_rules_50,
+      fmc_ftd_manualnat_rules.manualnat_rules_51,
+      fmc_ftd_manualnat_rules.manualnat_rules_52,
+      fmc_ftd_manualnat_rules.manualnat_rules_53,
+      fmc_ftd_manualnat_rules.manualnat_rules_54,
+      fmc_ftd_manualnat_rules.manualnat_rules_55,
+      fmc_ftd_manualnat_rules.manualnat_rules_56,
+      fmc_ftd_manualnat_rules.manualnat_rules_57,
+      fmc_ftd_manualnat_rules.manualnat_rules_58,
+      fmc_ftd_manualnat_rules.manualnat_rules_59,
+      fmc_ftd_manualnat_rules.manualnat_rules_60,
+      fmc_ftd_manualnat_rules.manualnat_rules_61,
+      fmc_ftd_manualnat_rules.manualnat_rules_62,
+      fmc_ftd_manualnat_rules.manualnat_rules_63,
+      fmc_ftd_manualnat_rules.manualnat_rules_64,
+      fmc_ftd_manualnat_rules.manualnat_rules_65,
+      fmc_ftd_manualnat_rules.manualnat_rules_66,
+      fmc_ftd_manualnat_rules.manualnat_rules_67,
+      fmc_ftd_manualnat_rules.manualnat_rules_68,
+      fmc_ftd_manualnat_rules.manualnat_rules_69,
+      fmc_ftd_manualnat_rules.manualnat_rules_70,
+      fmc_ftd_manualnat_rules.manualnat_rules_71,
+      fmc_ftd_manualnat_rules.manualnat_rules_72,
+      fmc_ftd_manualnat_rules.manualnat_rules_73,
+      fmc_ftd_manualnat_rules.manualnat_rules_74,
+      fmc_ftd_manualnat_rules.manualnat_rules_75,
+      fmc_ftd_manualnat_rules.manualnat_rules_76,
+      fmc_ftd_manualnat_rules.manualnat_rules_77,
+      fmc_ftd_manualnat_rules.manualnat_rules_78,
+      fmc_ftd_manualnat_rules.manualnat_rules_79,
+      fmc_ftd_manualnat_rules.manualnat_rules_80,
+      fmc_ftd_manualnat_rules.manualnat_rules_81,
+      fmc_ftd_manualnat_rules.manualnat_rules_82,
+      fmc_ftd_manualnat_rules.manualnat_rules_83,
+      fmc_ftd_manualnat_rules.manualnat_rules_84,
+      fmc_ftd_manualnat_rules.manualnat_rules_85,
+      fmc_ftd_manualnat_rules.manualnat_rules_86,
+      fmc_ftd_manualnat_rules.manualnat_rules_87,
+      fmc_ftd_manualnat_rules.manualnat_rules_88,
+      fmc_ftd_manualnat_rules.manualnat_rules_89,
+      fmc_ftd_manualnat_rules.manualnat_rules_90,
+      fmc_ftd_manualnat_rules.manualnat_rules_91,
+      fmc_ftd_manualnat_rules.manualnat_rules_92,
+      fmc_ftd_manualnat_rules.manualnat_rules_93,
+      fmc_ftd_manualnat_rules.manualnat_rules_94,
+      fmc_ftd_manualnat_rules.manualnat_rules_95,
+      fmc_ftd_manualnat_rules.manualnat_rules_96,
+      fmc_ftd_manualnat_rules.manualnat_rules_97,
+      fmc_ftd_manualnat_rules.manualnat_rules_98,
+    ]
+  }
   dynamic "destination_interface" {
-    for_each = can(each.value.data.destination_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.destination_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.destination_interface].id
       type = local.map_securityzones[each.value.data.destination_interface].type
     }
   }
   dynamic "original_destination" {
-    for_each = can(each.value.data.original_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.original_destination].id
       type = local.map_networkobjects[each.value.data.original_destination].type
     }
   }
   dynamic "original_destination_port" {
-    for_each = can(each.value.data.original_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_destination_port].id
       type = local.map_ports[each.value.data.original_destination_port].type
     }
   }
   dynamic "original_source_port" {
-    for_each = can(each.value.data.original_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.original_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.original_source_port].id
       type = local.map_ports[each.value.data.original_source_port].type
     }
   }
   dynamic "source_interface" {
-    for_each = can(each.value.data.source_interface) ? ["1"] : []
+    for_each = try(length(each.value.data.source_interface), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_securityzones[each.value.data.source_interface].id
       type = local.map_securityzones[each.value.data.source_interface].type
     }
   }
   dynamic "translated_destination" {
-    for_each = can(each.value.data.translated_destination) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_destination].id
       type = local.map_networkobjects[each.value.data.translated_destination].type
     }
   }
   dynamic "translated_destination_port" {
-    for_each = can(each.value.data.translated_destination_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_destination_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_destination_port].id
       type = local.map_ports[each.value.data.translated_destination_port].type
     }
   }
   dynamic "translated_source" {
-    for_each = can(each.value.data.translated_source) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_networkobjects[each.value.data.translated_source].id
       type = local.map_networkobjects[each.value.data.translated_source].type
     }
   }
   dynamic "translated_source_port" {
-    for_each = can(each.value.data.translated_source_port) ? ["1"] : []
+    for_each = try(length(each.value.data.translated_source_port), 0) != 0 ? ["1"] : []
     content {
       id   = local.map_ports[each.value.data.translated_source_port].id
       type = local.map_ports[each.value.data.translated_source_port].type
