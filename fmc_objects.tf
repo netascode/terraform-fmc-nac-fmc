@@ -177,7 +177,7 @@ locals {
       for object in try(domains.objects.network_groups, []) :
       {
         name        = object.name
-        description = can(object.description)
+        description = try(object.description, local.defaults.fmc.domains.objects.network_groups.description, null)
         objects     = try(object.objects, [])
         literals    = try(object.literals, [])
       } if !contains(local.res_networkgroups_l1_hlp[domains.name][object.name], false)
@@ -189,7 +189,7 @@ locals {
       for object in try(domains.objects.network_groups, []) :
       {
         name        = object.name
-        description = can(object.description)
+        description = try(object.description, local.defaults.fmc.domains.objects.network_groups.description, null)
         objects     = try(object.objects, [])
         literals    = try(object.literals, [])
       } if !contains(keys(local.map_networkobjects_l2), object.name) && !contains(local.res_networkgroups_l2_hlp[domains.name][object.name], false)
@@ -201,7 +201,7 @@ locals {
       for object in try(domains.objects.network_groups, []) :
       {
         name        = object.name
-        description = can(object.description)
+        description = try(object.description, local.defaults.fmc.domains.objects.network_groups.description, null)
         objects     = try(object.objects, [])
         literals    = try(object.literals, [])
       } if !contains(keys(local.map_networkobjects_l3), object.name) && !contains(local.res_networkgroups_l3_hlp[domains.name][object.name], false)
@@ -213,7 +213,7 @@ locals {
       for object in try(domains.objects.network_groups, []) :
       {
         name        = object.name
-        description = can(object.description)
+        description = try(object.description, local.defaults.fmc.domains.objects.network_groups.description, null)
         objects     = try(object.objects, [])
         literals    = try(object.literals, [])
       } if !contains(keys(local.map_networkobjects_l4), object.name) && !contains(local.res_networkgroups_l4_hlp[domains.name][object.name], false)
@@ -225,7 +225,7 @@ locals {
       for object in try(domains.objects.network_groups, []) :
       {
         name        = object.name
-        description = can(object.description)
+        description = try(object.description, local.defaults.fmc.domains.objects.network_groups.description, null)
         objects     = try(object.objects, [])
         literals    = try(object.literals, [])
       } if !contains(keys(local.map_networkobjects_l5), object.name) && !contains(local.res_networkgroups_l5_hlp[domains.name][object.name], false)
@@ -256,7 +256,7 @@ resource "fmc_network_group_objects" "networkgroup_l1" {
     }
   }
   # Optional
-  description = try(each.value.description, local.defaults.fmc.domains.objects.networkgroups.description, null)
+  description = each.value.description
 
   lifecycle {
     create_before_destroy = false
@@ -287,7 +287,7 @@ resource "fmc_network_group_objects" "networkgroup_l2" {
     }
   }
   # Optional
-  description = try(each.value.description, local.defaults.fmc.domains.objects.networkgroups.description, null)
+  description = each.value.description
   depends_on = [
     fmc_network_group_objects.networkgroup_l1
   ]
@@ -323,7 +323,7 @@ resource "fmc_network_group_objects" "networkgroup_l3" {
   }
 
   # Optional
-  description = try(each.value.description, local.defaults.fmc.domains.objects.networkgroups.description, null)
+  description = each.value.description
   depends_on = [
     fmc_network_group_objects.networkgroup_l1,
     fmc_network_group_objects.networkgroup_l2
@@ -361,7 +361,7 @@ resource "fmc_network_group_objects" "networkgroup_l4" {
   }
 
   # Optional
-  description = try(each.value.description, local.defaults.fmc.domains.objects.networkgroups.description, null)
+  description = each.value.description
   depends_on = [
     fmc_network_group_objects.networkgroup_l1,
     fmc_network_group_objects.networkgroup_l2,
@@ -401,7 +401,7 @@ resource "fmc_network_group_objects" "networkgroup_l5" {
   }
 
   # Optional
-  description = try(each.value.description, local.defaults.fmc.domains.objects.networkgroups.description, null)
+  description = each.value.description
   depends_on = [
     fmc_network_group_objects.networkgroup_l1,
     fmc_network_group_objects.networkgroup_l2,
