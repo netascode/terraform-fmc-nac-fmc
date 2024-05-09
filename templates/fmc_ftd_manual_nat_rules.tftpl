@@ -55,17 +55,12 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_${index}" {
       fmc_ftd_nat_policies.ftdnatpolicy
   ]
   lifecycle {
-    create_before_destroy = false
-    #replace_triggered_by = [    
-    %{ for i in range(0, index)}
-    #    fmc_ftd_manualnat_rules.manualnat_rules_${i},
-    %{~ endfor ~}
-    #]      
+    create_before_destroy = true    
   }
   %{~ else ~}
   depends_on = [fmc_ftd_nat_policies.ftdnatpolicy]
   lifecycle {
-    create_before_destroy = false
+    create_before_destroy = true
   }  
   %{~ endif ~}
 

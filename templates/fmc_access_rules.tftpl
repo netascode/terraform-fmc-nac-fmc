@@ -6,7 +6,7 @@ locals {
     for domain in local.domains : [
       for accesspolicy in try(domain.access_policies, {}) : [
         for accessrule in try(accesspolicy.access_rules, {}) : {
-          key  = replace("$${accesspolicy.name}_$${accessrule.name}", " ", "")
+          key  = replace("$${accesspolicy.name}#$${accessrule.name}", " ", "")
           acp  = accesspolicy.name
           idx  = index(accesspolicy.access_rules, accessrule)
           data = accessrule
@@ -22,7 +22,7 @@ resource "fmc_access_rules" "access_rule_${index}" {
 
   # Mandatory
   acp       = local.map_accesspolicies[each.value.acp].id
-  name      = each.value.data.name
+  name      = "$${each.value.data.name}#$${each.value.idx}"
   action    = each.value.data.action
   enabled   = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
 
@@ -49,17 +49,14 @@ resource "fmc_access_rules" "access_rule_${index}" {
       fmc_access_policies_category.accesspolicy_category
     ]
   lifecycle {
-    create_before_destroy = false
-    #replace_triggered_by = [
-    %{ for i in range(0, index)}
-    #    fmc_access_rules.access_rule_${i},
-    %{~ endfor ~}
-    #]  
+    create_before_destroy = true
   }  
   %{~ else ~}
-  depends_on = [fmc_access_policies_category.accesspolicy_category]
+  depends_on = [
+    fmc_access_policies_category.accesspolicy_category
+    ]
   lifecycle {
-    create_before_destroy = false
+    create_before_destroy = true
   }
   %{~ endif ~}
 
