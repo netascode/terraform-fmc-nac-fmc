@@ -12,6 +12,8 @@ defaults:
             mode: "NONE"
         ipv4_static_routes:
           metric_value: 1
+        vnis:
+          description: "VNI Interface"
       clusters:
         ccl_prefix: 10.10.3.0/27
         vni_prefix: 10.10.4.0/27
@@ -60,3 +62,9 @@ defaults:
           description: " "
         security_zones:
           interface_type: "ROUTED"
+        extended_access_lists:
+            logging: "DISABLED"
+            log_interval: 300
+            log_level: "INFORMATIONAL"
+      network_analysis_policies:
+        snort_engine: "SNORT2"            
