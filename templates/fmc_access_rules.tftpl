@@ -131,7 +131,7 @@ resource "fmc_access_rules" "access_rule_${index}" {
    }
 
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {          
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }

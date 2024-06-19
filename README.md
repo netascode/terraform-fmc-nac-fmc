@@ -196,8 +196,11 @@ module "fmc" {
 | [fmc_device_cluster.cluster](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_cluster) | resource |
 | [fmc_device_physical_interfaces.physical_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_physical_interfaces) | resource |
 | [fmc_device_subinterfaces.sub_interfaces](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_subinterfaces) | resource |
+| [fmc_device_vni.vni](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_vni) | resource |
+| [fmc_device_vtep.vtep](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_vtep) | resource |
 | [fmc_devices.device](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/devices) | resource |
 | [fmc_dynamic_objects.dynamicobject](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/dynamic_objects) | resource |
+| [fmc_extended_acl.extended_acl](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/extended_acl) | resource |
 | [fmc_fqdn_objects.fqdn](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/fqdn_objects) | resource |
 | [fmc_ftd_autonat_rules.ftdautonatrule](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/ftd_autonat_rules) | resource |
 | [fmc_ftd_deploy.ftd](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/ftd_deploy) | resource |
@@ -305,6 +308,7 @@ module "fmc" {
 | [fmc_host_objects.host](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/host_objects) | resource |
 | [fmc_icmpv4_objects.icmpv4](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/icmpv4_objects) | resource |
 | [fmc_ips_policies.ips_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/ips_policies) | resource |
+| [fmc_network_analysis_policy.network_analysis_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_analysis_policy) | resource |
 | [fmc_network_group_objects.networkgroup_l1](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_group_objects) | resource |
 | [fmc_network_group_objects.networkgroup_l2](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_group_objects) | resource |
 | [fmc_network_group_objects.networkgroup_l3](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_group_objects) | resource |
@@ -320,24 +324,33 @@ module "fmc" {
 | [fmc_security_zone.securityzone](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/security_zone) | resource |
 | [fmc_sgt_objects.sgt](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/sgt_objects) | resource |
 | [fmc_smart_license.license](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/smart_license) | resource |
+| [fmc_standard_acl.standard_acl](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/standard_acl) | resource |
 | [fmc_staticIPv4_route.ipv4staticroute](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/staticIPv4_route) | resource |
+| [fmc_time_range_object.time_range](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/time_range_object) | resource |
 | [fmc_url_object_group.urlgroup](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/url_object_group) | resource |
 | [fmc_url_objects.url](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/url_objects) | resource |
 | [local_sensitive_file.defaults](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
 | [fmc_access_policies.accesspolicy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/access_policies) | data source |
 | [fmc_device_physical_interfaces.physical_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/device_physical_interfaces) | data source |
 | [fmc_device_subinterfaces.sub_interfaces](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/device_subinterfaces) | data source |
+| [fmc_device_vni.vni](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/device_vni) | data source |
 | [fmc_devices.device](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/devices) | data source |
 | [fmc_dynamic_objects.dynamicobject](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/dynamic_objects) | data source |
+| [fmc_extended_acl.extended_acl](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/extended_acl) | data source |
+| [fmc_file_policies.file_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/file_policies) | data source |
 | [fmc_ftd_nat_policies.ftdnatpolicy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/ftd_nat_policies) | data source |
 | [fmc_host_objects.host](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/host_objects) | data source |
 | [fmc_ips_policies.ips_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/ips_policies) | data source |
+| [fmc_network_analysis_policy.network_analysis_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/network_analysis_policy) | data source |
 | [fmc_network_group_objects.networkgroup](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/network_group_objects) | data source |
 | [fmc_network_objects.network](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/network_objects) | data source |
 | [fmc_port_group_objects.portgroup](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/port_group_objects) | data source |
 | [fmc_port_objects.port](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/port_objects) | data source |
 | [fmc_security_zones.securityzone](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/security_zones) | data source |
 | [fmc_sgt_objects.sgt](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/sgt_objects) | data source |
+| [fmc_smart_license.smart_license](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/smart_license) | data source |
+| [fmc_standard_acl.standard_acl](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/standard_acl) | data source |
+| [fmc_syslog_alerts.syslog_alert](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/syslog_alerts) | data source |
 | [fmc_url_objects.url](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/url_objects) | data source |
 | [utils_yaml_merge.defaults](https://registry.terraform.io/providers/netascode/utils/latest/docs/data-sources/yaml_merge) | data source |
 | [utils_yaml_merge.model](https://registry.terraform.io/providers/netascode/utils/latest/docs/data-sources/yaml_merge) | data source |

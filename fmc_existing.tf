@@ -3,24 +3,29 @@
 ###
 
 locals {
-  data_devices        = [for obj in try(local.data_existing.fmc.domains[0].devices, []) : obj.name]
-  data_clusters       = [for obj in try(local.data_existing.fmc.domains[0].clusters, []) : obj.name]
-  data_accesspolicies = [for obj in try(local.data_existing.fmc.domains[0].access_policies, []) : obj.name]
-  data_ftdnatpolicies = [for obj in try(local.data_existing.fmc.domains[0].ftd_nat_policies, []) : obj.name]
-  data_ipspolicies    = [for obj in try(local.data_existing.fmc.domains[0].ips_policies, []) : obj.name]
-  #data_filepolicies   = [for obj in try(local.data_existing.fmc.domains[0].file_policies, []) : obj.name]
-  data_hosts    = [for obj in try(local.data_existing.fmc.domains[0].objects.hosts, []) : obj.name]
-  data_networks = [for obj in try(local.data_existing.fmc.domains[0].objects.networks, []) : obj.name]
-  #data_ranges        = []
+  data_smart_license             = contains(keys(local.data_existing.fmc), "smart_license") ? [local.data_existing.fmc.smart_license] : []
+  data_devices                   = [for obj in try(local.data_existing.fmc.domains[0].devices, []) : obj.name]
+  data_clusters                  = [for obj in try(local.data_existing.fmc.domains[0].clusters, []) : obj.name]
+  data_accesspolicies            = [for obj in try(local.data_existing.fmc.domains[0].access_policies, []) : obj.name]
+  data_ftdnatpolicies            = [for obj in try(local.data_existing.fmc.domains[0].ftd_nat_policies, []) : obj.name]
+  data_ipspolicies               = [for obj in try(local.data_existing.fmc.domains[0].ips_policies, []) : obj.name]
+  data_filepolicies              = [for obj in try(local.data_existing.fmc.domains[0].file_policies, []) : obj.name]
+  data_network_analysis_policies = [for obj in try(local.data_existing.fmc.domains[0].network_analysis_policies, []) : obj.name]
+  data_hosts                     = [for obj in try(local.data_existing.fmc.domains[0].objects.hosts, []) : obj.name]
+  data_networks                  = [for obj in try(local.data_existing.fmc.domains[0].objects.networks, []) : obj.name]
+  #data_ranges                    = []
   data_networkgroups = [for obj in try(local.data_existing.fmc.domains[0].objects.network_groups, []) : obj.name]
   data_ports         = [for obj in try(local.data_existing.fmc.domains[0].objects.ports, []) : obj.name]
   data_portgroups    = [for obj in try(local.data_existing.fmc.domains[0].objects.port_groups, []) : obj.name]
-  #data_icmpv_4s       = []
-  data_securityzones = [for obj in try(local.data_existing.fmc.domains[0].objects.security_zones, []) : obj.name]
-  data_urls          = [for obj in try(local.data_existing.fmc.domains[0].objects.urls, []) : obj.name]
-  #data_syslogalerts   = []
-  data_sgts           = [for obj in try(local.data_existing.fmc.domains[0].objects.sgts, []) : obj.name]
-  data_dynamicobjects = [for obj in try(local.data_existing.fmc.domains[0].objects.dynamic_objects, []) : obj.name]
+  #data_icmpv_4s                  = []
+  data_securityzones         = [for obj in try(local.data_existing.fmc.domains[0].objects.security_zones, []) : obj.name]
+  data_urls                  = [for obj in try(local.data_existing.fmc.domains[0].objects.urls, []) : obj.name]
+  data_syslog_alerts         = [for obj in try(local.data_existing.fmc.domains[0].syslog_alerts, []) : obj.name]
+  data_sgts                  = [for obj in try(local.data_existing.fmc.domains[0].objects.sgts, []) : obj.name]
+  data_dynamicobjects        = [for obj in try(local.data_existing.fmc.domains[0].objects.dynamic_objects, []) : obj.name]
+  data_time_ranges           = [for obj in try(local.data_existing.fmc.domains[0].objects.time_ranges, []) : obj.name]
+  data_standard_access_lists = [for obj in try(local.data_existing.fmc.domains[0].objects.standard_access_lists, []) : obj.name]
+  data_extended_access_lists = [for obj in try(local.data_existing.fmc.domains[0].objects.extended_access_lists, []) : obj.name]
 
   data_sub_interfaces = flatten([
     for device in try(local.data_existing.fmc.domains[0].devices, []) : [
@@ -43,6 +48,28 @@ locals {
     ]
   ])
 
+  data_vni_interfaces = flatten([
+    for device in try(local.data_existing.fmc.domains[0].devices, []) : [
+      for vni in try(device.vnis, []) : {
+        key       = "${device.name}/${vni.name}/${vni.vni_id}"
+        device_id = local.map_devices[device.name].id
+        vni_name  = vni
+      }
+    ]
+  ])
+
+  data_vni_interfaces_list = flatten([
+    for device in try(local.data_existing.fmc.domains[0].devices, []) : [
+      for vni in try(device.vnis, []) : "${device.name}/${vni.name}/${vni.vni_id}"
+    ]
+  ])
+
+}
+
+data "fmc_smart_license" "smart_license" {
+  for_each = toset(local.data_smart_license)
+
+  virtual_account = try(each.key, null)
 }
 
 data "fmc_access_policies" "accesspolicy" {
@@ -101,6 +128,18 @@ data "fmc_port_group_objects" "portgroup" {
 #  name = each.key 
 #}
 
+data "fmc_standard_acl" "standard_acl" {
+  for_each = toset(local.data_standard_access_lists)
+
+  name = each.key
+}
+
+data "fmc_extended_acl" "extended_acl" {
+  for_each = toset(local.data_extended_access_lists)
+
+  name = each.key
+}
+
 data "fmc_security_zones" "securityzone" {
   for_each = toset(local.data_securityzones)
 
@@ -119,11 +158,17 @@ data "fmc_ips_policies" "ips_policy" {
   name = each.key
 }
 
-# data "fmc_file_policies" "file_policy" {
-#   for_each = toset(local.data_filepolicies)
+data "fmc_file_policies" "file_policy" {
+  for_each = toset(local.data_filepolicies)
 
-#   name = each.key
-# }
+  name = each.key
+}
+
+data "fmc_network_analysis_policy" "network_analysis_policy" {
+  for_each = toset(local.data_network_analysis_policies)
+
+  name = each.key
+}
 
 data "fmc_devices" "device" {
   for_each = toset(local.data_devices)
@@ -161,6 +206,13 @@ data "fmc_device_subinterfaces" "sub_interfaces" {
   ]
 }
 
+data "fmc_device_vni" "vni" {
+  for_each = { for object in local.data_vni_interfaces : object.key => object }
+
+  name      = each.value.vni_name
+  device_id = each.value.device_id
+}
+
 data "fmc_sgt_objects" "sgt" {
   for_each = toset(local.data_sgts)
 
@@ -169,6 +221,12 @@ data "fmc_sgt_objects" "sgt" {
 
 data "fmc_url_objects" "url" {
   for_each = toset(local.data_urls)
+
+  name = each.key
+}
+
+data "fmc_syslog_alerts" "syslog_alert" {
+  for_each = toset(local.data_syslog_alerts)
 
   name = each.key
 }

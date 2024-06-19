@@ -100,7 +100,7 @@ resource "fmc_access_rules" "access_rule_0" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -264,7 +264,7 @@ resource "fmc_access_rules" "access_rule_1" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -430,7 +430,7 @@ resource "fmc_access_rules" "access_rule_2" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -598,7 +598,7 @@ resource "fmc_access_rules" "access_rule_3" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -768,7 +768,7 @@ resource "fmc_access_rules" "access_rule_4" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -940,7 +940,7 @@ resource "fmc_access_rules" "access_rule_5" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -1114,7 +1114,7 @@ resource "fmc_access_rules" "access_rule_6" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -1290,7 +1290,7 @@ resource "fmc_access_rules" "access_rule_7" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -1468,7 +1468,7 @@ resource "fmc_access_rules" "access_rule_8" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -1648,7 +1648,7 @@ resource "fmc_access_rules" "access_rule_9" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -1830,7 +1830,7 @@ resource "fmc_access_rules" "access_rule_10" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -2014,7 +2014,7 @@ resource "fmc_access_rules" "access_rule_11" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -2200,7 +2200,7 @@ resource "fmc_access_rules" "access_rule_12" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -2388,7 +2388,7 @@ resource "fmc_access_rules" "access_rule_13" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -2578,7 +2578,7 @@ resource "fmc_access_rules" "access_rule_14" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -2770,7 +2770,7 @@ resource "fmc_access_rules" "access_rule_15" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -2964,7 +2964,7 @@ resource "fmc_access_rules" "access_rule_16" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -3160,7 +3160,7 @@ resource "fmc_access_rules" "access_rule_17" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -3358,7 +3358,7 @@ resource "fmc_access_rules" "access_rule_18" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -3558,7 +3558,7 @@ resource "fmc_access_rules" "access_rule_19" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -3760,7 +3760,7 @@ resource "fmc_access_rules" "access_rule_20" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -3964,7 +3964,7 @@ resource "fmc_access_rules" "access_rule_21" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -4170,7 +4170,7 @@ resource "fmc_access_rules" "access_rule_22" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -4378,7 +4378,7 @@ resource "fmc_access_rules" "access_rule_23" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -4588,7 +4588,7 @@ resource "fmc_access_rules" "access_rule_24" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -4800,7 +4800,7 @@ resource "fmc_access_rules" "access_rule_25" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -5014,7 +5014,7 @@ resource "fmc_access_rules" "access_rule_26" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -5230,7 +5230,7 @@ resource "fmc_access_rules" "access_rule_27" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -5448,7 +5448,7 @@ resource "fmc_access_rules" "access_rule_28" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -5668,7 +5668,7 @@ resource "fmc_access_rules" "access_rule_29" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -5890,7 +5890,7 @@ resource "fmc_access_rules" "access_rule_30" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -6114,7 +6114,7 @@ resource "fmc_access_rules" "access_rule_31" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -6340,7 +6340,7 @@ resource "fmc_access_rules" "access_rule_32" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -6568,7 +6568,7 @@ resource "fmc_access_rules" "access_rule_33" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -6798,7 +6798,7 @@ resource "fmc_access_rules" "access_rule_34" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -7030,7 +7030,7 @@ resource "fmc_access_rules" "access_rule_35" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -7264,7 +7264,7 @@ resource "fmc_access_rules" "access_rule_36" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -7500,7 +7500,7 @@ resource "fmc_access_rules" "access_rule_37" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -7738,7 +7738,7 @@ resource "fmc_access_rules" "access_rule_38" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -7978,7 +7978,7 @@ resource "fmc_access_rules" "access_rule_39" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -8220,7 +8220,7 @@ resource "fmc_access_rules" "access_rule_40" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -8464,7 +8464,7 @@ resource "fmc_access_rules" "access_rule_41" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -8710,7 +8710,7 @@ resource "fmc_access_rules" "access_rule_42" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -8958,7 +8958,7 @@ resource "fmc_access_rules" "access_rule_43" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -9208,7 +9208,7 @@ resource "fmc_access_rules" "access_rule_44" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -9460,7 +9460,7 @@ resource "fmc_access_rules" "access_rule_45" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -9714,7 +9714,7 @@ resource "fmc_access_rules" "access_rule_46" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -9970,7 +9970,7 @@ resource "fmc_access_rules" "access_rule_47" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -10228,7 +10228,7 @@ resource "fmc_access_rules" "access_rule_48" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -10488,7 +10488,7 @@ resource "fmc_access_rules" "access_rule_49" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -10750,7 +10750,7 @@ resource "fmc_access_rules" "access_rule_50" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -11014,7 +11014,7 @@ resource "fmc_access_rules" "access_rule_51" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -11280,7 +11280,7 @@ resource "fmc_access_rules" "access_rule_52" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -11548,7 +11548,7 @@ resource "fmc_access_rules" "access_rule_53" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -11818,7 +11818,7 @@ resource "fmc_access_rules" "access_rule_54" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -12090,7 +12090,7 @@ resource "fmc_access_rules" "access_rule_55" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -12364,7 +12364,7 @@ resource "fmc_access_rules" "access_rule_56" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -12640,7 +12640,7 @@ resource "fmc_access_rules" "access_rule_57" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -12918,7 +12918,7 @@ resource "fmc_access_rules" "access_rule_58" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -13198,7 +13198,7 @@ resource "fmc_access_rules" "access_rule_59" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -13480,7 +13480,7 @@ resource "fmc_access_rules" "access_rule_60" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -13764,7 +13764,7 @@ resource "fmc_access_rules" "access_rule_61" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -14050,7 +14050,7 @@ resource "fmc_access_rules" "access_rule_62" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -14338,7 +14338,7 @@ resource "fmc_access_rules" "access_rule_63" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -14628,7 +14628,7 @@ resource "fmc_access_rules" "access_rule_64" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -14920,7 +14920,7 @@ resource "fmc_access_rules" "access_rule_65" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -15214,7 +15214,7 @@ resource "fmc_access_rules" "access_rule_66" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -15510,7 +15510,7 @@ resource "fmc_access_rules" "access_rule_67" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -15808,7 +15808,7 @@ resource "fmc_access_rules" "access_rule_68" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -16108,7 +16108,7 @@ resource "fmc_access_rules" "access_rule_69" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -16410,7 +16410,7 @@ resource "fmc_access_rules" "access_rule_70" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -16714,7 +16714,7 @@ resource "fmc_access_rules" "access_rule_71" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -17020,7 +17020,7 @@ resource "fmc_access_rules" "access_rule_72" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -17328,7 +17328,7 @@ resource "fmc_access_rules" "access_rule_73" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -17638,7 +17638,7 @@ resource "fmc_access_rules" "access_rule_74" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -17950,7 +17950,7 @@ resource "fmc_access_rules" "access_rule_75" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -18264,7 +18264,7 @@ resource "fmc_access_rules" "access_rule_76" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -18580,7 +18580,7 @@ resource "fmc_access_rules" "access_rule_77" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -18898,7 +18898,7 @@ resource "fmc_access_rules" "access_rule_78" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -19218,7 +19218,7 @@ resource "fmc_access_rules" "access_rule_79" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -19540,7 +19540,7 @@ resource "fmc_access_rules" "access_rule_80" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -19864,7 +19864,7 @@ resource "fmc_access_rules" "access_rule_81" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -20190,7 +20190,7 @@ resource "fmc_access_rules" "access_rule_82" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -20518,7 +20518,7 @@ resource "fmc_access_rules" "access_rule_83" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -20848,7 +20848,7 @@ resource "fmc_access_rules" "access_rule_84" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -21180,7 +21180,7 @@ resource "fmc_access_rules" "access_rule_85" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -21514,7 +21514,7 @@ resource "fmc_access_rules" "access_rule_86" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -21850,7 +21850,7 @@ resource "fmc_access_rules" "access_rule_87" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -22188,7 +22188,7 @@ resource "fmc_access_rules" "access_rule_88" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -22528,7 +22528,7 @@ resource "fmc_access_rules" "access_rule_89" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -22870,7 +22870,7 @@ resource "fmc_access_rules" "access_rule_90" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -23214,7 +23214,7 @@ resource "fmc_access_rules" "access_rule_91" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -23560,7 +23560,7 @@ resource "fmc_access_rules" "access_rule_92" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -23908,7 +23908,7 @@ resource "fmc_access_rules" "access_rule_93" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -24258,7 +24258,7 @@ resource "fmc_access_rules" "access_rule_94" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -24610,7 +24610,7 @@ resource "fmc_access_rules" "access_rule_95" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -24964,7 +24964,7 @@ resource "fmc_access_rules" "access_rule_96" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -25320,7 +25320,7 @@ resource "fmc_access_rules" "access_rule_97" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -25678,7 +25678,7 @@ resource "fmc_access_rules" "access_rule_98" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }
@@ -26038,7 +26038,7 @@ resource "fmc_access_rules" "access_rule_99" {
     }
   }
   dynamic "source_dynamic_objects" {
-    for_each = try(length(each.value.data.source_netwsource_dynamic_objectsorks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
       dynamic "source_dynamic_object" {
         for_each = { for obj in try(each.value.data.source_dynamic_objects, []) : obj => obj }

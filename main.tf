@@ -153,7 +153,7 @@ locals {
           for physical_interface in try(device.physical_interfaces, []) : [
             for subinterface in try(physical_interface.subinterfaces, []) : {
               "name" : try(subinterface.name, null)
-              "object" : fmc_device_subinterfaces.sub_interfaces["${device.name}/${physical_interface.interface}/${subinterface.id}"].if_name
+              "object" : fmc_device_subinterfaces.sub_interfaces["${device.name}/${physical_interface.interface}/${subinterface.id}"].name
             }
           ]
         ]) : int_name.name => int_name.object

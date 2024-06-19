@@ -217,3 +217,29 @@ resource "fmc_ips_policies" "ips_policy" {
     data.fmc_ips_policies.ips_policy
   ]
 }
+
+###
+# Network Analysis Policy
+###
+locals {
+  res_network_analysis_policies = flatten([
+    for domains in local.domains : [
+      for object in try(domains.network_analysis_policies, []) : object
+    ]
+  ])
+}
+
+resource "fmc_network_analysis_policy" "network_analysis_policy" {
+  for_each = { for net_analysis_policy in local.res_network_analysis_policies : net_analysis_policy.name => net_analysis_policy }
+
+  # Mandatory  
+  name = each.value.name
+  base_policy {
+    name = each.value.base_policy
+  }
+
+  # Optional  
+  description  = try(each.value.description, local.defaults.fmc.domains.network_analysis_policies.description, null)
+  snort_engine = try(each.value.snort_engine, local.defaults.fmc.domains.network_analysis_policies.snort_engine, null)
+
+}

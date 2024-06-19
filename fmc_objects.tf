@@ -482,9 +482,7 @@ resource "fmc_port_group_objects" "portgroup" {
   name = each.value.name
 
   dynamic "objects" {
-    for_each = { for obj in try(each.value.objects, {}) :
-      obj => obj
-    }
+    for_each = { for obj in try(each.value.objects, {}) : obj => obj }
     content {
       id   = local.map_ports[objects.value].id
       type = local.map_ports[objects.value].type
@@ -535,8 +533,7 @@ resource "fmc_url_object_group" "urlgroup" {
   name = each.value.name
 
   dynamic "objects" {
-    for_each = { for obj in try(each.value.objects, {}) :
-      obj => obj
+    for_each = { for obj in try(each.value.objects, {}) : obj => obj
     }
     content {
       id   = local.map_urls[objects.value].id
@@ -556,6 +553,42 @@ resource "fmc_url_object_group" "urlgroup" {
   # Optional
   description = try(each.value.description, local.defaults.fmc.domains.objects.url_groups.description, null)
 }
+###
+# TIME RANGE
+###
+locals {
+  res_time_ranges = flatten([
+    for domains in local.domains : [
+      for object in try(domains.objects.time_ranges, []) : object if !contains(local.data_time_ranges, object.name)
+    ]
+  ])
+}
+
+resource "fmc_time_range_object" "time_range" {
+  for_each = { for time_range in local.res_time_ranges : time_range.name => time_range }
+  #Mandatory
+  name = each.value.name
+
+  effective_start_date = each.value.effective_start_date
+  effective_end_date   = each.value.effective_end_date
+
+  #Optional
+  description = try(each.value.description, null)
+
+  dynamic "recurrence" {
+    for_each = { for obj in try(each.value.recurrences, {}) : obj.recurrence_type => obj }
+    content {
+      recurrence_type  = try(recurrence.value.recurrence_type, null)
+      daily_end_time   = try(recurrence.value.daily_end_time, null)
+      daily_start_time = try(recurrence.value.daily_start_time, null)
+      days             = try(recurrence.value.days, [])
+      end_day          = try(recurrence.value.end_day, null)
+      end_time         = try(recurrence.value.end_time, null)
+      start_day        = try(recurrence.value.start_day, null)
+      start_time       = try(recurrence.value.start_time, null)
+    }
+  }
+}
 
 ###
 # SECURITY ZONE
@@ -574,4 +607,93 @@ resource "fmc_security_zone" "securityzone" {
   # Mandatory  
   name           = each.value.name
   interface_mode = try(each.value.interface_type, local.defaults.fmc.domains.objects.security_zones.interface_type)
+}
+
+###
+# STANDARD ACL
+###
+locals {
+  res_standard_acl = flatten([
+    for domains in local.domains : [
+      for object in try(domains.objects.standard_access_lists, []) : {
+        name    = object.name
+        entries = object.entries
+      } if !contains(local.data_standard_access_lists, object.name)
+    ]
+  ])
+}
+
+
+resource "fmc_standard_acl" "standard_acl" {
+  for_each = { for standard_acl in local.res_standard_acl : standard_acl.name => standard_acl }
+
+  #Mandatory
+  name          = each.value.name
+  action        = each.value.entries[0].action
+  object_id     = try(local.map_networkobjects[each.value.entries[0].objects[0]].id, null)
+  literal_value = try(each.value.entries[0].literals[0], null)
+}
+
+###
+# EXTENDED ACL
+###
+locals {
+  res_extended_acl = flatten([
+    for domains in local.domains : [
+      for object in try(domains.objects.extended_access_lists, []) : {
+        name         = object.name
+        logging      = object.logging
+        log_interval = object.log_interval
+        log_level    = object.log_level
+        entries = [for entry in try(object.entries, []) : {
+          destination_network_literals = [for dst_net_lit in try(entry.destination_network_literals, []) : {
+            destination_network_literal_type  = can(regex("/", dst_net_lit)) ? "Network" : "Host"
+            destination_network_literal_value = dst_net_lit
+          }]
+          source_network_literals = [for src_net_lit in try(entry.source_network_literals, []) : {
+            source_network_literal_type  = can(regex("/", src_net_lit)) ? "Network" : "Host"
+            source_network_literal_value = src_net_lit
+          }]
+          destination_network_objects = try(entry.destination_network_objects, null)
+          destination_port_literals   = try(entry.destination_port_literals, null) # bug in provider
+          destination_port_objects    = try(entry.destination_port_objects, null)
+          source_network_objects      = try(entry.source_network_objects, null)
+          source_port_literals        = try(entry.source_port_literals, null)
+          source_port_objects         = try(entry.source_port_objects, null)
+          action                      = try(entry.action, null)
+          }
+        ]
+      } if !contains(local.data_extended_access_lists, object.name)
+    ]
+  ])
+}
+
+resource "fmc_extended_acl" "extended_acl" {
+  for_each = { for extended_acl in local.res_extended_acl : extended_acl.name => extended_acl }
+
+  #Mandatory
+  name = each.value.name
+
+  logging = each.value.logging
+  #Only if logging != "DISABLED"
+  log_level    = try(each.value.log_level, local.defaults.fmc.domains.objects.extended_access_lists.log_level, null)
+  log_interval = try(each.value.log_interval, local.defaults.fmc.domains.objects.extended_access_lists.log_interval, null)
+
+  #To be fixed in the new provider
+  #Optional
+  #for literals there is a bug in provider
+  action = each.value.entries[0].action
+  #destination_network_literal_type = try(each.value.entries[0].destination_network_literals[0].destination_network_literal_type, null)
+  #destination_network_literal_value = try(each.value.entries[0].destination_network_literals[0].destination_network_literal_value, null)
+  destination_network_object_id = try(local.map_networkobjects[each.value.entries[0].destination_network_objects[0]].id, null)
+  #destination_port_literal_port = try(each.value.entries[0].destination_port_literals[0].port, null)
+  #destination_port_literal_protocol = try(each.value.entries[0].destination_port_literals[0].protocol, null)
+  destination_port_object_id = try(local.map_ports[each.value.entries[0].destination_port_objects[0]].id, null)
+  #source_network_literal_type = try(each.value.entries[0].source_network_literals[0].source_network_literal_type, null)
+  #source_network_literal_value = try(each.value.entries[0].source_network_literals[0].source_network_literal_value, null)
+  source_network_object_id = try(local.map_networkobjects[each.value.entries[0].source_network_objects[0]].id, null)
+  #source_port_literal_port = try(each.value.entries[0].source_port_literals[0].port, null)
+  #source_port_literal_protocol = try(each.value.entries[0].source_port_literals[0].protocol, null)
+  source_port_object_id = try(local.map_ports[each.value.entries[0].source_port_objects[0]].id, null)
+
 }

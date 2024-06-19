@@ -17,3 +17,4 @@ generated_*.tf
 .DS_Store
 data/
 schema/
+log.txt
