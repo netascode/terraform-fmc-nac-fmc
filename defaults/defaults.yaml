@@ -67,4 +67,4 @@ defaults:
             log_interval: 300
             log_level: "INFORMATIONAL"
       network_analysis_policies:
-        snort_engine: "SNORT2"            
+        snort_engine: "SNORT2"
