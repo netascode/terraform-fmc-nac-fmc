@@ -4,7 +4,7 @@
 locals {
   res_ftdmanualnatrules = flatten([
     for domain in local.domains : [
-      for natpolicy in try(domain.ftd_nat_policies, []) : [
+      for natpolicy in try(domain.policies.ftd_nat_policies, []) : [
         for ftdmanualnatrule in try(natpolicy.ftd_manual_nat_rules, []) : {
           key        = replace("$${natpolicy.name}_$${ftdmanualnatrule.name}", " ", "")
           nat_policy = natpolicy.name
@@ -34,17 +34,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_${index}" {
 
   # Optional
   description                       = try(each.value.data.description, null) 
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null) 
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null) 
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null) 
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null) 
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null) 
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null) 
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null) 
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null) 
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null) 
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null) 
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null) 
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null) 
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null) 
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null) 
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null) 
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null) 
 
   %{~ if index != 0 ~}
   # Positioning

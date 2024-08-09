@@ -4,7 +4,7 @@
 locals {
   res_accessrules = flatten([
     for domain in local.domains : [
-      for accesspolicy in try(domain.access_policies, {}) : [
+      for accesspolicy in try(domain.policies.access_policies, {}) : [
         for accessrule in try(accesspolicy.access_rules, {}) : {
           key  = replace("${accesspolicy.name}_${accessrule.name}", " ", "")
           acp  = accesspolicy.name
@@ -21,10 +21,10 @@ resource "fmc_access_rules" "access_rule_0" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -178,10 +178,10 @@ resource "fmc_access_rules" "access_rule_1" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -342,10 +342,10 @@ resource "fmc_access_rules" "access_rule_2" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -508,10 +508,10 @@ resource "fmc_access_rules" "access_rule_3" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -676,10 +676,10 @@ resource "fmc_access_rules" "access_rule_4" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -846,10 +846,10 @@ resource "fmc_access_rules" "access_rule_5" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -1018,10 +1018,10 @@ resource "fmc_access_rules" "access_rule_6" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -1192,10 +1192,10 @@ resource "fmc_access_rules" "access_rule_7" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -1368,10 +1368,10 @@ resource "fmc_access_rules" "access_rule_8" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -1546,10 +1546,10 @@ resource "fmc_access_rules" "access_rule_9" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -1726,10 +1726,10 @@ resource "fmc_access_rules" "access_rule_10" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -1908,10 +1908,10 @@ resource "fmc_access_rules" "access_rule_11" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -2092,10 +2092,10 @@ resource "fmc_access_rules" "access_rule_12" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -2278,10 +2278,10 @@ resource "fmc_access_rules" "access_rule_13" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -2466,10 +2466,10 @@ resource "fmc_access_rules" "access_rule_14" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -2656,10 +2656,10 @@ resource "fmc_access_rules" "access_rule_15" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -2848,10 +2848,10 @@ resource "fmc_access_rules" "access_rule_16" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -3042,10 +3042,10 @@ resource "fmc_access_rules" "access_rule_17" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -3238,10 +3238,10 @@ resource "fmc_access_rules" "access_rule_18" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -3436,10 +3436,10 @@ resource "fmc_access_rules" "access_rule_19" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -3636,10 +3636,10 @@ resource "fmc_access_rules" "access_rule_20" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -3838,10 +3838,10 @@ resource "fmc_access_rules" "access_rule_21" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -4042,10 +4042,10 @@ resource "fmc_access_rules" "access_rule_22" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -4248,10 +4248,10 @@ resource "fmc_access_rules" "access_rule_23" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -4456,10 +4456,10 @@ resource "fmc_access_rules" "access_rule_24" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -4666,10 +4666,10 @@ resource "fmc_access_rules" "access_rule_25" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -4878,10 +4878,10 @@ resource "fmc_access_rules" "access_rule_26" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -5092,10 +5092,10 @@ resource "fmc_access_rules" "access_rule_27" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -5308,10 +5308,10 @@ resource "fmc_access_rules" "access_rule_28" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -5526,10 +5526,10 @@ resource "fmc_access_rules" "access_rule_29" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -5746,10 +5746,10 @@ resource "fmc_access_rules" "access_rule_30" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -5968,10 +5968,10 @@ resource "fmc_access_rules" "access_rule_31" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -6192,10 +6192,10 @@ resource "fmc_access_rules" "access_rule_32" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -6418,10 +6418,10 @@ resource "fmc_access_rules" "access_rule_33" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -6646,10 +6646,10 @@ resource "fmc_access_rules" "access_rule_34" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -6876,10 +6876,10 @@ resource "fmc_access_rules" "access_rule_35" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -7108,10 +7108,10 @@ resource "fmc_access_rules" "access_rule_36" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -7342,10 +7342,10 @@ resource "fmc_access_rules" "access_rule_37" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -7578,10 +7578,10 @@ resource "fmc_access_rules" "access_rule_38" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -7816,10 +7816,10 @@ resource "fmc_access_rules" "access_rule_39" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -8056,10 +8056,10 @@ resource "fmc_access_rules" "access_rule_40" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -8298,10 +8298,10 @@ resource "fmc_access_rules" "access_rule_41" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -8542,10 +8542,10 @@ resource "fmc_access_rules" "access_rule_42" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -8788,10 +8788,10 @@ resource "fmc_access_rules" "access_rule_43" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -9036,10 +9036,10 @@ resource "fmc_access_rules" "access_rule_44" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -9286,10 +9286,10 @@ resource "fmc_access_rules" "access_rule_45" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -9538,10 +9538,10 @@ resource "fmc_access_rules" "access_rule_46" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -9792,10 +9792,10 @@ resource "fmc_access_rules" "access_rule_47" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -10048,10 +10048,10 @@ resource "fmc_access_rules" "access_rule_48" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -10306,10 +10306,10 @@ resource "fmc_access_rules" "access_rule_49" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -10566,10 +10566,10 @@ resource "fmc_access_rules" "access_rule_50" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -10828,10 +10828,10 @@ resource "fmc_access_rules" "access_rule_51" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -11092,10 +11092,10 @@ resource "fmc_access_rules" "access_rule_52" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -11358,10 +11358,10 @@ resource "fmc_access_rules" "access_rule_53" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -11626,10 +11626,10 @@ resource "fmc_access_rules" "access_rule_54" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -11896,10 +11896,10 @@ resource "fmc_access_rules" "access_rule_55" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -12168,10 +12168,10 @@ resource "fmc_access_rules" "access_rule_56" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -12442,10 +12442,10 @@ resource "fmc_access_rules" "access_rule_57" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -12718,10 +12718,10 @@ resource "fmc_access_rules" "access_rule_58" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -12996,10 +12996,10 @@ resource "fmc_access_rules" "access_rule_59" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -13276,10 +13276,10 @@ resource "fmc_access_rules" "access_rule_60" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -13558,10 +13558,10 @@ resource "fmc_access_rules" "access_rule_61" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -13842,10 +13842,10 @@ resource "fmc_access_rules" "access_rule_62" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -14128,10 +14128,10 @@ resource "fmc_access_rules" "access_rule_63" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -14416,10 +14416,10 @@ resource "fmc_access_rules" "access_rule_64" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -14706,10 +14706,10 @@ resource "fmc_access_rules" "access_rule_65" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -14998,10 +14998,10 @@ resource "fmc_access_rules" "access_rule_66" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -15292,10 +15292,10 @@ resource "fmc_access_rules" "access_rule_67" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -15588,10 +15588,10 @@ resource "fmc_access_rules" "access_rule_68" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -15886,10 +15886,10 @@ resource "fmc_access_rules" "access_rule_69" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -16186,10 +16186,10 @@ resource "fmc_access_rules" "access_rule_70" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -16488,10 +16488,10 @@ resource "fmc_access_rules" "access_rule_71" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -16792,10 +16792,10 @@ resource "fmc_access_rules" "access_rule_72" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -17098,10 +17098,10 @@ resource "fmc_access_rules" "access_rule_73" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -17406,10 +17406,10 @@ resource "fmc_access_rules" "access_rule_74" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -17716,10 +17716,10 @@ resource "fmc_access_rules" "access_rule_75" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -18028,10 +18028,10 @@ resource "fmc_access_rules" "access_rule_76" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -18342,10 +18342,10 @@ resource "fmc_access_rules" "access_rule_77" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -18658,10 +18658,10 @@ resource "fmc_access_rules" "access_rule_78" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -18976,10 +18976,10 @@ resource "fmc_access_rules" "access_rule_79" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -19296,10 +19296,10 @@ resource "fmc_access_rules" "access_rule_80" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -19618,10 +19618,10 @@ resource "fmc_access_rules" "access_rule_81" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -19942,10 +19942,10 @@ resource "fmc_access_rules" "access_rule_82" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -20268,10 +20268,10 @@ resource "fmc_access_rules" "access_rule_83" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -20596,10 +20596,10 @@ resource "fmc_access_rules" "access_rule_84" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -20926,10 +20926,10 @@ resource "fmc_access_rules" "access_rule_85" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -21258,10 +21258,10 @@ resource "fmc_access_rules" "access_rule_86" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -21592,10 +21592,10 @@ resource "fmc_access_rules" "access_rule_87" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -21928,10 +21928,10 @@ resource "fmc_access_rules" "access_rule_88" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -22266,10 +22266,10 @@ resource "fmc_access_rules" "access_rule_89" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -22606,10 +22606,10 @@ resource "fmc_access_rules" "access_rule_90" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -22948,10 +22948,10 @@ resource "fmc_access_rules" "access_rule_91" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -23292,10 +23292,10 @@ resource "fmc_access_rules" "access_rule_92" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -23638,10 +23638,10 @@ resource "fmc_access_rules" "access_rule_93" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -23986,10 +23986,10 @@ resource "fmc_access_rules" "access_rule_94" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -24336,10 +24336,10 @@ resource "fmc_access_rules" "access_rule_95" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -24688,10 +24688,10 @@ resource "fmc_access_rules" "access_rule_96" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -25042,10 +25042,10 @@ resource "fmc_access_rules" "access_rule_97" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -25398,10 +25398,10 @@ resource "fmc_access_rules" "access_rule_98" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)
@@ -25756,10 +25756,10 @@ resource "fmc_access_rules" "access_rule_99" {
   acp     = local.map_accesspolicies[each.value.acp].id
   name    = each.value.data.name
   action  = each.value.data.action
-  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
   # Optional
   category      = try(each.value.data.category, null)
-  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null)
+  enable_syslog = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null)
   file_policy   = try(each.value.data.file_policy, null)
   ips_policy    = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin     = try(each.value.data.log_connection_begin, null)

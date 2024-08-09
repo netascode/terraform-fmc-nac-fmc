@@ -331,6 +331,7 @@ module "fmc" {
 | [fmc_url_objects.url](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/url_objects) | resource |
 | [local_sensitive_file.defaults](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
 | [fmc_access_policies.accesspolicy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/access_policies) | data source |
+| [fmc_device_cluster.cluster](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/device_cluster) | data source |
 | [fmc_device_physical_interfaces.physical_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/device_physical_interfaces) | data source |
 | [fmc_device_subinterfaces.sub_interfaces](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/device_subinterfaces) | data source |
 | [fmc_device_vni.vni](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/device_vni) | data source |

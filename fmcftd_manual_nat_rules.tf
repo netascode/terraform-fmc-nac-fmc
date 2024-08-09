@@ -4,7 +4,7 @@
 locals {
   res_ftdmanualnatrules = flatten([
     for domain in local.domains : [
-      for natpolicy in try(domain.ftd_nat_policies, []) : [
+      for natpolicy in try(domain.policies.ftd_nat_policies, []) : [
         for ftdmanualnatrule in try(natpolicy.ftd_manual_nat_rules, []) : {
           key        = replace("${natpolicy.name}_${ftdmanualnatrule.name}", " ", "")
           nat_policy = natpolicy.name
@@ -29,17 +29,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_0" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   depends_on                        = [fmc_ftd_nat_policies.ftdnatpolicy]
   lifecycle {
     create_before_destroy = false
@@ -122,17 +122,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_1" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -222,17 +222,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_2" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -324,17 +324,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_3" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -428,17 +428,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_4" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -534,17 +534,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_5" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -642,17 +642,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_6" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -752,17 +752,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_7" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -864,17 +864,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_8" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -978,17 +978,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_9" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -1094,17 +1094,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_10" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -1212,17 +1212,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_11" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -1332,17 +1332,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_12" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -1454,17 +1454,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_13" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -1578,17 +1578,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_14" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -1704,17 +1704,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_15" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -1832,17 +1832,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_16" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -1962,17 +1962,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_17" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -2094,17 +2094,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_18" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -2228,17 +2228,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_19" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -2364,17 +2364,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_20" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -2502,17 +2502,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_21" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -2642,17 +2642,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_22" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -2784,17 +2784,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_23" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -2928,17 +2928,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_24" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -3074,17 +3074,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_25" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -3222,17 +3222,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_26" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -3372,17 +3372,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_27" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -3524,17 +3524,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_28" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -3678,17 +3678,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_29" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -3834,17 +3834,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_30" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -3992,17 +3992,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_31" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -4152,17 +4152,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_32" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -4314,17 +4314,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_33" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -4478,17 +4478,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_34" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -4644,17 +4644,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_35" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -4812,17 +4812,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_36" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -4982,17 +4982,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_37" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -5154,17 +5154,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_38" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -5328,17 +5328,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_39" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -5504,17 +5504,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_40" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -5682,17 +5682,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_41" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -5862,17 +5862,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_42" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -6044,17 +6044,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_43" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -6228,17 +6228,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_44" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -6414,17 +6414,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_45" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -6602,17 +6602,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_46" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -6792,17 +6792,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_47" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -6984,17 +6984,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_48" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -7178,17 +7178,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_49" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -7374,17 +7374,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_50" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -7572,17 +7572,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_51" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -7772,17 +7772,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_52" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -7974,17 +7974,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_53" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -8178,17 +8178,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_54" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -8384,17 +8384,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_55" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -8592,17 +8592,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_56" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -8802,17 +8802,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_57" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -9014,17 +9014,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_58" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -9228,17 +9228,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_59" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -9444,17 +9444,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_60" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -9662,17 +9662,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_61" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -9882,17 +9882,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_62" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -10104,17 +10104,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_63" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -10328,17 +10328,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_64" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -10554,17 +10554,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_65" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -10782,17 +10782,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_66" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -11012,17 +11012,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_67" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -11244,17 +11244,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_68" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -11478,17 +11478,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_69" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -11714,17 +11714,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_70" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -11952,17 +11952,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_71" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -12192,17 +12192,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_72" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -12434,17 +12434,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_73" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -12678,17 +12678,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_74" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -12924,17 +12924,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_75" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -13172,17 +13172,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_76" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -13422,17 +13422,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_77" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -13674,17 +13674,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_78" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -13928,17 +13928,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_79" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -14184,17 +14184,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_80" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -14442,17 +14442,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_81" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -14702,17 +14702,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_82" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -14964,17 +14964,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_83" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -15228,17 +15228,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_84" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -15494,17 +15494,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_85" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -15762,17 +15762,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_86" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -16032,17 +16032,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_87" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -16304,17 +16304,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_88" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -16578,17 +16578,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_89" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -16854,17 +16854,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_90" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -17132,17 +17132,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_91" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -17412,17 +17412,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_92" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -17694,17 +17694,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_93" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -17978,17 +17978,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_94" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -18264,17 +18264,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_95" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -18552,17 +18552,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_96" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -18842,17 +18842,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_97" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -19134,17 +19134,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_98" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,
@@ -19428,17 +19428,17 @@ resource "fmc_ftd_manualnat_rules" "manualnat_rules_99" {
   }
   # Optional
   description                       = try(each.value.data.description, null)
-  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
-  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
-  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
-  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
-  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
-  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+  fallthrough                       = try(each.value.data.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fallthrough, null)
+  interface_in_original_destination = try(each.value.data.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_original_destination, null)
+  interface_in_translated_source    = try(each.value.data.interface_in_translated_source, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.interface_in_translated_source, null)
+  ipv6                              = try(each.value.data.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
+  net_to_net                        = try(each.value.data.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
+  no_proxy_arp                      = try(each.value.data.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+  perform_route_lookup              = try(each.value.data.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
   section                           = try(each.value.data.section, null)
-  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
-  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+  translate_dns                     = try(each.value.data.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+  unidirectional                    = try(each.value.data.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
   # Positioning
   depends_on = [
     fmc_ftd_manualnat_rules.manualnat_rules_0,

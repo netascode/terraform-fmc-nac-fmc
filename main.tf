@@ -121,53 +121,42 @@ locals {
   map_interfaces = merge(concat(
     flatten([
       for domain in local.domains : [
-        for device in try(domain.devices, []) : {
+        for device in try(domain.devices.devices, []) : {
           for physicalinterface in try(device.physical_interfaces, []) : "${device.name}/${physicalinterface.interface}" => {
-            key         = "${device.name}/${physicalinterface.interface}"
-            device_id   = local.map_devices[device.name].id
-            device_name = device.name
-            data        = physicalinterface
-            resource    = true
+            key               = "${device.name}/${physicalinterface.interface}"
+            device_id         = local.map_devices[device.name].id
+            device_name       = device.name
+            data              = physicalinterface
+            physicalinterface = physicalinterface.interface
+            resource          = true
           }
         }
       ]
     ]),
     flatten([
-      for device in try(local.data_existing.fmc.domains[0].devices, []) : {
+      for device in try(local.data_existing.fmc.domains[0].devices.devices, []) : {
         for physicalinterface in try(device.physical_interfaces, []) : "${device.name}/${physicalinterface.interface}" => {
-          key         = "${device.name}/${physicalinterface.interface}"
-          device_id   = local.map_devices[device.name].id
-          device_name = device.name
-          data        = physicalinterface
-          resource    = false
+          key               = "${device.name}/${physicalinterface.interface}"
+          device_id         = local.map_devices[device.name].id
+          physicalinterface = physicalinterface.interface
+          resource          = false
         }
       }
+    ]),
+    flatten([
+      for domain in local.domains : [
+        for cluster in try(domain.devices.clusters, []) : {
+          for device in try(cluster.devices, []) : "${device.name}/${cluster.ccl_interface}" => {
+            key               = "${device.name}/${cluster.ccl_interface}"
+            device_id         = local.map_devices[device.name].id
+            physicalinterface = cluster.ccl_interface
+            resource          = false
+          }
+        }
+      ]
     ])
     )...
   )
-
-  map_ipv4_static_route_interfaces = merge({
-    for domain in local.domains : domain.name => {
-      for device in try(domain.devices, {}) : device.name => merge({
-        for int_name in flatten([
-          for physical_interface in try(device.physical_interfaces, []) : [
-            for subinterface in try(physical_interface.subinterfaces, []) : {
-              "name" : try(subinterface.name, null)
-              "object" : fmc_device_subinterfaces.sub_interfaces["${device.name}/${physical_interface.interface}/${subinterface.id}"].name
-            }
-          ]
-        ]) : int_name.name => int_name.object
-        },
-        {
-          for int_name in flatten([
-            for physical_interface in try(device.physical_interfaces, []) : {
-              "name" : try(physical_interface.name, null)
-              "object" : fmc_device_physical_interfaces.physical_interface["${device.name}/${physical_interface.interface}"].if_name
-            }
-          ]) : int_name.name => int_name.object
-      })
-    }
-  })
 
   map_securityzones = merge({
     for securityzone in local.res_securityzones :
@@ -244,6 +233,22 @@ locals {
       device => {
         id   = data.fmc_devices.device[device].id
         type = data.fmc_devices.device[device].type
+      }
+    }
+  )
+
+  map_clusters = merge({
+    for cluster in local.res_clusters :
+    cluster.name => {
+      id   = fmc_device_cluster.cluster[cluster.name].id
+      type = fmc_device_cluster.cluster[cluster.name].type
+    }
+    },
+    {
+      for cluster in local.data_clusters :
+      cluster => {
+        id   = data.fmc_device_cluster.cluster[cluster].id
+        type = data.fmc_device_cluster.cluster[cluster].type
       }
     }
   )

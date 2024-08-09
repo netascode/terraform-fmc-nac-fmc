@@ -4,7 +4,7 @@
 locals {
   res_accessrules = flatten([
     for domain in local.domains : [
-      for accesspolicy in try(domain.access_policies, {}) : [
+      for accesspolicy in try(domain.policies.access_policies, {}) : [
         for accessrule in try(accesspolicy.access_rules, {}) : {
           key  = replace("$${accesspolicy.name}_$${accessrule.name}", " ", "")
           acp  = accesspolicy.name
@@ -24,11 +24,11 @@ resource "fmc_access_rules" "access_rule_${index}" {
   acp       = local.map_accesspolicies[each.value.acp].id
   name      = each.value.data.name
   action    = each.value.data.action
-  enabled   = try(each.value.data.enabled, local.defaults.fmc.domains.access_policies.access_rules.enabled)
+  enabled   = try(each.value.data.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled)
 
   # Optional
   category            = try(each.value.data.category, null) 
-  enable_syslog       = try(each.value.data.enable_syslog, local.defaults.fmc.domains.access_policies.access_rules.enable_syslog, null) 
+  enable_syslog       = try(each.value.data.enable_syslog, local.defaults.fmc.domains.policies.access_policies.access_rules.enable_syslog, null) 
   file_policy         = try(each.value.data.file_policy, null)
   ips_policy          = try(local.map_ipspolicies[each.value.data.ips_policy].id, null)
   log_begin           = try(each.value.data.log_connection_begin, null)

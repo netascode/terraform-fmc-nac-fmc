@@ -4,7 +4,7 @@
 locals {
   res_devices = flatten([
     for domains in local.domains : [
-      for object in try(domains.devices, []) : object if !contains(local.data_devices, object.name)
+      for object in try(domains.devices.devices, []) : object if !contains(local.data_devices, object.name)
     ]
   ])
 }
@@ -23,8 +23,8 @@ resource "fmc_devices" "device" {
 
   # Optional  
   license_caps     = try(each.value.licenses)
-  nat_id           = try(each.value.nat_id, local.defaults.fmc.domains.devices.nat_id, null)
-  performance_tier = try(each.value.performance_tier, local.defaults.fmc.domains.devices.performance_tier, null)
+  nat_id           = try(each.value.nat_id, local.defaults.fmc.domains.devices.devices.nat_id, null)
+  performance_tier = try(each.value.performance_tier, local.defaults.fmc.domains.devices.devices.performance_tier, null)
 
   lifecycle {
     ignore_changes = [regkey, access_policy]
@@ -37,7 +37,7 @@ resource "fmc_devices" "device" {
 locals {
   res_clusters = flatten([
     for domains in local.domains : [
-      for cluster in try(domains.clusters, []) : {
+      for cluster in try(domains.devices.clusters, []) : {
         name          = cluster.name
         ccl_prefix    = cluster.ccl_prefix
         vni_prefix    = cluster.vni_prefix
@@ -104,6 +104,7 @@ resource "fmc_device_cluster" "cluster" {
 ###
 # PHYSICAL INTERFACE Standalone/Cluster
 ###
+
 resource "fmc_device_physical_interfaces" "physical_interface" {
   for_each = { for physicalinterface in local.map_interfaces : physicalinterface.key => physicalinterface if physicalinterface.resource }
 
@@ -128,7 +129,8 @@ resource "fmc_device_physical_interfaces" "physical_interface" {
   description            = try(each.value.data.description, local.defaults.fmc.domains.devices.physical_interfaces.description, null)
 
   depends_on = [
-    data.fmc_device_physical_interfaces.physical_interface
+    data.fmc_device_physical_interfaces.physical_interface,
+    fmc_device_cluster.cluster
   ]
   lifecycle {
     ignore_changes = [
@@ -230,7 +232,7 @@ resource "fmc_device_vtep" "vtep" {
 locals {
   res_vni_interfaces = flatten([
     for domain in local.domains : [
-      for device in try(domain.devices, []) : [
+      for device in try(domain.devices.devices, []) : [
         for vni in try(device.vnis, []) : {
           key       = "${device.name}/${vni.name}/${vni.vni_id}"
           device_id = local.map_devices[device.name].id
@@ -286,7 +288,7 @@ locals {
           gateway_id        = local.map_networkobjects[ipv4staticroute.gateway].id
           gateway_type      = local.map_networkobjects[ipv4staticroute.gateway].type
           gateway_name      = ipv4staticroute.gateway
-          interface_name    = try(local.map_ipv4_static_route_interfaces[domain.name][device.name][ipv4staticroute.interface], null)
+          interface_name    = ipv4staticroute.interface
           selected_networks = ipv4staticroute.selected_networks
         }
       ]
@@ -328,68 +330,4 @@ resource "fmc_staticIPv4_route" "ipv4staticroute" {
     data.fmc_device_subinterfaces.sub_interfaces
   ]
 
-}
-
-###
-# POLICY ASSIGNMENT
-###
-locals {
-  res_natpolicyassignments = flatten([
-    for nat_policy in local.res_ftdnatpolicies : {
-      "name" = nat_policy.name
-      "objects" = compact(flatten([
-        for domain in local.domains : [
-          for device in try(domain.devices, []) : contains(keys(device), "nat_policy") && try(device.nat_policy, null) == nat_policy.name ? device.name : null
-        ]
-      ]))
-    }
-  ])
-
-  res_acppolicyassignments = flatten([
-    for acp_policy in local.res_accesspolicies : {
-      "name" = acp_policy.name
-      "objects" = compact(flatten([
-        for domain in local.domains : [
-          for device in try(domain.devices, []) : contains(keys(device), "access_policy") && device.access_policy == acp_policy.name && contains(local.data_devices, device.name) ? device.name : null
-        ]
-      ]))
-    }
-  ])
-
-}
-
-resource "fmc_policy_devices_assignments" "nat_policy_assignment" {
-  for_each = { for nat in local.res_natpolicyassignments : nat.name => nat if length(nat.objects) > 0 }
-
-  # Mandatory
-  dynamic "target_devices" {
-    for_each = { for device in each.value.objects : device => device }
-    content {
-      id   = try(local.map_devices[target_devices.value].id, null)
-      type = try(local.map_devices[target_devices.value].type, null)
-    }
-  }
-  policy {
-    id   = try(local.map_natpolicies[each.value.name].id, null)
-    type = try(local.map_natpolicies[each.value.name].type, null)
-  }
-}
-
-resource "fmc_policy_devices_assignments" "access_policy_assignment" {
-  for_each = { for acp in local.res_acppolicyassignments : acp.name => acp if length(acp.objects) > 0 }
-
-
-  # Mandatory
-  dynamic "target_devices" {
-    for_each = { for device in each.value.objects : device => device }
-    content {
-      id   = try(local.map_devices[target_devices.value].id, null)
-      type = try(local.map_devices[target_devices.value].type, null)
-    }
-  }
-
-  policy {
-    id   = try(local.map_accesspolicies[each.value.name].id, null)
-    type = try(local.map_accesspolicies[each.value.name].type, null)
-  }
 }
