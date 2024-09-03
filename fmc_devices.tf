@@ -281,7 +281,7 @@ resource "fmc_device_vni" "vni" {
 locals {
   res_ipv4staticroutes = flatten([
     for domain in local.domains : [
-      for device in try(domain.devices, []) : [
+      for device in try(domain.devices.devices, []) : [
         for ipv4staticroute in try(device.ipv4_static_routes, []) : {
           key               = "${device.name}/${ipv4staticroute.name}"
           device_id         = local.map_devices[device.name].id
@@ -302,7 +302,7 @@ resource "fmc_staticIPv4_route" "ipv4staticroute" {
   # Mandatory  
   device_id      = each.value.device_id
   interface_name = each.value.interface_name
-  metric_value   = try(each.value.metric_value, local.defaults.fmc.domains.devices.ipv4_static_routes.metric_value)
+  metric_value   = try(each.value.metric_value, local.defaults.fmc.domains.devices.devices.ipv4_static_routes.metric_value)
 
   gateway {
     object {
