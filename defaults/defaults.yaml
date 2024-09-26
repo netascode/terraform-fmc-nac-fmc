@@ -22,7 +22,7 @@ defaults:
         prefilter_policies:
           action: "ANALYZE_TUNNELS"
         network_analysis_policies:
-          snort_engine: "SNORT2"             
+          snort_engine: "SNORT2"
         access_policies:
           default_action: "BLOCK"
           log_begin: false
