@@ -116,9 +116,9 @@ resource "fmc_device_physical_interfaces" "physical_interface" {
   # Optional
   if_name                = try(each.value.data.name, null)
   security_zone_id       = try(local.map_securityzones[each.value.data.security_zone].id, null)
-  enabled                = try(each.value.data.enabled, local.defaults.fmc.domains.devices.physical_interfaces.enabled)
+  enabled                = try(each.value.data.enabled, local.defaults.fmc.domains.devices.devices.physical_interfaces.enabled)
   mtu                    = try(each.value.data.mtu, null)
-  mode                   = try(each.value.data.mode, local.defaults.fmc.domains.devices.physical_interfaces.mode)
+  mode                   = try(each.value.data.mode, local.defaults.fmc.domains.devices.devices.physical_interfaces.mode)
   ipv4_static_address    = try(each.value.data.ipv4_static_address, null)
   ipv4_static_netmask    = try(each.value.data.ipv4_static_netmask, null)
   ipv4_dhcp_enabled      = try(each.value.data.ipv4_dhcp, null)
@@ -126,7 +126,7 @@ resource "fmc_device_physical_interfaces" "physical_interface" {
   ipv6_address           = try(each.value.data.ipv6_address, null)
   ipv6_prefix            = try(each.value.data.ipv6_prefix, null)
   ipv6_enforce_eui       = try(each.value.data.ipv6_enforce_eui64, null)
-  description            = try(each.value.data.description, local.defaults.fmc.domains.devices.physical_interfaces.description, null)
+  description            = try(each.value.data.description, local.defaults.fmc.domains.devices.devices.physical_interfaces.description, null)
 
   depends_on = [
     data.fmc_device_physical_interfaces.physical_interface,
@@ -181,7 +181,7 @@ resource "fmc_device_subinterfaces" "sub_interfaces" {
   ipv6_enforce_eui       = try(each.value.data.ipv6_enforce_eui, null)
   ipv6_prefix            = try(each.value.data.ipv6_prefix, null)
   management_only        = try(each.value.data.management_only, null)
-  mode                   = try(each.value.data.mode, local.defaults.fmc.domains.devices.physical_interfaces.subinterfaces.mode, null)
+  mode                   = try(each.value.data.mode, local.defaults.fmc.domains.devices.devices.physical_interfaces.subinterfaces.mode, null)
   mtu                    = try(each.value.data.mtu, null)
   priority               = try(each.value.data.priority, null)
   security_zone_id       = try(local.map_securityzones[each.value.data.security_zone].id, null)
@@ -251,7 +251,7 @@ resource "fmc_device_vni" "vni" {
   security_zone_id       = try(local.map_securityzones[each.value.data.security_zone].id, null)
   if_name                = each.value.data.name
   enabled                = try(each.value.data.enabled, null)
-  description            = try(each.value.data.description, local.defaults.fmc.domains.devices.vnis.description, "VNI Interface")
+  description            = try(each.value.data.description, local.defaults.fmc.domains.devices.devices.vnis.description, "VNI Interface")
   priority               = try(each.value.data.priority, null)
   vnid                   = each.value.data.vni_id
   segment_id             = try(each.value.data.vni_segment_id, null)
@@ -322,7 +322,7 @@ resource "fmc_staticIPv4_route" "ipv4staticroute" {
   }
 
   # Optional
-  is_tunneled = try(each.value.tunneled, local.defaults.fmc.domains.devices.ipv4_static_routes.tunneled, null)
+  is_tunneled = try(each.value.tunneled, local.defaults.fmc.domains.devices.devices.ipv4_static_routes.tunneled, null)
 
   depends_on = [
     fmc_device_physical_interfaces.physical_interface,
