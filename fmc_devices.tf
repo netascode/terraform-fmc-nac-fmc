@@ -286,9 +286,9 @@ locals {
         for ipv4staticroute in try(device.ipv4_static_routes, []) : {
           key               = "${device.name}/${ipv4staticroute.name}"
           device_id         = local.map_devices[device.name].id
-          gateway_id        = local.map_networkobjects[ipv4staticroute.gateway].id
-          gateway_type      = local.map_networkobjects[ipv4staticroute.gateway].type
-          gateway_name      = ipv4staticroute.gateway
+          gateway_id        = local.map_networkobjects[ipv4staticroute.gateway.object].id
+          gateway_type      = local.map_networkobjects[ipv4staticroute.gateway.object].type
+          gateway_name      = ipv4staticroute.gateway.object
           interface_name    = ipv4staticroute.interface
           selected_networks = ipv4staticroute.selected_networks
         }

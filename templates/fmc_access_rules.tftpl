@@ -78,10 +78,10 @@ resource "fmc_access_rules" "access_rule_${index}" {
   }
 
   dynamic "destination_networks" {
-    for_each = try(length(each.value.data.destination_networks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.destination_network_objects), 0) != 0 ? ["1"] : []
     content {      
       dynamic "destination_network" {
-        for_each = { for obj in try(each.value.data.destination_networks, []) : obj => obj }
+        for_each = { for obj in try(each.value.data.destination_network_objects, []) : obj => obj }
         content {
           id = local.map_networkobjects[destination_network.value].id
           type = local.map_networkobjects[destination_network.value].type
@@ -91,10 +91,10 @@ resource "fmc_access_rules" "access_rule_${index}" {
   }
 
   dynamic "destination_ports" {
-    for_each = try(length(each.value.data.destination_ports), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.destination_port_objects), 0) != 0 ? ["1"] : []
     content {   
     dynamic "destination_port" {
-        for_each = { for obj in try(each.value.data.destination_ports, []) : obj => obj }
+        for_each = { for obj in try(each.value.data.destination_port_objects, []) : obj => obj }
         content {
           id = local.map_ports[destination_port.value].id
           type = local.map_ports[destination_port.value].type
@@ -144,10 +144,10 @@ resource "fmc_access_rules" "access_rule_${index}" {
   }
 
   dynamic "source_networks" {
-    for_each = try(length(each.value.data.source_networks), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_network_objects), 0) != 0 ? ["1"] : []
     content {      
     dynamic "source_network" {
-      for_each = { for obj in try(each.value.data.source_networks, []) : obj => obj }
+      for_each = { for obj in try(each.value.data.source_network_objects, []) : obj => obj }
       content {
         id = local.map_networkobjects[source_network.value].id
         type = local.map_networkobjects[source_network.value].type
@@ -157,10 +157,10 @@ resource "fmc_access_rules" "access_rule_${index}" {
   }
 
   dynamic "source_ports" {
-    for_each = try(length(each.value.data.source_ports), 0) != 0 ? ["1"] : []
+    for_each = try(length(each.value.data.source_port_objects), 0) != 0 ? ["1"] : []
     content {    
     dynamic "source_port" {
-      for_each = { for obj in try(each.value.data.source_ports, []) : obj => obj }
+      for_each = { for obj in try(each.value.data.source_port_objects, []) : obj => obj }
       content {
         id = local.map_ports[source_port.value].id
         type = local.map_ports[source_port.value].type
