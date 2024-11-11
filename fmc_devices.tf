@@ -145,7 +145,7 @@ resource "fmc_device_physical_interfaces" "physical_interface" {
 locals {
   res_sub_interface = flatten([
     for domain in local.domains : [
-      for device in try(domain.devices, []) : [
+      for device in try(domain.devices.devices, []) : [
         for physicalinterface in try(device.physical_interfaces, []) : [
           for subinterface in try(physicalinterface.subinterfaces, []) : {
             key          = "${device.name}/${physicalinterface.interface}/${subinterface.id}"
@@ -194,7 +194,7 @@ locals {
 
   res_vtep_interfaces = flatten([
     for domain in local.domains : [
-      for device in try(domain.devices, []) : [
+      for device in try(domain.devices.devices, []) : [
         for physicalinterface in try(device.physical_interfaces, []) : [
           for vtep in try(physicalinterface.vteps, []) : {
             key                  = "${device.name}/${physicalinterface.interface}/${vtep.encapsulation_port}"
