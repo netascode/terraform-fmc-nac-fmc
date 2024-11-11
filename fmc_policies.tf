@@ -3,8 +3,8 @@
 ###
 locals {
   res_accesspolicies = flatten([
-    for domains in local.domains : [
-      for object in try(domains.policies.access_policies, {}) : object if !contains(local.data_accesspolicies, object.name)
+    for domain in local.domains : [
+      for object in try(domain.policies.access_policies, {}) : object if !contains(local.data_accesspolicies, object.name)
     ]
   ])
 }

@@ -9,6 +9,8 @@ defaults:
           physical_interfaces:
             enabled: true
             mode: "NONE"
+            vtis:
+              enabled: true
             sub_interfaces:
               mode: "NONE"
           ipv4_static_routes:

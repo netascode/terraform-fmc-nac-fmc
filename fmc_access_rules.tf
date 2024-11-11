@@ -39,6 +39,7 @@ resource "fmc_access_rules" "access_rule_0" {
   lifecycle {
     create_before_destroy = false
   }
+
   dynamic "destination_dynamic_objects" {
     for_each = try(length(each.value.data.destination_dynamic_objects), 0) != 0 ? ["1"] : []
     content {
