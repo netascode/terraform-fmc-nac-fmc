@@ -2,71 +2,93 @@
 defaults:
   fmc:
     domains:
-      devices:
+      "Global":
         devices:
-          deploy_ignore_warning: false
-          deploy_force: false
-          physical_interfaces:
-            enabled: true
-            mode: "NONE"
-            sub_interfaces:
-              mode: "NONE"
-          ipv4_static_routes:
-            metric_value: 1
-          vnis:
-            description: "VNI Interface"
-        clusters:
-          ccl_prefix: 10.10.3.0/27
-          vni_prefix: 10.10.4.0/27
-      policies:
-        prefilter_policies:
-          action: "ANALYZE_TUNNELS"
-        network_analysis_policies:
-          snort_engine: "SNORT2"
-        access_policies:
-          default_action: "BLOCK"
-          log_begin: false
-          log_end: false
-          send_events_to_fmc: false
-          access_rules:
+          devices:
+            deploy_ignore_warning: false
+            deploy_force: false
+            vrfs:
+              "Global":
+                bgp:
+                physical_interfaces:
+                  enabled: true
+                  speed: "AUTO"
+                  duplex: "AUTO"
+                  mode: "NONE"
+                  flow_control_send: false
+                sub_interfaces:
+                  mode: "NONE"
+                etherchannel_interfaces:
+                  mode: "NONE"
+                ipv4_static_routes:
+                  metric_value: 1
+                vnis:
+                  description: "VNI Interface"
+          clusters:
+            ccl_prefix: 10.10.3.0/27
+            vni_prefix: 10.10.4.0/27
+          ha_pairs:
+            failed_interfaces_limit: 1
+        policies:  
+          prefilter_policies:
+            default_action: ANALYZE_TUNNELS
+          access_policies:
+            default_action: "BLOCK"
+            log_begin: false
+            log_end: false
+            send_events_to_fmc: false
             enable_syslog: false
-            enabled: true
-        ftd_nat_policies:
-          ftd_auto_nat_rules:
-            fall_through: false
-            ipv6: false
-            net_to_net: false
-            no_proxy_arp: false
-            perform_route_lookup: false
-            translate_dns: false
-            translated_network_is_destination_interface: true
-          ftd_manual_nat_rules:
-            enabled: true
-            fall_through: false
-            interface_in_original_destination: false
-            interface_in_translated_source: true
-            ipv6: false
-            net_to_net: false
-            no_proxy_arp: false
-            perform_route_lookup: false
-            translate_dns: false
-            unidirectional: false
-      objects:
-        fqdns:
-          dns_resolution: "IPV4_AND_IPV6"
-        dynamic_objects:
-          object_type: "IP"
-        hosts:
-          description: " "
-        networks:
-          description: " "
-        ranges:
-          description: " "
-        network_groups:
-          description: " "
-        security_zones:
-          interface_type: "ROUTED"
-        extended_access_lists:
-            logging: "DISABLED"
-            log_interval: 300
-            log_level: "INFORMATIONAL"
+            access_rules:
+              enable_syslog: false
+              enabled: true
+          ftd_nat_policies:
+            ftd_auto_nat_rules:
+              fall_through: false
+              ipv6: false
+              net_to_net: false
+              no_proxy_arp: false
+              perform_route_lookup: false
+              translate_dns: false
+              translated_network_is_destination_interface: true
+            ftd_manual_nat_rules:
+              enabled: true
+              fall_through: false
+              interface_in_original_destination: false
+              interface_in_translated_source: true
+              ipv6: false
+              net_to_net: false
+              no_proxy_arp: false
+              perform_route_lookup: false
+              translate_dns: false
+              unidirectional: false
+          file_policies:
+            max_archive_depth: 2
+            block_uninspectable_archives: false
+            block_encrypted_archives: false
+            clean_list: true
+            custom_detection_list: true
+            first_time_file_analysis: true
+            inspect_archives: false
+            threat_score: DISABLED              
+          network_analysis_policies:
+            snort_engine: "SNORT2"
+        objects:
+          fqdns:
+            dns_resolution: "IPV4_AND_IPV6"
+          dynamic_objects:
+            object_type: "IP"
+          hosts:
+            description: " "
+          networks:
+            description: " "
+          ranges:
+            description: " "
+          network_groups:
+            description: " "
+          security_zones:
+            interface_type: "ROUTED"
+          extended_access_lists:
+              logging: "DISABLED"
+              log_interval: 300
+              log_level: "INFORMATIONAL"
+        
