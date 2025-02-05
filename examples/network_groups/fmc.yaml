@@ -1,6 +1,5 @@
 ---
 fmc:
-  name: MyFMC1
   domains:
     - name: Global
       objects:

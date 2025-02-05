@@ -15,7 +15,7 @@ Set environment variables pointing to FMC:
 ```bash
 export FMC_USERNAME=<username>
 export FMC_PASSWORD=<password>
-export FMC_HOST=<hostname>
+export FMC_URL=<hostname>
 (Optionally)
 export FMC_INSECURE_SKIP_VERIFY=true
 ```
@@ -47,7 +47,6 @@ existing:
 ```yaml
 ---
 fmc:
-  name: MyFMC1
   domains:
     - name: Global
       objects:
@@ -72,7 +71,7 @@ fmc:
 ```hcl
 module "fmc" {
   source  = "netascode/nac-fmc/fmc"
-  version = ">= 0.1.0"
+  version = ">= 2.0.0-beta"
 
   yaml_files = ["fmc.yaml", "existing.yaml"]
 }

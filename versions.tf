@@ -1,10 +1,10 @@
 terraform {
-  required_version = ">= 1.3.0"
+  required_version = ">= 1.8.0"
 
   required_providers {
     fmc = {
       source  = "CiscoDevNet/fmc"
-      version = ">= 1.4.8"
+      version = ">= 2.0.0-beta"
     }
     utils = {
       source  = "netascode/utils"

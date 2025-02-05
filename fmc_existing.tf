@@ -1,235 +1,1047 @@
-###
+#############################################################
 # Define terraform data representation of objects that already exist on FMC
+##########################################################
+###    Content of the file:
+##########################################################
+#
 ###
+#  Data sources
+####
+# data "fmc_hosts" "module" {
+# data "fmc_networks" "module" {
+# data "fmc_ranges" "module" {
+# data "fmc_fqdn_objects" "module" {
+# data "fmc_ports" "module" {
+# data "fmc_icmpv4_objects" "module" {
+# data "fmc_port_groups" "module" {
+# data "fmc_dynamic_objects" "module" {
+# data "fmc_urls" "module" {
+# data "fmc_url_groups" "module" {
+# data "fmc_vlan_tags" "module" {
+# data "fmc_vlan_tag_groups" "module" {
+# data "fmc_sgts" "module" {
+# data "fmc_security_zones" "module" {
+# data "fmc_tunnel_zones" "module" {
+# data "fmc_time_ranges" "module" {
+# data "fmc_variable_set" "module" {
+# data "fmc_standard_acl" "module" {
+# data "fmc_extended_acl" "module" {
+# data "fmc_bfd_template" "module" {
+# data "fmc_snmp_alerts" "module" {
+# data "fmc_syslog_alerts" "module" {
+# data "fmc_file_types" "module" {
+# data "fmc_file_categories" "module" {
+# data "fmc_access_control_policy" "module" {
+# data "fmc_ftd_nat_policy" "module" {
+# data "fmc_intrusion_policy" "module" {
+# data "fmc_file_policy" "module" {
+# data "fmc_prefilter_policy" "module" {
+# data "fmc_device" "module" {
+# data "fmc_device_ha_pair" "module" {
+# data "fmc_device_cluster" "module" {
+# data "fmc_device_physical_interface" "module" {
+# data "fmc_device_etherchannel_interface" "module" {
+# data "fmc_device_subinterface" "module" {
+# data "fmc_device_vrf" "module" {
+# data "fmc_device_bfd" "module" {
+# data "fmc_device_bgp_general_settings" "module" {
+#
+###  
+#  Local variables
+###
+# local.data_hosts
+# local.data_networks
+# local.data_ranges
+# local.data_fqdns
+# local.data_ports
+# local.data_icmpv4s
+# local.data_port_groups
+# local.data_dynamic_objects
+# local.data_urls
+# local.data_url_groups
+# local.data_vlan_tags
+# local.data_vlan_tag_groups
+# local.data_sgts
+# local.data_security_zones
+# local.data_tunnel_zones
+# local.data_time_ranges
+# local.data_variable_set
+# local.data_standard_acl
+# local.data_extended_acl
+# local.data_bfd_template
+# local.data_snmp_alerts
+# local.data_syslog_alerts
+# local.data_file_types
+# local.data_file_categories
+# local.data_access_control_policy
+# local.data_ftd_nat_policy
+# local.data_intrusion_policy
+# local.data_file_policy
+# local.data_prefilter_policy
+# local.data_device
+# local.data_device_ha_pair
+# local.data_device_cluster
+# local.data_physical_interface
+# local.data_etherchannel_interface
+# local.data_sub_interface
+# local.data_vrf
+# local.data_bfd
+# local.data_bgp_general_setting
+#
+#
+##########################################################
+##########################################################
+###    Objects
+##########################################################
+##########################################################
+
+##########################################################
+###    Hosts + Networks + Ranges + FQDNs
+##########################################################
+locals {
+
+  data_hosts = {
+    for domain in local.data_existing.fmc.domains : domain.name => {
+      items = {
+        for host in try(domain.objects.hosts, []) : host.name => {}
+      }
+    } if length(try(domain.objects.hosts, [])) > 0
+  }
+
+}
+
+data "fmc_hosts" "module" {
+  for_each = local.data_hosts
+
+  items  = each.value.items
+  domain = each.key
+}
 
 locals {
-  # data_smart_license             = contains(keys(try(local.data_existing.fmc.system, {})), "smart_license") ? [local.data_existing.fmc.system.smart_license] : []
-  # data_syslog_alerts             = [for obj in try(local.data_existing.fmc.system.syslog_alerts, []) : obj.name]
-  data_devices        = [for obj in try(local.data_existing.fmc.domains[0].devices.devices, []) : obj.name]
-  data_clusters       = [for obj in try(local.data_existing.fmc.domains[0].devices.clusters, []) : obj.name]
-  data_accesspolicies = [for obj in try(local.data_existing.fmc.domains[0].policies.access_policies, []) : obj.name]
-  data_ftdnatpolicies = [for obj in try(local.data_existing.fmc.domains[0].policies.ftd_nat_policies, []) : obj.name]
-  data_ipspolicies    = [for obj in try(local.data_existing.fmc.domains[0].policies.ips_policies, []) : obj.name]
-  # data_filepolicies              = [for obj in try(local.data_existing.fmc.domains[0].policies.file_policies, []) : obj.name]
-  # data_network_analysis_policies = [for obj in try(local.data_existing.fmc.domains[0].network_analysis_policies, []) : obj.name]
-  data_hosts    = [for obj in try(local.data_existing.fmc.domains[0].objects.hosts, []) : obj.name]
-  data_networks = [for obj in try(local.data_existing.fmc.domains[0].objects.networks, []) : obj.name]
-  #data_ranges                    = []
-  data_networkgroups = [for obj in try(local.data_existing.fmc.domains[0].objects.network_groups, []) : obj.name]
-  data_ports         = [for obj in try(local.data_existing.fmc.domains[0].objects.ports, []) : obj.name]
-  data_portgroups    = [for obj in try(local.data_existing.fmc.domains[0].objects.port_groups, []) : obj.name]
-  #data_icmpv_4s                  = []
-  data_securityzones         = [for obj in try(local.data_existing.fmc.domains[0].objects.security_zones, []) : obj.name]
-  data_urls                  = [for obj in try(local.data_existing.fmc.domains[0].objects.urls, []) : obj.name]
-  data_sgts                  = [for obj in try(local.data_existing.fmc.domains[0].objects.sgts, []) : obj.name]
-  data_dynamicobjects        = [for obj in try(local.data_existing.fmc.domains[0].objects.dynamic_objects, []) : obj.name]
-  data_time_ranges           = [for obj in try(local.data_existing.fmc.domains[0].objects.time_ranges, []) : obj.name]
-  data_standard_access_lists = [for obj in try(local.data_existing.fmc.domains[0].objects.standard_access_lists, []) : obj.name]
-  data_extended_access_lists = [for obj in try(local.data_existing.fmc.domains[0].objects.extended_access_lists, []) : obj.name]
 
-  data_sub_interfaces = flatten([
-    for device in try(local.data_existing.fmc.domains[0].devices.devices, []) : [
-      for physicalinterface in try(device.physical_interfaces, []) : [
-        for subinterface in try(physicalinterface.subinterfaces, []) : {
-          key               = "${device.name}/${physicalinterface.interface}/${subinterface.id}"
-          device_id         = local.map_devices[device.name].id
-          physicalinterface = physicalinterface.interface
-          subinterface_id   = subinterface.id
+  # data_network = { 
+  #    for item in flatten([
+  #      for domain in try(local.data_existing.fmc.domains, {}) : [ 
+  #        for element in try(domain.objects.networks, {}) : {
+  #          "name"        = element.name
+  #          "domain_name" = domain.name
+  #        }
+  #      ]
+  #      ]) : item.name => item if contains(keys(item), "name" )
+  #    } 
+
+  data_networks = {
+    for domain in local.data_existing.fmc.domains : domain.name => {
+      items = {
+        for network in try(domain.objects.networks, []) : network.name => {}
+      }
+    } if length(try(domain.objects.networks, [])) > 0
+  }
+
+}
+
+#data "fmc_network" "network" {
+#  for_each = local.data_network
+
+#  name    = each.key
+#  domain  = each.value.domain_name
+#}
+
+data "fmc_networks" "module" {
+  for_each = local.data_networks
+
+  items  = each.value.items
+  domain = each.key
+}
+
+locals {
+
+  data_ranges = {
+    for domain in local.data_existing.fmc.domains : domain.name => {
+      items = {
+        for range in try(domain.objects.ranges, []) : range.name => {}
+      }
+    } if length(try(domain.objects.ranges, [])) > 0
+  }
+
+}
+
+data "fmc_ranges" "module" {
+  for_each = local.data_ranges
+
+  items  = each.value.items
+  domain = each.key
+}
+
+locals {
+
+  data_fqdns = {
+    for domain in local.data_existing.fmc.domains : domain.name => {
+      items = {
+        for fqdn in try(domain.objects.fqdns, []) : fqdn.name => {}
+      }
+    } if length(try(domain.objects.fqdns, [])) > 0
+  }
+
+}
+
+data "fmc_fqdn_objects" "module" {
+  for_each = local.data_fqdns
+
+  items  = each.value.items
+  domain = each.key
+}
+
+##########################################################
+###    PORTS + ICMPv4s + Port_Groups
+##########################################################
+locals {
+
+  data_ports = {
+    for domain in local.data_existing.fmc.domains : domain.name => {
+      items = {
+        for port in try(domain.objects.ports, []) : port.name => {}
+      }
+    } if length(try(domain.objects.ports, [])) > 0
+  }
+
+}
+
+data "fmc_ports" "module" {
+  for_each = local.data_ports
+
+  items  = each.value.items
+  domain = each.key
+}
+
+locals {
+
+  data_icmpv4s = {
+    for domain in local.data_existing.fmc.domains : domain.name => {
+      items = {
+        for icmpv4 in try(domain.objects.icmpv4s, []) : icmpv4.name => {}
+      }
+    } if length(try(domain.objects.icmpv4s, [])) > 0
+  }
+
+}
+
+data "fmc_icmpv4_objects" "module" {
+  for_each = local.data_icmpv4s
+
+  items  = each.value.items
+  domain = each.key
+}
+
+locals {
+
+  data_port_groups = {
+    for domain in local.data_existing.fmc.domains : domain.name => {
+      items = {
+        for port_group in try(domain.objects.port_groups, []) : port_group.name => {}
+      }
+    } if length(try(domain.objects.port_groups, [])) > 0
+  }
+
+}
+
+data "fmc_port_groups" "module" {
+  for_each = local.data_port_groups
+
+  items  = each.value.items
+  domain = each.key
+}
+
+##########################################################
+###    DYNAMIC OBJECTS
+##########################################################
+locals {
+
+  data_dynamic_objects = {
+    for domain in local.data_existing.fmc.domains : domain.name => {
+      items = {
+        for dynamic_object in try(domain.objects.dynamic_objects, []) : dynamic_object.name => {}
+      }
+    } if length(try(domain.objects.dynamic_objects, [])) > 0
+  }
+
+}
+
+data "fmc_dynamic_objects" "module" {
+  for_each = local.data_dynamic_objects
+
+  items  = each.value.items
+  domain = each.key
+}
+
+##########################################################
+###    URLs + URL_Groups
+##########################################################
+locals {
+
+  data_urls = {
+    for domain in local.data_existing.fmc.domains : domain.name => {
+      items = {
+        for url in try(domain.objects.urls, []) : url.name => {}
+      }
+    } if length(try(domain.objects.urls, [])) > 0
+  }
+
+}
+
+data "fmc_urls" "module" {
+  for_each = local.data_urls
+
+  items  = each.value.items
+  domain = each.key
+}
+
+locals {
+
+  data_url_groups = {
+    for domain in local.data_existing.fmc.domains : domain.name => {
+      items = {
+        for url_group in try(domain.objects.url_groups, []) : url_group.name => {}
+      }
+    } if length(try(domain.objects.url_groups, [])) > 0
+  }
+
+}
+
+data "fmc_url_groups" "module" {
+  for_each = local.data_url_groups
+
+  items  = each.value.items
+  domain = each.key
+}
+
+##########################################################
+###    SGTs (VLAN Tags) + SGT Groups
+##########################################################
+locals {
+
+  data_vlan_tags = {
+    for domain in local.data_existing.fmc.domains : domain.name => {
+      items = {
+        for vlan_tag in try(domain.objects.vlan_tags, []) : vlan_tag.name => {}
+      }
+    } if length(try(domain.objects.vlan_tags, [])) > 0
+  }
+
+}
+
+data "fmc_vlan_tags" "module" {
+  for_each = local.data_vlan_tags
+
+  items  = each.value.items
+  domain = each.key
+}
+
+locals {
+
+  data_vlan_tag_groups = {
+    for domain in local.data_existing.fmc.domains : domain.name => {
+      items = {
+        for vlan_tag_group in try(domain.objects.vlan_tag_groups, []) : vlan_tag_group.name => {}
+      }
+    } if length(try(domain.objects.vlan_tag_groups, [])) > 0
+  }
+
+}
+
+data "fmc_vlan_tag_groups" "module" {
+  for_each = local.data_vlan_tag_groups
+
+  items  = each.value.items
+  domain = each.key
+}
+
+##########################################################
+###    Security Group Tags
+##########################################################
+locals {
+
+  data_sgts = {
+    for domain in local.data_existing.fmc.domains : domain.name => {
+      items = {
+        for sgt in try(domain.objects.sgts, []) : sgt.name => {}
+      }
+    } if length(try(domain.objects.sgts, [])) > 0
+  }
+
+}
+
+data "fmc_sgts" "module" {
+  for_each = local.data_sgts
+
+  items  = each.value.items
+  domain = each.key
+}
+
+##########################################################
+###    SECURITY ZONE
+##########################################################
+locals {
+
+  data_security_zones = {
+    for domain in local.data_existing.fmc.domains : domain.name => {
+      items = {
+        for security_zone in try(domain.objects.security_zones, []) : security_zone.name => {}
+      }
+    } if length(try(domain.objects.security_zones, [])) > 0
+  }
+
+}
+
+data "fmc_security_zones" "module" {
+  for_each = local.data_security_zones
+
+  items  = each.value.items
+  domain = each.key
+}
+##########################################################
+###    Tunnel Zone
+##########################################################
+locals {
+
+  data_tunnel_zones = {
+    for domain in local.data_existing.fmc.domains : domain.name => {
+      items = {
+        for tunnel_zone in try(domain.objects.tunnel_zones, []) : tunnel_zone.name => {}
+      }
+    } if length(try(domain.objects.tunnel_zones, [])) > 0
+  }
+
+}
+
+data "fmc_tunnel_zones" "module" {
+  for_each = local.data_tunnel_zones
+
+  items  = each.value.items
+  domain = each.key
+}
+
+##########################################################
+###    Time Ranges
+##########################################################
+locals {
+
+  data_time_ranges = {
+    for domain in local.data_existing.fmc.domains : domain.name => {
+      items = {
+        for time_range in try(domain.objects.time_ranges, []) : time_range.name => {}
+      }
+    } if length(try(domain.objects.time_ranges, [])) > 0
+  }
+
+}
+
+data "fmc_time_ranges" "module" {
+  for_each = local.data_time_ranges
+
+  items  = each.value.items
+  domain = each.key
+}
+##########################################################
+###    Variable Set
+##########################################################
+locals {
+
+  data_variable_set = {
+    for item in flatten([
+      for domain in try(local.data_existing.fmc.domains, {}) : [
+        for variable_set in try(domain.objects.variable_sets, {}) : {
+          name        = variable_set.name
+          domain_name = domain.name
+        } if length(try(domain.objects.variable_sets, [])) > 0
+      ]
+    ]) : item.name => item if contains(keys(item), "name")
+  }
+
+
+}
+
+data "fmc_variable_set" "module" {
+  for_each = local.data_variable_set
+
+  name   = each.key
+  domain = each.value.domain_name
+
+}
+
+##########################################################
+###    ACCESS POLICY - STANDARD + EXTENDED
+##########################################################
+locals {
+  data_standard_acl = {
+    for item in flatten([
+      for domain in try(local.data_existing.fmc.domains, {}) : [
+        for element in try(domain.objects.standard_acls, {}) : {
+          name        = element.name
+          domain_name = domain.name
         }
       ]
-    ]
-  ])
+    ]) : "${item.domain_name}:${item.name}" => item if contains(keys(item), "name")
+  }
 
-  data_sub_interfces_list = flatten([
-    for device in try(local.data_existing.fmc.domains[0].devices.devices, []) : [
-      for physicalinterface in try(device.physical_interfaces, []) : [
-        for subinterface in try(physicalinterface.subinterfaces, []) : "${device.name}/${physicalinterface.interface}/${subinterface.id}"
+}
+
+data "fmc_standard_acl" "module" {
+  for_each = local.data_standard_acl
+
+  name   = each.value.name
+  domain = each.value.domain_name
+}
+
+locals {
+  data_extended_acl = {
+    for item in flatten([
+      for domain in try(local.data_existing.fmc.domains, {}) : [
+        for element in try(domain.objects.extended_acls, {}) : {
+          name        = element.name
+          domain_name = domain.name
+        }
+      ]
+    ]) : "${item.domain_name}:${item.name}" => item if contains(keys(item), "name")
+  }
+
+}
+
+data "fmc_extended_acl" "module" {
+  for_each = local.data_extended_acl
+
+  name   = each.value.name
+  domain = each.value.domain_name
+}
+
+##########################################################
+##########################################################
+###    Templates
+##########################################################
+##########################################################
+##########################################################
+###    BFD TEMPLATES
+##########################################################
+locals {
+
+  data_bfd_template = {
+    for item in flatten([
+      for domain in local.data_existing.fmc.domains : [
+        for bfd_template in try(domain.objects.bfd_templates, []) : [
+          {
+            name        = bfd_template.name
+            domain_name = domain.name
+        }]
+      ]
+    ]) : "${item.domain_name}:${item.name}" => item if contains(keys(item), "name") #The device name is unique across the different domains.
+  }
+
+}
+data "fmc_bfd_template" "module" {
+  for_each = local.data_bfd_template
+
+  name   = each.value.name
+  domain = each.value.domain_name
+
+}
+
+##########################################################
+##########################################################
+###    Alerts
+##########################################################
+##########################################################
+
+##########################################################
+###    SNMP Alert
+##########################################################
+locals {
+  data_snmp_alerts = {
+    for domain in try(local.data_existing.fmc.domains, {}) : domain.name => {
+      items = {
+        for snmp in try(domain.policies.alerts.snmps, {}) : snmp.name => {}
+      }
+    } if length(try(domain.policies.alerts.snmps, [])) > 0
+  }
+
+}
+
+data "fmc_snmp_alerts" "module" {
+  for_each = local.data_snmp_alerts
+
+  items  = each.value.items
+  domain = each.key
+}
+
+##########################################################
+###    Syslog Alert
+##########################################################
+locals {
+  data_syslog_alerts = {
+    for domain in try(local.data_existing.fmc.domains, {}) : domain.name => {
+      items = {
+        for syslog in try(domain.policies.alerts.syslogs, {}) : syslog.name => {}
+      }
+    } if length(try(domain.policies.alerts.syslogs, [])) > 0
+  }
+
+}
+
+data "fmc_syslog_alerts" "module" {
+  for_each = local.data_syslog_alerts
+
+  items  = each.value.items
+  domain = each.key
+}
+##########################################################
+##########################################################
+###    File Types / Categories
+##########################################################
+##########################################################
+
+locals {
+  data_file_types = {
+    for domain in try(local.data_existing.fmc.domains, {}) : domain.name => {
+      items = {
+        for file_type in try(domain.objects.file_types, {}) : file_type.name => {}
+      }
+    } if length(try(domain.objects.file_types, [])) > 0
+  }
+
+}
+
+data "fmc_file_types" "module" {
+  for_each = local.data_file_types
+
+  items  = each.value.items
+  domain = each.key
+}
+
+locals {
+  data_file_categories = {
+    for domain in try(local.data_existing.fmc.domains, {}) : domain.name => {
+      items = {
+        for file_category in try(domain.objects.file_categories, {}) : file_category.name => {}
+      }
+    } if length(try(domain.objects.file_categories, [])) > 0
+  }
+
+}
+
+data "fmc_file_categories" "module" {
+  for_each = local.data_file_categories
+
+  items  = each.value.items
+  domain = each.key
+}
+##########################################################
+##########################################################
+###    Policies
+##########################################################
+##########################################################
+
+##########################################################
+###    ACCESS CONTROL POLICY
+##########################################################
+locals {
+  data_access_control_policy = {
+    for item in flatten([
+      for domain in try(local.data_existing.fmc.domains, {}) : [
+        for access_policy in try(domain.policies.access_policies, {}) : {
+          name        = access_policy.name
+          domain_name = domain.name
+        }
+      ]
+    ]) : item.name => item if contains(keys(item), "name")
+  }
+
+}
+
+data "fmc_access_control_policy" "module" {
+  for_each = local.data_access_control_policy
+
+  name   = each.value.name
+  domain = each.value.domain_name
+}
+
+##########################################################
+###    FTD NAT Policy
+##########################################################
+locals {
+  data_ftd_nat_policy = {
+    for item in flatten([
+      for domain in try(local.data_existing.fmc.domains, {}) : [
+        for ftd_nat_policy in try(domain.policies.ftd_nat_policies, {}) : {
+          name        = ftd_nat_policy.name
+          domain_name = domain.name
+        }
+      ]
+    ]) : item.name => item if contains(keys(item), "name")
+  }
+
+}
+
+data "fmc_ftd_nat_policy" "module" {
+  for_each = local.data_ftd_nat_policy
+
+  name   = each.value.name
+  domain = each.value.domain_name
+}
+
+##########################################################
+###    Intrusion (IPS) Policy
+##########################################################
+locals {
+  data_intrusion_policy = {
+    for item in flatten([
+      for domain in try(local.data_existing.fmc.domains, {}) : [
+        for intrusion_policy in try(domain.policies.intrusion_policies, {}) : {
+          name        = intrusion_policy.name
+          domain_name = domain.name
+        }
+      ]
+    ]) : item.name => item if contains(keys(item), "name")
+  }
+
+}
+
+data "fmc_intrusion_policy" "module" {
+  for_each = local.data_intrusion_policy
+
+  name   = each.value.name
+  domain = each.value.domain_name
+}
+
+##########################################################
+###    File Policy
+##########################################################
+locals {
+  data_file_policy = {
+    for item in flatten([
+      for domain in try(local.data_existing.fmc.domains, {}) : [
+        for file_policy in try(domain.policies.file_policies, {}) : {
+          name        = file_policy.name
+          domain_name = domain.name
+        }
+      ]
+    ]) : item.name => item if contains(keys(item), "name")
+  }
+
+}
+
+data "fmc_file_policy" "module" {
+  for_each = local.data_file_policy
+
+  name   = each.value.name
+  domain = each.value.domain_name
+}
+
+##########################################################
+###    Prefilter Policy
+##########################################################
+locals {
+  data_prefilter_policy = {
+    for item in flatten([
+      for domain in try(local.data_existing.fmc.domains, {}) : [
+        for prefilter_policy in try(domain.policies.prefilter_policies, {}) : {
+          name        = prefilter_policy.name
+          domain_name = domain.name
+        }
+      ]
+    ]) : item.name => item if contains(keys(item), "name")
+  }
+
+}
+
+data "fmc_prefilter_policy" "module" {
+  for_each = local.data_prefilter_policy
+
+  name   = each.value.name
+  domain = each.value.domain_name
+}
+
+##########################################################
+###    DEVICE
+##########################################################
+locals {
+
+  data_device = {
+    for item in flatten([
+      for domain in try(local.data_existing.fmc.domains, {}) : [
+        for device in try(domain.devices.devices, {}) : {
+          name        = try(device.name, null)
+          domain_name = domain.name
+        }
+      ]
+    ]) : item.name => item if contains(keys(item), "name") #The device name is unique across the different domains.
+  }
+
+}
+
+data "fmc_device" "module" {
+  for_each = local.data_device
+
+  name   = each.value.name
+  domain = each.value.domain_name
+}
+
+##########################################################
+###    DEVICE HA Pair
+##########################################################
+locals {
+
+  data_device_ha_pair = {
+    for item in flatten([
+      for domain in try(local.data_existing.fmc.domains, {}) : [
+        for ha_pair in try(domain.devices.ha_pairs, {}) : {
+          name        = try(ha_pair.name, null)
+          domain_name = domain.name
+        }
+      ]
+    ]) : item.name => item if contains(keys(item), "name") #The device name is unique across the different domains.
+  }
+
+}
+
+data "fmc_device_ha_pair" "module" {
+  for_each = local.data_device_ha_pair
+
+  name   = each.value.name
+  domain = each.value.domain_name
+}
+
+##########################################################
+###    DEVICE Cluster
+##########################################################
+locals {
+
+  data_device_cluster = {
+    for item in flatten([
+      for domain in try(local.data_existing.fmc.domains, {}) : [
+        for cluster in try(domain.devices.clusters, {}) : {
+          name        = try(cluster.name, null)
+          domain_name = domain.name
+        }
+      ]
+    ]) : item.name => item if contains(keys(item), "name") #The device name is unique across the different domains.
+  }
+
+}
+
+data "fmc_device_cluster" "module" {
+  for_each = local.data_device_cluster
+
+  name   = each.value.name
+  domain = each.value.domain_name
+}
+
+##########################################################
+###    Physical Interface
+##########################################################
+
+locals {
+
+  data_physical_interface = {
+    for item in flatten([
+      for domain in local.data_existing.fmc.domains : [
+        for device in try(domain.devices.devices, []) : [
+          for vrf in try(device.vrfs, []) : [
+            for physical_interface in try(vrf.physical_interfaces, []) : [
+              {
+                name        = physical_interface.name
+                device_name = device.name
+                device_id   = data.fmc_device.module[device.name].id
+                domain_name = domain.name
+            }]
+          ]
+        ]
+      ]
+    ]) : "${item.device_name}:${item.name}" => item if contains(keys(item), "name") #The device name is unique across the different domains.
+  }
+
+}
+
+data "fmc_device_physical_interface" "module" {
+  for_each = local.data_physical_interface
+
+  name      = each.value.name
+  device_id = each.value.device_id
+  domain    = each.value.domain_name
+
+  depends_on = [
+    data.fmc_device.module
+  ]
+}
+
+##########################################################
+###    Ether Channel Interface
+##########################################################
+
+locals {
+
+  data_etherchannel_interface = {
+    for item in flatten([
+      for domain in local.data_existing.fmc.domains : [
+        for device in try(domain.devices.devices, []) : [
+          for vrf in try(device.vrfs, []) : [
+            for etherchannel_interface in try(vrf.etherchannel_interfaces, []) : [
+              {
+                name        = etherchannel_interface.name
+                device_name = device.name
+                device_id   = data.fmc_device.module[device.name].id
+                domain_name = domain.name
+            }]
+          ]
+        ]
+      ]
+    ]) : "${item.device_name}:${item.name}" => item if contains(keys(item), "name") #The device name is unique across the different domains.
+  }
+
+}
+
+data "fmc_device_etherchannel_interface" "module" {
+  for_each = local.data_etherchannel_interface
+
+  name      = each.value.name
+  device_id = each.value.device_id
+  domain    = each.value.domain_name
+
+  depends_on = [
+    data.fmc_device.module
+  ]
+}
+
+##########################################################
+###    Sub-Interface
+##########################################################
+
+locals {
+  data_sub_interface = { for item in flatten([
+    for domain in local.data_existing.fmc.domains : [
+      for device in try(domain.devices.devices, []) : [
+        for vrf in try(device.vrfs, []) : [
+          for sub_interface in try(vrf.sub_interfaces, []) : [
+            {
+              name        = sub_interface.name
+              device_name = device.name
+              device_id   = data.fmc_device.module[device.name].id
+              domain_name = domain.name
+          }]
+        ]
       ]
     ]
-  ])
-
-  # data_vni_interfaces = flatten([
-  #   for device in try(local.data_existing.fmc.domains[0].devices.devices, []) : [
-  #     for vni in try(device.vnis, []) : {
-  #       key       = "${device.name}/${vni.name}/${vni.vni_id}"
-  #       device_id = local.map_devices[device.name].id
-  #       vni_name  = vni
-  #     }
-  #   ]
-  # ])
-
-  data_vni_interfaces_list = flatten([
-    for device in try(local.data_existing.fmc.domains[0].devices.devices, []) : [
-      for vni in try(device.vnis, []) : "${device.name}/${vni.name}/${vni.vni_id}"
-    ]
-  ])
+    ]) : "${item.device_name}:${item.name}" => item if contains(keys(item), "name") #The device name is unique across the different domains. We want to search by index=Sub-Interface_id
+  }
 
 }
-###
-#   Data sources
-###
 
-# data "fmc_smart_license" "smart_license" {
-#   for_each = toset(local.data_smart_license)
+data "fmc_device_subinterface" "module" {
+  for_each = local.data_sub_interface
 
-#   virtual_account = try(each.key, null)
-# }
-
-data "fmc_access_policies" "accesspolicy" {
-  for_each = toset(local.data_accesspolicies)
-
-  name = each.key
-}
-
-data "fmc_ftd_nat_policies" "ftdnatpolicy" {
-  for_each = toset(local.data_ftdnatpolicies)
-
-  name = each.key
-}
-
-data "fmc_host_objects" "host" {
-  for_each = toset(local.data_hosts)
-
-  name = each.key
-}
-
-data "fmc_network_objects" "network" {
-  for_each = toset(local.data_networks)
-
-  name = each.key
-}
-
-# No data.fmc_range_objects in the provider
-#data "fmc_range_objects" "range" {
-#  for_each = toset(local.data_ranges)
-#
-#  name = each.key 
-#}
-
-data "fmc_network_group_objects" "networkgroup" {
-  for_each = toset(local.data_networkgroups)
-
-  name = each.key
-}
-
-data "fmc_port_objects" "port" {
-  for_each = toset(local.data_ports)
-
-  name = each.key
-}
-
-data "fmc_port_group_objects" "portgroup" {
-  for_each = toset(local.data_portgroups)
-
-  name = each.key
-}
-
-# No data.fmc_icmpv4_objects in the provider
-#data "fmc_icmpv4_objects" "icmpv4" {
-#  for_each = toset(local.data_icmpv4s)
-#
-#  name = each.key 
-#}
-
-# data "fmc_standard_acl" "standard_acl" {
-#   for_each = toset(local.data_standard_access_lists)
-
-#   name = each.key
-# }
-
-# data "fmc_extended_acl" "extended_acl" {
-#   for_each = toset(local.data_extended_access_lists)
-
-#   name = each.key
-# }
-
-data "fmc_security_zones" "securityzone" {
-  for_each = toset(local.data_securityzones)
-
-  name = each.key
-}
-
-data "fmc_dynamic_objects" "dynamicobject" {
-  for_each = toset(local.data_dynamicobjects)
-
-  name = each.key
-}
-
-data "fmc_ips_policies" "ips_policy" {
-  for_each = toset(local.data_ipspolicies)
-
-  name = each.key
-}
-
-# data "fmc_file_policies" "file_policy" {
-#   for_each = toset(local.data_filepolicies)
-
-#   name = each.key
-# }
-
-# data "fmc_network_analysis_policy" "network_analysis_policy" {
-#   for_each = toset(local.data_network_analysis_policies)
-
-#   name = each.key
-# }
-
-data "fmc_devices" "device" {
-  for_each = toset(local.data_devices)
-
-  name = each.key
-}
-
-data "fmc_device_cluster" "cluster" {
-  for_each = toset(local.data_clusters)
-
-  name = each.key
-}
-
-data "fmc_device_physical_interfaces" "physical_interface" {
-  for_each = local.map_interfaces
-
+  name      = each.value.name
   device_id = each.value.device_id
-  name      = each.value.physicalinterface
+  domain    = each.value.domain_name
 
   depends_on = [
-    fmc_devices.device,
-    data.fmc_devices.device
+    data.fmc_device.module
   ]
 }
 
-data "fmc_device_subinterfaces" "sub_interfaces" {
-  for_each = { for object in local.data_sub_interfaces : object.key => object }
+##########################################################
+###    VRF
+##########################################################
+locals {
 
-  device_id       = each.value.device_id
-  subinterface_id = each.value.subinterface_id
+  data_vrf = {
+    for item in flatten([
+      for domain in local.data_existing.fmc.domains : [
+        for device in try(domain.devices.devices, []) : [
+          for vrf in try(device.vrfs, []) : [
+            {
+              name        = vrf.name
+              device_name = device.name
+              device_id   = data.fmc_device.module[device.name].id
+              domain_name = domain.name
+          }]
+        ]
+      ]
+    ]) : "${item.device_name}:${item.name}" => item if contains(keys(item), "name") #The device name is unique across the different domains.
+  }
+
+}
+
+data "fmc_device_vrf" "module" {
+  for_each = local.data_vrf
+
+  name      = each.value.name
+  device_id = each.value.device_id
+  domain    = each.value.domain_name
 
   depends_on = [
-    fmc_devices.device,
-    data.fmc_devices.device
+    data.fmc_device.module
   ]
 }
 
-# data "fmc_device_vni" "vni" {
-#   for_each = { for object in local.data_vni_interfaces : object.key => object }
+##########################################################
+###    BFD 
+##########################################################
 
-#   name      = each.value.vni_name
-#   device_id = each.value.device_id
-# }
+locals {
 
-data "fmc_sgt_objects" "sgt" {
-  for_each = toset(local.data_sgts)
+  data_bfd = {
+    for item in flatten([
+      for domain in local.data_existing.fmc.domains : [
+        for device in try(domain.devices.devices, []) : [
+          for bfd in try(device.bfds, []) : [
+            {
+              interface_logical_name = bfd.interface_logical_name
+              device_id              = data.fmc_device.module[device.name].id
+              domain_name            = domain.name
+          }]
+        ]
+      ]
+    ]) : "${item.domain_name}:${item.interface_logical_name}" => item if contains(keys(item), "interface_logical_name") #The device name is unique across the different domains.
+  }
 
-  name = each.key
+}
+data "fmc_device_bfd" "module" {
+  for_each = local.data_bfd
+
+  interface_logical_name = each.value.interface_logical_name
+  device_id              = each.value.device_id
+  domain                 = each.value.domain_name
+
 }
 
-data "fmc_url_objects" "url" {
-  for_each = toset(local.data_urls)
 
-  name = each.key
+##########################################################
+###    BGP - General Settings
+##########################################################
+locals {
+
+  data_bgp_general_setting = {
+    for item in flatten([
+      for domain in local.data_existing.fmc.domains : [
+        for device in try(domain.devices.devices, []) : [
+          {
+            as_number   = device.bgp_general_settings.as_number
+            device_name = device.name
+            domain_name = domain.name
+          }
+        ] if contains(keys(device), "bgp_general_settings")
+      ]
+    ]) : "${item.device_name}:BGP" => item if contains(keys(item), "device_name")
+  }
+
 }
 
-# data "fmc_syslog_alerts" "syslog_alert" {
-#   for_each = toset(local.data_syslog_alerts)
+data "fmc_device_bgp_general_settings" "module" {
+  for_each = local.data_bgp_general_setting
 
-#   name = each.key
-# }
+  as_number = each.value.as_number
+  device_id = data.fmc_device.module[each.value.device_name].id
+  domain    = each.value.domain_name
+
+  depends_on = [
+    data.fmc_device.module
+  ]
+}

@@ -27,3 +27,9 @@ variable "write_default_values_file" {
   type        = string
   default     = ""
 }
+
+variable "manage_deployment" {
+  description = "Enables support for FTD deployments"
+  type        = bool
+  default     = true
+}
