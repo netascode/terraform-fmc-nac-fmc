@@ -16,12 +16,6 @@ variable "model" {
   default     = {}
 }
 
-variable "manage_deployment" {
-  description = "Enables support for FTD deployments"
-  type        = bool
-  default     = true
-}
-
 variable "write_default_values_file" {
   description = "Write all default values to a YAML file. Value is a path pointing to the file to be created."
   type        = string
