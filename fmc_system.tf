@@ -105,7 +105,6 @@ locals {
       ignore_warning = try(local.fmc.system.deployment.ignore_warning, null)
       #version    = null
       deployment_note = try(local.fmc.system.deployment.deployment_note, null)
-      domain_name     = domain.name
       device_id_list = flatten([for device in try(domain.devices.devices, []) : [local.map_devices[device.name].id] if try(device.deploy, false) && var.manage_deployment
       ])
     }

@@ -484,18 +484,16 @@ locals {
 
               }]
 
-              enabled             = try(rule.enabled, null)
-              encapsulation_ports = try(rule.encapsulation_ports, null)
-
               enabled             = try(rule.enabled, local.defaults.fmc.domains[domain.name].policies.prefilter_policies.rules.enabled, null)
               encapsulation_ports = try(rule.encapsulation_ports, local.defaults.fmc.domains[domain.name].policies.prefilter_policies.rules.encapsulation_ports, null)
-              log_begin           = try(rule.log_connection_begin, local.defaults.fmc.domains[domain.name].policies.prefilter_policies.rules.log_connection_begin, null)
-              log_end             = try(rule.log_connection_end, local.defaults.fmc.domains[domain.name].policies.prefilter_policies.rules.log_connection_end, null)
-              log_files           = try(rule.log_files, local.defaults.fmc.domains[domain.name].policies.prefilter_policies.rules.log_files, null)
-              section             = try(rule.section, local.defaults.fmc.domains[domain.name].policies.prefilter_policies.rules.section, null)
-              send_events_to_fmc  = try(rule.send_events_to_fmc, local.defaults.fmc.domains[domain.name].policies.prefilter_policies.rules.send_events_to_fmc, null)
-              send_syslog         = try(rule.enable_syslog, local.defaults.fmc.domains[domain.name].policies.prefilter_policies.rules.enable_syslog, null)
-              snmp_config_id      = try(local.map_snmp_alerts[rule.snmp_alert].id, null)
+
+              log_begin          = try(rule.log_connection_begin, local.defaults.fmc.domains[domain.name].policies.prefilter_policies.rules.log_connection_begin, null)
+              log_end            = try(rule.log_connection_end, local.defaults.fmc.domains[domain.name].policies.prefilter_policies.rules.log_connection_end, null)
+              log_files          = try(rule.log_files, local.defaults.fmc.domains[domain.name].policies.prefilter_policies.rules.log_files, null)
+              section            = try(rule.section, local.defaults.fmc.domains[domain.name].policies.prefilter_policies.rules.section, null)
+              send_events_to_fmc = try(rule.send_events_to_fmc, local.defaults.fmc.domains[domain.name].policies.prefilter_policies.rules.send_events_to_fmc, null)
+              send_syslog        = try(rule.enable_syslog, local.defaults.fmc.domains[domain.name].policies.prefilter_policies.rules.enable_syslog, null)
+              snmp_config_id     = try(local.map_snmp_alerts[rule.snmp_alert].id, null)
               source_interfaces = [for source_interface in try(rule.source_interfaces, []) : {
                 id = local.map_security_zones[source_interface].id
               }]
