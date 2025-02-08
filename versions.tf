@@ -4,7 +4,7 @@ terraform {
   required_providers {
     fmc = {
       source  = "CiscoDevNet/fmc"
-      version = "2.0.0-beta0"
+      version = "2.0.0-beta1"
     }
     utils = {
       source  = "netascode/utils"
