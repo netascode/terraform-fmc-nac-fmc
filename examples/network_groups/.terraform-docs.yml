@@ -19,7 +19,7 @@ content: |-
   ```bash
   export FMC_USERNAME=<username>
   export FMC_PASSWORD=<password>
-  export FMC_HOST=<hostname>
+  export FMC_URL=<hostname>
   (Optionally)
   export FMC_INSECURE_SKIP_VERIFY=true
   ```

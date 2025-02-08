@@ -11,10 +11,6 @@ content: |-
 
   This module supports an inventory driven approach, where a complete FMC configuration or parts of it are either modeled in one or more YAML files or natively using Terraform variables.
 
-  ## Optional
-
-  The default number of supported Access Rules and Manual Nat Rules is 100. To change it, please visit: [templates](/templates)
-
   ## Examples
 
   Configuring a Network-group Object using YAML:
@@ -40,6 +36,7 @@ content: |-
   {{ .Requirements }}
   {{ .Inputs }}
   {{ .Outputs }}
+  {{ .Providers }}  
   {{ .Resources }}
   {{ .Modules }}
 output:
