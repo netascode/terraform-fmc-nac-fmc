@@ -88,6 +88,6 @@ defaults:
           security_zones:
             interface_type: "ROUTED"
           extended_access_lists:
-            logging: "DISABLED"
-            log_interval: 300
-            log_level: "INFORMATIONAL"
+              logging: "DISABLED"
+              log_interval: 300
+              log_level: "INFORMATIONAL"
