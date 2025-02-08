@@ -57,8 +57,8 @@ locals {
       policy_type             = "AccessPolicy"
       after_destroy_policy_id = try(local.map_access_control_policies[local.fmc.system.policy_assignment.after_destroy_policy].id, null)
       targets = flatten([
-      for domain in local.domains : [
-        for device in try(domain.devices.devices, []) : [
+        for domain in local.domains : [
+          for device in try(domain.devices.devices, []) : [
             {
               id   = local.map_devices[device.name].id
               type = "Device"
