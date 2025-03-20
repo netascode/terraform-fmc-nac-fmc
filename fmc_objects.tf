@@ -19,9 +19,12 @@
 # resource "fmc_vlan_tags" "module" 
 # resource "fmc_vlan_tag_groups" "module" 
 # resource "fmc_sgts" "module" 
+# resource "fmc_tunnel_zones" "module" 
 # resource "fmc_security_zones" "module"
 # resource "fmc_standard_acl" "module" 
 # resource "fmc_extended_acl" "module" 
+# resource "fmc_application_filters" "module" 
+# resource "fmc_time_ranges" "module" 
 #
 ###  
 #  Local variables
@@ -44,6 +47,7 @@
 # local.resource_security_zones
 # local.resource_standard_acl
 # local.resource_extended_acl
+# local.resource_application_filters
 # local.resource_time_ranges
 #
 # local.map_network_objects
@@ -57,6 +61,7 @@
 # local.map_vlan_tag_groups
 # local.map_sgts
 # local.map_tunnel_zones
+# local.map_application_filters
 # local.map_time_ranges
 # local.map_security_zones
 # local.map_variable_sets
@@ -95,7 +100,7 @@ locals {
       items = {
         for host in try(domain.objects.hosts, []) : host.name => {
           ip          = host.ip
-          description = try(host.description, local.defaults.fmc.domains[domain.name].objects.hosts.description, null)
+          description = try(host.description, local.defaults.fmc.domains.objects.hosts.description, null)
         } if !contains(try(keys(local.data_hosts[domain.name].items), []), host.name)
       }
     } if length(try(domain.objects.hosts, [])) > 0
@@ -142,7 +147,7 @@ locals {
       items = {
         for network in try(domain.objects.networks, []) : network.name => {
           prefix      = network.prefix
-          description = try(network.description, local.defaults.fmc.domains[domain.name].objects.network.description, null)
+          description = try(network.description, local.defaults.fmc.domains.objects.network.description, null)
         } if !contains(try(local.data_networks[domain.name].itmes, []), network.name)
       }
     } if length(try(domain.objects.networks, [])) > 0
@@ -174,7 +179,7 @@ locals {
       items = {
         for range in try(domain.objects.ranges, []) : range.name => {
           ip_range    = range.ip_range
-          description = try(range.description, local.defaults.fmc.domains[domain.name].objects.ranges.description, null)
+          description = try(range.description, local.defaults.fmc.domains.objects.ranges.description, null)
         } if !contains(try(keys(local.data_ranges[domain.name].items), []), range.name)
       }
     } if length(try(domain.objects.ranges, [])) > 0
@@ -207,7 +212,7 @@ locals {
         for fqdn in try(domain.objects.fqdns, []) : fqdn.name => {
           fqdn           = fqdn.fqdn
           dns_resolution = try(fqdn.dns_resolution, null)
-          description    = try(fqdn.description, local.defaults.fmc.domains[domain.name].objects.fqdns.description, null)
+          description    = try(fqdn.description, local.defaults.fmc.domains.objects.fqdns.description, null)
         } if !contains(try(keys(local.data_fqdns[domain.name].items), []), fqdn.name)
       }
     } if length(try(domain.objects.fqdns, [])) > 0
@@ -297,7 +302,7 @@ locals {
         for port in try(domain.objects.ports, []) : port.name => {
           protocol    = port.protocol
           port        = try(port.port, null)
-          description = try(port.description, local.defaults.fmc.domains[domain.name].objects.ports.description, null)
+          description = try(port.description, local.defaults.fmc.domains.objects.ports.description, null)
         } if !contains(try(keys(local.data_icmpv4s[domain.name].items), []), port.name)
       }
     } if length(try(domain.objects.ports, [])) > 0
@@ -329,7 +334,7 @@ locals {
         for icmpv4 in try(domain.objects.icmpv4s, []) : icmpv4.name => {
           icmp_type   = try(icmpv4.icmp_type, null)
           code        = try(icmpv4.code, null)
-          description = try(icmpv4.description, local.defaults.fmc.domains[domain.name].objects.icmpv4s.description, null)
+          description = try(icmpv4.description, local.defaults.fmc.domains.objects.icmpv4s.description, null)
         } if !contains(try(keys(local.data_icmpv4s[domain.name].items), []), icmpv4.name)
       }
     } if length(try(domain.objects.icmpv4s, [])) > 0
@@ -366,7 +371,7 @@ locals {
             id   = local.map_services[object_item].id
             type = local.map_services[object_item].type
           }]
-          description = try(port_group.description, local.defaults.fmc.domains[domain.name].objects.port_groups.description, null)
+          description = try(port_group.description, local.defaults.fmc.domains.objects.port_groups.description, null)
         } if !contains(try(keys(local.data_port_groups[domain.name].items), []), port_group.name)
       }
     } if length(try(domain.objects.port_groups, [])) > 0
@@ -404,9 +409,9 @@ locals {
     for domain in local.domains : domain.name => {
       items = {
         for dynamic_object in try(domain.objects.dynamic_objects, []) : dynamic_object.name => {
-          object_type = try(dynamic_object.type, local.defaults.fmc.domains[domain.name].objects.dynamic_objects.type, null)
+          object_type = try(dynamic_object.type, local.defaults.fmc.domains.objects.dynamic_objects.type, null)
           mappings    = try(dynamic_object.mappings, null)
-          description = try(dynamic_object.description, local.defaults.fmc.domains[domain.name].objects.dynamic_objects.description, null)
+          description = try(dynamic_object.description, local.defaults.fmc.domains.objects.dynamic_objects.description, null)
         } if !contains(try(keys(local.data_dynamic_objects[domain.name].items), []), dynamic_object.name)
       }
     } if length(try(domain.objects.dynamic_objects, [])) > 0
@@ -438,7 +443,7 @@ locals {
       items = {
         for url in try(domain.objects.urls, []) : url.name => {
           url         = url.url
-          description = try(url.description, local.defaults.fmc.domains[domain.name].objects.urls.description, null)
+          description = try(url.description, local.defaults.fmc.domains.objects.urls.description, null)
         } if !contains(try(keys(local.data_urls[domain.name].items), []), url.name)
       }
     } if length(try(domain.objects.urls, [])) > 0
@@ -653,7 +658,7 @@ locals {
         for security_zone in try(domain.objects.security_zones, []) : security_zone.name =>
         {
           # Mandatory 
-          interface_type = try(security_zone.description, local.defaults.fmc.domains[domain.name].objects.security_zones.interface_type, null)
+          interface_type = try(security_zone.description, local.defaults.fmc.domains.objects.security_zones.interface_type, null)
           # Optional
           description = try(security_zone.description, null)
         } if !contains(try(keys(local.data_security_zones[domain.name].items), []), security_zone.name)
@@ -793,6 +798,67 @@ resource "fmc_extended_acl" "module" {
   domain      = each.value.domain_name
 }
 
+##########################################################
+###    APPLICATION FILTERS
+##########################################################
+locals {
+
+  resource_application_filters = {
+    for domain in local.domains : domain.name => {
+      items = {
+        for application_filter in try(domain.objects.application_filters, []) : application_filter.name =>
+        {
+          applications = contains(try(keys(application_filter), []), "applications") ? [for application in application_filter.applications : {
+            id   = data.fmc_applications.module[domain.name].items[application].id
+            name = application
+          }] : null
+          filters = length(try(application_filter.filters, [])) > 0 ? [for filter in application_filter.filters : {
+            business_relevances = contains(try(keys(filter), []), "business_relevances") ? [for business_relevance in filter.business_relevances : {
+              id = data.fmc_application_business_relevances.module[domain.name].items[business_relevance].id
+            }] : null
+
+            categories = contains(try(keys(filter), []), "categories") ? [for category in filter.categories : {
+              id = data.fmc_application_categories.module[domain.name].items[category].id
+            }] : null
+
+            risks = contains(try(keys(filter), []), "risks") ? [for risks in filter.risks : {
+              id = data.fmc_application_risks.module[domain.name].items[risks].id
+            }] : null
+
+            types = contains(try(keys(filter), []), "types") ? [for type in filter.types : {
+              id = data.fmc_application_types.module[domain.name].items[type].id
+            }] : null
+
+            tags = contains(try(keys(filter), []), "tags") ? [for tag in filter.tags : {
+              id = data.fmc_application_tags.module[domain.name].items[tag].id
+            }] : null
+
+          }] : null
+
+        } if !contains(try(keys(local.data_application_filters[domain.name].items), []), application_filter.name)
+      }
+    } if length(try(domain.objects.application_filters, [])) > 0
+
+  }
+}
+
+resource "fmc_application_filters" "module" {
+  for_each = local.resource_application_filters
+
+  # Mandatory 
+  items = each.value.items
+
+  # Optional
+  domain = each.key
+  depends_on = [
+    data.fmc_applications.module,
+    data.fmc_application_business_relevances.module,
+    data.fmc_application_categories.module,
+    data.fmc_application_risks.module,
+    data.fmc_application_tags.module,
+    data.fmc_application_types.module,
+  ]
+}
 ##########################################################
 ###    TIME RANGES
 ##########################################################
@@ -1221,6 +1287,34 @@ locals {
           name        = item
           id          = data.fmc_tunnel_zones.module[domain_key].items[item].id
           type        = data.fmc_tunnel_zones.module[domain_key].items[item].type
+          domain_name = domain_key
+        }])
+      ]) : item.name => item if contains(keys(item), "name")
+    },
+  )
+
+}
+
+######
+### map_application_filters - Application Filters data + resource
+######
+locals {
+  map_application_filters = merge({
+    for item in flatten([
+      for domain_key, domain_value in local.resource_application_filters :
+      flatten([for item_key, item_value in domain_value.items : {
+        name        = item_key
+        id          = fmc_application_filters.module[domain_key].items[item_key].id
+        domain_name = domain_key
+      }])
+    ]) : item.name => item if contains(keys(item), "name")
+    },
+    {
+      for item in flatten([
+        for domain_key, domain_value in local.data_time_ranges :
+        flatten([for item in keys(domain_value.items) : {
+          name        = item
+          id          = data.fmc_application_filters.module[domain_key].items[item].id
           domain_name = domain_key
         }])
       ]) : item.name => item if contains(keys(item), "name")

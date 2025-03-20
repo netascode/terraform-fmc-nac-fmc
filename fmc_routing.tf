@@ -42,7 +42,7 @@ locals {
               name        = vrf.name
               device_id   = local.map_devices[device.name].id
               domain_name = domain.name
-              description = try(vrf.description, local.defaults.fmc.domains[domain.name].devices.devices.vrfs[vrf.name].description, null)
+              description = try(vrf.description, local.defaults.fmc.domains.devices.devices.vrfs.description, null)
               interfaces = concat([for interface in try(vrf.physical_interfaces, []) : {
                 interface_id           = try(fmc_device_physical_interface.module["${device.name}:${interface.name}"].id, data.fmc_device_physical_interface.module["${device.name}:${interface.name}"].id, null)
                 interface_logical_name = try(interface.logical_name, data.fmc_device_physical_interface.module["${device.name}:${interface.name}"].logical_name, null)
@@ -447,22 +447,22 @@ locals {
               network_id       = try(local.map_network_objects[ipv4_aggregate_address.network].id, local.map_network_group_objects[ipv4_aggregate_address.network].id, null)
               suppress_map_id  = try(local.map_route_maps[ipv4_aggregate_address.suppress_map].id, null)
             }]
-            ipv4_auto_aummary                 = try(vrf.bgp.ipv4_auto_aummary, local.defaults.fmc.domains[domain.name].devices.devices.vrfs[vrf.name].bgp.ipv4_auto_aummary, null)
-            ipv4_bgp_redistribute_internal    = try(vrf.bgp.ipv4_bgp_redistribute_internal, local.defaults.fmc.domains[domain.name].devices.devices.vrfs[vrf.name].bgp.ipv4_bgp_redistribute_internal, null)
-            ipv4_bgp_supress_inactive         = try(vrf.bgp.ipv4_bgp_supress_inactive, local.defaults.fmc.domains[domain.name].devices.devices.vrfs[vrf.name].bgp.ipv4_bgp_supress_inactive, null)
-            ipv4_default_information_orginate = try(vrf.bgp.ipv4_default_information_orginate, local.defaults.fmc.domains[domain.name].devices.devices.vrfs[vrf.name].bgp.ipv4_default_information_orginate, null)
-            ipv4_external_distance            = try(vrf.bgp.ipv4_external_distance, local.defaults.fmc.domains[domain.name].devices.devices.vrfs[vrf.name].bgp.ipv4_external_distance, null)
+            ipv4_auto_aummary                 = try(vrf.bgp.ipv4_auto_aummary, local.defaults.fmc.domains.devices.devices.vrfs.bgp.ipv4_auto_aummary, null)
+            ipv4_bgp_redistribute_internal    = try(vrf.bgp.ipv4_bgp_redistribute_internal, local.defaults.fmc.domains.devices.devices.vrfs.bgp.ipv4_bgp_redistribute_internal, null)
+            ipv4_bgp_supress_inactive         = try(vrf.bgp.ipv4_bgp_supress_inactive, local.defaults.fmc.domains.devices.devices.vrfs.bgp.ipv4_bgp_supress_inactive, null)
+            ipv4_default_information_orginate = try(vrf.bgp.ipv4_default_information_orginate, local.defaults.fmc.domains.devices.devices.vrfs.bgp.ipv4_default_information_orginate, null)
+            ipv4_external_distance            = try(vrf.bgp.ipv4_external_distance, local.defaults.fmc.domains.devices.devices.vrfs.bgp.ipv4_external_distance, null)
             ipv4_filterings = [for ipv4_filter in try(vrf.bgp.ipv4_filterings, {}) : {
               access_list_id    = null
               network_direction = try(ipv4_filter.network_direction, null)
               prorocol_process  = try(ipv4_filter.prorocol_process, null)
               protocol          = try(ipv4_filter.protocol, null)
             }]
-            ipv4_forward_packets_over_multipath_ebgp = try(vrf.bgp.ipv4_forward_packets_over_multipath_ebgp, local.defaults.fmc.domains[domain.name].devices.devices.vrfs[vrf.name].bgp.ipv4_forward_packets_over_multipath_ebgp, null)
-            ipv4_forward_packets_over_multipath_ibgp = try(vrf.bgp.ipv4_forward_packets_over_multipath_ibgp, local.defaults.fmc.domains[domain.name].devices.devices.vrfs[vrf.name].bgp.ipv4_forward_packets_over_multipath_ibgp, null)
-            ipv4_internal_distance                   = try(vrf.bgp.ipv4_internal_distance, local.defaults.fmc.domains[domain.name].devices.devices.vrfs[vrf.name].bgp.ipv4_internal_distance, null)
+            ipv4_forward_packets_over_multipath_ebgp = try(vrf.bgp.ipv4_forward_packets_over_multipath_ebgp, local.defaults.fmc.domains.devices.devices.vrfs.bgp.ipv4_forward_packets_over_multipath_ebgp, null)
+            ipv4_forward_packets_over_multipath_ibgp = try(vrf.bgp.ipv4_forward_packets_over_multipath_ibgp, local.defaults.fmc.domains.devices.devices.vrfs.bgp.ipv4_forward_packets_over_multipath_ibgp, null)
+            ipv4_internal_distance                   = try(vrf.bgp.ipv4_internal_distance, local.defaults.fmc.domains.devices.devices.vrfs.bgp.ipv4_internal_distance, null)
             ipv4_learned_route_map_id                = try(local.map_route_maps[vrf.bgp.ipv4_learned_route_map].id, null)
-            ipv4_local_distance                      = try(vrf.bgp.ipv4_local_distance, local.defaults.fmc.domains[domain.name].devices.devices.vrfs[vrf.name].bgp.ipv4_local_distance, null)
+            ipv4_local_distance                      = try(vrf.bgp.ipv4_local_distance, local.defaults.fmc.domains.devices.devices.vrfs.bgp.ipv4_local_distance, null)
             ipv4_neighbors = [for ipv4_neighbor in try(vrf.bgp.ipv4_neighbors, {}) : {
               enable_address_family                    = try(ipv4_neighbor.enable_address_family, null)
               neighbor_address                         = try(ipv4_neighbor.neighbor_address, null)
@@ -533,7 +533,7 @@ locals {
               exist_route_map_id  = try(local.map_route_maps[ipv4_route_injection.exist_route_map].id, null)
               inject_route_map_id = try(local.map_route_maps[ipv4_route_injection.inject_route_map].id, null)
             }]
-            ipv4_synchronization = try(vrf.bgp.ipv4_synchronization, local.defaults.fmc.domains[domain.name].devices.devices.vrfs[vrf.name].bgp.ipv4_synchronization, null)
+            ipv4_synchronization = try(vrf.bgp.ipv4_synchronization, local.defaults.fmc.domains.devices.devices.vrfs.bgp.ipv4_synchronization, null)
 
             domain_name = domain.name
 

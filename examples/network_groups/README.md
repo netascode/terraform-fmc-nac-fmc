@@ -37,7 +37,9 @@ existing:
   fmc:
     domains:
       - name: Global
+  
         objects:
+  
           networks:
             - name: any-ipv4
 ```
@@ -49,12 +51,15 @@ existing:
 fmc:
   domains:
     - name: Global
+
       objects:
+
         hosts:
           - name: MyHost1
             ip: 10.10.10.10
           - name: MyHost2
             ip: 20.20.20.20
+
         network_groups:
           - name: MyNetworkGroup1
             objects:
@@ -71,9 +76,9 @@ fmc:
 ```hcl
 module "fmc" {
   source  = "netascode/nac-fmc/fmc"
-  version = "0.0.1"
+  version = ">=0.0.1"
 
-  yaml_files = ["fmc.yaml", "existing.yaml"]
+  yaml_directories = ["data"]
 }
 ```
 <!-- END_TF_DOCS -->
