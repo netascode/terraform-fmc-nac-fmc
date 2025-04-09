@@ -11,7 +11,7 @@ This module supports an inventory driven approach, where a complete FMC configur
 
 Configuring a Network-group Object using YAML:
 
-#### `data/existing.yaml`
+#### `data/existing.nac.yaml`
 
 ```yaml
 ---
@@ -26,7 +26,7 @@ existing:
             - name: any-ipv4
 ```
 
-#### `data/fmc.yaml`
+#### `data/fmc.nac.yaml`
 
 ```yaml
 ---
