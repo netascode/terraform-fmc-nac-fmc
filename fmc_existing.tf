@@ -52,6 +52,10 @@
 # data "fmc_device_vrf" "module"
 # data "fmc_device_bfd" "module"
 # data "fmc_device_bgp_general_settings" "module"
+# data "fmc_ipv4_address_pools" "module"
+# data "fmc_ipv6_address_pools" "module"
+# data "fmc_ise_sgts" "module"
+# data "fmc_endpoint_device_types" "module"
 #
 ###  
 #  Local variables
@@ -101,6 +105,10 @@
 # local.data_vrf
 # local.data_bfd
 # local.data_bgp_general_setting
+# local.data_ipv4_address_pools
+# local.data_ipv6_address_pools
+# local.data_ise_sgts
+# local.data_endpoint_device_types
 #
 #
 ##########################################################
@@ -1196,4 +1204,92 @@ data "fmc_device_bgp_general_settings" "module" {
   depends_on = [
     data.fmc_device.module
   ]
+}
+
+##########################################################
+###    IPV4 ADDRESS POOL
+##########################################################
+locals {
+
+  data_ipv4_address_pools = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for ipv4_address_pool in try(domain.objects.ipv4_address_pools, []) : ipv4_address_pool.name => {}
+      }
+    } if length(try(domain.objects.ipv4_address_pools, [])) > 0
+  }
+
+}
+
+data "fmc_ipv4_address_pools" "module" {
+  for_each = local.data_ipv4_address_pools
+
+  items  = each.value.items
+  domain = each.key
+}
+
+##########################################################
+###    IPV6 ADDRESS POOL
+##########################################################
+locals {
+
+  data_ipv6_address_pools = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for ipv6_address_pool in try(domain.objects.ipv6_address_pools, []) : ipv6_address_pool.name => {}
+      }
+    } if length(try(domain.objects.ipv6_address_pools, [])) > 0
+  }
+
+}
+
+data "fmc_ipv6_address_pools" "module" {
+  for_each = local.data_ipv6_address_pools
+
+  items  = each.value.items
+  domain = each.key
+}
+
+##########################################################
+###    ISE SGT
+##########################################################
+locals {
+
+  data_ise_sgts = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for ise_sgt in try(domain.objects.ise_sgts, []) : ise_sgt.name => {}
+      }
+    } if length(try(domain.objects.ise_sgts, [])) > 0
+  }
+
+}
+
+data "fmc_ise_sgts" "module" {
+  for_each = local.data_ise_sgts
+
+  items  = each.value.items
+  domain = each.key
+}
+
+##########################################################
+###    ENDPOINT DEVICE TYPES
+##########################################################
+locals {
+
+  data_endpoint_device_types = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for endpoint_device_type in try(domain.objects.endpoint_device_types, []) : endpoint_device_type.name => {}
+      }
+    } if length(try(domain.objects.endpoint_device_types, [])) > 0
+  }
+
+}
+
+data "fmc_endpoint_device_types" "module" {
+  for_each = local.data_endpoint_device_types
+
+  items  = each.value.items
+  domain = each.key
 }

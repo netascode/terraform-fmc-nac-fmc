@@ -101,11 +101,21 @@ locals {
                 id   = try(local.map_services[destination_port_object].id, local.map_service_groups[destination_port_object].id)
                 type = try(local.map_services[destination_port_object].type, local.map_service_groups[destination_port_object].type)
               }]
+              destination_sgt_objects = [for destination_sgt in try(rule.destination_sgts, []) : {
+                name = local.map_sgts[destination_sgt].name
+                id   = local.map_sgts[destination_sgt].id
+                type = local.map_sgts[destination_sgt].type
+              }]
               destination_zones = [for destination_zone in try(rule.destination_zones, []) : {
                 id = local.map_security_zones[destination_zone].id
               }]
 
-              enabled             = try(rule.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled, null)
+              enabled = try(rule.enabled, local.defaults.fmc.domains.policies.access_policies.access_rules.enabled, null)
+              endpoint_device_types = [for endpoint_device_type in try(rule.endpoint_device_types, []) : {
+                id   = local.map_endpoint_device_types[endpoint_device_type].id
+                type = local.map_endpoint_device_types[endpoint_device_type].type
+                name = local.map_endpoint_device_types[endpoint_device_type].name
+              }]
               file_policy_id      = try(local.map_file_policies[rule.file_policy].id, null)
               intrusion_policy_id = try(local.map_intrusion_policies[rule.intrusion_policy].id, local.defaults.fmc.domains.policies.access_policies.access_rules.intrusion_policy, null)
               log_begin           = try(rule.log_connection_begin, local.defaults.fmc.domains.policies.access_policies.access_rules.log_connection_begin, null)
@@ -143,7 +153,9 @@ locals {
                 id = local.map_security_zones[source_zone].id
               }]
               source_sgt_objects = [for source_sgt in try(rule.source_sgts, []) : {
-                id = local.map_sgts[source_sgt].id
+                name = local.map_sgts[source_sgt].name
+                id   = local.map_sgts[source_sgt].id
+                type = local.map_sgts[source_sgt].type
               }]
               syslog_config_id = try(local.map_syslog_alerts[rule.syslog_alert].id, null)
               syslog_severity  = try(rule.syslog_severity, local.defaults.fmc.domains.policies.access_policies.syslog_severity, null)

@@ -220,7 +220,7 @@ locals {
           for monitored_interface in try(ha_pair.interfaces, []) : [
             {
               device_name          = ha_pair.name
-              device_id            = try(data.fmc_device_ha_pair.module[ha_pair.name].id, fmc_device_ha_pair.module[ha_pair.name].id)
+              ha_pair_id           = try(data.fmc_device_ha_pair.module[ha_pair.name].id, fmc_device_ha_pair.module[ha_pair.name].id)
               logical_name         = monitored_interface.interface_logical_name
               ipv4_standby_address = try(monitored_interface.ipv4_standby_address, null)
               monitor_interface    = try(monitored_interface.monitor_interface, null)
@@ -246,7 +246,7 @@ resource "fmc_device_ha_pair_monitoring" "module" {
 
   # Mandatory
   logical_name = each.value.logical_name
-  device_id    = each.value.device_id
+  ha_pair_id   = each.value.ha_pair_id
 
   #Optional
   monitor_interface    = each.value.monitor_interface
@@ -369,6 +369,7 @@ locals {
                 ip_based_monitoring                   = try(physical_interface.ip_based_monitoring, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ip_based_monitoring, null)
                 ip_based_monitoring_next_hop          = try(physical_interface.ip_based_monitoring_next_hop, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ip_based_monitoring_next_hop, null)
                 ip_based_monitoring_type              = try(physical_interface.ip_based_monitoring_type, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ip_based_monitoring_type, null)
+                ipv4_address_pool_id                  = try(local.map_ipv4_address_pools[physical_interface.ipv4_address_pool].id, null)
                 ipv4_dhcp_obtain_route                = try(physical_interface.ipv4_dhcp_obtain_route, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv4_dhcp_obtain_route, null)
                 ipv4_dhcp_route_metric                = try(physical_interface.ipv4_dhcp_route_metric, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv4_dhcp_route_metric, null)
                 ipv4_pppoe_authentication             = try(physical_interface.ipv4_pppoe_authentication, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv4_pppoe_authentication, null)
@@ -380,6 +381,7 @@ locals {
                 ipv4_pppoe_vpdn_group_name            = try(physical_interface.ipv4_pppoe_vpdn_group_name, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv4_pppoe_vpdn_group_name, null)
                 ipv4_static_address                   = try(physical_interface.ipv4_static_address, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv4_static_address, null)
                 ipv4_static_netmask                   = try(physical_interface.ipv4_static_netmask, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv4_static_netmask, null)
+                ipv6_address_pool_id                  = try(local.map_ipv6_address_pools[physical_interface.ipv6_address_pool].id, null)
                 ipv6_addresses = [for ipv6_address in try(physical_interface.ipv6_addresses, []) : {
                   address     = try(ipv6_address.address, null)
                   enforce_eui = try(ipv6_address.enforce_eui, null)
