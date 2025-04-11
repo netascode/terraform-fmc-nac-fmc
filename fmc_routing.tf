@@ -10,6 +10,8 @@
 # resource "fmc_device_bfd" "module" {
 # resource "fmc_device_ipv4_static_route" "module" {
 # resource "fmc_device_vrf_ipv4_static_route" "module" {
+# resource "fmc_device_ipv6_static_route" "module" {
+# resource "fmc_device_vrf_ipv6_static_route" "module" {
 # resource "fmc_device_bgp_general_settings" "module" {
 # resource "fmc_device_bgp" "module" {
 #
@@ -21,6 +23,8 @@
 # local.resource_bfd
 # local.resource_ipv4_static_route
 # local.resource_vrf_ipv4_static_route
+# local.resource_ipv6_static_route
+# local.resource_vrf_ipv6_static_route
 # local.resource_bgp_general_setting
 # local.resource_bgp_global
 #
@@ -301,6 +305,142 @@ resource "fmc_device_ipv4_static_route" "module" {
 
 resource "fmc_device_vrf_ipv4_static_route" "module" {
   for_each = local.resource_vrf_ipv4_static_route
+
+  # Mandatory
+  vrf_id                 = each.value.vrf_id
+  device_id              = each.value.device_id
+  interface_logical_name = each.value.interface_logical_name
+  interface_id           = each.value.interface_id
+  destination_networks   = each.value.destination_networks
+  metric_value           = each.value.metric_value
+  gateway_host_literal   = each.value.gateway_host_literal
+  gateway_host_object_id = each.value.gateway_host_object_id
+
+  # Optional
+  domain = each.value.domain_name
+
+  depends_on = [
+    data.fmc_hosts.module,
+    fmc_hosts.module,
+    data.fmc_networks.module,
+    fmc_networks.module,
+    fmc_network_groups.module,
+    data.fmc_device.module,
+    fmc_device.module,
+    fmc_device_ha_pair.module,
+    data.fmc_device_ha_pair.module,
+    fmc_device_cluster.module,
+    data.fmc_device_cluster.module,
+    fmc_device_physical_interface.module,
+    data.fmc_device_physical_interface.module,
+    fmc_device_etherchannel_interface.module,
+    data.fmc_device_etherchannel_interface.module,
+    fmc_device_subinterface.module,
+    data.fmc_device_subinterface.module,
+    fmc_device_vrf.module,
+    data.fmc_device_vrf.module
+  ]
+}
+
+##########################################################
+###    IPv6 STATIC ROUTES
+##########################################################
+locals {
+
+  resource_ipv6_static_route = {
+    for item in flatten([
+      for domain in local.domains : [
+        for device in try(domain.devices.devices, []) : [
+          for vrf in try(device.vrfs, []) : [
+            for ipv6_static_route in try(vrf.ipv6_static_routes, []) :
+            {
+              device_name            = device.name
+              device_id              = local.map_devices[device.name].id
+              domain_name            = domain.name
+              name                   = ipv6_static_route.name
+              interface_logical_name = ipv6_static_route.interface_logical_name
+              interface_id           = local.map_interface_logical_names["${device.name}:${ipv6_static_route.interface_logical_name}"].id
+              destination_networks = [for destination_network in ipv6_static_route.selected_networks : {
+                id = try(local.map_network_objects[destination_network].id, local.map_network_group_objects[destination_network].id)
+              }]
+              metric_value           = ipv6_static_route.metric
+              gateway_host_literal   = try(ipv6_static_route.gateway.literal, null)
+              gateway_host_object_id = try(local.map_network_objects[ipv6_static_route.gateway.object].id, local.map_network_group_objects[ipv6_static_route.gateway.object].id, null)
+            }
+          ] if vrf.name == "Global"
+        ]
+      ]
+    ]) : "${item.device_name}:Global:${item.name}" => item if contains(keys(item), "name")
+  }
+
+  resource_vrf_ipv6_static_route = {
+    for item in flatten([
+      for domain in local.domains : [
+        for device in try(domain.devices.devices, []) : [
+          for vrf in try(device.vrfs, []) : [
+            for ipv6_static_route in try(vrf.ipv6_static_routes, []) :
+            {
+              device_name            = device.name
+              device_id              = local.map_devices[device.name].id
+              vrf_id                 = local.map_vrfs["${device.name}:${vrf.name}"].id
+              vrf_name               = vrf.name
+              domain_name            = domain.name
+              name                   = ipv6_static_route.name
+              interface_logical_name = ipv6_static_route.interface_logical_name
+              interface_id           = local.map_interface_logical_names["${device.name}:${ipv6_static_route.interface_logical_name}"].id
+              destination_networks = [for destination_network in ipv6_static_route.selected_networks : {
+                id = try(local.map_network_objects[destination_network].id, local.map_network_group_objects[destination_network].id)
+              }]
+              metric_value           = ipv6_static_route.metric
+              gateway_host_literal   = try(ipv6_static_route.gateway.literal, null)
+              gateway_host_object_id = try(local.map_network_objects[ipv6_static_route.gateway.object].id, local.map_network_group_objects[ipv6_static_route.gateway.object].id, null)
+            }
+          ] if vrf.name != "Global"
+        ]
+      ]
+    ]) : "${item.device_name}:${item.vrf_name}:${item.name}" => item if contains(keys(item), "name")
+  }
+
+}
+
+resource "fmc_device_ipv6_static_route" "module" {
+  for_each = local.resource_ipv6_static_route
+
+  # Mandatory
+  device_id              = each.value.device_id
+  interface_logical_name = each.value.interface_logical_name
+  interface_id           = each.value.interface_id
+  destination_networks   = each.value.destination_networks
+  metric_value           = each.value.metric_value
+  gateway_host_literal   = each.value.gateway_host_literal
+  gateway_host_object_id = each.value.gateway_host_object_id
+
+  # Optional
+  domain = each.value.domain_name
+
+  depends_on = [
+    data.fmc_hosts.module,
+    fmc_hosts.module,
+    data.fmc_networks.module,
+    fmc_networks.module,
+    fmc_network_groups.module,
+    data.fmc_device.module,
+    fmc_device.module,
+    fmc_device_ha_pair.module,
+    data.fmc_device_ha_pair.module,
+    fmc_device_cluster.module,
+    data.fmc_device_cluster.module,
+    fmc_device_physical_interface.module,
+    data.fmc_device_physical_interface.module,
+    fmc_device_etherchannel_interface.module,
+    data.fmc_device_etherchannel_interface.module,
+    fmc_device_subinterface.module,
+    data.fmc_device_subinterface.module,
+  ]
+}
+
+resource "fmc_device_vrf_ipv6_static_route" "module" {
+  for_each = local.resource_vrf_ipv6_static_route
 
   # Mandatory
   vrf_id                 = each.value.vrf_id
