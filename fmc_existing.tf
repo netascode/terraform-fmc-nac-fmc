@@ -43,6 +43,7 @@
 # data "fmc_intrusion_policy" "module"
 # data "fmc_file_policy" "module"
 # data "fmc_prefilter_policy" "module"
+# data "fmc_network_analysis_policy" "module"
 # data "fmc_device" "module"
 # data "fmc_device_ha_pair" "module"
 # data "fmc_device_cluster" "module"
@@ -96,6 +97,7 @@
 # local.data_intrusion_policy
 # local.data_file_policy
 # local.data_prefilter_policy
+# local.data_network_analysis_policy
 # local.data_device
 # local.data_device_ha_pair
 # local.data_device_cluster
@@ -914,6 +916,30 @@ locals {
 
 data "fmc_prefilter_policy" "module" {
   for_each = local.data_prefilter_policy
+
+  name   = each.value.name
+  domain = each.value.domain_name
+}
+
+##########################################################
+###    Network Analysis Policy
+##########################################################
+locals {
+  data_network_analysis_policy = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for network_analysis_policy in try(domain.policies.network_analysis_policies, {}) : {
+          name        = network_analysis_policy.name
+          domain_name = domain.name
+        }
+      ]
+    ]) : item.name => item if contains(keys(item), "name")
+  }
+
+}
+
+data "fmc_network_analysis_policy" "module" {
+  for_each = local.data_network_analysis_policy
 
   name   = each.value.name
   domain = each.value.domain_name

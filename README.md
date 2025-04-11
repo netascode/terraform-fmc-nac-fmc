@@ -111,10 +111,12 @@ module "fmc" {
 | [fmc_device_ha_pair.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/resources/device_ha_pair) | resource |
 | [fmc_device_ha_pair_monitoring.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/resources/device_ha_pair_monitoring) | resource |
 | [fmc_device_ipv4_static_route.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/resources/device_ipv4_static_route) | resource |
+| [fmc_device_ipv6_static_route.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/resources/device_ipv6_static_route) | resource |
 | [fmc_device_physical_interface.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/resources/device_physical_interface) | resource |
 | [fmc_device_subinterface.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/resources/device_subinterface) | resource |
 | [fmc_device_vrf.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/resources/device_vrf) | resource |
 | [fmc_device_vrf_ipv4_static_route.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/resources/device_vrf_ipv4_static_route) | resource |
+| [fmc_device_vrf_ipv6_static_route.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/resources/device_vrf_ipv6_static_route) | resource |
 | [fmc_dynamic_objects.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/resources/dynamic_objects) | resource |
 | [fmc_extended_acl.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/resources/extended_acl) | resource |
 | [fmc_file_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/resources/file_policy) | resource |
@@ -125,6 +127,7 @@ module "fmc" {
 | [fmc_intrusion_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/resources/intrusion_policy) | resource |
 | [fmc_ipv4_address_pools.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/resources/ipv4_address_pools) | resource |
 | [fmc_ipv6_address_pools.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/resources/ipv6_address_pools) | resource |
+| [fmc_network_analysis_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/resources/network_analysis_policy) | resource |
 | [fmc_network_groups.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/resources/network_groups) | resource |
 | [fmc_networks.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/resources/networks) | resource |
 | [fmc_policy_assignment.access_control_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/resources/policy_assignment) | resource |
@@ -175,6 +178,7 @@ module "fmc" {
 | [fmc_ipv4_address_pools.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/data-sources/ipv4_address_pools) | data source |
 | [fmc_ipv6_address_pools.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/data-sources/ipv6_address_pools) | data source |
 | [fmc_ise_sgts.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/data-sources/ise_sgts) | data source |
+| [fmc_network_analysis_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/data-sources/network_analysis_policy) | data source |
 | [fmc_networks.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/data-sources/networks) | data source |
 | [fmc_port_groups.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/data-sources/port_groups) | data source |
 | [fmc_ports.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-beta3/docs/data-sources/ports) | data source |

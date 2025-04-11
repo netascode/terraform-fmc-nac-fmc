@@ -9,6 +9,7 @@
 # resource "fmc_ftd_nat_policy" "module" {
 # resource "fmc_intrusion_policy" "module" {
 # resource "fmc_file_policy" "module" {
+# resource "fmc_network_analysis_policy" "module" {
 # resource "fmc_prefilter_policy" "module" {
 #
 ###  
@@ -18,6 +19,7 @@
 # local.resource_ftd_nat_policy
 # local.resource_intrusion_policy
 # local.resource_file_policy
+# local.resource_network_analysis_policy
 # local.resource_prefilter_policy
 #
 # local.map_access_control_policies
@@ -443,6 +445,47 @@ resource "fmc_file_policy" "module" {
     data.fmc_file_policy.module,
   ]
 }
+
+##########################################################
+###    Network Analysis Policy
+##########################################################
+locals {
+  resource_network_analysis_policy = {
+    for item in flatten([
+      for domain in local.domains : [
+        for network_analysis_policy in try(domain.policies.network_analysis_policies, []) : [
+          {
+            # Mandatory
+            name           = network_analysis_policy.name
+            base_policy_id = data.fmc_network_analysis_policy.module[network_analysis_policy.base_policy].id
+            # Optional
+            description     = try(network_analysis_policy.description, null)
+            inspection_mode = try(network_analysis_policy.inspection_mode, null)
+
+            domain_name = domain.name
+
+        }] if !contains(try(keys(local.data_network_analysis_policy), []), network_analysis_policy.name)
+      ]
+    ]) : item.name => item if contains(keys(item), "name")
+  }
+
+}
+
+resource "fmc_network_analysis_policy" "module" {
+  for_each = local.resource_network_analysis_policy
+
+  # Mandatory
+  name           = each.key
+  base_policy_id = each.value.base_policy_id
+
+  # Optional
+  description     = each.value.description
+  inspection_mode = each.value.inspection_mode
+
+  domain = each.value.domain_name
+
+}
+
 ##########################################################
 ###    Prefilter Policy
 ##########################################################
