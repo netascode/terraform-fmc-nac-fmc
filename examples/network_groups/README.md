@@ -1,7 +1,7 @@
 <!-- BEGIN_TF_DOCS -->
 # FMC Network Group Object Example
 
-This example will create a new `MyNetworkGroup1`, `MyNetworkGroup2` network-group objects that contains two objects:
+This example will create new `MyNetworkGroup1`, `MyNetworkGroup2` network-group objects that contains two objects:
 > `MyNetworkGroup1`:
 - newly created `MyHost1` host object
 - already existing `any-ipv4` network object
@@ -15,9 +15,7 @@ Set environment variables pointing to FMC:
 ```bash
 export FMC_USERNAME=<username>
 export FMC_PASSWORD=<password>
-export FMC_URL=<hostname>
-(Optionally)
-export FMC_INSECURE_SKIP_VERIFY=true
+export FMC_URL=https://<hostname>
 ```
 
 To run this example you need to execute:
@@ -29,7 +27,7 @@ $ terraform apply
 
 Note that this example will create resources. Resources can be destroyed with `terraform destroy`.
 
-#### `data/existing.yaml`
+#### `data/existing.nac.yaml`
 
 ```yaml
 ---
@@ -44,7 +42,7 @@ existing:
             - name: any-ipv4
 ```
 
-#### `data/fmc.yaml`
+#### `data/fmc.nac.yaml`
 
 ```yaml
 ---

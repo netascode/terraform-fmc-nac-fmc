@@ -15,16 +15,16 @@ content: |-
 
   Configuring a Network-group Object using YAML:
 
-  #### `data/existing.yaml`
+  #### `data/existing.nac.yaml`
 
   ```yaml
-  {{ include "./examples/network_groups/existing.yaml" }}
+  {{ include "./examples/network_groups/existing.nac.yaml" }}
   ```
 
-  #### `data/fmc.yaml`
+  #### `data/fmc.nac.yaml`
 
   ```yaml
-  {{ include "./examples/network_groups/fmc.yaml" }}
+  {{ include "./examples/network_groups/fmc.nac.yaml" }}
   ```
 
   #### `main.tf`
