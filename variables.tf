@@ -1,7 +1,7 @@
 variable "yaml_directories" {
   description = "List of paths to YAML directories."
   type        = list(string)
-  default     = ["data"]
+  default     = []
 }
 
 variable "yaml_files" {
