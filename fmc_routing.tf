@@ -420,7 +420,7 @@ resource "fmc_device_ipv6_static_route" "module" {
   metric_value           = each.value.metric_value
   gateway_host_literal   = each.value.gateway_host_literal
   gateway_host_object_id = each.value.gateway_host_object_id
-  is_tunneled = each.value.is_tunneled
+  is_tunneled            = each.value.is_tunneled
 
   # Optional
   domain = each.value.domain_name
@@ -458,7 +458,7 @@ resource "fmc_device_vrf_ipv6_static_route" "module" {
   metric_value           = each.value.metric_value
   gateway_host_literal   = each.value.gateway_host_literal
   gateway_host_object_id = each.value.gateway_host_object_id
-  is_tunneled = each.value.is_tunneled
+  is_tunneled            = each.value.is_tunneled
 
   # Optional
   domain = each.value.domain_name
