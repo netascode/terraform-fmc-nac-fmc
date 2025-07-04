@@ -1,6 +1,14 @@
 ## 0.0.3
 
- - Align to provider version 2.0.0-beta3
+- (Change) Update FMC Terraform provider to 2.0.0-rc3
+- (Fix) Update BGP to reflect changes in the Terraform provider
+- (Fix) Updated multiple fields definitions
+- (Fix) Security Zones definition
+- (Enh) Add support for cdFMC (cloud-delivered FMC)
+- (Enh) Add support for ipv4_address_pools
+- (Enh) Add support for ipv6_address_pools
+- (Enh) Add support for ipv6_static_routes
+- (Enh) Add support for ise_sgts and device_types
 
 ## 0.0.2
 

@@ -153,7 +153,7 @@ locals {
       items = {
         for network in try(domain.objects.networks, []) : network.name => {
           prefix      = network.prefix
-          description = try(network.description, local.defaults.fmc.domains.objects.network.description, null)
+          description = try(network.description, local.defaults.fmc.domains.objects.networks.description, null)
         } if !contains(try(local.data_networks[domain.name].itmes, []), network.name)
       }
     } if length(try(domain.objects.networks, [])) > 0

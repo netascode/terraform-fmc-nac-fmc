@@ -613,6 +613,7 @@ locals {
                 selected_interfaces = [for selected_interface in try(etherchannel_interface.selected_interfaces, []) : {
                   id   = try(fmc_device_physical_interface.module["${device.name}:${selected_interface}"].id, data.fmc_device_physical_interface.module["${device.name}:${selected_interface}"].id)
                   name = selected_interface
+                  type = try(fmc_device_physical_interface.module["${device.name}:${selected_interface}"].type, data.fmc_device_physical_interface.module["${device.name}:${selected_interface}"].type)
                 }]
                 speed               = try(etherchannel_interface.speed, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.speed, null)
                 standby_mac_address = try(etherchannel_interface.standby_mac_address, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.standby_mac_address, null)
