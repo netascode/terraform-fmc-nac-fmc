@@ -3,7 +3,7 @@
 - (Change) Update FMC Terraform provider to 2.0.0-rc3
 - (Fix) Update BGP to reflect changes in the Terraform provider
 - (Fix) Updated multiple fields definitions
-- (Fix) Security Zones definition
+- (Fix) Updated Security Zones definition
 - (Enh) Add support for cdFMC (cloud-delivered FMC)
 - (Enh) Add support for ipv4_address_pools
 - (Enh) Add support for ipv6_address_pools
