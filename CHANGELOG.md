@@ -1,9 +1,10 @@
 ## 0.0.3
 
 - (Change) Update FMC Terraform provider to 2.0.0-rc3
+- (Change) Use Terraform functions to merge YAML content instead of data sources
 - (Fix) Update BGP to reflect changes in the Terraform provider
-- (Fix) Updated multiple fields definitions
-- (Fix) Updated Security Zones definition
+- (Fix) Update multiple fields definitions
+- (Fix) Update Security Zones definition
 - (Enh) Add support for cdFMC (cloud-delivered FMC)
 - (Enh) Add support for ipv4_address_pools
 - (Enh) Add support for ipv6_address_pools
