@@ -87,13 +87,6 @@ module "fmc" {
 |------|-------------|
 | <a name="output_default_values"></a> [default\_values](#output\_default\_values) | All default values. |
 | <a name="output_model"></a> [model](#output\_model) | Full model. |
-## Providers
-
-| Name | Version |
-|------|---------|
-| <a name="provider_fmc"></a> [fmc](#provider\_fmc) | 2.0.0-rc3 |
-| <a name="provider_local"></a> [local](#provider\_local) | >= 2.3.0 |
-| <a name="provider_utils"></a> [utils](#provider\_utils) | >= 1.0.2 |  
 ## Resources
 
 | Name | Type |
@@ -146,6 +139,7 @@ module "fmc" {
 | [fmc_vlan_tag_groups.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc3/docs/resources/vlan_tag_groups) | resource |
 | [fmc_vlan_tags.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc3/docs/resources/vlan_tags) | resource |
 | [local_sensitive_file.defaults](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
+| [terraform_data.validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [fmc_access_control_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc3/docs/data-sources/access_control_policy) | data source |
 | [fmc_application_business_relevances.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc3/docs/data-sources/application_business_relevances) | data source |
 | [fmc_application_categories.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc3/docs/data-sources/application_categories) | data source |
@@ -196,8 +190,6 @@ module "fmc" {
 | [fmc_variable_set.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc3/docs/data-sources/variable_set) | data source |
 | [fmc_vlan_tag_groups.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc3/docs/data-sources/vlan_tag_groups) | data source |
 | [fmc_vlan_tags.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc3/docs/data-sources/vlan_tags) | data source |
-| [utils_yaml_merge.defaults](https://registry.terraform.io/providers/netascode/utils/latest/docs/data-sources/yaml_merge) | data source |
-| [utils_yaml_merge.model](https://registry.terraform.io/providers/netascode/utils/latest/docs/data-sources/yaml_merge) | data source |
 ## Modules
 
 No modules.
