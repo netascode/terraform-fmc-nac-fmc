@@ -9,6 +9,7 @@
 - (Enh) Add support for ipv6_address_pools
 - (Enh) Add support for ipv6_static_routes
 - (Enh) Add support for ise_sgts and device_types
+- (Enh) Add support for network_analysis_policy
 
 ## 0.0.2
 
