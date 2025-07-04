@@ -25,6 +25,8 @@
 # resource "fmc_extended_acl" "module" 
 # resource "fmc_application_filters" "module" 
 # resource "fmc_time_ranges" "module" 
+# resource "fmc_ipv4_address_pools" "module" 
+# resource "fmc_ipv6_address_pools" "module" 
 #
 ###  
 #  Local variables
@@ -49,6 +51,8 @@
 # local.resource_extended_acl
 # local.resource_application_filters
 # local.resource_time_ranges
+# local.resource_ipv4_address_pools
+# local.resource_ipv6_address_pools
 #
 # local.map_network_objects
 # local.map_dynamic_objects
@@ -67,6 +71,8 @@
 # local.map_variable_sets
 # local.map_standard_acls
 # local.map_extended_acls
+# local.map_ipv4_address_pools
+# local.map_ipv6_address_pools
 # local.map_url_categories - fake
 # local.map_ipv6_dhcp_pools - fake
 # local.map_route_maps - fake  
@@ -147,7 +153,7 @@ locals {
       items = {
         for network in try(domain.objects.networks, []) : network.name => {
           prefix      = network.prefix
-          description = try(network.description, local.defaults.fmc.domains.objects.network.description, null)
+          description = try(network.description, local.defaults.fmc.domains.objects.networks.description, null)
         } if !contains(try(local.data_networks[domain.name].itmes, []), network.name)
       }
     } if length(try(domain.objects.networks, [])) > 0
@@ -658,9 +664,7 @@ locals {
         for security_zone in try(domain.objects.security_zones, []) : security_zone.name =>
         {
           # Mandatory 
-          interface_type = try(security_zone.description, local.defaults.fmc.domains.objects.security_zones.interface_type, null)
-          # Optional
-          description = try(security_zone.description, null)
+          interface_type = try(security_zone.interface_type, local.defaults.fmc.domains.objects.security_zones.interface_type)
         } if !contains(try(keys(local.data_security_zones[domain.name].items), []), security_zone.name)
       }
     } if length(try(domain.objects.security_zones, [])) > 0
@@ -899,6 +903,76 @@ resource "fmc_time_ranges" "module" {
 
   # Optional
   domain = each.key
+}
+
+##########################################################
+###    IPV4 ADDRESS POOL
+##########################################################
+locals {
+
+  resource_ipv4_address_pools = {
+    for domain in local.domains : domain.name => {
+      items = {
+        for ipv4_address_pool in try(domain.objects.ipv4_address_pools, []) : ipv4_address_pool.name => {
+          range       = ipv4_address_pool.range
+          netmask     = ipv4_address_pool.netmask
+          overridable = try(ipv4_address_pool.overridable, local.defaults.fmc.domains.objects.ipv4_address_pool.overridable, null)
+          description = try(ipv4_address_pool.description, local.defaults.fmc.domains.objects.ipv4_address_pool.description, null)
+        } if !contains(try(keys(local.data_ipv4_address_pools[domain.name].items), []), ipv4_address_pool.name)
+      }
+    } if length(try(domain.objects.ipv4_address_pools, [])) > 0
+  }
+
+}
+
+resource "fmc_ipv4_address_pools" "module" {
+  for_each = local.resource_ipv4_address_pools
+
+  # Mandatory
+  items = each.value.items
+
+  # Optional
+  domain = each.key
+
+  depends_on = [
+    data.fmc_ipv4_address_pools.module,
+  ]
+
+}
+
+##########################################################
+###    IPV6 ADDRESS POOL
+##########################################################
+locals {
+
+  resource_ipv6_address_pools = {
+    for domain in local.domains : domain.name => {
+      items = {
+        for ipv6_address_pool in try(domain.objects.ipv6_address_pools, []) : ipv6_address_pool.name => {
+          start_address       = ipv6_address_pool.start_address
+          number_of_addresses = ipv6_address_pool.number_of_addresses
+          overridable         = try(ipv6_address_pool.overridable, local.defaults.fmc.domains.objects.ipv6_address_pool.overridable, null)
+          description         = try(ipv6_address_pool.description, local.defaults.fmc.domains.objects.ipv6_address_pool.description, null)
+        } if !contains(try(keys(local.data_ipv6_address_pools[domain.name].items), []), ipv6_address_pool.name)
+      }
+    } if length(try(domain.objects.ipv6_address_pools, [])) > 0
+  }
+
+}
+
+resource "fmc_ipv6_address_pools" "module" {
+  for_each = local.resource_ipv6_address_pools
+
+  # Mandatory
+  items = each.value.items
+
+  # Optional
+  domain = each.key
+
+  depends_on = [
+    data.fmc_ipv6_address_pools.module,
+  ]
+
 }
 
 ##########################################################
@@ -1237,7 +1311,7 @@ locals {
 }
 
 ######
-### map_sgts - security group tags data + resource
+### map_sgts - security group tags (data source + resource) + ISE SGT (data source)
 ######
 locals {
   map_sgts = merge({
@@ -1258,6 +1332,17 @@ locals {
           name        = item
           id          = data.fmc_sgts.module[domain_key].items[item].id
           type        = data.fmc_sgts.module[domain_key].items[item].type
+          domain_name = domain_key
+        }])
+      ]) : item.name => item if contains(keys(item), "name")
+    },
+    {
+      for item in flatten([
+        for domain_key, domain_value in local.data_ise_sgts :
+        flatten([for item in keys(domain_value.items) : {
+          name        = item
+          id          = data.fmc_ise_sgts.module[domain_key].items[item].id
+          type        = data.fmc_ise_sgts.module[domain_key].items[item].type
           domain_name = domain_key
         }])
       ]) : item.name => item if contains(keys(item), "name")
@@ -1452,6 +1537,87 @@ locals {
   )
 
 }
+
+######
+### map_ipv4_address_pools - data + resource
+######
+locals {
+  map_ipv4_address_pools = merge({
+    for item in flatten([
+      for domain_key, domain_value in local.resource_ipv4_address_pools :
+      flatten([for item_key, item_value in domain_value.items : {
+        name        = item_key
+        id          = fmc_ipv4_address_pools.module[domain_key].items[item_key].id
+        type        = fmc_ipv4_address_pools.module[domain_key].items[item_key].type
+        domain_name = domain_key
+      }])
+    ]) : item.name => item if contains(keys(item), "name")
+    },
+    {
+      for item in flatten([
+        for domain_key, domain_value in local.data_ipv4_address_pools :
+        flatten([for item in keys(domain_value.items) : {
+          name        = item
+          id          = data.fmc_ipv4_address_pools.module[domain_key].items[item].id
+          type        = data.fmc_ipv4_address_pools.module[domain_key].items[item].type
+          domain_name = domain_key
+        }])
+      ]) : item.name => item if contains(keys(item), "name")
+    },
+  )
+
+}
+
+######
+### map_ipv6_address_pools - data + resource
+######
+locals {
+  map_ipv6_address_pools = merge({
+    for item in flatten([
+      for domain_key, domain_value in local.resource_ipv6_address_pools :
+      flatten([for item_key, item_value in domain_value.items : {
+        name        = item_key
+        id          = fmc_ipv6_address_pools.module[domain_key].items[item_key].id
+        type        = fmc_ipv6_address_pools.module[domain_key].items[item_key].type
+        domain_name = domain_key
+      }])
+    ]) : item.name => item if contains(keys(item), "name")
+    },
+    {
+      for item in flatten([
+        for domain_key, domain_value in local.data_ipv6_address_pools :
+        flatten([for item in keys(domain_value.items) : {
+          name        = item
+          id          = data.fmc_ipv6_address_pools.module[domain_key].items[item].id
+          type        = data.fmc_ipv6_address_pools.module[domain_key].items[item].type
+          domain_name = domain_key
+        }])
+      ]) : item.name => item if contains(keys(item), "name")
+    },
+  )
+
+}
+
+######
+### map_endpoint_device_types - data
+######
+locals {
+  map_endpoint_device_types = merge(
+    {
+      for item in flatten([
+        for domain_key, domain_value in local.data_endpoint_device_types :
+        flatten([for item in keys(domain_value.items) : {
+          name        = item
+          id          = data.fmc_endpoint_device_types.module[domain_key].items[item].id
+          type        = data.fmc_endpoint_device_types.module[domain_key].items[item].type
+          domain_name = domain_key
+        }])
+      ]) : item.name => item if contains(keys(item), "name")
+    },
+  )
+
+}
+
 
 ######
 ### FAKE - TODO
