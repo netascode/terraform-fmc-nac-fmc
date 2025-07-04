@@ -8,6 +8,11 @@ defaults:
           deploy_force: false
           vrfs:
             bgp:
+              ipv4_external_distance: 20
+              ipv4_number_of_ebgp_paths: 1
+              ipv4_number_of_ibgp_paths: 1
+              ipv4_internal_distance: 200
+              ipv4_local_distance: 200
             physical_interfaces:
               enabled: true
               speed: "AUTO"
@@ -18,10 +23,6 @@ defaults:
               mode: "NONE"
             etherchannel_interfaces:
               mode: "NONE"
-            ipv4_static_routes:
-              metric_value: 1
-            vnis:
-              description: "VNI Interface"
         clusters:
           ccl_prefix: 10.10.3.0/27
           vni_prefix: 10.10.4.0/27
@@ -75,14 +76,6 @@ defaults:
           dns_resolution: "IPV4_AND_IPV6"
         dynamic_objects:
           object_type: "IP"
-        hosts:
-          description: " "
-        networks:
-          description: " "
-        ranges:
-          description: " "
-        network_groups:
-          description: " "
         security_zones:
           interface_type: "ROUTED"
         extended_access_lists:
