@@ -118,6 +118,13 @@ locals {
                 type = local.map_endpoint_device_types[endpoint_device_type].type
                 name = local.map_endpoint_device_types[endpoint_device_type].name
               }]
+
+              applications = [for application in try(rule.applications, []) : {
+                name = application
+                id   = try(data.fmc_applications.module[domain.name].items[application].id, null)
+                type = try(data.fmc_applications.module[domain.name].items[application].type, "Application")
+              }]
+
               file_policy_id      = try(local.map_file_policies[rule.file_policy].id, null)
               intrusion_policy_id = try(local.map_intrusion_policies[rule.intrusion_policy].id, local.defaults.fmc.domains.policies.access_policies.access_rules.intrusion_policy, null)
               log_begin           = try(rule.log_connection_begin, local.defaults.fmc.domains.policies.access_policies.access_rules.log_connection_begin, null)
