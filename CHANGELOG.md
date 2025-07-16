@@ -1,5 +1,6 @@
 ## 0.0.4 (Unreleased)
 
+- (Fix) Fix problem with passing data model through `model` variable
 - (Enh) Add `applications` support for Access Control Policy rules
 
 ## 0.0.3

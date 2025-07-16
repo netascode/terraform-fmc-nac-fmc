@@ -12,8 +12,11 @@ variable "yaml_files" {
 
 variable "model" {
   description = "As an alternative to YAML files, a native Terraform data structure can be provided as well."
-  type        = map(any)
-  default     = {}
+  type = object({
+    existing = optional(map(any), {})
+    fmc      = optional(map(any), {})
+  })
+  default = {}
 }
 
 variable "write_default_values_file" {
