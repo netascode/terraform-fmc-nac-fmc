@@ -120,7 +120,7 @@ locals {
               }]
 
               applications = [for application in try(rule.applications, []) : {
-                id   = try(data.fmc_applications.module[domain.name].items[application].id, null)
+                id = try(data.fmc_applications.module[domain.name].items[application].id, null)
               }]
 
               file_policy_id      = try(local.map_file_policies[rule.file_policy].id, null)

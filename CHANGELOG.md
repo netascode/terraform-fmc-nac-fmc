@@ -1,3 +1,7 @@
+## 0.0.4 (Unreleased)
+
+- (Enh) Add `applications` support for Access Control Policy rules
+
 ## 0.0.3
 
 - (Change) Update FMC Terraform provider to 2.0.0-rc3
