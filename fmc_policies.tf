@@ -12,7 +12,7 @@
 # resource "fmc_network_analysis_policy" "module" {
 # resource "fmc_prefilter_policy" "module" {
 #
-###  
+###
 #  Local variables
 ###
 # local.resource_access_control_policy
@@ -120,9 +120,7 @@ locals {
               }]
 
               applications = [for application in try(rule.applications, []) : {
-                name = application
                 id   = try(data.fmc_applications.module[domain.name].items[application].id, null)
-                type = try(data.fmc_applications.module[domain.name].items[application].type, "Application")
               }]
 
               file_policy_id      = try(local.map_file_policies[rule.file_policy].id, null)
@@ -258,7 +256,7 @@ locals {
             auto_nat_rules = [for auto_rule in try(ftd_nat_policy.ftd_auto_nat_rules, []) : {
               # Mandatory
               nat_type = auto_rule.nat_type
-              # Optional         
+              # Optional
               destination_interface_id                    = try(local.map_security_zones[auto_rule.destination_interface].id, null)
               fall_through                                = try(auto_rule.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_auto_nat_rules.fall_through, null)
               ipv6                                        = try(auto_rule.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_auto_nat_rules.ipv6, null)
@@ -631,11 +629,11 @@ resource "fmc_prefilter_policy" "module" {
   ]
 }
 ##########################################################
-###    Create maps for combined set of _data and _resources network objects 
+###    Create maps for combined set of _data and _resources network objects
 ##########################################################
 
 ######
-### map_access_control_policies 
+### map_access_control_policies
 ######
 locals {
   map_access_control_policies = merge({
@@ -662,7 +660,7 @@ locals {
 }
 
 ######
-### map_ftd_nat_policies 
+### map_ftd_nat_policies
 ######
 locals {
   map_ftd_nat_policies = merge({
@@ -689,7 +687,7 @@ locals {
 }
 
 ######
-### map_intrusion_policies 
+### map_intrusion_policies
 ######
 locals {
   map_intrusion_policies = merge({
@@ -716,7 +714,7 @@ locals {
 }
 
 ######
-### map_file_policies 
+### map_file_policies
 ######
 locals {
   map_file_policies = merge({
@@ -743,7 +741,7 @@ locals {
 }
 
 ######
-### map_prefilter_policies 
+### map_prefilter_policies
 ######
 locals {
   map_prefilter_policies = merge({
@@ -777,15 +775,15 @@ locals {
   map_snmp_alerts = merge(
     #{
     #  for item in flatten([
-    #    for domain_key, domain_value in local.resource_snmp_alerts : 
-    #      flatten([ for item_key, item_value in domain_value.items : { 
+    #    for domain_key, domain_value in local.resource_snmp_alerts :
+    #      flatten([ for item_key, item_value in domain_value.items : {
     #        name        = item_key
     #        id          = fmc_snmp_alerts.module[domain_key].items[item_key].id
     #        #type = fmc_urls.urls[domain_key].items[item_key].type
     #        domain_name = domain_key
     #      }])
     #    ]) : item.name => item if contains(keys(item), "name" )
-    #},    
+    #},
     {
       for item in flatten([
         for domain_key, domain_value in local.data_snmp_alerts :
@@ -808,15 +806,15 @@ locals {
   map_syslog_alerts = merge(
     #{
     #  for item in flatten([
-    #    for domain_key, domain_value in local.resource_sysylog_alerts : 
-    #      flatten([ for item_key, item_value in domain_value.items : { 
+    #    for domain_key, domain_value in local.resource_sysylog_alerts :
+    #      flatten([ for item_key, item_value in domain_value.items : {
     #        name        = item_key
     #        id          = fmc_syslog_alerts.module[domain_key].items[item_key].id
     #        #type = fmc_urls.urls[domain_key].items[item_key].type
     #        domain_name = domain_key
     #      }])
     #    ]) : item.name => item if contains(keys(item), "name" )
-    #},    
+    #},
     {
       for item in flatten([
         for domain_key, domain_value in local.data_syslog_alerts :
