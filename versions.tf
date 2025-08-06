@@ -4,7 +4,7 @@ terraform {
   required_providers {
     fmc = {
       source  = "CiscoDevNet/fmc"
-      version = "2.0.0-rc4" # Terraform does not match pre-release versions on >, >=, <, <=, or ~> operators.
+      version = "2.0.0-rc6" # Terraform does not match pre-release versions on >, >=, <, <=, or ~> operators.
       #version = ">=2.0.0" 
     }
     utils = {
