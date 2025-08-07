@@ -48,21 +48,21 @@ locals {
               domain_name = domain.name
               description = try(vrf.description, local.defaults.fmc.domains.devices.devices.vrfs.description, null)
               interfaces = concat([for interface in try(vrf.physical_interfaces, []) : {
-                interface_id           = try(fmc_device_physical_interface.module["${device.name}:${interface.name}"].id, data.fmc_device_physical_interface.module["${device.name}:${interface.name}"].id, null)
-                interface_logical_name = try(interface.logical_name, data.fmc_device_physical_interface.module["${device.name}:${interface.name}"].logical_name, null)
-                interface_name         = interface.name
+                id           = try(fmc_device_physical_interface.module["${device.name}:${interface.name}"].id, data.fmc_device_physical_interface.module["${device.name}:${interface.name}"].id, null)
+                logical_name = try(interface.logical_name, data.fmc_device_physical_interface.module["${device.name}:${interface.name}"].logical_name, null)
+                name         = interface.name
                 }],
                 [
                   for interface in try(vrf.etherchannel_interfaces, []) : {
-                    interface_id           = try(fmc_device_etherchannel_interface.module["${device.name}:${interface.name}"].id, data.fmc_device_etherchannel_interface.module["${device.name}:${interface.name}"].id, null)
-                    interface_logical_name = try(interface.logical_name, data.fmc_device_etherchannel_interface.module["${device.name}:${interface.name}"].logical_name, null)
-                    interface_name         = interface.name
+                    id           = try(fmc_device_etherchannel_interface.module["${device.name}:${interface.name}"].id, data.fmc_device_etherchannel_interface.module["${device.name}:${interface.name}"].id, null)
+                    logical_name = try(interface.logical_name, data.fmc_device_etherchannel_interface.module["${device.name}:${interface.name}"].logical_name, null)
+                    name         = interface.name
                 }],
                 [
                   for interface in try(vrf.sub_interfaces, []) : {
-                    interface_id           = try(fmc_device_subinterface.module["${device.name}:${interface.name}"].id, data.fmc_device_subinterface.module["${device.name}:${interface.name}"].id, null)
-                    interface_logical_name = try(interface.logical_name, data.fmc_device_subinterface.module["${device.name}:${interface.name}"].logical_name, null)
-                    interface_name         = interface.name
+                    id           = try(fmc_device_subinterface.module["${device.name}:${interface.name}"].id, data.fmc_device_subinterface.module["${device.name}:${interface.name}"].id, null)
+                    logical_name = try(interface.logical_name, data.fmc_device_subinterface.module["${device.name}:${interface.name}"].logical_name, null)
+                    name         = interface.name
                 }],
               )
           }] if !contains(try(keys(local.data_vrf), []), "${device.name}:${vrf.name}") && vrf.name != "Global"

@@ -61,7 +61,8 @@ locals {
           for device in try(domain.devices.devices, []) : [
             {
               id   = local.map_devices[device.name].id
-              type = "Device"
+              type = local.map_devices[device.name].type
+              name = device.name
             }
           ] if try(device.access_policy, null) == acp_policy_key && !contains(try(keys(local.resource_device), []), device.name)
         ]
