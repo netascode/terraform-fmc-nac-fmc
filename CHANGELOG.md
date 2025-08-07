@@ -1,5 +1,6 @@
-## 0.0.4 (Unreleased)
+## 0.0.4
 
+- (Change) Update FMC Terraform provider to 2.0.0-rc6
 - (Fix) Fix problem with passing data model through `model` variable
 - (Enh) Add `applications` support for Access Control Policy rules
 
