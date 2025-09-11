@@ -115,7 +115,6 @@ module "fmc" {
 | [fmc_file_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc6/docs/resources/file_policy) | resource |
 | [fmc_fqdn_objects.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc6/docs/resources/fqdn_objects) | resource |
 | [fmc_ftd_nat_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc6/docs/resources/ftd_nat_policy) | resource |
-| [fmc_hosts.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc6/docs/resources/hosts) | resource |
 | [fmc_icmpv4_objects.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc6/docs/resources/icmpv4_objects) | resource |
 | [fmc_intrusion_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc6/docs/resources/intrusion_policy) | resource |
 | [fmc_ipv4_address_pools.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc6/docs/resources/ipv4_address_pools) | resource |
@@ -192,5 +191,7 @@ module "fmc" {
 | [fmc_vlan_tags.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc6/docs/data-sources/vlan_tags) | data source |
 ## Modules
 
-No modules.
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_hosts"></a> [hosts](#module\_hosts) | ./modules/terraform-fmc-hosts | n/a |
 <!-- END_TF_DOCS -->
