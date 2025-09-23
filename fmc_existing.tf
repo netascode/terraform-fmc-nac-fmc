@@ -946,6 +946,30 @@ data "fmc_network_analysis_policy" "module" {
 }
 
 ##########################################################
+###    Health Policy
+##########################################################
+locals {
+  data_health_policy = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for health_policy in try(domain.policies.health_policies, {}) : {
+          name        = health_policy.name
+          domain_name = domain.name
+        }
+      ]
+    ]) : item.name => item if contains(keys(item), "name")
+  }
+
+}
+
+data "fmc_health_policy" "module" {
+  for_each = local.data_health_policy
+
+  name   = each.value.name
+  domain = each.value.domain_name
+}
+
+##########################################################
 ###    DEVICE
 ##########################################################
 locals {

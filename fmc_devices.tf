@@ -1099,7 +1099,6 @@ locals {
 
 }
 
-
 ######
 ### FAKE - TODO
 ######
@@ -1107,7 +1106,6 @@ locals {
 
 locals {
 
-  map_health_policies = {}
-  map_device_groups   = {}
+  map_device_groups = {}
 
 }
