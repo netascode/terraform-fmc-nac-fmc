@@ -1,3 +1,7 @@
+## 0.0.5 (Unreleased)
+
+- (Fix) Module fails, if no input is provided
+
 ## 0.0.4
 
 - (Change) Update FMC Terraform provider to 2.0.0-rc6
