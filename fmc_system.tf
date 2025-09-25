@@ -184,6 +184,64 @@ resource "fmc_policy_assignment" "ftd_nat_policy" {
   ]
 }
 
+locals {
+  resource_policy_assignments_ftd_platform_settings = { for item in flatten([
+    for ftd_platform_settings_key, ftd_platform_settings_value in local.map_ftd_platform_settings : {
+      policy_id               = ftd_platform_settings_value.id
+      policy_name             = ftd_platform_settings_key
+      policy_type             = ftd_platform_settings_value.type
+      after_destroy_policy_id = null
+      targets = flatten([
+        for domain in local.domains : [
+          for device in try(domain.devices.devices, []) : [
+            {
+              id   = local.map_devices[device.name].id
+              type = local.map_devices[device.name].type
+              name = device.name
+            }
+          ] if try(device.platform_settings, null) == ftd_platform_settings_key
+        ]
+      ])
+    }
+    ]) : item.policy_name => item if length(item.targets) > 0
+  }
+
+}
+
+resource "fmc_policy_assignment" "ftd_platform_settings" {
+  for_each = local.resource_policy_assignments_ftd_platform_settings
+
+  policy_id               = each.value.policy_id
+  policy_type             = each.value.policy_type
+  after_destroy_policy_id = each.value.after_destroy_policy_id
+  targets                 = each.value.targets
+
+  depends_on = [
+    fmc_device.module,
+    data.fmc_device.module,
+    fmc_device_ha_pair.module,
+    data.fmc_device_ha_pair.module,
+    fmc_device_cluster.module,
+    data.fmc_device_cluster.module,
+    fmc_ftd_platform_settings.module,
+    data.fmc_ftd_platform_settings.module,
+    fmc_ftd_platform_settings_banner.module,
+    fmc_ftd_platform_settings_http_access.module,
+    fmc_ftd_platform_settings_icmp_access.module,
+    fmc_ftd_platform_settings_snmp.module,
+    fmc_ftd_platform_settings_ssh_access.module,
+    fmc_ftd_platform_settings_syslog_logging_setup.module,
+    fmc_ftd_platform_settings_syslog_logging_destination.module,
+    fmc_ftd_platform_settings_syslog_email_setup.module,
+    fmc_ftd_platform_settings_syslog_event_list.module,
+    fmc_ftd_platform_settings_syslog_rate_limit.module,
+    fmc_ftd_platform_settings_syslog_settings.module,
+    fmc_ftd_platform_settings_syslog_settings_syslog_id.module,
+    fmc_ftd_platform_settings_syslog_servers.module,
+    fmc_ftd_platform_settings_time_synchronization.module
+  ]
+}
+
 ##########################################################
 ###    Deploy
 ##########################################################
@@ -225,7 +283,8 @@ resource "fmc_device_deploy" "module" {
     fmc_device_cluster.module,
     data.fmc_device_cluster.module,
     fmc_policy_assignment.access_control_policy,
-    fmc_policy_assignment.ftd_nat_policy
+    fmc_policy_assignment.ftd_nat_policy,
+    fmc_policy_assignment.ftd_platform_settings,
   ]
 
 }

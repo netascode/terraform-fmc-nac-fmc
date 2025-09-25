@@ -1257,6 +1257,34 @@ data "fmc_device_bgp_general_settings" "module" {
 }
 
 ##########################################################
+###    Platform Settings
+##########################################################
+
+locals {
+
+  data_ftd_platform_settings = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for ftd_platform_setting in try(domain.devices.ftd_platform_settings, []) : [
+          {
+            name   = ftd_platform_setting.name
+            domain = domain.name
+          }
+        ] if contains(keys(ftd_platform_setting), "name")
+      ]
+    ]) : item.name => item if contains(keys(item), "name")
+  }
+
+}
+
+data "fmc_ftd_platform_settings" "module" {
+  for_each = local.data_ftd_platform_settings
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+##########################################################
 ###    IPV4 ADDRESS POOL
 ##########################################################
 locals {

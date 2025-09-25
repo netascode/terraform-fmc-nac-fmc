@@ -28,7 +28,6 @@
 #  local.map_vrfs 
 #  local.map_interface_names 
 #  local.map_interface_logical_names 
-#  local.map_health_policies - fake
 #  local.map_device_groups - fake
 #
 ###
@@ -815,7 +814,7 @@ resource "fmc_device_subinterface" "module" {
   sub_interface_id = each.value.sub_interface_id
   vlan_id          = each.value.vlan_id
 
-  #Optional
+  # Optional
   active_mac_address                        = each.value.active_mac_address
   allow_full_fragment_reassembly            = each.value.allow_full_fragment_reassembly
   arp_table_entries                         = each.value.arp_table_entries
@@ -877,6 +876,617 @@ resource "fmc_device_subinterface" "module" {
     data.fmc_device_etherchannel_interface.module,
   ]
 
+}
+
+##########################################################
+###    Platform Settings
+##########################################################
+
+locals {
+
+  resource_ftd_platform_settings = {
+    for item in flatten([
+      for domain in local.domains : [
+        for ftd_platform_setting in try(domain.devices.ftd_platform_settings, []) : [
+          {
+            name        = ftd_platform_setting.name
+            domain      = domain.name
+            description = try(ftd_platform_setting.description, local.defaults.fmc.domains.devices.ftd_platform_settings.description, null)
+          }
+        ] if !contains(try(keys(local.data_ftd_platform_settings), []), ftd_platform_setting.name)
+      ]
+    ]) : item.name => item if contains(keys(item), "name")
+  }
+
+}
+
+resource "fmc_ftd_platform_settings" "module" {
+  for_each = local.resource_ftd_platform_settings
+
+  name        = each.value.name
+  domain      = each.value.domain
+  description = each.value.description
+}
+
+locals {
+  resource_ftd_platform_settings_banner = {
+    for item in flatten([
+      for domain in local.domains : [
+        for ftd_platform_setting in try(domain.devices.ftd_platform_settings, []) : [
+          {
+            platform_settings_name   = ftd_platform_setting.name
+            ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
+            domain                   = domain.name
+
+            banner_text = try(ftd_platform_setting.banner.text, [])
+          }
+        ] if try(ftd_platform_setting.banner, null) != null
+      ]
+    ]) : "${item.platform_settings_name}:banner" => item
+  }
+}
+
+resource "fmc_ftd_platform_settings_banner" "module" {
+  for_each = local.resource_ftd_platform_settings_banner
+
+  ftd_platform_settings_id = each.value.ftd_platform_settings_id
+  domain                   = each.value.domain
+
+  banner_text = each.value.banner_text
+}
+
+locals {
+  resource_ftd_platform_settings_http_access = {
+    for item in flatten([
+      for domain in local.domains : [
+        for ftd_platform_setting in try(domain.devices.ftd_platform_settings, []) : [
+          {
+            platform_settings_name   = ftd_platform_setting.name
+            ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
+            domain                   = domain.name
+
+            http_server      = try(ftd_platform_setting.http_access.http_server, local.defaults.fmc.domains.devices.ftd_platform_settings.http_access.http_server, null)
+            http_server_port = try(ftd_platform_setting.http_access.http_server_port, local.defaults.fmc.domains.devices.ftd_platform_settings.http_access.http_server_port, null)
+            configurations = [for configuration in try(ftd_platform_setting.http_access.configurations, []) : {
+              source_network_object_id = local.map_network_objects[configuration.source_network_object].id
+              interface_literals       = try(configuration.interface_literals, null)
+              interface_objects = [for interface_object in try(configuration.interface_objects, []) : {
+                id   = local.map_security_zones[interface_object].id
+                type = local.map_security_zones[interface_object].type
+                name = interface_object
+              }]
+            }]
+          }
+        ] if try(ftd_platform_setting.http_access, null) != null
+      ]
+    ]) : "${item.platform_settings_name}:http_access" => item
+  }
+}
+
+resource "fmc_ftd_platform_settings_http_access" "module" {
+  for_each = local.resource_ftd_platform_settings_http_access
+
+  ftd_platform_settings_id = each.value.ftd_platform_settings_id
+  domain                   = each.value.domain
+
+  http_server      = each.value.http_server
+  http_server_port = each.value.http_server_port
+  configurations   = each.value.configurations
+}
+
+locals {
+  resource_ftd_platform_settings_icmp_access = {
+    for item in flatten([
+      for domain in local.domains : [
+        for ftd_platform_setting in try(domain.devices.ftd_platform_settings, []) : [
+          {
+            platform_settings_name   = ftd_platform_setting.name
+            ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
+            domain                   = domain.name
+
+            rate_limit = try(ftd_platform_setting.icmp_access.rate_limit, local.defaults.fmc.domains.devices.ftd_platform_settings.icmp_access.rate_limit, null)
+            burst_size = try(ftd_platform_setting.icmp_access.burst_size, local.defaults.fmc.domains.devices.ftd_platform_settings.icmp_access.burst_size, null)
+            configurations = [for configuration in try(ftd_platform_setting.icmp_access.configurations, []) : {
+              action                   = configuration.action
+              icmp_service_id          = local.map_services[configuration.icmp_service].id
+              source_network_object_id = local.map_network_objects[configuration.source_network_object].id
+              interface_literals       = try(configuration.interface_literals, null)
+              interface_objects = [for interface_object in try(configuration.interface_objects, []) : {
+                id   = local.map_security_zones[interface_object].id
+                type = local.map_security_zones[interface_object].type
+                name = interface_object
+              }]
+            }]
+          }
+        ] if try(ftd_platform_setting.icmp_access, null) != null
+      ]
+    ]) : "${item.platform_settings_name}:icmp_access" => item
+  }
+}
+
+resource "fmc_ftd_platform_settings_icmp_access" "module" {
+  for_each = local.resource_ftd_platform_settings_icmp_access
+
+  ftd_platform_settings_id = each.value.ftd_platform_settings_id
+  domain                   = each.value.domain
+
+  rate_limit     = each.value.rate_limit
+  burst_size     = each.value.burst_size
+  configurations = each.value.configurations
+}
+
+locals {
+  resource_ftd_platform_settings_ssh_access = {
+    for item in flatten([
+      for domain in local.domains : [
+        for ftd_platform_setting in try(domain.devices.ftd_platform_settings, []) : [
+          for ssh_access in try(ftd_platform_setting.ssh_accesses, []) : [
+            {
+              platform_settings_name   = ftd_platform_setting.name
+              ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
+              domain                   = domain.name
+              source_network_object    = ssh_access.source_network_object
+
+              source_network_object_id = local.map_network_objects[ssh_access.source_network_object].id
+              interface_literals       = try(ssh_access.interface_literals, null)
+              interface_objects = [for interface_object in try(ssh_access.interface_objects, []) : {
+                id   = local.map_security_zones[interface_object].id
+                type = local.map_security_zones[interface_object].type
+                name = interface_object
+              }]
+          }]
+        ]
+      ]
+    ]) : "${item.platform_settings_name}:ssh_access:${item.source_network_object}" => item
+  }
+}
+
+resource "fmc_ftd_platform_settings_ssh_access" "module" {
+  for_each = local.resource_ftd_platform_settings_ssh_access
+
+  ftd_platform_settings_id = each.value.ftd_platform_settings_id
+  domain                   = each.value.domain
+
+  source_network_object_id = each.value.source_network_object_id
+  interface_literals       = each.value.interface_literals
+  interface_objects        = each.value.interface_objects
+}
+
+locals {
+  resource_ftd_platform_settings_snmp = {
+    for item in flatten([
+      for domain in local.domains : [
+        for ftd_platform_setting in try(domain.devices.ftd_platform_settings, []) : [
+          {
+            platform_settings_name   = ftd_platform_setting.name
+            ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
+            domain                   = domain.name
+
+            snmp_server          = try(ftd_platform_setting.snmp.snmp_server, null)
+            read_community       = try(ftd_platform_setting.snmp.read_community, null)
+            system_administrator = try(ftd_platform_setting.snmp.system_administrator, null)
+            location             = try(ftd_platform_setting.snmp.location, null)
+            snmp_server_port     = try(ftd_platform_setting.snmp.snmp_server_port, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.snmp_server_port, null)
+            management_hosts = [for management_host in try(ftd_platform_setting.snmp.management_hosts, []) : {
+              network_object_id        = local.map_network_objects[management_host.network_object].id
+              snmp_version             = management_host.snmp_version
+              username                 = management_host.snmp_version == "SNMPv3" ? try(management_host.username, null) : null
+              read_community           = management_host.snmp_version != "SNMPv3" ? try(management_host.read_community, null) : null
+              poll                     = try(management_host.poll, null)
+              trap                     = try(management_host.trap, null)
+              trap_port                = try(management_host.trap_port, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.management_hosts.trap_port, null)
+              use_management_interface = try(management_host.use_management_interface, null)
+              interface_literals       = try(management_host.interface_literals, null)
+              interface_objects = [for interface_object in try(management_host.interface_objects, []) : {
+                id   = local.map_security_zones[interface_object].id
+                type = local.map_security_zones[interface_object].type
+                name = interface_object
+              }]
+            }]
+            snmpv3_users = [for snmpv3_user in try(ftd_platform_setting.snmp.snmpv3_users, []) : {
+              security_level           = snmpv3_user.security_level
+              username                 = snmpv3_user.username
+              password_type            = contains(["Auth", "Priv"], snmpv3_user.security_level) ? snmpv3_user.password_type : null
+              authentication_algorithm = contains(["Auth", "Priv"], snmpv3_user.security_level) ? snmpv3_user.authentication_algorithm : null
+              authentication_password  = contains(["Auth", "Priv"], snmpv3_user.security_level) ? snmpv3_user.authentication_password : null
+              encryption_algorithm     = snmpv3_user.security_level == "Priv" ? snmpv3_user.encryption_algorithm : null
+              encryption_password      = snmpv3_user.security_level == "Priv" ? snmpv3_user.encryption_password : null
+            }]
+            trap_syslog                        = try(ftd_platform_setting.snmp.traps.syslog, null)
+            trap_authentication                = try(ftd_platform_setting.snmp.traps.authentication, null)
+            trap_link_up                       = try(ftd_platform_setting.snmp.traps.link_up, null)
+            trap_link_down                     = try(ftd_platform_setting.snmp.traps.link_down, null)
+            trap_cold_start                    = try(ftd_platform_setting.snmp.traps.cold_start, null)
+            trap_warm_start                    = try(ftd_platform_setting.snmp.traps.warm_start, null)
+            trap_field_replacement_unit_insert = try(ftd_platform_setting.snmp.traps.field_replacement_unit_insert, null)
+            trap_field_replacement_unit_delete = try(ftd_platform_setting.snmp.traps.field_replacement_unit_delete, null)
+            trap_configuration_change          = try(ftd_platform_setting.snmp.traps.configuration_change, null)
+            trap_connection_limit_reached      = try(ftd_platform_setting.snmp.traps.connection_limit_reached, null)
+            trap_nat_packet_discard            = try(ftd_platform_setting.snmp.traps.nat_packet_discard, null)
+            trap_cpu_rising                    = try(ftd_platform_setting.snmp.traps.cpu.rising, null)
+            trap_cpu_rising_threshold          = try(ftd_platform_setting.snmp.traps.cpu_rising_threshold, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.cpu_rising_threshold, null)
+            trap_cpu_rising_interval           = try(ftd_platform_setting.snmp.traps.cpu_rising_interval, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.cpu_rising_interval, null)
+            trap_memory_rising                 = try(ftd_platform_setting.snmp.traps.memory.rising, null)
+            trap_memory_rising_threshold       = try(ftd_platform_setting.snmp.traps.memory_rising_threshold, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.memory_rising_threshold, null)
+            trap_failover_state                = try(ftd_platform_setting.snmp.traps.failover.state, null)
+            trap_cluster_state                 = try(ftd_platform_setting.snmp.traps.cluster.state, null)
+            trap_peer_flap                     = try(ftd_platform_setting.snmp.traps.peer_flap, null)
+          }
+        ] if try(ftd_platform_setting.snmp, null) != null
+      ]
+    ]) : "${item.platform_settings_name}:snmp" => item
+  }
+}
+
+resource "fmc_ftd_platform_settings_snmp" "module" {
+  for_each = local.resource_ftd_platform_settings_snmp
+
+  ftd_platform_settings_id = each.value.ftd_platform_settings_id
+  domain                   = each.value.domain
+
+  snmp_server                        = each.value.snmp_server
+  read_community                     = each.value.read_community
+  system_administrator               = each.value.system_administrator
+  location                           = each.value.location
+  snmp_server_port                   = each.value.snmp_server_port
+  management_hosts                   = each.value.management_hosts
+  snmpv3_users                       = each.value.snmpv3_users
+  trap_syslog                        = each.value.trap_syslog
+  trap_authentication                = each.value.trap_authentication
+  trap_link_up                       = each.value.trap_link_up
+  trap_link_down                     = each.value.trap_link_down
+  trap_cold_start                    = each.value.trap_cold_start
+  trap_warm_start                    = each.value.trap_warm_start
+  trap_field_replacement_unit_insert = each.value.trap_field_replacement_unit_insert
+  trap_field_replacement_unit_delete = each.value.trap_field_replacement_unit_delete
+  trap_configuration_change          = each.value.trap_configuration_change
+  trap_connection_limit_reached      = each.value.trap_connection_limit_reached
+  trap_nat_packet_discard            = each.value.trap_nat_packet_discard
+  trap_cpu_rising                    = each.value.trap_cpu_rising
+  trap_cpu_rising_threshold          = each.value.trap_cpu_rising_threshold
+  trap_cpu_rising_interval           = each.value.trap_cpu_rising_interval
+  trap_memory_rising                 = each.value.trap_memory_rising
+  trap_memory_rising_threshold       = each.value.trap_memory_rising_threshold
+  trap_failover_state                = each.value.trap_failover_state
+  trap_cluster_state                 = each.value.trap_cluster_state
+  trap_peer_flap                     = each.value.trap_peer_flap
+}
+
+locals {
+  resource_ftd_platform_settings_syslog_logging_setup = {
+    for item in flatten([
+      for domain in local.domains : [
+        for ftd_platform_setting in try(domain.devices.ftd_platform_settings, []) : [
+          {
+            platform_settings_name   = ftd_platform_setting.name
+            ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
+            domain                   = domain.name
+
+            enable_logging                          = try(ftd_platform_setting.syslog.logging_setup.enable_logging, null)
+            enable_logging_on_failover_standby_unit = try(ftd_platform_setting.syslog.logging_setup.enable_logging_on_failover_standby_unit, null)
+            emblem_format                           = try(ftd_platform_setting.syslog.logging_setup.emblem_format, null)
+            send_debug_messages_as_syslog           = try(ftd_platform_setting.syslog.logging_setup.send_debug_messages_as_syslog, null)
+            internal_buffer_memory_size             = try(ftd_platform_setting.syslog.logging_setup.internal_buffer_memory_size, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.internal_buffer_memory_size, null)
+            fmc_logging_mode                        = try(ftd_platform_setting.syslog.logging_setup.fmc_logging_mode, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.fmc_logging_mode, null)
+            fmc_logging_level                       = try(ftd_platform_setting.syslog.logging_setup.fmc_logging_mode, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.fmc_logging_mode, null) != "OFF" ? try(ftd_platform_setting.syslog.logging_setup.fmc_logging_level, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.fmc_logging_level, null) : null
+            ftp_server_host_id                      = try(local.map_network_objects[ftd_platform_setting.syslog.logging_setup.ftp_server_host].id, null)
+            ftp_server_username                     = try(ftd_platform_setting.syslog.logging_setup.ftp_server_username, null)
+            ftp_server_path                         = try(ftd_platform_setting.syslog.logging_setup.ftp_server_path, null)
+            ftp_server_password                     = try(ftd_platform_setting.syslog.logging_setup.ftp_server_password, null)
+            flash                                   = try(ftd_platform_setting.syslog.logging_setup.flash, null)
+            flash_maximum_space                     = try(ftd_platform_setting.syslog.logging_setup.flash_maximum_space, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.flash_maximum_space, null)
+            flash_minimum_free_space                = try(ftd_platform_setting.syslog.logging_setup.flash_minimum_free_space, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.flash_minimum_free_space, null)
+
+          }
+        ] if try(ftd_platform_setting.syslog.logging_setup, null) != null
+      ]
+    ]) : "${item.platform_settings_name}:syslog:logging_setup" => item
+  }
+}
+
+resource "fmc_ftd_platform_settings_syslog_logging_setup" "module" {
+  for_each = local.resource_ftd_platform_settings_syslog_logging_setup
+
+  ftd_platform_settings_id = each.value.ftd_platform_settings_id
+  domain                   = each.value.domain
+
+  enable_logging                          = each.value.enable_logging
+  enable_logging_on_failover_standby_unit = each.value.enable_logging_on_failover_standby_unit
+  emblem_format                           = each.value.emblem_format
+  send_debug_messages_as_syslog           = each.value.send_debug_messages_as_syslog
+  internal_buffer_memory_size             = each.value.internal_buffer_memory_size
+  fmc_logging_mode                        = each.value.fmc_logging_mode
+  fmc_logging_level                       = each.value.fmc_logging_level
+  ftp_server_host_id                      = each.value.ftp_server_host_id
+  ftp_server_username                     = each.value.ftp_server_username
+  ftp_server_path                         = each.value.ftp_server_path
+  ftp_server_password                     = each.value.ftp_server_password
+  flash                                   = each.value.flash
+  flash_maximum_space                     = each.value.flash_maximum_space
+  flash_minimum_free_space                = each.value.flash_minimum_free_space
+}
+
+locals {
+  resource_ftd_platform_settings_syslog_logging_destinations = {
+    for item in flatten([
+      for domain in local.domains : [
+        for ftd_platform_setting in try(domain.devices.ftd_platform_settings, []) : [
+          for logging_destination in try(ftd_platform_setting.syslog.logging_destinations, []) : [
+            {
+              platform_settings_name   = ftd_platform_setting.name
+              ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
+              domain                   = domain.name
+
+              logging_destination                = logging_destination.destination
+              global_event_class_filter_criteria = logging_destination.global_event_class_filter_criteria
+              global_event_class_filter_value    = logging_destination.global_event_class_filter_criteria != "DISABLE" ? try(logging_destination.global_event_class_filter_value, null) : null
+              event_class_filters = [for class_filter in try(logging_destination.event_class_filters, []) : {
+                class    = class_filter.class
+                severity = class_filter.severity
+              }]
+          }]
+        ]
+      ]
+    ]) : "${item.platform_settings_name}:logging_destinations:${item.logging_destination}" => item
+  }
+}
+
+resource "fmc_ftd_platform_settings_syslog_logging_destination" "module" {
+  for_each = local.resource_ftd_platform_settings_syslog_logging_destinations
+
+  ftd_platform_settings_id = each.value.ftd_platform_settings_id
+  domain                   = each.value.domain
+
+  logging_destination                = each.value.logging_destination
+  global_event_class_filter_criteria = each.value.global_event_class_filter_criteria
+  global_event_class_filter_value    = each.value.global_event_class_filter_value
+  event_class_filters                = each.value.event_class_filters
+}
+
+locals {
+  resource_ftd_platform_settings_syslog_email_setup = {
+    for item in flatten([
+      for domain in local.domains : [
+        for ftd_platform_setting in try(domain.devices.ftd_platform_settings, []) : [
+          {
+            platform_settings_name   = ftd_platform_setting.name
+            ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
+            domain                   = domain.name
+
+            source_email_address = ftd_platform_setting.syslog.email_setup.source_email_address
+            destinations = [for destination in try(ftd_platform_setting.syslog.email_setup.destinations, []) : {
+              email_addresses = destination.email_addresses
+              log_level       = destination.log_level
+            }]
+          }
+        ] if try(ftd_platform_setting.syslog.email_setup, null) != null
+      ]
+    ]) : "${item.platform_settings_name}:syslog:email_setup" => item
+  }
+}
+
+resource "fmc_ftd_platform_settings_syslog_email_setup" "module" {
+  for_each = local.resource_ftd_platform_settings_syslog_email_setup
+
+  ftd_platform_settings_id = each.value.ftd_platform_settings_id
+  domain                   = each.value.domain
+
+  source_email_address = each.value.source_email_address
+  destinations         = each.value.destinations
+}
+
+locals {
+  resource_ftd_platform_settings_syslog_event_lists = {
+    for item in flatten([
+      for domain in local.domains : [
+        for ftd_platform_setting in try(domain.devices.ftd_platform_settings, []) : [
+          for event_list in try(ftd_platform_setting.syslog.event_lists, []) : [
+            {
+              platform_settings_name   = ftd_platform_setting.name
+              ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
+              domain                   = domain.name
+
+              name = event_list.name
+              event_classes = [for event_class in try(event_list.event_classes, []) : {
+                class    = event_class.class
+                severity = event_class.severity
+              }]
+              message_ids = try(event_list.message_ids, null)
+          }]
+        ]
+      ]
+    ]) : "${item.platform_settings_name}:syslog:event_list:${item.name}" => item
+  }
+}
+
+resource "fmc_ftd_platform_settings_syslog_event_list" "module" {
+  for_each = local.resource_ftd_platform_settings_syslog_event_lists
+
+  ftd_platform_settings_id = each.value.ftd_platform_settings_id
+  domain                   = each.value.domain
+
+  name          = each.value.name
+  event_classes = each.value.event_classes
+  message_ids   = each.value.message_ids
+}
+
+locals {
+  resource_ftd_platform_settings_syslog_rate_limits = {
+    for item in flatten([
+      for domain in local.domains : [
+        for ftd_platform_setting in try(domain.devices.ftd_platform_settings, []) : [
+          for rate_limit in try(ftd_platform_setting.syslog.rate_limits, []) : [
+            {
+              platform_settings_name   = ftd_platform_setting.name
+              ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
+              domain                   = domain.name
+
+              rate_limit_type    = rate_limit.type
+              rate_limit_value   = rate_limit.value
+              number_of_messages = rate_limit.number_of_messages
+              interval           = rate_limit.interval
+          }]
+        ]
+      ]
+    ]) : "${item.platform_settings_name}:syslog:rate_limit:${item.rate_limit_value}" => item
+  }
+}
+
+resource "fmc_ftd_platform_settings_syslog_rate_limit" "module" {
+  for_each = local.resource_ftd_platform_settings_syslog_rate_limits
+
+  ftd_platform_settings_id = each.value.ftd_platform_settings_id
+  domain                   = each.value.domain
+
+  rate_limit_type    = each.value.rate_limit_type
+  rate_limit_value   = each.value.rate_limit_value
+  number_of_messages = each.value.number_of_messages
+  interval           = each.value.interval
+}
+
+locals {
+  resource_ftd_platform_settings_syslog_settings = {
+    for item in flatten([
+      for domain in local.domains : [
+        for ftd_platform_setting in try(domain.devices.ftd_platform_settings, []) : [
+          {
+            platform_settings_name   = ftd_platform_setting.name
+            ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
+            domain                   = domain.name
+
+            facility                          = try(ftd_platform_setting.syslog.settings.facility, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.settings.facility, null)
+            timestamp_format                  = try(ftd_platform_setting.syslog.settings.timestamp_format, null)
+            device_id_source                  = try(ftd_platform_setting.syslog.settings.device_id_source, null)
+            device_id_user_defined            = try(ftd_platform_setting.syslog.settings.device_id_source, null) == "USERDEFINEDID" ? ftd_platform_setting.syslog.settings.device_id_user_defined : null
+            device_id_interface_id            = try(ftd_platform_setting.syslog.settings.device_id_source, null) == "INTERFACE" ? local.map_security_zones[ftd_platform_setting.syslog.settings.device_id_interface].id : null
+            all_syslog_messages               = try(ftd_platform_setting.syslog.settings.all_syslog_messages, null)
+            all_syslog_messages_logging_level = try(ftd_platform_setting.syslog.settings.all_syslog_messages, null) == true ? ftd_platform_setting.syslog.settings.all_syslog_messages_logging_level : null
+          }
+        ] if try(ftd_platform_setting.syslog.settings, null) != null
+      ]
+    ]) : "${item.platform_settings_name}:syslog:settings" => item
+  }
+}
+
+resource "fmc_ftd_platform_settings_syslog_settings" "module" {
+  for_each = local.resource_ftd_platform_settings_syslog_settings
+
+  ftd_platform_settings_id = each.value.ftd_platform_settings_id
+  domain                   = each.value.domain
+
+  facility                          = each.value.facility
+  timestamp_format                  = each.value.timestamp_format
+  device_id_source                  = each.value.device_id_source
+  device_id_user_defined            = each.value.device_id_user_defined
+  device_id_interface_id            = each.value.device_id_interface_id
+  all_syslog_messages               = each.value.all_syslog_messages
+  all_syslog_messages_logging_level = each.value.all_syslog_messages_logging_level
+}
+
+locals {
+  resource_ftd_platform_settings_syslog_settings_syslog_ids = {
+    for item in flatten([
+      for domain in local.domains : [
+        for ftd_platform_setting in try(domain.devices.ftd_platform_settings, []) : [
+          for syslog_id in try(ftd_platform_setting.syslog.settings.syslog_ids, []) : [
+            {
+              platform_settings_name   = ftd_platform_setting.name
+              ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
+              domain                   = domain.name
+
+              syslog_id = syslog_id.syslog_id
+              log_level = try(syslog_id.log_level, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.settings.syslog_ids.log_level, null)
+              enabled   = try(syslog_id.enabled, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.settings.syslog_ids.enabled, null)
+          }]
+        ]
+      ]
+    ]) : "${item.platform_settings_name}:syslog:settings:syslog_id:${item.syslog_id}" => item
+  }
+}
+
+resource "fmc_ftd_platform_settings_syslog_settings_syslog_id" "module" {
+  for_each = local.resource_ftd_platform_settings_syslog_settings_syslog_ids
+
+  ftd_platform_settings_id                 = each.value.ftd_platform_settings_id
+  ftd_platform_settings_syslog_settings_id = each.value.ftd_platform_settings_id
+  domain                                   = each.value.domain
+
+  syslog_id = each.value.syslog_id
+  log_level = each.value.log_level
+  enabled   = each.value.enabled
+}
+
+locals {
+  resource_ftd_platform_settings_syslog_servers = {
+    for item in flatten([
+      for domain in local.domains : [
+        for ftd_platform_setting in try(domain.devices.ftd_platform_settings, []) : [
+          {
+            platform_settings_name   = ftd_platform_setting.name
+            ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
+            domain                   = domain.name
+
+            allow_user_traffic_when_tcp_syslog_server_is_down = try(ftd_platform_setting.syslog.servers.allow_user_traffic_when_tcp_syslog_server_is_down, null)
+            message_queue_size                                = try(ftd_platform_setting.syslog.servers.message_queue_size, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.servers.message_queue_size, null)
+            servers = [for server in try(ftd_platform_setting.syslog.servers.servers, []) : {
+              network_object_id        = local.map_network_objects[server.network_object].id
+              protocol                 = try(server.protocol, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.servers.servers.protocol, null)
+              port                     = try(server.port, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.servers.servers.port, null)
+              emblem_format            = try(server.protocol, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.servers.servers.protocol, null) == "UDP" ? try(server.emblem_format, null) : null
+              secure_syslog            = try(server.protocol, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.servers.servers.protocol, null) == "TCP" ? try(server.secure_syslog, null) : null
+              use_management_interface = try(server.use_management_interface, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.servers.servers.use_management_interface, null)
+              interface_literals       = try(server.interface_literals, null)
+              interface_objects = [for interface_object in try(server.interface_objects, []) : {
+                id   = local.map_security_zones[interface_object].id
+                type = local.map_security_zones[interface_object].type
+                name = interface_object
+              }]
+            }]
+          }
+        ] if try(ftd_platform_setting.syslog.servers, null) != null
+      ]
+    ]) : "${item.platform_settings_name}:syslog:servers" => item
+  }
+}
+
+resource "fmc_ftd_platform_settings_syslog_servers" "module" {
+  for_each = local.resource_ftd_platform_settings_syslog_servers
+
+  ftd_platform_settings_id = each.value.ftd_platform_settings_id
+  domain                   = each.value.domain
+
+  allow_user_traffic_when_tcp_syslog_server_is_down = each.value.allow_user_traffic_when_tcp_syslog_server_is_down
+  message_queue_size                                = each.value.message_queue_size
+  servers                                           = each.value.servers
+}
+
+locals {
+  resource_ftd_platform_settings_time_synchronization = {
+    for item in flatten([
+      for domain in local.domains : [
+        for ftd_platform_setting in try(domain.devices.ftd_platform_settings, []) : [
+          {
+            platform_settings_name   = ftd_platform_setting.name
+            ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
+            domain                   = domain.name
+
+            synchronization_mode = ftd_platform_setting.time_synchronization.mode
+            ntp_servers          = ftd_platform_setting.time_synchronization.mode == "SYNC_VIA_NTP_SERVER" ? ftd_platform_setting.time_synchronization.ntp_servers : null
+          }
+        ] if try(ftd_platform_setting.time_synchronization, null) != null
+      ]
+    ]) : "${item.platform_settings_name}:time_synchronization" => item
+  }
+}
+
+resource "fmc_ftd_platform_settings_time_synchronization" "module" {
+  for_each = local.resource_ftd_platform_settings_time_synchronization
+
+  ftd_platform_settings_id = each.value.ftd_platform_settings_id
+  domain                   = each.value.domain
+
+  synchronization_mode = each.value.synchronization_mode
+  ntp_servers          = each.value.ntp_servers
 }
 
 ##########################################################
@@ -1094,6 +1704,34 @@ locals {
           domain_name  = sub_interface_value.domain_name
         }
       ]) : "${item.device_name}:${item.logical_name}" => item if item.logical_name != null
+    },
+  )
+
+}
+
+######
+### map_ftd_platform_settings
+######
+locals {
+  map_ftd_platform_settings = merge({
+    for item in flatten([
+      for ftd_platform_setting_key, ftd_platform_setting_value in local.resource_ftd_platform_settings : {
+        name        = ftd_platform_setting_key
+        id          = fmc_ftd_platform_settings.module[ftd_platform_setting_key].id
+        type        = fmc_ftd_platform_settings.module[ftd_platform_setting_key].type
+        domain_name = ftd_platform_setting_value.domain
+      }
+    ]) : item.name => item if contains(keys(item), "name")
+    },
+    {
+      for item in flatten([
+        for ftd_platform_setting_key, ftd_platform_setting_value in local.data_ftd_platform_settings : {
+          name        = ftd_platform_setting_key
+          id          = data.fmc_ftd_platform_settings.module[ftd_platform_setting_key].id
+          type        = data.fmc_ftd_platform_settings.module[ftd_platform_setting_key].type
+          domain_name = ftd_platform_setting_value.domain
+        }
+      ]) : item.name => item if contains(keys(item), "name")
     },
   )
 

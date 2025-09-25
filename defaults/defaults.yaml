@@ -28,6 +28,39 @@ defaults:
           vni_prefix: 10.10.4.0/27
         ha_pairs:
           failed_interfaces_limit: 1
+        ftd_platform_settings:
+          http_access:
+            http_server: true
+            http_server_port: 443
+          icmp_access:
+            rate_limit: 1
+            burst_size: 1
+          snmp:
+            snmp_server_port: 161
+            management_hosts:
+              trap_port: 162
+            traps:
+              cpu_rising_threshold: 70
+              cpu_rising_interval: 1
+              memory_rising_threshold: 70
+          syslog:
+            logging_setup:
+              internal_buffer_memory_size: 4096
+              fmc_logging_mode: "VPN"
+              fmc_logging_level: "ERR"
+              flash_maximum_space: 3076
+              flash_minimum_free_space: 1024
+            settings:
+              facility: "LOCAL4"
+              syslog_ids:
+                enabled: true
+                log_level: "DEFAULT"
+            servers:
+              message_queue_size: 512
+              servers:
+                protocol: "TCP"
+                port: 1470
+                use_management_interface: true
       policies:
         prefilter_policies:
           default_action: ANALYZE_TUNNELS
@@ -71,6 +104,15 @@ defaults:
           threat_score: DISABLED
         network_analysis_policies:
           snort_engine: "SNORT2"
+        health_policies:
+          health_module_run_time_interval: 5
+          metric_collection_interval: 1
+          policy_type: "DevicePolicy"
+          is_default_policy: false
+          health_modules:
+            enabled: true
+            alert_configs:
+              enabled: true
       objects:
         fqdns:
           dns_resolution: "IPV4_AND_IPV6"
