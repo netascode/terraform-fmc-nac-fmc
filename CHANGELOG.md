@@ -4,6 +4,7 @@
 - (Fix) Module fails, if no input is provided
 - (Fix) NAT Policy is not assigned to existing devices
 - (Enh) Add support for Health Policy
+- (Enh) Add support for FTD Platform Settings
 
 ## 0.0.4
 
