@@ -881,9 +881,7 @@ resource "fmc_device_subinterface" "module" {
 ##########################################################
 ###    Platform Settings
 ##########################################################
-
 locals {
-
   resource_ftd_platform_settings = {
     for item in flatten([
       for domain in local.domains : [
@@ -897,7 +895,6 @@ locals {
       ]
     ]) : item.name => item if contains(keys(item), "name")
   }
-
 }
 
 resource "fmc_ftd_platform_settings" "module" {
@@ -918,7 +915,7 @@ locals {
             ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
             domain                   = domain.name
 
-            banner_text = try(ftd_platform_setting.banner.text, [])
+            text = split("\n", trimsuffix(ftd_platform_setting.banner.text, "\n"))
           }
         ] if try(ftd_platform_setting.banner, null) != null
       ]
@@ -932,7 +929,7 @@ resource "fmc_ftd_platform_settings_banner" "module" {
   ftd_platform_settings_id = each.value.ftd_platform_settings_id
   domain                   = each.value.domain
 
-  banner_text = each.value.banner_text
+  text = each.value.text
 }
 
 locals {
@@ -945,8 +942,8 @@ locals {
             ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
             domain                   = domain.name
 
-            http_server      = try(ftd_platform_setting.http_access.http_server, local.defaults.fmc.domains.devices.ftd_platform_settings.http_access.http_server, null)
-            http_server_port = try(ftd_platform_setting.http_access.http_server_port, local.defaults.fmc.domains.devices.ftd_platform_settings.http_access.http_server_port, null)
+            server_enabled = try(ftd_platform_setting.http_access.server_enabled, local.defaults.fmc.domains.devices.ftd_platform_settings.http_access.server_enabled, null)
+            server_port    = try(ftd_platform_setting.http_access.server_port, local.defaults.fmc.domains.devices.ftd_platform_settings.http_access.server_port, null)
             configurations = [for configuration in try(ftd_platform_setting.http_access.configurations, []) : {
               source_network_object_id = local.map_network_objects[configuration.source_network_object].id
               interface_literals       = try(configuration.interface_literals, null)
@@ -969,9 +966,9 @@ resource "fmc_ftd_platform_settings_http_access" "module" {
   ftd_platform_settings_id = each.value.ftd_platform_settings_id
   domain                   = each.value.domain
 
-  http_server      = each.value.http_server
-  http_server_port = each.value.http_server_port
-  configurations   = each.value.configurations
+  server_enabled = each.value.server_enabled
+  server_port    = each.value.server_port
+  configurations = each.value.configurations
 }
 
 locals {
@@ -988,7 +985,7 @@ locals {
             burst_size = try(ftd_platform_setting.icmp_access.burst_size, local.defaults.fmc.domains.devices.ftd_platform_settings.icmp_access.burst_size, null)
             configurations = [for configuration in try(ftd_platform_setting.icmp_access.configurations, []) : {
               action                   = configuration.action
-              icmp_service_id          = local.map_services[configuration.icmp_service].id
+              icmp_service_object_id   = local.map_services[configuration.icmp_service_object].id
               source_network_object_id = local.map_network_objects[configuration.source_network_object].id
               interface_literals       = try(configuration.interface_literals, null)
               interface_objects = [for interface_object in try(configuration.interface_objects, []) : {
@@ -1062,18 +1059,18 @@ locals {
             ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
             domain                   = domain.name
 
-            snmp_server          = try(ftd_platform_setting.snmp.snmp_server, null)
+            server_enabled       = try(ftd_platform_setting.snmp.server_enabled, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.server_enabled, null)
+            server_port          = try(ftd_platform_setting.snmp.server_port, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.server_port, null)
             read_community       = try(ftd_platform_setting.snmp.read_community, null)
             system_administrator = try(ftd_platform_setting.snmp.system_administrator, null)
             location             = try(ftd_platform_setting.snmp.location, null)
-            snmp_server_port     = try(ftd_platform_setting.snmp.snmp_server_port, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.snmp_server_port, null)
             management_hosts = [for management_host in try(ftd_platform_setting.snmp.management_hosts, []) : {
               network_object_id        = local.map_network_objects[management_host.network_object].id
               snmp_version             = management_host.snmp_version
               username                 = management_host.snmp_version == "SNMPv3" ? try(management_host.username, null) : null
               read_community           = management_host.snmp_version != "SNMPv3" ? try(management_host.read_community, null) : null
-              poll                     = try(management_host.poll, null)
-              trap                     = try(management_host.trap, null)
+              poll                     = try(management_host.poll, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.management_hosts.poll, null)
+              trap                     = try(management_host.trap, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.management_hosts.trap, null)
               trap_port                = try(management_host.trap_port, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.management_hosts.trap_port, null)
               use_management_interface = try(management_host.use_management_interface, null)
               interface_literals       = try(management_host.interface_literals, null)
@@ -1092,25 +1089,25 @@ locals {
               encryption_algorithm     = snmpv3_user.security_level == "Priv" ? snmpv3_user.encryption_algorithm : null
               encryption_password      = snmpv3_user.security_level == "Priv" ? snmpv3_user.encryption_password : null
             }]
-            trap_syslog                        = try(ftd_platform_setting.snmp.traps.syslog, null)
-            trap_authentication                = try(ftd_platform_setting.snmp.traps.authentication, null)
-            trap_link_up                       = try(ftd_platform_setting.snmp.traps.link_up, null)
-            trap_link_down                     = try(ftd_platform_setting.snmp.traps.link_down, null)
-            trap_cold_start                    = try(ftd_platform_setting.snmp.traps.cold_start, null)
-            trap_warm_start                    = try(ftd_platform_setting.snmp.traps.warm_start, null)
-            trap_field_replacement_unit_insert = try(ftd_platform_setting.snmp.traps.field_replacement_unit_insert, null)
-            trap_field_replacement_unit_delete = try(ftd_platform_setting.snmp.traps.field_replacement_unit_delete, null)
-            trap_configuration_change          = try(ftd_platform_setting.snmp.traps.configuration_change, null)
-            trap_connection_limit_reached      = try(ftd_platform_setting.snmp.traps.connection_limit_reached, null)
-            trap_nat_packet_discard            = try(ftd_platform_setting.snmp.traps.nat_packet_discard, null)
-            trap_cpu_rising                    = try(ftd_platform_setting.snmp.traps.cpu.rising, null)
+            trap_syslog                        = try(ftd_platform_setting.snmp.traps.syslog, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.syslog, null)
+            trap_authentication                = try(ftd_platform_setting.snmp.traps.authentication, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.authentication, null)
+            trap_link_up                       = try(ftd_platform_setting.snmp.traps.link_up, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.link_up, null)
+            trap_link_down                     = try(ftd_platform_setting.snmp.traps.link_down, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.link_down, null)
+            trap_cold_start                    = try(ftd_platform_setting.snmp.traps.cold_start, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.cold_start, null)
+            trap_warm_start                    = try(ftd_platform_setting.snmp.traps.warm_start, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.warm_start, null)
+            trap_field_replacement_unit_insert = try(ftd_platform_setting.snmp.traps.field_replacement_unit_insert, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.field_replacement_unit_insert, null)
+            trap_field_replacement_unit_delete = try(ftd_platform_setting.snmp.traps.field_replacement_unit_delete, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.field_replacement_unit_delete, null)
+            trap_configuration_change          = try(ftd_platform_setting.snmp.traps.configuration_change, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.configuration_change, null)
+            trap_connection_limit_reached      = try(ftd_platform_setting.snmp.traps.connection_limit_reached, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.connection_limit_reached, null)
+            trap_nat_packet_discard            = try(ftd_platform_setting.snmp.traps.nat_packet_discard, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.nat_packet_discard, null)
+            trap_cpu_rising                    = try(ftd_platform_setting.snmp.traps.cpu_rising, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.cpu_rising, null)
             trap_cpu_rising_threshold          = try(ftd_platform_setting.snmp.traps.cpu_rising_threshold, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.cpu_rising_threshold, null)
             trap_cpu_rising_interval           = try(ftd_platform_setting.snmp.traps.cpu_rising_interval, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.cpu_rising_interval, null)
-            trap_memory_rising                 = try(ftd_platform_setting.snmp.traps.memory.rising, null)
+            trap_memory_rising                 = try(ftd_platform_setting.snmp.traps.memory_rising, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.memory_rising, null)
             trap_memory_rising_threshold       = try(ftd_platform_setting.snmp.traps.memory_rising_threshold, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.memory_rising_threshold, null)
-            trap_failover_state                = try(ftd_platform_setting.snmp.traps.failover.state, null)
-            trap_cluster_state                 = try(ftd_platform_setting.snmp.traps.cluster.state, null)
-            trap_peer_flap                     = try(ftd_platform_setting.snmp.traps.peer_flap, null)
+            trap_failover_state                = try(ftd_platform_setting.snmp.traps.failover_state, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.failover_state, null)
+            trap_cluster_state                 = try(ftd_platform_setting.snmp.traps.cluster_state, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.cluster_state, null)
+            trap_peer_flap                     = try(ftd_platform_setting.snmp.traps.peer_flap, local.defaults.fmc.domains.devices.ftd_platform_settings.snmp.traps.peer_flap, null)
           }
         ] if try(ftd_platform_setting.snmp, null) != null
       ]
@@ -1124,11 +1121,11 @@ resource "fmc_ftd_platform_settings_snmp" "module" {
   ftd_platform_settings_id = each.value.ftd_platform_settings_id
   domain                   = each.value.domain
 
-  snmp_server                        = each.value.snmp_server
+  server_enabled                     = each.value.server_enabled
+  server_port                        = each.value.server_port
   read_community                     = each.value.read_community
   system_administrator               = each.value.system_administrator
   location                           = each.value.location
-  snmp_server_port                   = each.value.snmp_server_port
   management_hosts                   = each.value.management_hosts
   snmpv3_users                       = each.value.snmpv3_users
   trap_syslog                        = each.value.trap_syslog
@@ -1162,20 +1159,20 @@ locals {
             ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
             domain                   = domain.name
 
-            enable_logging                          = try(ftd_platform_setting.syslog.logging_setup.enable_logging, null)
-            enable_logging_on_failover_standby_unit = try(ftd_platform_setting.syslog.logging_setup.enable_logging_on_failover_standby_unit, null)
-            emblem_format                           = try(ftd_platform_setting.syslog.logging_setup.emblem_format, null)
-            send_debug_messages_as_syslog           = try(ftd_platform_setting.syslog.logging_setup.send_debug_messages_as_syslog, null)
-            internal_buffer_memory_size             = try(ftd_platform_setting.syslog.logging_setup.internal_buffer_memory_size, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.internal_buffer_memory_size, null)
-            fmc_logging_mode                        = try(ftd_platform_setting.syslog.logging_setup.fmc_logging_mode, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.fmc_logging_mode, null)
-            fmc_logging_level                       = try(ftd_platform_setting.syslog.logging_setup.fmc_logging_mode, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.fmc_logging_mode, null) != "OFF" ? try(ftd_platform_setting.syslog.logging_setup.fmc_logging_level, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.fmc_logging_level, null) : null
-            ftp_server_host_id                      = try(local.map_network_objects[ftd_platform_setting.syslog.logging_setup.ftp_server_host].id, null)
-            ftp_server_username                     = try(ftd_platform_setting.syslog.logging_setup.ftp_server_username, null)
-            ftp_server_path                         = try(ftd_platform_setting.syslog.logging_setup.ftp_server_path, null)
-            ftp_server_password                     = try(ftd_platform_setting.syslog.logging_setup.ftp_server_password, null)
-            flash                                   = try(ftd_platform_setting.syslog.logging_setup.flash, null)
-            flash_maximum_space                     = try(ftd_platform_setting.syslog.logging_setup.flash_maximum_space, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.flash_maximum_space, null)
-            flash_minimum_free_space                = try(ftd_platform_setting.syslog.logging_setup.flash_minimum_free_space, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.flash_minimum_free_space, null)
+            logging_enabled                          = try(ftd_platform_setting.syslog.logging_setup.logging_enabled, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.logging_enabled, null)
+            logging_on_failover_standby_unit_enabled = try(ftd_platform_setting.syslog.logging_setup.logging_on_failover_standby_unit_enabled, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.logging_on_failover_standby_unit_enabled, null)
+            emblem_format                            = try(ftd_platform_setting.syslog.logging_setup.emblem_format, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.emblem_format, null)
+            send_debug_messages_as_syslog            = try(ftd_platform_setting.syslog.logging_setup.send_debug_messages_as_syslog, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.send_debug_messages_as_syslog, null)
+            internal_buffer_memory_size              = try(ftd_platform_setting.syslog.logging_setup.internal_buffer_memory_size, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.internal_buffer_memory_size, null)
+            fmc_logging_mode                         = try(ftd_platform_setting.syslog.logging_setup.fmc_logging_mode, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.fmc_logging_mode, null)
+            fmc_logging_level                        = try(ftd_platform_setting.syslog.logging_setup.fmc_logging_mode, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.fmc_logging_mode, null) != "OFF" ? try(ftd_platform_setting.syslog.logging_setup.fmc_logging_level, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.fmc_logging_level, null) : null
+            ftp_server_host_id                       = try(local.map_network_objects[ftd_platform_setting.syslog.logging_setup.ftp_server_host].id, null)
+            ftp_server_username                      = try(ftd_platform_setting.syslog.logging_setup.ftp_server_username, null)
+            ftp_server_path                          = try(ftd_platform_setting.syslog.logging_setup.ftp_server_path, null)
+            ftp_server_password                      = try(ftd_platform_setting.syslog.logging_setup.ftp_server_password, null)
+            flash_enabled                            = try(ftd_platform_setting.syslog.logging_setup.flash_enabled, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.flash_enabled, null)
+            flash_maximum_space                      = try(ftd_platform_setting.syslog.logging_setup.flash_maximum_space, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.flash_maximum_space, null)
+            flash_minimum_free_space                 = try(ftd_platform_setting.syslog.logging_setup.flash_minimum_free_space, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.flash_minimum_free_space, null)
 
           }
         ] if try(ftd_platform_setting.syslog.logging_setup, null) != null
@@ -1190,20 +1187,20 @@ resource "fmc_ftd_platform_settings_syslog_logging_setup" "module" {
   ftd_platform_settings_id = each.value.ftd_platform_settings_id
   domain                   = each.value.domain
 
-  enable_logging                          = each.value.enable_logging
-  enable_logging_on_failover_standby_unit = each.value.enable_logging_on_failover_standby_unit
-  emblem_format                           = each.value.emblem_format
-  send_debug_messages_as_syslog           = each.value.send_debug_messages_as_syslog
-  internal_buffer_memory_size             = each.value.internal_buffer_memory_size
-  fmc_logging_mode                        = each.value.fmc_logging_mode
-  fmc_logging_level                       = each.value.fmc_logging_level
-  ftp_server_host_id                      = each.value.ftp_server_host_id
-  ftp_server_username                     = each.value.ftp_server_username
-  ftp_server_path                         = each.value.ftp_server_path
-  ftp_server_password                     = each.value.ftp_server_password
-  flash                                   = each.value.flash
-  flash_maximum_space                     = each.value.flash_maximum_space
-  flash_minimum_free_space                = each.value.flash_minimum_free_space
+  logging_enabled                          = each.value.logging_enabled
+  logging_on_failover_standby_unit_enabled = each.value.logging_on_failover_standby_unit_enabled
+  emblem_format                            = each.value.emblem_format
+  send_debug_messages_as_syslog            = each.value.send_debug_messages_as_syslog
+  internal_buffer_memory_size              = each.value.internal_buffer_memory_size
+  fmc_logging_mode                         = each.value.fmc_logging_mode
+  fmc_logging_level                        = each.value.fmc_logging_level
+  ftp_server_host_id                       = each.value.ftp_server_host_id
+  ftp_server_username                      = each.value.ftp_server_username
+  ftp_server_path                          = each.value.ftp_server_path
+  ftp_server_password                      = each.value.ftp_server_password
+  flash_enabled                            = each.value.flash_enabled
+  flash_maximum_space                      = each.value.flash_maximum_space
+  flash_minimum_free_space                 = each.value.flash_minimum_free_space
 }
 
 locals {
@@ -1256,7 +1253,7 @@ locals {
             source_email_address = ftd_platform_setting.syslog.email_setup.source_email_address
             destinations = [for destination in try(ftd_platform_setting.syslog.email_setup.destinations, []) : {
               email_addresses = destination.email_addresses
-              log_level       = destination.log_level
+              logging_level   = destination.logging_level
             }]
           }
         ] if try(ftd_platform_setting.syslog.email_setup, null) != null
@@ -1324,7 +1321,7 @@ locals {
               rate_limit_type    = rate_limit.type
               rate_limit_value   = rate_limit.value
               number_of_messages = rate_limit.number_of_messages
-              interval           = rate_limit.interval
+              interval           = try(rate_limit.interval, null)
           }]
         ]
       ]
@@ -1359,8 +1356,8 @@ locals {
             device_id_source                  = try(ftd_platform_setting.syslog.settings.device_id_source, null)
             device_id_user_defined            = try(ftd_platform_setting.syslog.settings.device_id_source, null) == "USERDEFINEDID" ? ftd_platform_setting.syslog.settings.device_id_user_defined : null
             device_id_interface_id            = try(ftd_platform_setting.syslog.settings.device_id_source, null) == "INTERFACE" ? local.map_security_zones[ftd_platform_setting.syslog.settings.device_id_interface].id : null
-            all_syslog_messages               = try(ftd_platform_setting.syslog.settings.all_syslog_messages, null)
-            all_syslog_messages_logging_level = try(ftd_platform_setting.syslog.settings.all_syslog_messages, null) == true ? ftd_platform_setting.syslog.settings.all_syslog_messages_logging_level : null
+            all_syslog_messages_enabled       = try(ftd_platform_setting.syslog.settings.all_syslog_messages_enabled, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.settings.all_syslog_messages_enabled, null)
+            all_syslog_messages_logging_level = try(ftd_platform_setting.syslog.settings.all_syslog_messages_enabled, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.settings.all_syslog_messages_enabled, null) == true ? ftd_platform_setting.syslog.settings.all_syslog_messages_logging_level : null
           }
         ] if try(ftd_platform_setting.syslog.settings, null) != null
       ]
@@ -1379,7 +1376,7 @@ resource "fmc_ftd_platform_settings_syslog_settings" "module" {
   device_id_source                  = each.value.device_id_source
   device_id_user_defined            = each.value.device_id_user_defined
   device_id_interface_id            = each.value.device_id_interface_id
-  all_syslog_messages               = each.value.all_syslog_messages
+  all_syslog_messages_enabled       = each.value.all_syslog_messages_enabled
   all_syslog_messages_logging_level = each.value.all_syslog_messages_logging_level
 }
 
@@ -1394,9 +1391,9 @@ locals {
               ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
               domain                   = domain.name
 
-              syslog_id = syslog_id.syslog_id
-              log_level = try(syslog_id.log_level, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.settings.syslog_ids.log_level, null)
-              enabled   = try(syslog_id.enabled, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.settings.syslog_ids.enabled, null)
+              syslog_id     = syslog_id.syslog_id
+              logging_level = try(syslog_id.logging_level, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.settings.syslog_ids.logging_level, null)
+              enabled       = try(syslog_id.enabled, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.settings.syslog_ids.enabled, null)
           }]
         ]
       ]
@@ -1411,9 +1408,9 @@ resource "fmc_ftd_platform_settings_syslog_settings_syslog_id" "module" {
   ftd_platform_settings_syslog_settings_id = each.value.ftd_platform_settings_id
   domain                                   = each.value.domain
 
-  syslog_id = each.value.syslog_id
-  log_level = each.value.log_level
-  enabled   = each.value.enabled
+  syslog_id     = each.value.syslog_id
+  logging_level = each.value.logging_level
+  enabled       = each.value.enabled
 }
 
 locals {
@@ -1426,7 +1423,7 @@ locals {
             ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
             domain                   = domain.name
 
-            allow_user_traffic_when_tcp_syslog_server_is_down = try(ftd_platform_setting.syslog.servers.allow_user_traffic_when_tcp_syslog_server_is_down, null)
+            allow_user_traffic_when_tcp_syslog_server_is_down = try(ftd_platform_setting.syslog.servers.allow_user_traffic_when_tcp_syslog_server_is_down, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.servers.allow_user_traffic_when_tcp_syslog_server_is_down, null)
             message_queue_size                                = try(ftd_platform_setting.syslog.servers.message_queue_size, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.servers.message_queue_size, null)
             servers = [for server in try(ftd_platform_setting.syslog.servers.servers, []) : {
               network_object_id        = local.map_network_objects[server.network_object].id
@@ -1434,7 +1431,7 @@ locals {
               port                     = try(server.port, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.servers.servers.port, null)
               emblem_format            = try(server.protocol, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.servers.servers.protocol, null) == "UDP" ? try(server.emblem_format, null) : null
               secure_syslog            = try(server.protocol, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.servers.servers.protocol, null) == "TCP" ? try(server.secure_syslog, null) : null
-              use_management_interface = try(server.use_management_interface, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.servers.servers.use_management_interface, null)
+              use_management_interface = try(server.use_management_interface, null)
               interface_literals       = try(server.interface_literals, null)
               interface_objects = [for interface_object in try(server.interface_objects, []) : {
                 id   = local.map_security_zones[interface_object].id
