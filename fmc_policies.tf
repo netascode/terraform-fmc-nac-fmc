@@ -628,6 +628,70 @@ resource "fmc_prefilter_policy" "module" {
     data.fmc_access_control_policy.module,
   ]
 }
+
+##########################################################
+###    Health Policy
+##########################################################
+locals {
+  resource_health_policy = {
+    for item in flatten([
+      for domain in local.domains : [
+        for health_policy in try(domain.policies.health_policies, []) : [
+          {
+            # Mandatory
+            name        = health_policy.name
+            policy_type = try(health_policy.policy_type, local.defaults.fmc.domains.policies.health_policies.policy_type)
+
+            # Optional
+            domain_name                     = domain.name
+            description                     = try(health_policy.description, "")
+            is_default_policy               = try(health_policy.is_default_policy, local.defaults.fmc.domains.policies.health_policies.is_default_policy, null)
+            health_module_run_time_interval = try(health_policy.health_module_run_time_interval, local.defaults.fmc.domains.policies.health_policies.health_module_run_time_interval, null)
+            metric_collection_interval      = try(health_policy.metric_collection_interval, local.defaults.fmc.domains.policies.health_policies.metric_collection_interval, null)
+            health_modules = [for health_module in try(health_policy.health_modules, []) : {
+              name               = health_module.name
+              type               = health_module.type
+              enabled            = try(health_module.enabled, local.defaults.fmc.domains.policies.health_policies.health_modules.enabled, null)
+              alert_severity     = try(health_module.alert_severity, null)
+              critical_threshold = try(health_module.critical_threshold, null)
+              warning_threshold  = try(health_module.warning_threshold, null)
+              alert_configs = [for alert_config in try(health_module.alert_configs, []) : {
+                name    = alert_config.name
+                enabled = try(alert_config.enabled, local.defaults.fmc.domains.policies.health_policies.health_modules.alert_configs.enabled, null)
+                thresholds = [for threshold in try(alert_config.thresholds, []) : {
+                  type      = threshold.type
+                  threshold = threshold.threshold
+                }]
+              }]
+              custom_thresholds = [for custom_threshold in try(health_module.custom_thresholds, []) : {
+                type      = custom_threshold.type
+                threshold = custom_threshold.threshold
+              }]
+            }]
+        }] if !contains(try(keys(local.data_health_policy), []), health_policy.name)
+      ]
+    ]) : item.name => item if contains(keys(item), "name")
+  }
+
+}
+
+resource "fmc_health_policy" "module" {
+  for_each = local.resource_health_policy
+
+  # Mandatory
+  name        = each.key
+  policy_type = each.value.policy_type
+
+  # Optional
+  description                     = each.value.description
+  health_module_run_time_interval = each.value.health_module_run_time_interval
+  is_default_policy               = each.value.is_default_policy
+  metric_collection_interval      = each.value.metric_collection_interval
+  health_modules                  = each.value.health_modules
+
+  domain = each.value.domain_name
+}
+
 ##########################################################
 ###    Create maps for combined set of _data and _resources network objects
 ##########################################################
@@ -767,6 +831,33 @@ locals {
   )
 }
 
+######
+### map_health_policies
+######
+locals {
+  map_health_policies = merge({
+    for item in flatten([
+      for health_policy_key, health_policy_value in local.resource_health_policy : {
+        name        = health_policy_key
+        id          = try(fmc_health_policy.module[health_policy_key].id, null)
+        type        = try(fmc_health_policy.module[health_policy_key].type, null)
+        domain_name = health_policy_value.domain_name
+      }
+    ]) : item.name => item if contains(keys(item), "name")
+    },
+    {
+      for item in flatten([
+        for health_policy_key, health_policy_value in local.data_health_policy : {
+          name        = health_policy_key
+          id          = try(data.fmc_health_policy.module[health_policy_key].id, null)
+          type        = try(data.fmc_health_policy.module[health_policy_key].type, null)
+          domain_name = health_policy_value.domain_name
+        }
+      ]) : item.name => item if contains(keys(item), "name")
+    },
+  )
+
+}
 
 ######
 ### map_snmp_alerts

@@ -16,7 +16,7 @@ variable "model" {
     fmc = optional(object({
       name    = optional(string)
       system  = optional(map(any))
-      domains = optional(list(any))
+      domains = optional(list(any), [])
     }), {})
     defaults = optional(map(any), {})
     existing = optional(map(any), {})
