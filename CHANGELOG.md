@@ -1,6 +1,7 @@
 ## 0.0.5 (Unreleased)
 
 - (BREAKING CHANGE) Rename `after_destroy_policy` to `after_destroy_access_policy`
+- (Change) Update FMC Terraform provider to 2.0.0-rc6
 - (Fix) Module fails, if no input is provided
 - (Fix) NAT Policy is not assigned to existing devices
 - (Fix) Variable Sets are not assigned correctly to Access Control Policy Rules
