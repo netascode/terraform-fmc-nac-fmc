@@ -915,7 +915,7 @@ locals {
             ftd_platform_settings_id = local.map_ftd_platform_settings[ftd_platform_setting.name].id
             domain                   = domain.name
 
-            text = split("\n", trimsuffix(ftd_platform_setting.banner.text, "\n"))
+            text_lines = split("\n", trimsuffix(ftd_platform_setting.banner.text, "\n"))
           }
         ] if try(ftd_platform_setting.banner, null) != null
       ]
@@ -929,7 +929,7 @@ resource "fmc_ftd_platform_settings_banner" "module" {
   ftd_platform_settings_id = each.value.ftd_platform_settings_id
   domain                   = each.value.domain
 
-  text = each.value.text
+  text_lines = each.value.text_lines
 }
 
 locals {

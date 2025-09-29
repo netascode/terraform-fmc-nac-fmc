@@ -1473,19 +1473,17 @@ locals {
 ######
 
 locals {
-  map_variable_sets = merge(
-    {
-      for item in flatten([
-        for variable_set_key, variable_set_value in local.data_variable_set : {
-          name        = variable_set_key
-          type        = data.fmc_variable_set.module[variable_set_key].type
-          domain_name = variable_set_value.domain_name
-        }
-      ]) : item.name => item if item.name != null
+  map_variable_sets = merge({
+    for item in flatten([
+      for variable_set_key, variable_set_value in local.data_variable_set : {
+        name        = variable_set_key
+        type        = data.fmc_variable_set.module[variable_set_key].type
+        id          = data.fmc_variable_set.module[variable_set_key].id
+        domain_name = variable_set_value.domain_name
+      }
+    ]) : item.name => item
     },
-
   )
-
 }
 
 ######

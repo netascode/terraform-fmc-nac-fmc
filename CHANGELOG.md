@@ -3,6 +3,7 @@
 - (BREAKING CHANGE) Rename `after_destroy_policy` to `after_destroy_access_policy`
 - (Fix) Module fails, if no input is provided
 - (Fix) NAT Policy is not assigned to existing devices
+- (Fix) Variable Sets are not assigned correctly to Access Control Policy Rules
 - (Enh) Add support for Health Policy
 - (Enh) Add support for FTD Platform Settings
 
