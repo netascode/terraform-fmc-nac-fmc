@@ -1,8 +1,6 @@
 ---
 defaults:
   fmc:
-    module_configuration:
-      bulk_hosts: false
     domains:
       devices:
         devices:
