@@ -84,27 +84,58 @@
 ###    HOSTS
 ##########################################################
 locals {
+  hosts_bulk = try(local.fmc.module_configuration.hosts_bulk, false)
 
+  # Create a map, key is domain name, value is list of hosts for that domain
   resource_hosts = {
-    for domain in try(local.domains, []) : domain.name => [
+    for domain in local.domains : domain.name => [
       for host in try(domain.objects.hosts, []) : {
         name        = host.name
         ip          = host.ip
-        description = try(host.description, local.defaults.fmc.domains.objects.hosts.description, " ")
+        description = try(host.description, local.defaults.fmc.domains.objects.hosts.description, "")
       } if !contains(try(keys(local.data_hosts[domain.name].items), []), host.name)
     ] if length(try(domain.objects.hosts, [])) > 0
   }
-
 }
 
-module "hosts" {
-  source   = "./modules/terraform-fmc-hosts"
-  for_each = local.resource_hosts
-  bulk     = try(local.fmc.module_configuration.bulk_hosts, local.defaults.fmc.module_configuration.bulk_hosts)
+# module "hosts" {
+#   source   = "./modules/terraform-fmc-hosts"
+#   for_each = local.resource_hosts
+#   bulk     = hosts_bulk
+
+#   domain = each.key
+#   hosts  = each.value
+# }
+
+
+# Handle bulk mode (single resource)
+resource "fmc_hosts" "module" {
+  for_each = local.hosts_bulk ? local.resource_hosts : {}
 
   domain = each.key
-  hosts  = each.value
+  items  = {for host in each.value : host.name => host}
 }
+
+# Handle individual mode  
+resource "fmc_host" "module" {
+  for_each = !local.hosts_bulk ? {
+    for item in flatten([
+      for domain_key, domain_value in local.resource_hosts : [
+        for host in domain_value : {
+          key            = "${domain_key}:${host.name}"
+          domain         = domain_key
+          item = host
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+
+  domain      = each.value.domain
+  name        = each.value.item.name
+  ip          = each.value.item.ip
+  description = each.value.item.description
+}
+
 
 ##########################################################
 ###    NETWORKS
@@ -247,7 +278,8 @@ resource "fmc_network_groups" "module" {
 
   depends_on = [
     data.fmc_hosts.module,
-    module.hosts,
+    fmc_hosts.module,
+    fmc_host.module,
     data.fmc_networks.module,
     fmc_networks.module,
     data.fmc_ranges.module,
@@ -946,14 +978,29 @@ resource "fmc_ipv6_address_pools" "module" {
 ######
 
 locals {
-  # Merge all hosts module outputs into a single map
-  hosts_from_modules = merge([
-    for domain_key in keys(local.resource_hosts) :
-    module.hosts[domain_key].hosts_map
-  ]...)
+  # Normalize bulk mode outputs
+  bulk_hosts_map = local.hosts_bulk ? merge([
+    for domain_key, domain_resource in fmc_hosts.module : {
+      for item_key, item_value in domain_resource.items : item_key => {
+        name        = item_key
+        id          = item_value.id
+        type        = item_value.type
+      }
+    }
+  ]...) : {}
+
+  # Normalize individual mode outputs  
+  individual_hosts_map = !local.hosts_bulk ? {
+    for key, resource in fmc_host.module : resource.name => {
+      name        = resource.name
+      id          = resource.id
+      type        = resource.type
+    }
+  } : {}
 
   map_network_objects = merge(
-    local.hosts_from_modules,
+    local.bulk_hosts_map,
+    local.individual_hosts_map,
     {
       for item in flatten([
         for domain_key, domain_value in local.data_hosts :

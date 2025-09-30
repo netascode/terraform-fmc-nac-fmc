@@ -287,7 +287,8 @@ resource "fmc_device_ipv4_static_route" "module" {
 
   depends_on = [
     data.fmc_hosts.module,
-    module.hosts,
+    fmc_hosts.module,
+    fmc_host.module,
     data.fmc_networks.module,
     fmc_networks.module,
     fmc_network_groups.module,
@@ -325,7 +326,8 @@ resource "fmc_device_vrf_ipv4_static_route" "module" {
 
   depends_on = [
     data.fmc_hosts.module,
-    module.hosts,
+    fmc_hosts.module,
+    fmc_host.module,
     data.fmc_networks.module,
     fmc_networks.module,
     fmc_network_groups.module,
@@ -427,7 +429,8 @@ resource "fmc_device_ipv6_static_route" "module" {
 
   depends_on = [
     data.fmc_hosts.module,
-    module.hosts,
+    fmc_hosts.module,
+    fmc_host.module,
     data.fmc_networks.module,
     fmc_networks.module,
     fmc_network_groups.module,
@@ -465,7 +468,8 @@ resource "fmc_device_vrf_ipv6_static_route" "module" {
 
   depends_on = [
     data.fmc_hosts.module,
-    module.hosts,
+    fmc_hosts.module,
+    fmc_host.module,
     data.fmc_networks.module,
     fmc_networks.module,
     fmc_network_groups.module,
@@ -731,7 +735,8 @@ resource "fmc_device_bgp" "module" {
     data.fmc_device_bgp_general_settings.module,
     fmc_device_bgp_general_settings.module,
     data.fmc_hosts.module,
-    module.hosts,
+    fmc_hosts.module,
+    fmc_host.module,
     data.fmc_networks.module,
     fmc_networks.module,
     data.fmc_ranges.module,

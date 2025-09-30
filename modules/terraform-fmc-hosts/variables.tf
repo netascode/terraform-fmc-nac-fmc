@@ -1,10 +1,6 @@
 variable "hosts" {
   description = "List of FMC hosts"
-  type = list(object({
-    name        = string
-    ip          = string
-    description = optional(string)
-  }))
+  type = list(any)
   default = []
 }
 
