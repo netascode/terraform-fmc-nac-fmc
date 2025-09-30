@@ -3,7 +3,7 @@ resource "fmc_hosts" "bulk" {
   count = var.bulk ? 1 : 0
 
   domain = var.domain
-  items  = {for host in var.hosts : host.name => host}
+  items  = { for host in var.hosts : host.name => host }
 }
 
 # Handle individual mode  

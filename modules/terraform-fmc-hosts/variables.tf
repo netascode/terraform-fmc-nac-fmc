@@ -1,7 +1,7 @@
 variable "hosts" {
   description = "List of FMC hosts"
-  type = list(any)
-  default = []
+  type        = list(any)
+  default     = []
 }
 
 variable "domain" {
