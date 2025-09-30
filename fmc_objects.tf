@@ -93,7 +93,7 @@ locals {
         domain      = domain.name
         name        = host.name
         ip          = host.ip
-        description = try(host.description, local.defaults.fmc.domains.objects.hosts.description, null)
+        description = try(host.description, local.defaults.fmc.domains.objects.hosts.description, "")
       } if !contains(try(keys(local.data_hosts[domain.name].items), []), host.name)
     ] if length(try(domain.objects.hosts, [])) > 0
   }
