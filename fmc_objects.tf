@@ -978,35 +978,23 @@ resource "fmc_ipv6_address_pools" "module" {
 
 locals {
   map_network_objects = merge(
-    # Normalize bulk mode outputs
+
+    # Hosts - bulk mode outputs
     local.hosts_bulk ? merge([
-      for domain_key, domain_resource in fmc_hosts.module : {
-        for item_key, item_value in domain_resource.items : item_key => {
-          name = item_key
-          id   = item_value.id
-          type = item_value.type
-        }
+      for domain, hosts in fmc_hosts.module : {
+        for host_name, host_values in hosts.items : host_name => { id = host_values.id, type = host_values.type }
       }
     ]...) : {},
-    # Normalize individual mode outputs  
-    !local.hosts_bulk ? {
-      for key, resource in fmc_host.module : resource.name => {
-        name = resource.name
-        id   = resource.id
-        type = resource.type
+
+    # Hosts - individual mode outputs  
+    !local.hosts_bulk ? { for key, resource in fmc_host.module : resource.name => { id = resource.id, type = resource.type } } : {},
+
+    # Hosts - data sources
+    merge([
+      for domain, hosts in data.fmc_hosts.module : {
+        for host_name, host_values in hosts.items : host_name => { id = host_values.id, type = host_values.type }
       }
-    } : {},
-    {
-      for item in flatten([
-        for domain_key, domain_value in local.data_hosts :
-        flatten([for item in keys(domain_value.items) : {
-          name        = item
-          id          = data.fmc_hosts.module[domain_key].items[item].id
-          type        = data.fmc_hosts.module[domain_key].items[item].type
-          domain_name = domain_key
-        }])
-      ]) : item.name => item if contains(keys(item), "name")
-    },
+    ]...),
     {
       for item in flatten([
         for domain_key, domain_value in local.resource_networks :
