@@ -94,6 +94,7 @@ locals {
         name        = host.name
         ip          = host.ip
         description = try(host.description, local.defaults.fmc.domains.objects.hosts.description, "")
+        overridable = try(host.overridable, local.defaults.fmc.domains.objects.hosts.overridable)
       } if !contains(try(keys(local.data_hosts[domain.name].items), []), host.name)
     ] if length(try(domain.objects.hosts, [])) > 0
   }
@@ -133,6 +134,7 @@ resource "fmc_host" "module" {
   name        = each.value.item.name
   ip          = each.value.item.ip
   description = each.value.item.description
+  overridable = each.value.item.overridable
 }
 
 
