@@ -131,6 +131,7 @@ module "fmc" {
 | [fmc_ftd_platform_settings_syslog_settings_syslog_id.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ftd_platform_settings_syslog_settings_syslog_id) | resource |
 | [fmc_ftd_platform_settings_time_synchronization.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ftd_platform_settings_time_synchronization) | resource |
 | [fmc_health_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/health_policy) | resource |
+| [fmc_host.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/host) | resource |
 | [fmc_hosts.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/hosts) | resource |
 | [fmc_icmpv4_objects.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/icmpv4_objects) | resource |
 | [fmc_intrusion_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/intrusion_policy) | resource |
