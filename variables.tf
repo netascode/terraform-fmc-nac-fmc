@@ -30,6 +30,12 @@ variable "write_default_values_file" {
   default     = ""
 }
 
+variable "bulk" {
+  description = "Should operation mode be set to `bulk` by default. This can be overridden per-resource type in YAML files."
+  type        = bool
+  default     = false
+}
+
 variable "manage_deployment" {
   description = "Enables support for FTD deployments"
   type        = bool

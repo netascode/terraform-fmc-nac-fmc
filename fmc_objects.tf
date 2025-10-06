@@ -84,7 +84,7 @@
 ###    HOSTS
 ##########################################################
 locals {
-  hosts_bulk = try(local.fmc.module_configuration.hosts_bulk, false)
+  hosts_bulk = try(local.fmc.module_configuration.hosts_bulk, var.bulk)
 
   # Create a map, key is domain name, value is list of hosts for that domain
   resource_hosts = {
