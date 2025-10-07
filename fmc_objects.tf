@@ -92,7 +92,7 @@ locals {
     } if length(try(domain.objects.hosts, [])) > 0
   }
 
-  hosts_bulk = try(local.fmc.module_configuration.hosts_bulk, local.fmc.module_configuration.bulk)
+  hosts_bulk = try(local.fmc.module_configuration.hosts_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
 
   # Create a map, key is domain name, value is list of hosts for that domain
   resource_hosts = {
@@ -159,7 +159,7 @@ locals {
     } if length(try(domain.objects.networks, [])) > 0
   }
 
-  networks_bulk = try(local.fmc.module_configuration.networks_bulk, local.fmc.module_configuration.bulk)
+  networks_bulk = try(local.fmc.module_configuration.networks_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
 
   resource_networks = {
     for domain in local.domains : domain.name => [
@@ -221,7 +221,7 @@ locals {
     } if length(try(domain.objects.ranges, [])) > 0
   }
 
-  ranges_bulk = try(local.fmc.module_configuration.ranges_bulk, local.fmc.module_configuration.bulk)
+  ranges_bulk = try(local.fmc.module_configuration.ranges_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
 
   resource_ranges = {
     for domain in local.domains : domain.name => [
@@ -283,7 +283,7 @@ locals {
     } if length(try(domain.objects.fqdns, [])) > 0
   }
 
-  fqdns_bulk = try(local.fmc.module_configuration.fqdns_bulk, local.fmc.module_configuration.bulk)
+  fqdns_bulk = try(local.fmc.module_configuration.fqdns_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
 
   resource_fqdns = {
     for domain in local.domains : domain.name => [
