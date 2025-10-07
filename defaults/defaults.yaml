@@ -1,6 +1,8 @@
 ---
 defaults:
   fmc:
+    module_configuration:
+      bulk: false
     domains:
       devices:
         devices:
@@ -141,9 +143,18 @@ defaults:
             enabled: true
             alert_configs:
               enabled: true
+        intrusion_policies:
+          inspection_mode: "PREVENTION"
       objects:
+        hosts:
+          overridable: false
+        networks:
+          overridable: false
+        ranges:
+          overridable: false
         fqdns:
           dns_resolution: "IPV4_AND_IPV6"
+          overridable: false
         dynamic_objects:
           object_type: "IP"
         security_zones:
