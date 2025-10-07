@@ -80,6 +80,22 @@
 # 
 ###
 
+locals {
+  # Maps each domain with itself and all its parent domains
+  related_domains = merge(
+    {
+      for domain in local.domains : domain.name => [
+        for i in range(1, length(split("/", domain.name)) + 1) : join("/", slice(split("/", domain.name), 0, i))
+      ]
+    },
+    {
+      for domain in local.data_existing : domain.name => [
+        for i in range(1, length(split("/", domain.name)) + 1) : join("/", slice(split("/", domain.name), 0, i))
+      ]
+    }
+  )
+}
+
 ##########################################################
 ###    HOSTS
 ##########################################################
@@ -350,24 +366,41 @@ locals {
   # Helper list of all network object names and network group data source names
   help_network_objects = flatten([
     flatten([for item in keys(local.map_network_objects) : item]),
-    flatten([for domain in keys(local.data_network_groups) : [for k in keys(local.data_network_groups[domain].items) : k]])
+    flatten([for domain in keys(local.data_network_groups) : [for k in keys(local.data_network_groups[domain].items) : "${domain}:${k}"]])
   ])
 
   resource_network_groups = {
     for domain in local.domains : domain.name => {
       for network_group in try(domain.objects.network_groups, {}) : network_group.name => {
-        # Mandatory
         name   = network_group.name
         domain = domain.name
         literals = [for literal in try(network_group.literals, []) : {
           value = literal
         }]
         objects = [for object_item in try(network_group.objects, []) : {
-          id   = try(local.map_network_objects[object_item].id, data.fmc_network_groups.network_groups[domain.name].items[object_item].id)
+          id = try(
+            values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_network_objects["${domain_path}:${object_item}"].id
+              if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")
+            })[0],
+            values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => data.fmc_network_groups.network_groups[domain_path].items[object_item].id
+              if contains(keys(try(data.fmc_network_groups.network_groups[domain_path].items, {})), object_item)
+            })[0],
+          )
           name = object_item
-        } if contains(local.help_network_objects, object_item)]
-        network_groups = [for object_item in try(network_group.objects, []) : object_item if !contains(local.help_network_objects, object_item)]
-        description    = try(network_group.description, local.defaults.fmc.domains.objects.network_groups.description, "")
+          } if anytrue([
+            for domain_path in local.related_domains[domain.name] :
+            contains(local.help_network_objects, "${domain_path}:${object_item}")
+          ])
+        ]
+        network_groups = [for object_item in try(network_group.objects, []) : object_item if !anytrue([
+          for domain_path in local.related_domains[domain.name] :
+          contains(local.help_network_objects, "${domain_path}:${object_item}")
+        ])]
+        description = try(network_group.description, local.defaults.fmc.domains.objects.network_groups.description, "")
       } if !contains(try(keys(local.data_network_groups[domain.name].items), []), network_group.name)
     } if length(try(domain.objects.network_groups, [])) > 0
   }
@@ -1078,68 +1111,68 @@ locals {
     # Hosts - bulk mode outputs
     local.hosts_bulk ? merge([
       for domain, hosts in fmc_hosts.hosts : {
-        for host_name, host_values in hosts.items : host_name => { id = host_values.id, type = host_values.type }
+        for host_name, host_values in hosts.items : "${hosts.domain}:${host_name}" => { id = host_values.id, type = host_values.type }
       }
     ]...) : {},
 
-    # Hosts - individual mode outputs  
-    !local.hosts_bulk ? { for key, resource in fmc_host.host : resource.name => { id = resource.id, type = resource.type } } : {},
+    # Hosts - individual mode outputs
+    !local.hosts_bulk ? { for key, resource in fmc_host.host : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
 
     # Hosts - data sources
     merge([
       for domain, hosts in data.fmc_hosts.hosts : {
-        for host_name, host_values in hosts.items : host_name => { id = host_values.id, type = host_values.type }
+        for host_name, host_values in hosts.items : "${hosts.domain}:${host_name}" => { id = host_values.id, type = host_values.type }
       }
     ]...),
 
     # Networks - bulk mode outputs
     local.networks_bulk ? merge([
       for domain, networks in fmc_networks.networks : {
-        for network_name, network_values in networks.items : network_name => { id = network_values.id, type = network_values.type }
+        for network_name, network_values in networks.items : "${networks.domain}:${network_name}" => { id = network_values.id, type = network_values.type }
       }
     ]...) : {},
 
     # Networks - individual mode outputs
-    !local.networks_bulk ? { for key, resource in fmc_network.network : resource.name => { id = resource.id, type = resource.type } } : {},
+    !local.networks_bulk ? { for key, resource in fmc_network.network : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
 
     # Networks - data sources
     merge([
       for domain, networks in data.fmc_networks.networks : {
-        for network_name, network_values in networks.items : network_name => { id = network_values.id, type = network_values.type }
+        for network_name, network_values in networks.items : "${networks.domain}:${network_name}" => { id = network_values.id, type = network_values.type }
       }
     ]...),
 
     # Ranges - bulk mode outputs
     local.ranges_bulk ? merge([
       for domain, ranges in fmc_ranges.ranges : {
-        for range_name, range_values in ranges.items : range_name => { id = range_values.id, type = range_values.type }
+        for range_name, range_values in ranges.items : "${ranges.domain}:${range_name}" => { id = range_values.id, type = range_values.type }
       }
     ]...) : {},
 
-    # Ranges - individual mode outputs  
-    !local.ranges_bulk ? { for key, resource in fmc_range.range : resource.name => { id = resource.id, type = resource.type } } : {},
+    # Ranges - individual mode outputs
+    !local.ranges_bulk ? { for key, resource in fmc_range.range : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
 
     # Ranges - data sources
     merge([
       for domain, ranges in data.fmc_ranges.ranges : {
-        for range_name, range_values in ranges.items : range_name => { id = range_values.id, type = range_values.type }
+        for range_name, range_values in ranges.items : "${ranges.domain}:${range_name}" => { id = range_values.id, type = range_values.type }
       }
     ]...),
 
     # FQDNs - bulk mode outputs
     local.fqdns_bulk ? merge([
       for domain, fqdns in fmc_fqdns.fqdns : {
-        for fqdn_name, fqdn_values in fqdns.items : fqdn_name => { id = fqdn_values.id, type = fqdn_values.type }
+        for fqdn_name, fqdn_values in fqdns.items : "${fqdns.domain}:${fqdn_name}" => { id = fqdn_values.id, type = fqdn_values.type }
       }
     ]...) : {},
 
     # FQDNs - individual mode outputs
-    !local.fqdns_bulk ? { for key, resource in fmc_fqdn.fqdn : resource.name => { id = resource.id, type = resource.type } } : {},
+    !local.fqdns_bulk ? { for key, resource in fmc_fqdn.fqdn : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
 
     # FQDNs - data sources
     merge([
       for domain, fqdns in data.fmc_fqdns.fqdns : {
-        for fqdn_name, fqdn_values in fqdns.items : fqdn_name => { id = fqdn_values.id, type = fqdn_values.type }
+        for fqdn_name, fqdn_values in fqdns.items : "${fqdns.domain}:${fqdn_name}" => { id = fqdn_values.id, type = fqdn_values.type }
       }
     ]...),
   )
