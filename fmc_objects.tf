@@ -80,221 +80,344 @@
 # 
 ###
 
+locals {
+  # Maps each domain with itself and all its parent domains
+  related_domains = merge(
+    {
+      for domain in local.domains : domain.name => [
+        for i in range(1, length(split("/", domain.name)) + 1) : join("/", slice(split("/", domain.name), 0, i))
+      ]
+    },
+    {
+      for domain in local.data_existing : domain.name => [
+        for i in range(1, length(split("/", domain.name)) + 1) : join("/", slice(split("/", domain.name), 0, i))
+      ]
+    }
+  )
+}
+
 ##########################################################
 ###    HOSTS
 ##########################################################
 locals {
-
-  ####################
-  # Superseded by bulk
-  ####################
-  #  resource_host = { 
-  #    for item in flatten([
-  #      for domain in local.domains : [ 
-  #        for item_value in try(domain.objects.hosts, []) : [ 
-  #          merge(item_value, 
-  #            {
-  #              "domain_name" = domain.name
-  #            })
-  #        ]
-  #      ]
-  #      ]) : item.name => item if contains(keys(item), "name" ) && !contains(try(keys(local.data_host), []), item.name)
-  #  }
-
-  resource_hosts = {
-    for domain in local.domains : domain.name => {
+  data_hosts = {
+    for domain in local.data_existing : domain.name => {
       items = {
-        for host in try(domain.objects.hosts, []) : host.name => {
-          ip          = host.ip
-          description = try(host.description, local.defaults.fmc.domains.objects.hosts.description, null)
-        } if !contains(try(keys(local.data_hosts[domain.name].items), []), host.name)
+        for host in try(domain.objects.hosts, []) : host.name => {}
       }
     } if length(try(domain.objects.hosts, [])) > 0
   }
 
+  hosts_bulk = try(local.fmc.module_configuration.hosts_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+
+  # Create a map, key is domain name, value is list of hosts for that domain
+  resource_hosts = {
+    for domain in local.domains : domain.name => [
+      for host in try(domain.objects.hosts, []) : {
+        domain      = domain.name
+        name        = host.name
+        ip          = host.ip
+        description = try(host.description, local.defaults.fmc.domains.objects.hosts.description, "")
+        overridable = try(host.overridable, local.defaults.fmc.domains.objects.hosts.overridable, null)
+      } if !contains(try(keys(local.data_hosts[domain.name].items), []), host.name)
+    ] if length(try(domain.objects.hosts, [])) > 0
+  }
+
+  # Convert the map for need of individual host resources
+  resource_host = !local.hosts_bulk ? {
+    for item in flatten([
+      for domain, hosts in local.resource_hosts : [
+        for host in hosts : {
+          key  = "${domain}:${host.name}"
+          item = host
+        }
+      ]
+    ]) : item.key => item
+  } : {}
 }
 
-####################
-# Superseded by bulk
-####################
-#resource "fmc_host" "host" {
-#  for_each = local.resource_host
-#  # Mandatory
-#  name  = each.key
-#  ip    = each.value.ip
-#
-#  # Optional
-#  domain = try(each.value.domain_name, null)
-#  description = try(each.value.description, local.defaults.fmc.domains.objects.hosts.description, null)
-#}
+# Data source to get existing hosts
+data "fmc_hosts" "hosts" {
+  for_each = local.data_hosts
 
-resource "fmc_hosts" "module" {
-  for_each = local.resource_hosts
-
-  # Mandatory
-  items = each.value.items
-
-  # Optional
+  items  = each.value.items
   domain = each.key
+}
 
-  depends_on = [
-    data.fmc_hosts.module,
-  ]
+# Handle bulk mode (resource per domain)
+resource "fmc_hosts" "hosts" {
+  for_each = local.hosts_bulk ? local.resource_hosts : {}
 
+  domain = each.key
+  items  = { for host in each.value : host.name => host }
+}
+
+# Handle individual mode (resource per host) 
+resource "fmc_host" "host" {
+  for_each = !local.hosts_bulk ? local.resource_host : {}
+
+  domain      = each.value.item.domain
+  name        = each.value.item.name
+  ip          = each.value.item.ip
+  description = each.value.item.description
+  overridable = each.value.item.overridable
 }
 
 ##########################################################
 ###    NETWORKS
 ##########################################################
 locals {
-
-  resource_networks = {
-    for domain in local.domains : domain.name => {
+  data_networks = {
+    for domain in local.data_existing : domain.name => {
       items = {
-        for network in try(domain.objects.networks, []) : network.name => {
-          prefix      = network.prefix
-          description = try(network.description, local.defaults.fmc.domains.objects.networks.description, null)
-        } if !contains(try(local.data_networks[domain.name].itmes, []), network.name)
+        for network in try(domain.objects.networks, []) : network.name => {}
       }
     } if length(try(domain.objects.networks, [])) > 0
   }
 
+  networks_bulk = try(local.fmc.module_configuration.networks_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+
+  resource_networks = {
+    for domain in local.domains : domain.name => [
+      for network in try(domain.objects.networks, []) : {
+        domain      = domain.name
+        name        = network.name
+        prefix      = network.prefix
+        description = try(network.description, local.defaults.fmc.domains.objects.networks.description, "")
+        overridable = try(network.overridable, local.defaults.fmc.domains.objects.networks.overridable, null)
+      } if !contains(try(keys(local.data_networks[domain.name].items), []), network.name)
+    ] if length(try(domain.objects.networks, [])) > 0
+  }
+
+  resource_network = !local.networks_bulk ? {
+    for item in flatten([
+      for domain, networks in local.resource_networks : [
+        for network in networks : {
+          key  = "${domain}:${network.name}"
+          item = network
+        }
+      ]
+    ]) : item.key => item
+  } : {}
 }
 
-resource "fmc_networks" "module" {
-  for_each = local.resource_networks
+data "fmc_networks" "networks" {
+  for_each = local.data_networks
 
-  # Mandatory
-  items = each.value.items
-
-  # Optional
+  items  = each.value.items
   domain = each.key
+}
 
-  depends_on = [
-    data.fmc_networks.module,
-  ]
+resource "fmc_networks" "networks" {
+  for_each = local.networks_bulk ? local.resource_networks : {}
+
+  domain = each.key
+  items  = { for network in each.value : network.name => network }
+}
+
+resource "fmc_network" "network" {
+  for_each = !local.networks_bulk ? local.resource_network : {}
+
+  domain      = each.value.item.domain
+  name        = each.value.item.name
+  prefix      = each.value.item.prefix
+  description = each.value.item.description
+  overridable = each.value.item.overridable
 }
 
 ##########################################################
 ###    RANGES
 ##########################################################
 locals {
-
-  resource_ranges = {
-    for domain in local.domains : domain.name => {
+  data_ranges = {
+    for domain in local.data_existing : domain.name => {
       items = {
-        for range in try(domain.objects.ranges, []) : range.name => {
-          ip_range    = range.ip_range
-          description = try(range.description, local.defaults.fmc.domains.objects.ranges.description, null)
-        } if !contains(try(keys(local.data_ranges[domain.name].items), []), range.name)
+        for range in try(domain.objects.ranges, []) : range.name => {}
       }
     } if length(try(domain.objects.ranges, [])) > 0
   }
 
+  ranges_bulk = try(local.fmc.module_configuration.ranges_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+
+  resource_ranges = {
+    for domain in local.domains : domain.name => [
+      for range in try(domain.objects.ranges, []) : {
+        domain      = domain.name
+        name        = range.name
+        ip_range    = range.ip_range
+        description = try(range.description, local.defaults.fmc.domains.objects.ranges.description, "")
+        overridable = try(range.overridable, local.defaults.fmc.domains.objects.ranges.overridable, null)
+      } if !contains(try(keys(local.data_ranges[domain.name].items), []), range.name)
+    ] if length(try(domain.objects.ranges, [])) > 0
+  }
+
+  resource_range = !local.ranges_bulk ? {
+    for item in flatten([
+      for domain, ranges in local.resource_ranges : [
+        for range in ranges : {
+          key  = "${domain}:${range.name}"
+          item = range
+        }
+      ]
+    ]) : item.key => item
+  } : {}
 }
 
-resource "fmc_ranges" "module" {
-  for_each = local.resource_ranges
+data "fmc_ranges" "ranges" {
+  for_each = local.data_ranges
 
-  # Mandatory
-  items = each.value.items
-
-  # Optional
+  items  = each.value.items
   domain = each.key
+}
 
-  depends_on = [
-    data.fmc_ranges.module,
-  ]
+resource "fmc_ranges" "ranges" {
+  for_each = local.ranges_bulk ? local.resource_ranges : {}
+
+  domain = each.key
+  items  = { for range in each.value : range.name => range }
+}
+
+resource "fmc_range" "range" {
+  for_each = !local.ranges_bulk ? local.resource_range : {}
+
+  domain      = each.value.item.domain
+  name        = each.value.item.name
+  ip_range    = each.value.item.ip_range
+  description = each.value.item.description
+  overridable = each.value.item.overridable
 }
 
 ##########################################################
 ###    FQDNS
 ##########################################################
 locals {
-
-  resource_fqdns = {
-    for domain in local.domains : domain.name => {
+  data_fqdns = {
+    for domain in local.data_existing : domain.name => {
       items = {
-        for fqdn in try(domain.objects.fqdns, []) : fqdn.name => {
-          fqdn           = fqdn.fqdn
-          dns_resolution = try(fqdn.dns_resolution, null)
-          description    = try(fqdn.description, local.defaults.fmc.domains.objects.fqdns.description, null)
-        } if !contains(try(keys(local.data_fqdns[domain.name].items), []), fqdn.name)
+        for fqdn in try(domain.objects.fqdns, []) : fqdn.name => {}
       }
     } if length(try(domain.objects.fqdns, [])) > 0
   }
 
+  fqdns_bulk = try(local.fmc.module_configuration.fqdns_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+
+  resource_fqdns = {
+    for domain in local.domains : domain.name => [
+      for fqdn in try(domain.objects.fqdns, []) : {
+        domain         = domain.name
+        name           = fqdn.name
+        fqdn           = fqdn.fqdn
+        description    = try(fqdn.description, local.defaults.fmc.domains.objects.fqdns.description, "")
+        dns_resolution = try(fqdn.dns_resolution, local.defaults.fmc.domains.objects.fqdns.dns_resolution, null)
+        overridable    = try(fqdn.overridable, local.defaults.fmc.domains.objects.fqdns.overridable, null)
+      } if !contains(try(keys(local.data_fqdns[domain.name].items), []), fqdn.name)
+    ] if length(try(domain.objects.fqdns, [])) > 0
+  }
+
+  resource_fqdn = !local.fqdns_bulk ? {
+    for item in flatten([
+      for domain, fqdns in local.resource_fqdns : [
+        for fqdn in fqdns : {
+          key  = "${domain}:${fqdn.name}"
+          item = fqdn
+        }
+      ]
+    ]) : item.key => item
+  } : {}
 }
 
-resource "fmc_fqdn_objects" "module" {
-  for_each = local.resource_fqdns
+data "fmc_fqdns" "fqdns" {
+  for_each = local.data_fqdns
 
-  # Mandatory
-  items = each.value.items
-
-  # Optional
+  items  = each.value.items
   domain = each.key
+}
 
-  depends_on = [
-    data.fmc_fqdn_objects.module
-  ]
+resource "fmc_fqdns" "fqdns" {
+  for_each = local.fqdns_bulk ? local.resource_fqdns : {}
+
+  domain = each.key
+  items  = { for fqdn in each.value : fqdn.name => fqdn }
+}
+
+resource "fmc_fqdn" "fqdn" {
+  for_each = !local.fqdns_bulk ? local.resource_fqdn : {}
+
+  domain         = each.value.item.domain
+  name           = each.value.item.name
+  fqdn           = each.value.item.fqdn
+  description    = each.value.item.description
+  dns_resolution = each.value.item.dns_resolution
+  overridable    = each.value.item.overridable
 }
 
 ##########################################################
 ###    NETWORK GROUPS
 ##########################################################
-
 locals {
+  data_network_groups = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for network_group in try(domain.objects.network_groups, []) : network_group.name => {}
+      }
+    } if length(try(domain.objects.network_groups, [])) > 0
+  }
 
+  # Helper list of all network object names and network group data source names
   help_network_objects = flatten([
-    for item in keys(local.map_network_objects) : item
+    flatten([for item in keys(local.map_network_objects) : item]),
+    flatten([for domain in keys(local.data_network_groups) : [for k in keys(local.data_network_groups[domain].items) : "${domain}:${k}"]])
   ])
 
   resource_network_groups = {
     for domain in local.domains : domain.name => {
-      items = {
-        for item in try(domain.objects.network_groups, {}) : item.name => {
-          # Mandatory
-          name = item.name
-          objects = [for object_item in try(item.objects, []) : {
-            id = local.map_network_objects[object_item].id
-          } if contains(local.help_network_objects, object_item)]
-          literals = [for literal_item in try(item.literals, []) : {
-            value = literal_item
-          }]
-          network_groups = length([for object_item in try(item.objects, []) : object_item if !contains(local.help_network_objects, object_item)]) > 0 ? [for object_item in try(item.objects, []) : object_item if !contains(local.help_network_objects, object_item)] : null
-          #network_groups = [for object_item in try(item.objects, []) : object_item if !contains(local.help_network_objects, object_item)]
-          description = try(item.description, null)
-        }
-      } # no data source yet
-      domain_name = domain.name
+      for network_group in try(domain.objects.network_groups, {}) : network_group.name => {
+        name   = network_group.name
+        domain = domain.name
+        literals = [for literal in try(network_group.literals, []) : {
+          value = literal
+        }]
+        objects = [for object_item in try(network_group.objects, []) : {
+          id = try(
+            values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_network_objects["${domain_path}:${object_item}"].id
+              if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")
+            })[0],
+            values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => data.fmc_network_groups.network_groups[domain_path].items[object_item].id
+              if contains(keys(try(data.fmc_network_groups.network_groups[domain_path].items, {})), object_item)
+            })[0],
+          )
+          name = object_item
+          } if anytrue([
+            for domain_path in local.related_domains[domain.name] :
+            contains(local.help_network_objects, "${domain_path}:${object_item}")
+          ])
+        ]
+        network_groups = [for object_item in try(network_group.objects, []) : object_item if !anytrue([
+          for domain_path in local.related_domains[domain.name] :
+          contains(local.help_network_objects, "${domain_path}:${object_item}")
+        ])]
+        description = try(network_group.description, local.defaults.fmc.domains.objects.network_groups.description, "")
+      } if !contains(try(keys(local.data_network_groups[domain.name].items), []), network_group.name)
     } if length(try(domain.objects.network_groups, [])) > 0
   }
-
 }
 
-resource "fmc_network_groups" "module" {
+data "fmc_network_groups" "network_groups" {
+  for_each = local.data_network_groups
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_network_groups" "network_groups" {
   for_each = local.resource_network_groups
 
-  # Mandatory
-  items = each.value.items
-
-  # Optional
-  domain = each.value.domain_name
-
-  depends_on = [
-    data.fmc_hosts.module,
-    fmc_hosts.module,
-    data.fmc_networks.module,
-    fmc_networks.module,
-    data.fmc_ranges.module,
-    fmc_ranges.module,
-    data.fmc_fqdn_objects.module,
-    fmc_fqdn_objects.module,
-  ]
-  lifecycle {
-    create_before_destroy = true
-  }
+  domain = each.key
+  items  = { for network_group in each.value : network_group.name => network_group }
 }
 
 ##########################################################
@@ -976,101 +1099,104 @@ resource "fmc_ipv6_address_pools" "module" {
 }
 
 ##########################################################
-###    Create maps for combined set of _data and _resources network objects 
+###    MAPS combine _data and _resources for a given object type
 ##########################################################
 ######
 ### map_network_objects
 ######
 
 locals {
-  map_network_objects = merge({
-    for item in flatten([
-      for domain_key, domain_value in local.resource_hosts :
-      flatten([for item_key, item_value in domain_value.items : {
-        name        = item_key
-        id          = fmc_hosts.module[domain_key].items[item_key].id
-        type        = fmc_hosts.module[domain_key].items[item_key].type
-        domain_name = domain_key
-      }])
-    ]) : item.name => item if contains(keys(item), "name")
-    },
-    {
-      for item in flatten([
-        for domain_key, domain_value in local.data_hosts :
-        flatten([for item in keys(domain_value.items) : {
-          name        = item
-          id          = data.fmc_hosts.module[domain_key].items[item].id
-          type        = data.fmc_hosts.module[domain_key].items[item].type
-          domain_name = domain_key
-        }])
-      ]) : item.name => item if contains(keys(item), "name")
-    },
-    {
-      for item in flatten([
-        for domain_key, domain_value in local.resource_networks :
-        flatten([for item_key, item_value in domain_value.items : {
-          name        = item_key
-          id          = fmc_networks.module[domain_key].items[item_key].id
-          type        = fmc_networks.module[domain_key].items[item_key].type
-          domain_name = domain_key
-        }])
-      ]) : item.name => item if contains(keys(item), "name")
-    },
-    {
-      for item in flatten([
-        for domain_key, domain_value in local.data_networks :
-        flatten([for item in keys(domain_value.items) : {
-          name        = item
-          id          = data.fmc_networks.module[domain_key].items[item].id
-          type        = data.fmc_networks.module[domain_key].items[item].type
-          domain_name = domain_key
-        }])
-      ]) : item.name => item if contains(keys(item), "name")
-    },
-    {
-      for item in flatten([
-        for domain_key, domain_value in local.resource_ranges :
-        flatten([for item_key, item_value in domain_value.items : {
-          name        = item_key
-          id          = fmc_ranges.module[domain_key].items[item_key].id
-          type        = fmc_ranges.module[domain_key].items[item_key].type
-          domain_name = domain_key
-        }])
-      ]) : item.name => item if contains(keys(item), "name")
-    },
-    {
-      for item in flatten([
-        for domain_key, domain_value in local.data_ranges :
-        flatten([for item in keys(domain_value.items) : {
-          name        = item
-          id          = data.fmc_ranges.module[domain_key].items[item].id
-          type        = data.fmc_ranges.module[domain_key].items[item].type
-          domain_name = domain_key
-        }])
-      ]) : item.name => item if contains(keys(item), "name")
-    },
-    {
-      for item in flatten([
-        for domain_key, domain_value in local.resource_fqdns :
-        flatten([for item_key, item_value in domain_value.items : {
-          name        = item_key
-          id          = fmc_fqdn_objects.module[domain_key].items[item_key].id
-          type        = fmc_fqdn_objects.module[domain_key].items[item_key].type
-          domain_name = domain_key
-        }])
-      ]) : item.name => item if contains(keys(item), "name")
-    },
-    {
-      for item in flatten([
-        for domain_key, domain_value in local.data_fqdns :
-        flatten([for item in keys(domain_value.items) : {
-          name        = item
-          id          = data.fmc_fqdn_objects.module[domain_key].items[item].id
-          type        = data.fmc_fqdn_objects.module[domain_key].items[item].type
-          domain_name = domain_key
-        }])
-      ]) : item.name => item if contains(keys(item), "name")
-    },
+  map_network_objects = merge(
+
+    # Hosts - bulk mode outputs
+    local.hosts_bulk ? merge([
+      for domain, hosts in fmc_hosts.hosts : {
+        for host_name, host_values in hosts.items : "${hosts.domain}:${host_name}" => { id = host_values.id, type = host_values.type }
+      }
+    ]...) : {},
+
+    # Hosts - individual mode outputs
+    !local.hosts_bulk ? { for key, resource in fmc_host.host : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # Hosts - data sources
+    merge([
+      for domain, hosts in data.fmc_hosts.hosts : {
+        for host_name, host_values in hosts.items : "${hosts.domain}:${host_name}" => { id = host_values.id, type = host_values.type }
+      }
+    ]...),
+
+    # Networks - bulk mode outputs
+    local.networks_bulk ? merge([
+      for domain, networks in fmc_networks.networks : {
+        for network_name, network_values in networks.items : "${networks.domain}:${network_name}" => { id = network_values.id, type = network_values.type }
+      }
+    ]...) : {},
+
+    # Networks - individual mode outputs
+    !local.networks_bulk ? { for key, resource in fmc_network.network : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # Networks - data sources
+    merge([
+      for domain, networks in data.fmc_networks.networks : {
+        for network_name, network_values in networks.items : "${networks.domain}:${network_name}" => { id = network_values.id, type = network_values.type }
+      }
+    ]...),
+
+    # Ranges - bulk mode outputs
+    local.ranges_bulk ? merge([
+      for domain, ranges in fmc_ranges.ranges : {
+        for range_name, range_values in ranges.items : "${ranges.domain}:${range_name}" => { id = range_values.id, type = range_values.type }
+      }
+    ]...) : {},
+
+    # Ranges - individual mode outputs
+    !local.ranges_bulk ? { for key, resource in fmc_range.range : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # Ranges - data sources
+    merge([
+      for domain, ranges in data.fmc_ranges.ranges : {
+        for range_name, range_values in ranges.items : "${ranges.domain}:${range_name}" => { id = range_values.id, type = range_values.type }
+      }
+    ]...),
+
+    # FQDNs - bulk mode outputs
+    local.fqdns_bulk ? merge([
+      for domain, fqdns in fmc_fqdns.fqdns : {
+        for fqdn_name, fqdn_values in fqdns.items : "${fqdns.domain}:${fqdn_name}" => { id = fqdn_values.id, type = fqdn_values.type }
+      }
+    ]...) : {},
+
+    # FQDNs - individual mode outputs
+    !local.fqdns_bulk ? { for key, resource in fmc_fqdn.fqdn : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # FQDNs - data sources
+    merge([
+      for domain, fqdns in data.fmc_fqdns.fqdns : {
+        for fqdn_name, fqdn_values in fqdns.items : "${fqdns.domain}:${fqdn_name}" => { id = fqdn_values.id, type = fqdn_values.type }
+      }
+    ]...),
+  )
+}
+
+######
+### map_network_group_objects
+######
+locals {
+  map_network_group_objects = merge(
+
+    # Network Groups - bulk mode outputs
+    merge([
+      for domain, network_groups in fmc_network_groups.network_groups : {
+        for network_group_name, network_group_values in network_groups.items : network_group_name => { id = network_group_values.id, type = network_group_values.type }
+      }
+    ]...),
+
+    # Network Groups - data sources
+    merge([
+      for domain, network_groups in data.fmc_network_groups.network_groups : {
+        for network_group_name, network_group_values in network_groups.items : network_group_name => { id = network_group_values.id, type = network_group_values.type }
+      }
+    ]...),
   )
 }
 
@@ -1184,24 +1310,8 @@ locals {
 
 }
 
-######
-### map_network_group_objects
-######
-locals {
-  map_network_group_objects = merge({
-    for item in flatten([
-      for domain_key, domain_value in local.resource_network_groups :
-      flatten([for item_key, item_value in domain_value.items : {
-        name        = item_key
-        id          = try(fmc_network_groups.module[domain_key].items[item_key].id, null)
-        type        = "NetworkGroup"
-        domain_name = domain_key
-      }])
-    ]) : item.name => item if contains(keys(item), "name")
-    },
-  )
 
-}
+
 ######
 ### map_urls - urls data + resource
 ######
