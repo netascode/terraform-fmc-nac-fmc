@@ -69,7 +69,6 @@ module "fmc" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.8.0 |
-| <a name="requirement_fmc"></a> [fmc](#requirement\_fmc) | 2.0.0-rc7 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.3.0 |
 | <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 1.0.2 |
 ## Inputs
@@ -91,127 +90,145 @@ module "fmc" {
 
 | Name | Type |
 |------|------|
-| [fmc_access_control_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/access_control_policy) | resource |
-| [fmc_application_filters.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/application_filters) | resource |
-| [fmc_bfd_template.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/bfd_template) | resource |
-| [fmc_device.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/device) | resource |
-| [fmc_device_bfd.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/device_bfd) | resource |
-| [fmc_device_bgp.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/device_bgp) | resource |
-| [fmc_device_bgp_general_settings.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/device_bgp_general_settings) | resource |
-| [fmc_device_cluster.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/device_cluster) | resource |
-| [fmc_device_deploy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/device_deploy) | resource |
-| [fmc_device_etherchannel_interface.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/device_etherchannel_interface) | resource |
-| [fmc_device_ha_pair.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/device_ha_pair) | resource |
-| [fmc_device_ha_pair_monitoring.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/device_ha_pair_monitoring) | resource |
-| [fmc_device_ipv4_static_route.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/device_ipv4_static_route) | resource |
-| [fmc_device_ipv6_static_route.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/device_ipv6_static_route) | resource |
-| [fmc_device_physical_interface.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/device_physical_interface) | resource |
-| [fmc_device_subinterface.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/device_subinterface) | resource |
-| [fmc_device_vrf.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/device_vrf) | resource |
-| [fmc_device_vrf_ipv4_static_route.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/device_vrf_ipv4_static_route) | resource |
-| [fmc_device_vrf_ipv6_static_route.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/device_vrf_ipv6_static_route) | resource |
-| [fmc_dynamic_objects.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/dynamic_objects) | resource |
-| [fmc_extended_acl.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/extended_acl) | resource |
-| [fmc_file_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/file_policy) | resource |
-| [fmc_fqdn_objects.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/fqdn_objects) | resource |
-| [fmc_ftd_nat_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ftd_nat_policy) | resource |
-| [fmc_ftd_platform_settings.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ftd_platform_settings) | resource |
-| [fmc_ftd_platform_settings_banner.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ftd_platform_settings_banner) | resource |
-| [fmc_ftd_platform_settings_http_access.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ftd_platform_settings_http_access) | resource |
-| [fmc_ftd_platform_settings_icmp_access.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ftd_platform_settings_icmp_access) | resource |
-| [fmc_ftd_platform_settings_snmp.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ftd_platform_settings_snmp) | resource |
-| [fmc_ftd_platform_settings_ssh_access.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ftd_platform_settings_ssh_access) | resource |
-| [fmc_ftd_platform_settings_syslog_email_setup.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ftd_platform_settings_syslog_email_setup) | resource |
-| [fmc_ftd_platform_settings_syslog_event_list.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ftd_platform_settings_syslog_event_list) | resource |
-| [fmc_ftd_platform_settings_syslog_logging_destination.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ftd_platform_settings_syslog_logging_destination) | resource |
-| [fmc_ftd_platform_settings_syslog_logging_setup.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ftd_platform_settings_syslog_logging_setup) | resource |
-| [fmc_ftd_platform_settings_syslog_rate_limit.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ftd_platform_settings_syslog_rate_limit) | resource |
-| [fmc_ftd_platform_settings_syslog_servers.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ftd_platform_settings_syslog_servers) | resource |
-| [fmc_ftd_platform_settings_syslog_settings.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ftd_platform_settings_syslog_settings) | resource |
-| [fmc_ftd_platform_settings_syslog_settings_syslog_id.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ftd_platform_settings_syslog_settings_syslog_id) | resource |
-| [fmc_ftd_platform_settings_time_synchronization.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ftd_platform_settings_time_synchronization) | resource |
-| [fmc_health_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/health_policy) | resource |
-| [fmc_host.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/host) | resource |
-| [fmc_hosts.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/hosts) | resource |
-| [fmc_icmpv4_objects.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/icmpv4_objects) | resource |
-| [fmc_intrusion_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/intrusion_policy) | resource |
-| [fmc_ipv4_address_pools.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ipv4_address_pools) | resource |
-| [fmc_ipv6_address_pools.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ipv6_address_pools) | resource |
-| [fmc_network_analysis_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/network_analysis_policy) | resource |
-| [fmc_network_groups.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/network_groups) | resource |
-| [fmc_networks.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/networks) | resource |
-| [fmc_policy_assignment.access_control_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/policy_assignment) | resource |
-| [fmc_policy_assignment.ftd_nat_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/policy_assignment) | resource |
-| [fmc_policy_assignment.ftd_platform_settings](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/policy_assignment) | resource |
-| [fmc_policy_assignment.health_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/policy_assignment) | resource |
-| [fmc_port_groups.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/port_groups) | resource |
-| [fmc_ports.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ports) | resource |
-| [fmc_prefilter_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/prefilter_policy) | resource |
-| [fmc_ranges.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/ranges) | resource |
-| [fmc_security_zones.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/security_zones) | resource |
-| [fmc_sgts.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/sgts) | resource |
-| [fmc_smart_license.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/smart_license) | resource |
-| [fmc_standard_acl.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/standard_acl) | resource |
-| [fmc_time_ranges.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/time_ranges) | resource |
-| [fmc_tunnel_zones.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/tunnel_zones) | resource |
-| [fmc_url_groups.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/url_groups) | resource |
-| [fmc_urls.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/urls) | resource |
-| [fmc_vlan_tag_groups.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/vlan_tag_groups) | resource |
-| [fmc_vlan_tags.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/resources/vlan_tags) | resource |
+| fmc_access_control_policy.access_control_policy | resource |
+| fmc_application_filter.application_filter | resource |
+| fmc_application_filters.application_filters | resource |
+| fmc_bfd_template.bfd_template | resource |
+| fmc_device.device | resource |
+| fmc_device_bfd.device_bfd | resource |
+| fmc_device_bgp.device_bgp | resource |
+| fmc_device_bgp_general_settings.device_bgp_general_settings | resource |
+| fmc_device_cluster.device_cluster | resource |
+| fmc_device_deploy.device_deploy | resource |
+| fmc_device_etherchannel_interface.device_etherchannel_interface | resource |
+| fmc_device_ha_pair.device_ha_pair | resource |
+| fmc_device_ha_pair_monitoring.device_ha_pair_monitoring | resource |
+| fmc_device_ipv4_static_route.device_ipv4_static_route | resource |
+| fmc_device_ipv6_static_route.device_ipv6_static_route | resource |
+| fmc_device_physical_interface.device_physical_interface | resource |
+| fmc_device_subinterface.device_subinterface | resource |
+| fmc_device_vrf.device_vrf | resource |
+| fmc_device_vrf_ipv4_static_route.device_vrf_ipv4_static_route | resource |
+| fmc_device_vrf_ipv6_static_route.device_vrf_ipv6_static_route | resource |
+| fmc_dynamic_objects.dynamic_objects | resource |
+| fmc_extended_access_list.extended_access_list | resource |
+| fmc_file_policy.file_policy | resource |
+| fmc_fqdn.fqdn | resource |
+| fmc_fqdns.fqdns | resource |
+| fmc_ftd_nat_policy.ftd_nat_policy | resource |
+| fmc_ftd_platform_settings.ftd_platform_settings | resource |
+| fmc_ftd_platform_settings_banner.ftd_platform_settings_banner | resource |
+| fmc_ftd_platform_settings_http_access.ftd_platform_settings_http_access | resource |
+| fmc_ftd_platform_settings_icmp_access.ftd_platform_settings_icmp_access | resource |
+| fmc_ftd_platform_settings_snmp.ftd_platform_settings_snmp | resource |
+| fmc_ftd_platform_settings_ssh_access.ftd_platform_settings_ssh_access | resource |
+| fmc_ftd_platform_settings_syslog_email_setup.ftd_platform_settings_syslog_email_setup | resource |
+| fmc_ftd_platform_settings_syslog_event_list.ftd_platform_settings_syslog_event_list | resource |
+| fmc_ftd_platform_settings_syslog_logging_destination.ftd_platform_settings_syslog_logging_destination | resource |
+| fmc_ftd_platform_settings_syslog_logging_setup.ftd_platform_settings_syslog_logging_setup | resource |
+| fmc_ftd_platform_settings_syslog_rate_limit.ftd_platform_settings_syslog_rate_limit | resource |
+| fmc_ftd_platform_settings_syslog_servers.ftd_platform_settings_syslog_servers | resource |
+| fmc_ftd_platform_settings_syslog_settings.ftd_platform_settings_syslog_settings | resource |
+| fmc_ftd_platform_settings_syslog_settings_syslog_id.ftd_platform_settings_syslog_settings_syslog_id | resource |
+| fmc_ftd_platform_settings_time_synchronization.ftd_platform_settings_time_synchronization | resource |
+| fmc_health_policy.health_policy | resource |
+| fmc_host.host | resource |
+| fmc_hosts.hosts | resource |
+| fmc_icmpv4.icmpv4 | resource |
+| fmc_icmpv4s.icmpv4s | resource |
+| fmc_intrusion_policy.intrusion_policy | resource |
+| fmc_ipv4_address_pool.ipv4_address_pool | resource |
+| fmc_ipv4_address_pools.ipv4_address_pools | resource |
+| fmc_ipv6_address_pool.ipv6_address_pool | resource |
+| fmc_ipv6_address_pools.ipv6_address_pools | resource |
+| fmc_network.network | resource |
+| fmc_network_analysis_policy.network_analysis_policy | resource |
+| fmc_network_groups.network_groups | resource |
+| fmc_networks.networks | resource |
+| fmc_policy_assignment.access_control_policy | resource |
+| fmc_policy_assignment.ftd_nat_policy | resource |
+| fmc_policy_assignment.ftd_platform_settings | resource |
+| fmc_policy_assignment.health_policy | resource |
+| fmc_port.port | resource |
+| fmc_port_group.port_group | resource |
+| fmc_port_groups.port_groups | resource |
+| fmc_ports.ports | resource |
+| fmc_prefilter_policy.prefilter_policy | resource |
+| fmc_range.range | resource |
+| fmc_ranges.ranges | resource |
+| fmc_security_zone.security_zone | resource |
+| fmc_security_zones.security_zones | resource |
+| fmc_sgt.sgt | resource |
+| fmc_sgts.sgts | resource |
+| fmc_smart_license.smart_license | resource |
+| fmc_standard_access_list.standard_access_list | resource |
+| fmc_time_range.time_range | resource |
+| fmc_time_ranges.time_ranges | resource |
+| fmc_tunnel_zone.tunnel_zone | resource |
+| fmc_tunnel_zones.tunnel_zones | resource |
+| fmc_url.url | resource |
+| fmc_url_group.url_group | resource |
+| fmc_url_groups.url_groups | resource |
+| fmc_urls.urls | resource |
+| fmc_vlan_tag.vlan_tag | resource |
+| fmc_vlan_tag_group.vlan_tag_group | resource |
+| fmc_vlan_tag_groups.vlan_tag_groups | resource |
+| fmc_vlan_tags.vlan_tags | resource |
 | [local_sensitive_file.defaults](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
 | [terraform_data.validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
-| [fmc_access_control_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/access_control_policy) | data source |
-| [fmc_application_business_relevances.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/application_business_relevances) | data source |
-| [fmc_application_categories.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/application_categories) | data source |
-| [fmc_application_filters.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/application_filters) | data source |
-| [fmc_application_risks.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/application_risks) | data source |
-| [fmc_application_tags.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/application_tags) | data source |
-| [fmc_application_types.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/application_types) | data source |
-| [fmc_applications.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/applications) | data source |
-| [fmc_bfd_template.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/bfd_template) | data source |
-| [fmc_device.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/device) | data source |
-| [fmc_device_bfd.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/device_bfd) | data source |
-| [fmc_device_bgp_general_settings.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/device_bgp_general_settings) | data source |
-| [fmc_device_cluster.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/device_cluster) | data source |
-| [fmc_device_etherchannel_interface.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/device_etherchannel_interface) | data source |
-| [fmc_device_ha_pair.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/device_ha_pair) | data source |
-| [fmc_device_physical_interface.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/device_physical_interface) | data source |
-| [fmc_device_subinterface.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/device_subinterface) | data source |
-| [fmc_device_vrf.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/device_vrf) | data source |
-| [fmc_dynamic_objects.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/dynamic_objects) | data source |
-| [fmc_endpoint_device_types.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/endpoint_device_types) | data source |
-| [fmc_extended_acl.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/extended_acl) | data source |
-| [fmc_file_categories.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/file_categories) | data source |
-| [fmc_file_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/file_policy) | data source |
-| [fmc_file_types.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/file_types) | data source |
-| [fmc_fqdn_objects.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/fqdn_objects) | data source |
-| [fmc_ftd_nat_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/ftd_nat_policy) | data source |
-| [fmc_ftd_platform_settings.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/ftd_platform_settings) | data source |
-| [fmc_health_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/health_policy) | data source |
-| [fmc_hosts.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/hosts) | data source |
-| [fmc_icmpv4_objects.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/icmpv4_objects) | data source |
-| [fmc_intrusion_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/intrusion_policy) | data source |
-| [fmc_ipv4_address_pools.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/ipv4_address_pools) | data source |
-| [fmc_ipv6_address_pools.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/ipv6_address_pools) | data source |
-| [fmc_ise_sgts.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/ise_sgts) | data source |
-| [fmc_network_analysis_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/network_analysis_policy) | data source |
-| [fmc_networks.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/networks) | data source |
-| [fmc_port_groups.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/port_groups) | data source |
-| [fmc_ports.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/ports) | data source |
-| [fmc_prefilter_policy.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/prefilter_policy) | data source |
-| [fmc_ranges.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/ranges) | data source |
-| [fmc_security_zones.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/security_zones) | data source |
-| [fmc_sgts.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/sgts) | data source |
-| [fmc_snmp_alerts.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/snmp_alerts) | data source |
-| [fmc_standard_acl.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/standard_acl) | data source |
-| [fmc_syslog_alerts.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/syslog_alerts) | data source |
-| [fmc_time_ranges.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/time_ranges) | data source |
-| [fmc_tunnel_zones.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/tunnel_zones) | data source |
-| [fmc_url_groups.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/url_groups) | data source |
-| [fmc_urls.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/urls) | data source |
-| [fmc_variable_set.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/variable_set) | data source |
-| [fmc_vlan_tag_groups.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/vlan_tag_groups) | data source |
-| [fmc_vlan_tags.module](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc7/docs/data-sources/vlan_tags) | data source |
+| fmc_access_control_policy.access_control_policy | data source |
+| fmc_application_business_relevances.application_business_relevances | data source |
+| fmc_application_categories.application_categories | data source |
+| fmc_application_filters.application_filters | data source |
+| fmc_application_risks.application_risks | data source |
+| fmc_application_tags.application_tags | data source |
+| fmc_application_types.application_types | data source |
+| fmc_applications.applications | data source |
+| fmc_bfd_template.bfd_template | data source |
+| fmc_device.device | data source |
+| fmc_device_bfd.device_bfd | data source |
+| fmc_device_bgp_general_settings.device_bgp_general_settings | data source |
+| fmc_device_cluster.device_cluster | data source |
+| fmc_device_etherchannel_interface.device_etherchannel_interface | data source |
+| fmc_device_ha_pair.device_ha_pair | data source |
+| fmc_device_physical_interface.device_physical_interface | data source |
+| fmc_device_subinterface.device_subinterface | data source |
+| fmc_device_vrf.device_vrf | data source |
+| fmc_dynamic_objects.dynamic_objects | data source |
+| fmc_endpoint_device_types.endpoint_device_types | data source |
+| fmc_extended_access_list.extended_access_list | data source |
+| fmc_file_categories.file_categories | data source |
+| fmc_file_policy.file_policy | data source |
+| fmc_file_types.file_types | data source |
+| fmc_fqdns.fqdns | data source |
+| fmc_ftd_nat_policy.ftd_nat_policy | data source |
+| fmc_ftd_platform_settings.ftd_platform_settings | data source |
+| fmc_health_policy.health_policy | data source |
+| fmc_hosts.hosts | data source |
+| fmc_icmpv4s.icmpv4s | data source |
+| fmc_intrusion_policy.intrusion_policy | data source |
+| fmc_ipv4_address_pools.ipv4_address_pools | data source |
+| fmc_ipv6_address_pools.ipv6_address_pools | data source |
+| fmc_ise_sgts.ise_sgts | data source |
+| fmc_network_analysis_policy.network_analysis_policy | data source |
+| fmc_network_groups.network_groups | data source |
+| fmc_networks.networks | data source |
+| fmc_port_groups.port_groups | data source |
+| fmc_ports.ports | data source |
+| fmc_prefilter_policy.prefilter_policy | data source |
+| fmc_ranges.ranges | data source |
+| fmc_security_zones.security_zones | data source |
+| fmc_sgts.sgts | data source |
+| fmc_snmp_alerts.snmp_alerts | data source |
+| fmc_standard_access_list.standard_access_list | data source |
+| fmc_syslog_alerts.syslog_alerts | data source |
+| fmc_time_ranges.time_ranges | data source |
+| fmc_tunnel_zones.tunnel_zones | data source |
+| fmc_url_groups.url_groups | data source |
+| fmc_urls.urls | data source |
+| fmc_variable_set.variable_set | data source |
+| fmc_vlan_tag_groups.vlan_tag_groups | data source |
+| fmc_vlan_tags.vlan_tags | data source |
 ## Modules
 
 No modules.
