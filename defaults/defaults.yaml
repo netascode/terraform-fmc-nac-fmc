@@ -106,9 +106,9 @@ defaults:
           log_begin: false
           log_end: false
           send_events_to_fmc: false
-          enable_syslog: false
+          send_syslog: false
           access_rules:
-            enable_syslog: false
+            send_syslog: false
             enabled: true
         ftd_nat_policies:
           ftd_auto_nat_rules:

@@ -19,7 +19,7 @@ locals {
         for device in try(domain.devices.devices, []) : {
           domain           = domain.name
           name             = device.name
-          host             = device.host
+          host_name        = device.host
           licenses         = device.licenses
           registration_key = device.registration_key
 
@@ -66,7 +66,7 @@ resource "fmc_device" "device" {
 
   domain                   = each.value.domain
   name                     = each.value.name
-  host                     = each.value.host
+  host_name                = each.value.host_name
   registration_key         = each.value.registration_key
   access_control_policy_id = each.value.access_control_policy_id
   licenses                 = each.value.licenses
@@ -353,8 +353,8 @@ locals {
               auto_negotiation             = try(physical_interface.enabled, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.enabled, null)
               description                  = try(physical_interface.description, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.description, null)
               duplex                       = try(physical_interface.duplex, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.duplex, null)
-              enable_anti_spoofing         = try(physical_interface.enable_anti_spoofing, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.enable_anti_spoofing, null)
-              enable_sgt_propagate         = try(physical_interface.enable_sgt_propagate, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.enable_sgt_propagate, null)
+              anti_spoofing                = try(physical_interface.anti_spoofing, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.anti_spoofing, null)
+              sgt_propagate                = try(physical_interface.sgt_propagate, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.sgt_propagate, null)
               enabled                      = try(physical_interface.enabled, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.enabled, null)
               fec_mode                     = try(physical_interface.fec_mode, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.fec_mode, null)
               flow_control_send            = try(physical_interface.flow_control_send, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.flow_control_send, false) ? "ON" : null
@@ -475,8 +475,8 @@ resource "fmc_device_physical_interface" "device_physical_interface" {
   auto_negotiation                      = each.value.auto_negotiation
   description                           = each.value.description
   duplex                                = each.value.duplex
-  enable_anti_spoofing                  = each.value.enable_anti_spoofing
-  enable_sgt_propagate                  = each.value.enable_sgt_propagate
+  anti_spoofing                         = each.value.anti_spoofing
+  sgt_propagate                         = each.value.sgt_propagate
   enabled                               = each.value.enabled
   fec_mode                              = each.value.fec_mode
   flow_control_send                     = each.value.flow_control_send
@@ -577,8 +577,8 @@ locals {
               auto_negotiation                      = try(etherchannel_interface.enabled, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.enabled, null)
               description                           = try(etherchannel_interface.description, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.description, null)
               duplex                                = try(etherchannel_interface.duplex, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.duplex, null)
-              enable_anti_spoofing                  = try(etherchannel_interface.enable_anti_spoofing, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.enable_anti_spoofing, null)
-              enable_sgt_propagate                  = try(etherchannel_interface.enable_sgt_propagate, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.enable_sgt_propagate, null)
+              anti_spoofing                         = try(etherchannel_interface.anti_spoofing, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.anti_spoofing, null)
+              sgt_propagate                         = try(etherchannel_interface.sgt_propagate, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.sgt_propagate, null)
               enabled                               = try(etherchannel_interface.enabled, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.enabled, null)
               fec_mode                              = try(etherchannel_interface.fec_mode, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.fec_mode, null)
               flow_control_send                     = try(etherchannel_interface.flow_control_send, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.flow_control_send, null)
@@ -692,8 +692,8 @@ resource "fmc_device_etherchannel_interface" "device_etherchannel_interface" {
   auto_negotiation                      = each.value.auto_negotiation
   description                           = each.value.description
   duplex                                = each.value.duplex
-  enable_anti_spoofing                  = each.value.enable_anti_spoofing
-  enable_sgt_propagate                  = each.value.enable_sgt_propagate
+  anti_spoofing                         = each.value.anti_spoofing
+  sgt_propagate                         = each.value.sgt_propagate
   enabled                               = each.value.enabled
   fec_mode                              = each.value.fec_mode
   flow_control_send                     = each.value.flow_control_send
@@ -793,8 +793,8 @@ locals {
                 mac_address = arp_table_entry.mac_address
               }]
               description                  = try(sub_interface.description, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.description, null)
-              enable_anti_spoofing         = try(sub_interface.enable_anti_spoofing, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.enable_anti_spoofing, null)
-              enable_sgt_propagate         = try(sub_interface.enable_sgt_propagate, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.enable_sgt_propagate, null)
+              anti_spoofing                = try(sub_interface.anti_spoofing, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.anti_spoofing, null)
+              sgt_propagate                = try(sub_interface.sgt_propagate, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.sgt_propagate, null)
               enabled                      = try(sub_interface.enabled, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.enabled, null)
               ip_based_monitoring          = try(sub_interface.ip_based_monitoring, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ip_based_monitoring, null)
               ip_based_monitoring_next_hop = try(sub_interface.ip_based_monitoring_next_hop, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ip_based_monitoring_next_hop, null)
@@ -886,8 +886,8 @@ resource "fmc_device_subinterface" "device_subinterface" {
   allow_full_fragment_reassembly        = each.value.allow_full_fragment_reassembly
   arp_table_entries                     = each.value.arp_table_entries
   description                           = each.value.description
-  enable_anti_spoofing                  = each.value.enable_anti_spoofing
-  enable_sgt_propagate                  = each.value.enable_sgt_propagate
+  anti_spoofing                         = each.value.anti_spoofing
+  sgt_propagate                         = each.value.sgt_propagate
   enabled                               = each.value.enabled
   ip_based_monitoring                   = each.value.ip_based_monitoring
   ip_based_monitoring_next_hop          = each.value.ip_based_monitoring_next_hop
