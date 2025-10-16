@@ -1,6 +1,8 @@
 ---
 defaults:
   fmc:
+    module_configuration:
+      bulk: false
     domains:
       devices:
         devices:
@@ -19,8 +21,12 @@ defaults:
               duplex: "AUTO"
               mode: "NONE"
               flow_control_send: false
+              arp_table_entries:
+                enabled: true
             sub_interfaces:
               mode: "NONE"
+              arp_table_entries:
+                enabled: true
             etherchannel_interfaces:
               mode: "NONE"
         clusters:
@@ -92,7 +98,10 @@ defaults:
       policies:
         prefilter_policies:
           default_action: ANALYZE_TUNNELS
-        access_policies:
+          rules:
+            enabled: true
+            bidirectional: false
+        access_control_policies:
           default_action: "BLOCK"
           log_begin: false
           log_end: false
@@ -141,14 +150,44 @@ defaults:
             enabled: true
             alert_configs:
               enabled: true
+        intrusion_policies:
+          inspection_mode: "PREVENTION"
       objects:
+        hosts:
+          overridable: false
+        networks:
+          overridable: false
+        ranges:
+          overridable: false
         fqdns:
           dns_resolution: "IPV4_AND_IPV6"
+          overridable: false
+        network_groups:
+          overridable: false
+        ports:
+          overridable: false
+        port_groups:
+          overridable: false
         dynamic_objects:
           object_type: "IP"
+        urls:
+          overridable: false
+        url_groups:
+          overridable: false
+        vlan_tags:
+          overridable: false
+        vlan_tag_groups:
+          overridable: false
+        ipv4_address_pools:
+          overridable: false
+        ipv6_address_pools:
+          overridable: false
+        extended_access_lists:
+          entries:
+            logging: "DEFAULT"
+            log_level: "INFORMATIONAL"
+            log_interval: 300
         security_zones:
           interface_type: "ROUTED"
-        extended_access_lists:
-            logging: "DISABLED"
-            log_interval: 300
-            log_level: "INFORMATIONAL"
+        bfd_templates:
+          echo: false
