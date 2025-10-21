@@ -8,6 +8,32 @@ defaults:
         devices:
           deploy_ignore_warning: false
           deploy_force: false
+          object_group_search: true
+          prohibit_packet_transfer: true
+          snort_engine: SNORT3
+          bgp_general_settings:
+            aggregate_timer: 30
+            as_number_in_path_attribute: 0
+            compare_med_from_different_neighbors: false
+            compare_router_id_in_path: false
+            default_local_preference: 100
+            enforce_first_peer_as: true
+            graceful_restart: false
+            graceful_restart_restart_time: 120
+            graceful_restart_stale_path_time: 360
+            hold_time: 180
+            keepalive_interval: 60
+            log_neighbor_changes: true
+            min_hold_time: 0
+            missing_med_as_best: false
+            next_hop_address_tracking: true
+            next_hop_delay_interval: 5
+            pick_best_med: false
+            reset_session_upon_failover: true
+            router_id: AUTOMATIC
+            scanning_interval: 60
+            tcp_path_mtu_discovery: true
+            use_dot_notation: false
           vrfs:
             bgp:
               ipv4_external_distance: 20
@@ -15,25 +41,39 @@ defaults:
               ipv4_number_of_ibgp_paths: 1
               ipv4_internal_distance: 200
               ipv4_local_distance: 200
+              ipv4_auto_summary: false
+              ipv4_redistribute_ibgp_into_igp: false
+              ipv4_suppress_inactive_routes: true
+              ipv4_synchronization: false
             physical_interfaces:
               enabled: true
               speed: "AUTO"
               duplex: "AUTO"
               mode: "NONE"
               flow_control_send: false
+              ip_based_monitoring: false
+              mtu: 1500
+              nve_only: false
+              priority: 0
+              sgt_propagate: false
               arp_table_entries:
                 enabled: true
             sub_interfaces:
               mode: "NONE"
+              ip_based_monitoring: false
+              mtu: 1500
+              nve_only: false
+              priority: 0
+              sgt_propagate: false
               arp_table_entries:
                 enabled: true
             etherchannel_interfaces:
               mode: "NONE"
-        clusters:
-          ccl_prefix: 10.10.3.0/27
-          vni_prefix: 10.10.4.0/27
         ha_pairs:
+          encryption_enabled: false
           failed_interfaces_limit: 1
+          ha_link_use_ipv6: false
+          state_link_use_ipv6: false
         ftd_platform_settings:
           description: " "
           http_access:
@@ -103,23 +143,21 @@ defaults:
             bidirectional: false
         access_control_policies:
           default_action: "BLOCK"
-          log_begin: false
-          log_end: false
           send_events_to_fmc: false
           send_syslog: false
           access_rules:
             send_syslog: false
             enabled: true
         ftd_nat_policies:
-          ftd_auto_nat_rules:
+          auto_nat_rules:
             fall_through: false
             ipv6: false
             net_to_net: false
             no_proxy_arp: false
-            perform_route_lookup: false
+            route_lookup: false
             translate_dns: false
             translated_network_is_destination_interface: true
-          ftd_manual_nat_rules:
+          manual_nat_rules:
             enabled: true
             fall_through: false
             interface_in_original_destination: false
@@ -127,7 +165,7 @@ defaults:
             ipv6: false
             net_to_net: false
             no_proxy_arp: false
-            perform_route_lookup: false
+            route_lookup: false
             translate_dns: false
             unidirectional: false
         file_policies:
@@ -140,7 +178,7 @@ defaults:
           inspect_archives: false
           threat_score: DISABLED
         network_analysis_policies:
-          snort_engine: "SNORT2"
+          inspection_mode: "PREVENTION"
         health_policies:
           health_module_run_time_interval: 5
           metric_collection_interval: 1
@@ -178,6 +216,8 @@ defaults:
           overridable: false
         vlan_tag_groups:
           overridable: false
+        icmpv4s:
+          overridable: false
         ipv4_address_pools:
           overridable: false
         ipv6_address_pools:
@@ -191,3 +231,4 @@ defaults:
           interface_type: "ROUTED"
         bfd_templates:
           echo: false
+          authentication_type: "NONE"

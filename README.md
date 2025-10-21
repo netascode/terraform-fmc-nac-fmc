@@ -137,6 +137,7 @@ module "fmc" {
 | fmc_icmpv4.icmpv4 | resource |
 | fmc_icmpv4s.icmpv4s | resource |
 | fmc_intrusion_policy.intrusion_policy | resource |
+| fmc_intrusion_policy.intrusion_policy_l2 | resource |
 | fmc_ipv4_address_pool.ipv4_address_pool | resource |
 | fmc_ipv4_address_pools.ipv4_address_pools | resource |
 | fmc_ipv6_address_pool.ipv6_address_pool | resource |

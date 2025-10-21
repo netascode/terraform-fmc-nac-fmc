@@ -18,7 +18,7 @@ locals {
       for host in try(domain.objects.hosts, []) : {
         domain      = domain.name
         name        = host.name
-        ip          = host.ip
+        ip          = lower(host.ip)
         description = try(host.description, local.defaults.fmc.domains.objects.hosts.description, null)
         overridable = try(host.overridable, local.defaults.fmc.domains.objects.hosts.overridable, null)
       } if !contains(try(keys(local.data_hosts[domain.name].items), []), host.name)
@@ -84,7 +84,7 @@ locals {
       for network in try(domain.objects.networks, []) : {
         domain      = domain.name
         name        = network.name
-        prefix      = network.prefix
+        prefix      = lower(network.prefix)
         description = try(network.description, local.defaults.fmc.domains.objects.networks.description, null)
         overridable = try(network.overridable, local.defaults.fmc.domains.objects.networks.overridable, null)
       } if !contains(try(keys(local.data_networks[domain.name].items), []), network.name)
@@ -346,7 +346,7 @@ locals {
         port        = try(port.port, null)
         description = try(port.description, local.defaults.fmc.domains.objects.ports.description, null)
         overridable = try(port.overridable, local.defaults.fmc.domains.objects.ports.overridable, null)
-      } if !contains(try(keys(local.data_icmpv4s[domain.name].items), []), port.name)
+      } if !contains(try(keys(local.data_ports[domain.name].items), []), port.name)
     } if length(try(domain.objects.ports, [])) > 0
   }
 
@@ -1394,9 +1394,9 @@ locals {
             }]
           }]
           description = try(standard_access_list.description, local.defaults.fmc.domains.objects.standard_access_lists.description, null)
-        }
+        } if !contains(try(keys(local.data_standard_access_list), {}), "${domain.name}:${standard_access_list.name}")
       ]
-    ]) : "${item.domain}:${item.name}" => item if !contains(try(keys(local.data_standard_access_list), {}), "${item.domain}:${item.name}")
+    ]) : "${item.domain}:${item.name}" => item
   }
 }
 
@@ -1522,9 +1522,9 @@ locals {
               )
             }]
           }]
-        }
+        } if !contains(try(keys(local.data_extended_access_list), {}), "${domain.name}:${extended_access_list.name}")
       ]
-    ]) : "${item.domain}:${item.name}" => item if contains(keys(item), "name") && !contains(try(keys(local.data_extended_access_list), {}), "${item.domain}:${item.name}")
+    ]) : "${item.domain}:${item.name}" => item
   }
 }
 
@@ -1571,11 +1571,11 @@ locals {
           multiplier                         = try(bfd_template.multiplier, null)
           minimum_transmit                   = try(bfd_template.minimum_transmit, null)
           minimum_receive                    = try(bfd_template.minimum_receive, null)
-          authentication_type                = try(bfd_template.authentication_type, null)
+          authentication_type                = try(bfd_template.authentication_type, local.defaults.fmc.domains.objects.bfd_templates.authentication_type, null)
           authentication_password            = try(bfd_template.authentication_password, null)
           authentication_password_encryption = try(bfd_template.authentication_password_encryption, null)
           authentication_key_id              = try(bfd_template.authentication_key_id, null)
-        }
+        } if !contains(try(keys(local.data_bfd_template), {}), "${domain.name}:${bfd_template.name}")
       ]
     ]) : "${item.domain}:${item.name}" => item
   }

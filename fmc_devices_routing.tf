@@ -161,6 +161,7 @@ data "fmc_device_bfd" "device_bfd" {
 resource "fmc_device_bfd" "device_bfd" {
   for_each = local.resource_device_bfd
 
+  domain                     = each.value.domain
   device_id                  = each.value.device_id
   interface_logical_name     = each.value.interface_logical_name
   interface_id               = each.value.interface_id
@@ -545,28 +546,28 @@ locals {
           device_id   = local.map_devices["${domain.name}:${device.name}"].id
           as_number   = device.bgp_general_settings.as_number
 
-          aggregate_timer                      = try(device.bgp_general_settings.aggregate_timer, null)
-          as_number_in_path_attribute          = try(device.bgp_general_settings.as_number_in_path_attribute, null)
-          compare_med_from_different_neighbors = try(device.bgp_general_settings.compare_med_from_different_neighbors, null)
-          compare_router_id_in_path            = try(device.bgp_general_settings.compare_router_id_in_path, null)
-          default_local_preference             = try(device.bgp_general_settings.default_local_preference, null)
-          enforce_first_peer_as                = try(device.bgp_general_settings.enforce_first_peer_as, null)
-          graceful_restart                     = try(device.bgp_general_settings.graceful_restart, null)
-          graceful_restart_restart_time        = try(device.bgp_general_settings.graceful_restart_restart_time, null)
-          graceful_restart_stale_path_time     = try(device.bgp_general_settings.graceful_restart_stale_path_time, null)
-          hold_time                            = try(device.bgp_general_settings.hold_time, null)
-          keepalive_interval                   = try(device.bgp_general_settings.keepalive_interval, null)
-          log_neighbor_changes                 = try(device.bgp_general_settings.log_neighbor_changes, null)
-          min_hold_time                        = try(device.bgp_general_settings.min_hold_time, null)
-          missing_med_as_best                  = try(device.bgp_general_settings.missing_med_as_best, null)
-          next_hop_address_tracking            = try(device.bgp_general_settings.next_hop_address_tracking, null)
-          next_hop_delay_interval              = try(device.bgp_general_settings.next_hop_delay_interval, null)
-          pick_best_med                        = try(device.bgp_general_settings.pick_best_med, null)
-          reset_session_upon_failover          = try(device.bgp_general_settings.reset_session_upon_failover, null)
-          router_id                            = try(device.bgp_general_settings.router_id, null)
-          scanning_interval                    = try(device.bgp_general_settings.scanning_interval, null)
-          tcp_path_mtu_discovery               = try(device.bgp_general_settings.tcp_path_mtu_discovery, null)
-          use_dot_notation                     = try(device.bgp_general_settings.use_dot_notation, null)
+          aggregate_timer                      = try(device.bgp_general_settings.aggregate_timer, local.defaults.fmc.domains.devices.devices.bgp_general_settings.aggregate_timer, null)
+          as_number_in_path_attribute          = try(device.bgp_general_settings.as_number_in_path_attribute, local.defaults.fmc.domains.devices.devices.bgp_general_settings.as_number_in_path_attribute, null)
+          compare_med_from_different_neighbors = try(device.bgp_general_settings.compare_med_from_different_neighbors, local.defaults.fmc.domains.devices.devices.bgp_general_settings.compare_med_from_different_neighbors, null)
+          compare_router_id_in_path            = try(device.bgp_general_settings.compare_router_id_in_path, local.defaults.fmc.domains.devices.devices.bgp_general_settings.compare_router_id_in_path, null)
+          default_local_preference             = try(device.bgp_general_settings.default_local_preference, local.defaults.fmc.domains.devices.devices.bgp_general_settings.default_local_preference, null)
+          enforce_first_peer_as                = try(device.bgp_general_settings.enforce_first_peer_as, local.defaults.fmc.domains.devices.devices.bgp_general_settings.enforce_first_peer_as, null)
+          graceful_restart                     = try(device.bgp_general_settings.graceful_restart, local.defaults.fmc.domains.devices.devices.bgp_general_settings.graceful_restart, null)
+          graceful_restart_restart_time        = try(device.bgp_general_settings.graceful_restart_restart_time, local.defaults.fmc.domains.devices.devices.bgp_general_settings.graceful_restart_restart_time, null)
+          graceful_restart_stale_path_time     = try(device.bgp_general_settings.graceful_restart_stale_path_time, local.defaults.fmc.domains.devices.devices.bgp_general_settings.graceful_restart_stale_path_time, null)
+          hold_time                            = try(device.bgp_general_settings.hold_time, local.defaults.fmc.domains.devices.devices.bgp_general_settings.hold_time, null)
+          keepalive_interval                   = try(device.bgp_general_settings.keepalive_interval, local.defaults.fmc.domains.devices.devices.bgp_general_settings.keepalive_interval, null)
+          log_neighbor_changes                 = try(device.bgp_general_settings.log_neighbor_changes, local.defaults.fmc.domains.devices.devices.bgp_general_settings.log_neighbor_changes, null)
+          min_hold_time                        = try(device.bgp_general_settings.min_hold_time, local.defaults.fmc.domains.devices.devices.bgp_general_settings.min_hold_time, null)
+          missing_med_as_best                  = try(device.bgp_general_settings.missing_med_as_best, local.defaults.fmc.domains.devices.devices.bgp_general_settings.missing_med_as_best, null)
+          next_hop_address_tracking            = try(device.bgp_general_settings.next_hop_address_tracking, local.defaults.fmc.domains.devices.devices.bgp_general_settings.next_hop_address_tracking, null)
+          next_hop_delay_interval              = try(device.bgp_general_settings.next_hop_delay_interval, local.defaults.fmc.domains.devices.devices.bgp_general_settings.next_hop_delay_interval, null)
+          pick_best_med                        = try(device.bgp_general_settings.pick_best_med, local.defaults.fmc.domains.devices.devices.bgp_general_settings.pick_best_med, null)
+          reset_session_upon_failover          = try(device.bgp_general_settings.reset_session_upon_failover, local.defaults.fmc.domains.devices.devices.bgp_general_settings.reset_session_upon_failover, null)
+          router_id                            = try(device.bgp_general_settings.router_id, local.defaults.fmc.domains.devices.devices.bgp_general_settings.router_id, null)
+          scanning_interval                    = try(device.bgp_general_settings.scanning_interval, local.defaults.fmc.domains.devices.devices.bgp_general_settings.scanning_interval, null)
+          tcp_path_mtu_discovery               = try(device.bgp_general_settings.tcp_path_mtu_discovery, local.defaults.fmc.domains.devices.devices.bgp_general_settings.tcp_path_mtu_discovery, null)
+          use_dot_notation                     = try(device.bgp_general_settings.use_dot_notation, local.defaults.fmc.domains.devices.devices.bgp_general_settings.use_dot_notation, null)
         } if contains(keys(device), "bgp_general_settings")
       ]
     ]) : "${item.domain}:${item.device_name}" => item

@@ -7,6 +7,8 @@ It is suggested to:
 - OR remove state and import resources from FMC without destroying them
 !!!!
 
+- (BREAKING CHANGE) Rename `ftd_auto_nat_rules` and `ftd_manual_nat_rules` under `ftd_nat_policy`
+- (BREAKING CHANGE) Rename cluster `data_devices` to `data_nodes` with corresponding attributes
 - (BREAKING CHANGE) Unified name as `access_control_policy` under fmc.system.policy_assignment, fmc.domains.policies, existing.fmc.domain.policies, fmc.domains.devices.devices
 - (BREAKING CHANGE) Unified name as `syslog_alert` and `snmp_alert` in Prefilter Policy and Prefilter Rules
 - (BREAKING CHANGE) Moved `bfds` configuration to `vrfs` section in fmc.domains.devices.devices

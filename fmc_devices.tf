@@ -102,24 +102,33 @@ locals {
           domain = domain.name
           name   = ha_pair.name
 
-          primary_device_id         = local.map_devices["${domain.name}:${ha_pair.primary_device}"].id
-          secondary_device_id       = local.map_devices["${domain.name}:${ha_pair.secondary_device}"].id
-          ha_link_interface_id      = local.map_interfaces_by_names["${domain.name}:${ha_pair.primary_device}:${ha_pair.ha_link_interface_name}"].id
-          ha_link_interface_name    = ha_pair.ha_link_interface_name
-          ha_link_interface_type    = local.map_interfaces_by_names["${domain.name}:${ha_pair.primary_device}:${ha_pair.ha_link_interface_name}"].type
-          ha_link_logical_name      = ha_pair.ha_link_logical_name
-          ha_link_primary_ip        = ha_pair.ha_link_primary_ip
-          ha_link_secondary_ip      = ha_pair.ha_link_secondary_ip
-          ha_link_netmask           = ha_pair.ha_link_netmask
+          primary_device_id      = local.map_devices["${domain.name}:${ha_pair.primary_device}"].id
+          secondary_device_id    = local.map_devices["${domain.name}:${ha_pair.secondary_device}"].id
+          ha_link_interface_id   = local.map_interfaces_by_names["${domain.name}:${ha_pair.primary_device}:${ha_pair.ha_link_interface_name}"].id
+          ha_link_interface_name = ha_pair.ha_link_interface_name
+          ha_link_interface_type = local.map_interfaces_by_names["${domain.name}:${ha_pair.primary_device}:${ha_pair.ha_link_interface_name}"].type
+          ha_link_logical_name   = ha_pair.ha_link_logical_name
+          ha_link_primary_ip     = ha_pair.ha_link_primary_ip
+          ha_link_secondary_ip   = ha_pair.ha_link_secondary_ip
+          ha_link_netmask        = ha_pair.ha_link_netmask
+          ha_link_use_ipv6       = try(ha_pair.ha_link_use_ipv6, local.defaults.fmc.domains.devices.ha_pairs.ha_link_use_ipv6, null)
+
           state_link_use_same_as_ha = ha_pair.state_link_use_same_as_ha
+          state_link_interface_id   = try(local.map_interfaces_by_names["${domain.name}:${ha_pair.primary_device}:${ha_pair.state_link_interface_name}"].id, null)
+          state_link_interface_name = try(ha_pair.state_link_interface_name, null)
+          state_link_interface_type = try(local.map_interfaces_by_names["${domain.name}:${ha_pair.primary_device}:${ha_pair.state_link_interface_name}"].type, null)
+          state_link_logical_name   = try(ha_pair.state_link_logical_name, null)
+          state_link_primary_ip     = try(ha_pair.state_link_primary_ip, null)
+          state_link_secondary_ip   = try(ha_pair.state_link_secondary_ip, null)
+          state_link_netmask        = try(ha_pair.state_link_netmask, null)
+          state_link_use_ipv6       = ha_pair.state_link_use_same_as_ha == false ? try(ha_pair.state_link_use_ipv6, local.defaults.fmc.domains.devices.ha_pairs.state_link_use_ipv6, null) : null
 
           action                           = try(ha_pair.action, null)
-          encryption_enabled               = try(ha_pair.encryption_enabled, null)
+          encryption_enabled               = try(ha_pair.encryption_enabled, local.defaults.fmc.domains.devices.ha_pairs.encryption_enabled, null)
           encryption_key                   = try(ha_pair.encryption_key, null)
           encryption_key_generation_scheme = try(ha_pair.encryption_key_generation_scheme, null)
-          failed_interfaces_limit          = try(ha_pair.failed_interfaces_limit, local.defaults.fmc.domains.devices.ha_pairs.failed_interfaces_limit, null)
+          failed_interfaces_limit          = try(ha_pair.failed_interfaces_percent, null) == null ? try(ha_pair.failed_interfaces_limit, local.defaults.fmc.domains.devices.ha_pairs.failed_interfaces_limit, null) : null
           failed_interfaces_percent        = try(ha_pair.failed_interfaces_percent, null)
-          ha_link_use_ipv6                 = try(ha_pair.ha_link_use_ipv6, null)
           interface_hold_time              = try(ha_pair.interface_hold_time, null)
           interface_poll_time              = try(ha_pair.interface_poll_time, null)
           interface_poll_time_unit         = try(ha_pair.interface_poll_time_unit, null)
@@ -127,14 +136,6 @@ locals {
           peer_hold_time_unit              = try(ha_pair.peer_hold_time_unit, null)
           peer_poll_time                   = try(ha_pair.peer_poll_time, null)
           peer_poll_time_unit              = try(ha_pair.peer_poll_time_unit, null)
-          state_link_interface_id          = try(local.map_interfaces_by_names["${domain.name}:${ha_pair.primary_device}:${ha_pair.state_link_interface_name}"].id, null)
-          state_link_interface_name        = try(ha_pair.state_link_interface_name, null)
-          state_link_interface_type        = try(local.map_interfaces_by_names["${domain.name}:${ha_pair.primary_device}:${ha_pair.state_link_interface_name}"].type, null)
-          state_link_logical_name          = try(ha_pair.state_link_logical_name, null)
-          state_link_primary_ip            = try(ha_pair.state_link_primary_ip, null)
-          state_link_secondary_ip          = try(ha_pair.state_link_secondary_ip, null)
-          state_link_netmask               = try(ha_pair.state_link_netmask, null)
-          state_link_use_ipv6              = try(ha_pair.state_link_use_ipv6, null)
         } if !contains(try(keys(local.data_device_ha_pair), []), "${domain.name}:${ha_pair.name}")
       ]
     ]) : "${item.domain}:${item.name}" => item
@@ -269,10 +270,10 @@ locals {
           control_node_ccl_ipv4_address = cluster.control_node_ccl_ipv4_address
           control_node_ccl_prefix       = cluster.control_node_ccl_prefix
           control_node_vni_prefix       = try(cluster.control_node_vni_prefix, null)
-          data_devices = [for data_device in try(cluster.data_devices, []) : {
-            data_node_ccl_ipv4_address = data_device.data_node_ccl_ipv4_address
-            data_node_device_id        = local.map_devices["${domain.name}:${data_device.data_node_device}"].id
-            data_node_priority         = data_device.data_node_priority
+          data_nodes = [for data_node in try(cluster.data_nodes, []) : {
+            ccl_ipv4_address = data_node.ccl_ipv4_address
+            device_id        = local.map_devices["${domain.name}:${data_node.device}"].id
+            priority         = data_node.priority
           }]
         } if !contains(try(keys(local.data_device_cluster), []), "${domain.name}:${cluster.name}")
       ]
@@ -283,8 +284,8 @@ locals {
 data "fmc_device_cluster" "device_cluster" {
   for_each = local.data_device_cluster
 
-  name   = each.value.name
   domain = each.value.domain
+  name   = each.value.name
 }
 
 resource "fmc_device_cluster" "device_cluster" {
@@ -292,7 +293,7 @@ resource "fmc_device_cluster" "device_cluster" {
 
   domain                        = each.value.domain
   name                          = each.value.name
-  cluster_key                   = each.value.name
+  cluster_key                   = each.value.cluster_key
   control_node_device_id        = each.value.control_node_device_id
   control_node_priority         = each.value.control_node_priority
   control_node_interface_id     = each.value.control_node_interface_id
@@ -301,12 +302,7 @@ resource "fmc_device_cluster" "device_cluster" {
   control_node_ccl_ipv4_address = each.value.control_node_ccl_ipv4_address
   control_node_ccl_prefix       = each.value.control_node_ccl_prefix
   control_node_vni_prefix       = each.value.control_node_vni_prefix
-  data_devices                  = each.value.data_devices
-
-  # depends_on = [
-  #   fmc_device.module,
-  #   data.fmc_device.module,
-  # ]
+  data_nodes                    = each.value.data_nodes
 }
 
 ##########################################################
@@ -785,79 +781,79 @@ locals {
               device_id        = local.map_devices["${domain.name}:${device.name}"].id
               vlan_id          = sub_interface.vlan
 
-              active_mac_address             = try(sub_interface.active_mac_address, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.active_mac_address, null)
-              allow_full_fragment_reassembly = try(sub_interface.allow_full_fragment_reassembly, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.allow_full_fragment_reassembly, null)
+              active_mac_address             = try(sub_interface.active_mac_address, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.active_mac_address, null)
+              allow_full_fragment_reassembly = try(sub_interface.allow_full_fragment_reassembly, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.allow_full_fragment_reassembly, null)
               arp_table_entries = [for arp_table_entry in try(sub_interface.arp_table_entries, []) : {
-                enabled     = try(arp_table_entry.enabled, local.defaults.fmc.domains.devices.devices.vrfs.sub_interface.arp_table_entries.enabled, null)
+                enabled     = try(arp_table_entry.enabled, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.arp_table_entries.enabled, null)
                 ip_address  = arp_table_entry.ip_address
                 mac_address = arp_table_entry.mac_address
               }]
-              description                  = try(sub_interface.description, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.description, null)
-              anti_spoofing                = try(sub_interface.anti_spoofing, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.anti_spoofing, null)
-              sgt_propagate                = try(sub_interface.sgt_propagate, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.sgt_propagate, null)
-              enabled                      = try(sub_interface.enabled, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.enabled, null)
-              ip_based_monitoring          = try(sub_interface.ip_based_monitoring, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ip_based_monitoring, null)
-              ip_based_monitoring_next_hop = try(sub_interface.ip_based_monitoring_next_hop, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ip_based_monitoring_next_hop, null)
-              ip_based_monitoring_type     = try(sub_interface.ip_based_monitoring_type, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ip_based_monitoring_type, null)
+              description                  = try(sub_interface.description, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.description, null)
+              anti_spoofing                = try(sub_interface.anti_spoofing, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.anti_spoofing, null)
+              sgt_propagate                = try(sub_interface.sgt_propagate, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.sgt_propagate, null)
+              enabled                      = try(sub_interface.enabled, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.enabled, null)
+              ip_based_monitoring          = try(sub_interface.ip_based_monitoring, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ip_based_monitoring, null)
+              ip_based_monitoring_next_hop = try(sub_interface.ip_based_monitoring_next_hop, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ip_based_monitoring_next_hop, null)
+              ip_based_monitoring_type     = try(sub_interface.ip_based_monitoring_type, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ip_based_monitoring_type, null)
               ipv4_address_pool_id = try(sub_interface.ipv4_address_pool, "") != "" ? try(
                 values({
                   for domain_path in local.related_domains[domain.name] :
                   domain_path => local.map_ipv4_address_pools["${domain_path}:${sub_interface.ipv4_address_pool}"].id
                   if contains(keys(local.map_ipv4_address_pools), "${domain_path}:${sub_interface.ipv4_address_pool}")
               })[0]) : null
-              ipv4_dhcp_obtain_default_route        = try(sub_interface.ipv4_dhcp_obtain_default_route, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv4_dhcp_obtain_default_route, null)
-              ipv4_dhcp_default_route_metric        = try(sub_interface.ipv4_dhcp_default_route_metric, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv4_dhcp_default_route_metric, null)
-              ipv4_pppoe_authentication             = try(sub_interface.ipv4_pppoe_authentication, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv4_pppoe_authentication, null)
-              ipv4_pppoe_password                   = try(sub_interface.ipv4_pppoe_password, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv4_pppoe_password, null)
-              ipv4_pppoe_route_metric               = try(sub_interface.ipv4_pppoe_route_metric, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv4_pppoe_route_metric, null)
-              ipv4_pppoe_route_settings             = try(sub_interface.ipv4_pppoe_route_settings, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv4_pppoe_route_settings, null)
-              ipv4_pppoe_store_credentials_in_flash = try(sub_interface.ipv4_pppoe_store_credentials_in_flash, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv4_pppoe_store_credentials_in_flash, null)
-              ipv4_pppoe_user                       = try(sub_interface.ipv4_pppoe_user, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv4_pppoe_user, null)
-              ipv4_pppoe_vpdn_group_name            = try(sub_interface.ipv4_pppoe_vpdn_group_name, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv4_pppoe_vpdn_group_name, null)
-              ipv4_static_address                   = try(sub_interface.ipv4_static_address, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv4_static_address, null)
-              ipv4_static_netmask                   = try(sub_interface.ipv4_static_netmask, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv4_static_netmask, null)
+              ipv4_dhcp_obtain_default_route        = try(sub_interface.ipv4_dhcp_obtain_default_route, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv4_dhcp_obtain_default_route, null)
+              ipv4_dhcp_default_route_metric        = try(sub_interface.ipv4_dhcp_default_route_metric, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv4_dhcp_default_route_metric, null)
+              ipv4_pppoe_authentication             = try(sub_interface.ipv4_pppoe_authentication, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv4_pppoe_authentication, null)
+              ipv4_pppoe_password                   = try(sub_interface.ipv4_pppoe_password, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv4_pppoe_password, null)
+              ipv4_pppoe_route_metric               = try(sub_interface.ipv4_pppoe_route_metric, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv4_pppoe_route_metric, null)
+              ipv4_pppoe_route_settings             = try(sub_interface.ipv4_pppoe_route_settings, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv4_pppoe_route_settings, null)
+              ipv4_pppoe_store_credentials_in_flash = try(sub_interface.ipv4_pppoe_store_credentials_in_flash, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv4_pppoe_store_credentials_in_flash, null)
+              ipv4_pppoe_user                       = try(sub_interface.ipv4_pppoe_user, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv4_pppoe_user, null)
+              ipv4_pppoe_vpdn_group_name            = try(sub_interface.ipv4_pppoe_vpdn_group_name, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv4_pppoe_vpdn_group_name, null)
+              ipv4_static_address                   = try(sub_interface.ipv4_static_address, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv4_static_address, null)
+              ipv4_static_netmask                   = try(sub_interface.ipv4_static_netmask, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv4_static_netmask, null)
               ipv6_addresses = [for ipv6_address in try(sub_interface.ipv6_addresses, []) : {
                 address     = ipv6_address.address
                 enforce_eui = try(ipv6_address.enforce_eui, null)
                 prefix      = ipv6_address.prefix
               }]
-              ipv6_dad_attempts                 = try(sub_interface.ipv6_dad_attempts, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_dad_attempts, null)
-              ipv6_dhcp_obtain_default_route    = try(sub_interface.ipv6_dhcp_obtain_default_route, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_dhcp_obtain_default_route, null)
-              ipv6_dhcp                         = try(sub_interface.ipv6_dhcp, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_dhcp, null)
-              ipv6_dhcp_client_pd_hint_prefixes = try(sub_interface.ipv6_dhcp_client_pd_hint_prefixes, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_dhcp_client_pd_hint_prefixes, null)
-              ipv6_dhcp_client_pd_prefix_name   = try(sub_interface.ipv6_dhcp_client_pd_prefix_name, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_dhcp_client_pd_prefix_name, null)
+              ipv6_dad_attempts                 = try(sub_interface.ipv6_dad_attempts, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_dad_attempts, null)
+              ipv6_dhcp_obtain_default_route    = try(sub_interface.ipv6_dhcp_obtain_default_route, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_dhcp_obtain_default_route, null)
+              ipv6_dhcp                         = try(sub_interface.ipv6_dhcp, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_dhcp, null)
+              ipv6_dhcp_client_pd_hint_prefixes = try(sub_interface.ipv6_dhcp_client_pd_hint_prefixes, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_dhcp_client_pd_hint_prefixes, null)
+              ipv6_dhcp_client_pd_prefix_name   = try(sub_interface.ipv6_dhcp_client_pd_prefix_name, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_dhcp_client_pd_prefix_name, null)
               # ipv6_dhcp_pool_id                  = try(local.map_ipv6_dhcp_pools[sub_interface.ipv6_dhcp_pool].id, null)
-              ipv6                        = try(sub_interface.ipv6, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6, null)
-              ipv6_auto_config            = try(sub_interface.ipv6_auto_config, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_auto_config, null)
-              ipv6_dad                    = try(sub_interface.ipv6_dad, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_dad, null)
-              ipv6_dhcp_address_config    = try(sub_interface.ipv6_dhcp_address_config, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_dhcp_address_config, null)
-              ipv6_dhcp_nonaddress_config = try(sub_interface.ipv6_dhcp_nonaddress_config, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_dhcp_nonaddress_config, null)
-              ipv6_ra                     = try(sub_interface.ipv6_ra, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_ra, null)
-              ipv6_enforce_eui            = try(sub_interface.ipv6_enforce_eui, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_enforce_eui, null)
-              ipv6_link_local_address     = try(sub_interface.ipv6_link_local_address, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_link_local_address, null)
-              ipv6_ns_interval            = try(sub_interface.ipv6_ns_interval, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_ns_interval, null)
+              ipv6                        = try(sub_interface.ipv6, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6, null)
+              ipv6_auto_config            = try(sub_interface.ipv6_auto_config, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_auto_config, null)
+              ipv6_dad                    = try(sub_interface.ipv6_dad, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_dad, null)
+              ipv6_dhcp_address_config    = try(sub_interface.ipv6_dhcp_address_config, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_dhcp_address_config, null)
+              ipv6_dhcp_nonaddress_config = try(sub_interface.ipv6_dhcp_nonaddress_config, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_dhcp_nonaddress_config, null)
+              ipv6_ra                     = try(sub_interface.ipv6_ra, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_ra, null)
+              ipv6_enforce_eui            = try(sub_interface.ipv6_enforce_eui, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_enforce_eui, null)
+              ipv6_link_local_address     = try(sub_interface.ipv6_link_local_address, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_link_local_address, null)
+              ipv6_ns_interval            = try(sub_interface.ipv6_ns_interval, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_ns_interval, null)
               ipv6_prefixes = [for ipv6_prefix in try(sub_interface.ipv6_prefixes, []) : {
                 address = try(ipv6_prefix.address, null)
                 default = try(ipv6_prefix.default, null)
               }]
-              ipv6_ra_interval                          = try(sub_interface.ipv6_ra_interval, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_ra_interval, null)
-              ipv6_ra_life_time                         = try(sub_interface.ipv6_ra_life_time, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_ra_life_time, null)
-              ipv6_reachable_time                       = try(sub_interface.ipv6_reachable_time, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_reachable_time, null)
-              logical_name                              = try(sub_interface.logical_name, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.logical_name, null)
-              management_only                           = try(sub_interface.management_only, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.management_only, null)
-              mtu                                       = try(sub_interface.mtu, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.mtu, null)
-              nve_only                                  = try(sub_interface.nve_only, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.nve_only, null)
-              override_default_fragment_setting_chain   = try(sub_interface.override_default_fragment_setting_chain, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.override_default_fragment_setting_chain, null)
-              override_default_fragment_setting_size    = try(sub_interface.override_default_fragment_setting_size, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.override_default_fragment_setting_size, null)
-              override_default_fragment_setting_timeout = try(sub_interface.override_default_fragment_setting_timeout, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.override_default_fragment_setting_timeout, null)
-              priority                                  = try(sub_interface.priority, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.priority, null)
+              ipv6_ra_interval                          = try(sub_interface.ipv6_ra_interval, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_ra_interval, null)
+              ipv6_ra_life_time                         = try(sub_interface.ipv6_ra_life_time, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_ra_life_time, null)
+              ipv6_reachable_time                       = try(sub_interface.ipv6_reachable_time, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_reachable_time, null)
+              logical_name                              = try(sub_interface.logical_name, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.logical_name, null)
+              management_only                           = try(sub_interface.management_only, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.management_only, null)
+              mtu                                       = try(sub_interface.mtu, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.mtu, null)
+              nve_only                                  = try(sub_interface.nve_only, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.nve_only, null)
+              override_default_fragment_setting_chain   = try(sub_interface.override_default_fragment_setting_chain, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.override_default_fragment_setting_chain, null)
+              override_default_fragment_setting_size    = try(sub_interface.override_default_fragment_setting_size, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.override_default_fragment_setting_size, null)
+              override_default_fragment_setting_timeout = try(sub_interface.override_default_fragment_setting_timeout, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.override_default_fragment_setting_timeout, null)
+              priority                                  = try(sub_interface.priority, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.priority, null)
               security_zone_id = try(sub_interface.security_zone, "") != "" ? try(
                 values({
                   for domain_path in local.related_domains[domain.name] :
                   domain_path => local.map_security_zones["${domain_path}:${sub_interface.security_zone}"].id
                   if contains(keys(local.map_security_zones), "${domain_path}:${sub_interface.security_zone}")
               })[0]) : null
-              standby_mac_address = try(sub_interface.standby_mac_address, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.standby_mac_address, null)
+              standby_mac_address = try(sub_interface.standby_mac_address, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.standby_mac_address, null)
             } if !contains(try(keys(local.data_device_subinterface), []), "${domain.name}:${device.name}:${sub_interface.name}")
           ]
         ]

@@ -437,7 +437,7 @@ locals {
           name        = ftd_nat_policy.name
           description = try(ftd_nat_policy.description, local.defaults.fmc.domains.policies.ftd_nat_policies.description, null)
 
-          auto_nat_rules = [for auto_rule in try(ftd_nat_policy.ftd_auto_nat_rules, []) : {
+          auto_nat_rules = [for auto_rule in try(ftd_nat_policy.auto_nat_rules, []) : {
             nat_type = auto_rule.nat_type
             destination_interface_id = try(auto_rule.destination_interface, "") != "" ? try(
               values({
@@ -445,10 +445,10 @@ locals {
                 domain_path => local.map_security_zones["${domain_path}:${auto_rule.destination_interface}"].id
                 if contains(keys(local.map_security_zones), "${domain_path}:${auto_rule.destination_interface}")
             })[0]) : null
-            fall_through = try(auto_rule.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_auto_nat_rules.fall_through, null)
-            ipv6         = try(auto_rule.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_auto_nat_rules.ipv6, null)
-            net_to_net   = try(auto_rule.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_auto_nat_rules.net_to_net, null)
-            no_proxy_arp = try(auto_rule.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_auto_nat_rules.no_proxy_arp, null)
+            fall_through = try(auto_rule.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.fall_through, null)
+            ipv6         = try(auto_rule.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.ipv6, null)
+            net_to_net   = try(auto_rule.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.net_to_net, null)
+            no_proxy_arp = try(auto_rule.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.no_proxy_arp, null)
             original_network_id = try(auto_rule.original_network, null) != null ? try(
               values({
                 for domain_path in local.related_domains[domain.name] :
@@ -457,7 +457,7 @@ locals {
               })[0],
             ) : null
             original_port = try(auto_rule.original_port, null)
-            route_lookup  = try(auto_rule.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+            route_lookup  = try(auto_rule.route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.route_lookup, null)
             protocol      = try(auto_rule.protocol, null)
             source_interface_id = try(auto_rule.source_interface, null) != null ? try(
               values({
@@ -465,7 +465,7 @@ locals {
                 domain_path => local.map_security_zones["${domain_path}:${auto_rule.source_interface}"].id
                 if contains(keys(local.map_security_zones), "${domain_path}:${auto_rule.source_interface}")
             })[0]) : null
-            translate_dns = try(auto_rule.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_auto_nat_rules.translate_dns, null)
+            translate_dns = try(auto_rule.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.translate_dns, null)
             translated_network_id = try(auto_rule.translated_network, null) != null ? try(
               values({
                 for domain_path in local.related_domains[domain.name] :
@@ -482,10 +482,10 @@ locals {
             translated_port                             = try(auto_rule.translated_port, null)
           }]
 
-          manual_nat_rules = [for manual_rule in try(ftd_nat_policy.ftd_manual_nat_rules, []) : {
+          manual_nat_rules = [for manual_rule in try(ftd_nat_policy.manual_nat_rules, []) : {
             nat_type    = manual_rule.nat_type
             section     = upper(manual_rule.section)
-            enabled     = try(manual_rule.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.enabled, null)
+            enabled     = try(manual_rule.enabled, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_nat_rules.enabled, null)
             description = try(manual_rule.description, null)
             destination_interface_id = try(manual_rule.destination_interface, "") != "" ? try(
               values({
@@ -493,12 +493,12 @@ locals {
                 domain_path => local.map_security_zones["${domain_path}:${manual_rule.destination_interface}"].id
                 if contains(keys(local.map_security_zones), "${domain_path}:${manual_rule.destination_interface}")
             })[0]) : null
-            fall_through                      = try(manual_rule.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.fall_through, null)
-            interface_in_original_destination = try(manual_rule.interface_in_original_destination, null)
+            fall_through                      = try(manual_rule.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_nat_rules.fall_through, null)
+            interface_in_original_destination = try(manual_rule.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_nat_rules.interface_in_original_destination, null)
             interface_in_translated_source    = try(manual_rule.interface_in_translated_source, null)
-            ipv6                              = try(manual_rule.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.ipv6, null)
-            net_to_net                        = try(manual_rule.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.net_to_net, null)
-            no_proxy_arp                      = try(manual_rule.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.no_proxy_arp, null)
+            ipv6                              = try(manual_rule.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_nat_rules.ipv6, null)
+            net_to_net                        = try(manual_rule.net_to_net, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_nat_rules.net_to_net, null)
+            no_proxy_arp                      = try(manual_rule.no_proxy_arp, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_nat_rules.no_proxy_arp, null)
             original_destination_id = try(manual_rule.original_destination, "") != "" ? try(
               values({
                 for domain_path in local.related_domains[domain.name] :
@@ -536,14 +536,14 @@ locals {
                 if contains(keys(local.map_port_groups), "${domain_path}:${manual_rule.translated_source_port}")
               })[0],
             ) : null
-            route_lookup = try(manual_rule.perform_route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.perform_route_lookup, null)
+            route_lookup = try(manual_rule.route_lookup, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_nat_rules.route_lookup, null)
             source_interface_id = try(manual_rule.source_interface, null) != null ? try(
               values({
                 for domain_path in local.related_domains[domain.name] :
                 domain_path => local.map_security_zones["${domain_path}:${manual_rule.source_interface}"].id
                 if contains(keys(local.map_security_zones), "${domain_path}:${manual_rule.source_interface}")
             })[0]) : null
-            translate_dns = try(manual_rule.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.translate_dns, null)
+            translate_dns = try(manual_rule.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_nat_rules.translate_dns, null)
             translated_destination_id = try(manual_rule.translated_destination, "") != "" ? try(
               values({
                 for domain_path in local.related_domains[domain.name] :
@@ -580,7 +580,6 @@ locals {
                 if contains(keys(local.map_network_group_objects), "${domain_path}:${manual_rule.manual_rule.translated_source}")
               })[0],
             ) : null
-
             translated_source_port_id = try(manual_rule.translated_source_port, "") != "" ? try(
               values({
                 for domain_path in local.related_domains[domain.name] :
@@ -593,7 +592,7 @@ locals {
                 if contains(keys(local.map_port_groups), "${domain_path}:${manual_rule.translated_source_port}")
               })[0],
             ) : null
-            unidirectional = try(manual_rule.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.ftd_manual_nat_rules.unidirectional, null)
+            unidirectional = try(manual_rule.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_nat_rules.unidirectional, null)
           }]
         } if !contains(try(keys(local.data_ftd_nat_policy), []), ftd_nat_policy.name)
       ]
@@ -637,18 +636,35 @@ locals {
   resource_intrusion_policy = {
     for item in flatten([
       for domain in local.domains : [
-        for intrusion_policy in try(domain.policies.intrusion_policies, []) : [
-          {
-            domain      = domain.name
-            name        = intrusion_policy.name
-            description = try(intrusion_policy.description, local.defaults.fmc.domains.policies.intrusion_policies.description, null)
-            base_policy_id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => data.fmc_intrusion_policy.intrusion_policy["${domain_path}:${intrusion_policy.base_policy}"].id
-              if try(data.fmc_intrusion_policy.intrusion_policy["${domain_path}:${intrusion_policy.base_policy}"].id, "") != ""
-            })[0]
-            inspection_mode = try(intrusion_policy.inspection_mode, local.defaults.fmc.domains.policies.intrusion_policies.inspection_mode, null)
-        }] #if !contains(try(keys(local.data_intrusion_policy), []), intrusion_policy.name)
+        for intrusion_policy in try(domain.policies.intrusion_policies, []) : {
+          domain      = domain.name
+          name        = intrusion_policy.name
+          description = try(intrusion_policy.description, local.defaults.fmc.domains.policies.intrusion_policies.description, null)
+          base_policy_id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => data.fmc_intrusion_policy.intrusion_policy["${domain_path}:${intrusion_policy.base_policy}"].id
+            if try(data.fmc_intrusion_policy.intrusion_policy["${domain_path}:${intrusion_policy.base_policy}"].id, "") != ""
+          })[0]
+          inspection_mode = try(intrusion_policy.inspection_mode, local.defaults.fmc.domains.policies.intrusion_policies.inspection_mode, null)
+        } if contains(try(keys(local.data_intrusion_policy), []), "Global:${intrusion_policy.base_policy}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_intrusion_policy_l2 = {
+    for item in flatten([
+      for domain in local.domains : [
+        for intrusion_policy in try(domain.policies.intrusion_policies, []) : {
+          domain      = domain.name
+          name        = intrusion_policy.name
+          description = try(intrusion_policy.description, local.defaults.fmc.domains.policies.intrusion_policies.description, null)
+          base_policy_id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => fmc_intrusion_policy.intrusion_policy["${domain_path}:${intrusion_policy.base_policy}"].id
+            if try(fmc_intrusion_policy.intrusion_policy["${domain_path}:${intrusion_policy.base_policy}"].id, "") != ""
+          })[0]
+          inspection_mode = try(intrusion_policy.inspection_mode, local.defaults.fmc.domains.policies.intrusion_policies.inspection_mode, null)
+        } if contains(try(keys(local.resource_intrusion_policy), []), "${domain.name}:${intrusion_policy.base_policy}")
       ]
     ]) : "${item.domain}:${item.name}" => item
   }
@@ -671,6 +687,15 @@ resource "fmc_intrusion_policy" "intrusion_policy" {
   inspection_mode = each.value.inspection_mode
 }
 
+resource "fmc_intrusion_policy" "intrusion_policy_l2" {
+  for_each = local.resource_intrusion_policy_l2
+
+  domain          = each.value.domain
+  name            = each.value.name
+  base_policy_id  = each.value.base_policy_id
+  description     = each.value.description
+  inspection_mode = each.value.inspection_mode
+}
 ##########################################################
 ###    File Policy
 ##########################################################
@@ -781,7 +806,7 @@ locals {
             if try(data.fmc_network_analysis_policy.network_analysis_policy["${domain_path}:${network_analysis_policy.base_policy}"].id, "") != ""
           })[0]
           description     = try(network_analysis_policy.description, local.defaults.fmc.domains.policies.network_analysis_policies.description, null)
-          inspection_mode = try(network_analysis_policy.inspection_mode, null)
+          inspection_mode = try(network_analysis_policy.inspection_mode, local.defaults.fmc.domains.policies.network_analysis_policies.inspection_mode, null)
         } #if !contains(try(keys(local.data_network_analysis_policy), []), network_analysis_policy.name)
       ]
     ]) : "${item.domain}:${item.name}" => item
@@ -825,13 +850,13 @@ locals {
       for domain in local.domains : [
         for prefilter_policy in try(domain.policies.prefilter_policies, []) : [
           {
-            domain                            = domain.name
-            name                              = prefilter_policy.name
-            description                       = try(prefilter_policy.description, local.defaults.fmc.domains.policies.prefilter_policies.description, null)
-            default_action                    = try(prefilter_policy.default_action, local.defaults.fmc.domains.policies.prefilter_policies.default_action)
-            default_action_log_begin          = try(prefilter_policy.log_begin, local.defaults.fmc.domains.policies.prefilter_policies.log_begin, null)
-            default_action_log_end            = try(prefilter_policy.log_end, local.defaults.fmc.domains.policies.prefilter_policies.log_end, null)
-            default_action_send_events_to_fmc = try(prefilter_policy.send_events_to_fmc, local.defaults.fmc.domains.policies.prefilter_policies.send_events_to_fmc, null)
+            domain                              = domain.name
+            name                                = prefilter_policy.name
+            description                         = try(prefilter_policy.description, local.defaults.fmc.domains.policies.prefilter_policies.description, null)
+            default_action                      = try(prefilter_policy.default_action, local.defaults.fmc.domains.policies.prefilter_policies.default_action)
+            default_action_log_connection_begin = try(prefilter_policy.log_connection_begin, local.defaults.fmc.domains.policies.prefilter_policies.log_connection_begin, null)
+            default_action_log_connection_end   = try(prefilter_policy.log_connection_end, local.defaults.fmc.domains.policies.prefilter_policies.log_connection_end, null)
+            default_action_send_events_to_fmc   = try(prefilter_policy.send_events_to_fmc, local.defaults.fmc.domains.policies.prefilter_policies.send_events_to_fmc, null)
             default_action_snmp_alert_id = try(prefilter_policy.snmp_alert, "") != "" ? try(
               values({
                 for domain_path in local.related_domains[domain.name] :
@@ -927,11 +952,11 @@ locals {
                 )
               }]
 
-              encapsulation_ports = rule.rule_type == "TUNNEL" ? try(rule.encapsulation_ports, local.defaults.fmc.domains.policies.prefilter_policies.rules.encapsulation_ports) : null
-              log_begin           = try(rule.log_begin, local.defaults.fmc.domains.policies.prefilter_policies.rules.log_begin, null)
-              log_end             = try(rule.log_end, local.defaults.fmc.domains.policies.prefilter_policies.rules.log_end, null)
-              send_events_to_fmc  = try(rule.send_events_to_fmc, local.defaults.fmc.domains.policies.prefilter_policies.rules.send_events_to_fmc, null)
-              send_syslog         = try(rule.send_syslog, local.defaults.fmc.domains.policies.prefilter_policies.rules.send_syslog, null)
+              encapsulation_ports  = rule.rule_type == "TUNNEL" ? try(rule.encapsulation_ports, local.defaults.fmc.domains.policies.prefilter_policies.rules.encapsulation_ports) : null
+              log_connection_begin = try(rule.log_connection_begin, local.defaults.fmc.domains.policies.prefilter_policies.rules.log_connection_begin, null)
+              log_connection_end   = try(rule.log_connection_end, local.defaults.fmc.domains.policies.prefilter_policies.rules.log_connection_end, null)
+              send_events_to_fmc   = try(rule.send_events_to_fmc, local.defaults.fmc.domains.policies.prefilter_policies.rules.send_events_to_fmc, null)
+              send_syslog          = try(rule.send_syslog, local.defaults.fmc.domains.policies.prefilter_policies.rules.send_syslog, null)
               snmp_alert_id = try(rule.snmp_alert, "") != "" ? try(
                 values({
                   for domain_path in local.related_domains[domain.name] :
@@ -1066,16 +1091,16 @@ data "fmc_prefilter_policy" "prefilter_policy" {
 resource "fmc_prefilter_policy" "prefilter_policy" {
   for_each = local.resource_prefilter_policy
 
-  domain                            = each.value.domain
-  name                              = each.value.name
-  description                       = each.value.description
-  default_action                    = each.value.default_action
-  default_action_log_begin          = each.value.default_action_log_begin
-  default_action_log_end            = each.value.default_action_log_end
-  default_action_send_events_to_fmc = each.value.default_action_send_events_to_fmc
-  default_action_syslog_alert_id    = each.value.default_action_syslog_alert_id
-  default_action_snmp_alert_id      = each.value.default_action_snmp_alert_id
-  rules                             = each.value.rules
+  domain                              = each.value.domain
+  name                                = each.value.name
+  description                         = each.value.description
+  default_action                      = each.value.default_action
+  default_action_log_connection_begin = each.value.default_action_log_connection_begin
+  default_action_log_connection_end   = each.value.default_action_log_connection_end
+  default_action_send_events_to_fmc   = each.value.default_action_send_events_to_fmc
+  default_action_syslog_alert_id      = each.value.default_action_syslog_alert_id
+  default_action_snmp_alert_id        = each.value.default_action_snmp_alert_id
+  rules                               = each.value.rules
 }
 
 ##########################################################
@@ -1191,6 +1216,9 @@ locals {
 
     # Intrusion Policy - individual mode outputs
     { for key, resource in fmc_intrusion_policy.intrusion_policy : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+
+    # Intrusion Policy L2 - individual mode outputs
+    { for key, resource in fmc_intrusion_policy.intrusion_policy_l2 : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
 
     # Intrusion Policy - data source
     { for key, data in data.fmc_intrusion_policy.intrusion_policy : "${data.domain}:${data.name}" => { id = data.id, type = data.type } },
