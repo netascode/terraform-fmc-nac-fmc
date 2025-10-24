@@ -1154,31 +1154,31 @@ locals {
   time_ranges_bulk = try(local.fmc.module_configuration.time_ranges_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
 
   resource_time_ranges = {
-    for domain in local.domains : domain.name => {
-      for time_range in try(domain.objects.time_ranges, []) : time_range.name => {
+    for domain in local.domains : domain.name => [
+      for time_range in try(domain.objects.time_ranges, []) : {
         domain     = domain.name
         name       = time_range.name
         start_time = try(time_range.start_time, null)
         end_time   = try(time_range.end_time, null)
         recurrence_list = [for recurrence in try(time_range.recurrences, []) : {
           recurrence_type  = recurrence.recurrence_type
-          daily_days       = recurrence.recurrence_type == "DAILY_INTERVAL" ? try(recurrence.daily_days, null) : null
-          daily_end_time   = recurrence.recurrence_type == "DAILY_INTERVAL" ? try(recurrence.daily_end_time, null) : null
-          daily_start_time = recurrence.recurrence_type == "DAILY_INTERVAL" ? try(recurrence.daily_start_time, null) : null
-          range_end_day    = recurrence.recurrence_type == "RANGE" ? try(recurrence.range_end_day, null) : null
-          range_end_time   = recurrence.recurrence_type == "RANGE" ? try(recurrence.range_end_time, null) : null
-          range_start_day  = recurrence.recurrence_type == "RANGE" ? try(recurrence.range_start_day, null) : null
-          range_start_time = recurrence.recurrence_type == "RANGE" ? try(recurrence.range_start_time, null) : null
+          daily_days       = recurrence.recurrence_type == "DAILY_INTERVAL" ? try(recurrence.daily_days, []) : null
+          daily_end_time   = try(recurrence.daily_end_time, null)
+          daily_start_time = try(recurrence.daily_start_time, null)
+          range_end_day    = try(recurrence.range_end_day, null)
+          range_end_time   = try(recurrence.range_end_time, null)
+          range_start_day  = try(recurrence.range_start_day, null)
+          range_start_time = try(recurrence.range_start_time, null)
         }]
         description = try(time_range.description, local.defaults.fmc.module_configuration.time_ranges.description, null)
       } if !contains(try(keys(local.data_time_ranges[domain.name].items), []), time_range.name)
-    } if length(try(domain.objects.time_ranges, [])) > 0
+    ] if length(try(domain.objects.time_ranges, [])) > 0
   }
 
   resource_time_range = !local.time_ranges_bulk ? {
     for item in flatten([
       for domain, time_ranges in local.resource_time_ranges : [
-        for time_range in values(time_ranges) : {
+        for time_range in time_ranges : {
           key  = "${domain}:${time_range.name}"
           item = time_range
         }
