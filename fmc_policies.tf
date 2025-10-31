@@ -315,6 +315,10 @@ locals {
                 )
               }]
 
+              url_literals = [for url_literal in try(rule.url_literals, []) : {
+                url = url_literal
+              }]
+
               vlan_tag_literals = [for vlan_tag_literal in try(rule.vlan_tag_literals, []) : {
                 start_tag = vlan_tag_literal.start_tag
                 end_tag   = try(vlan_tag_literal.end_tag, vlan_tag_literal.start_tag)
@@ -571,13 +575,13 @@ locals {
             translated_source_id = try(manual_rule.translated_source, "") != "" ? try(
               values({
                 for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_network_objects["${domain_path}:${manual_rule.manual_rule.translated_source}"].id
-                if contains(keys(local.map_network_objects), "${domain_path}:${manual_rule.manual_rule.translated_source}")
+                domain_path => local.map_network_objects["${domain_path}:${manual_rule.translated_source}"].id
+                if contains(keys(local.map_network_objects), "${domain_path}:${manual_rule.translated_source}")
               })[0],
               values({
                 for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_network_group_objects["${domain_path}:${manual_rule.manual_rule.translated_source}"].id
-                if contains(keys(local.map_network_group_objects), "${domain_path}:${manual_rule.manual_rule.translated_source}")
+                domain_path => local.map_network_group_objects["${domain_path}:${manual_rule.translated_source}"].id
+                if contains(keys(local.map_network_group_objects), "${domain_path}:${manual_rule.translated_source}")
               })[0],
             ) : null
             translated_source_port_id = try(manual_rule.translated_source_port, "") != "" ? try(
