@@ -1041,9 +1041,9 @@ locals {
   data_application_filters = {
     for domain in local.data_existing : domain.name => {
       items = {
-        for application_filter in try(domain.objects.application_filters.filters, {}) : application_filter.name => {}
+        for application_filter in try(domain.objects.application_filters, {}) : application_filter.name => {}
       }
-    } if length(try(domain.objects.application_filters.filters, [])) > 0
+    } if length(try(domain.objects.application_filters, [])) > 0
   }
 
   application_filters_bulk = try(local.fmc.module_configuration.application_filters_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)

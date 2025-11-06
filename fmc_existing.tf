@@ -131,9 +131,9 @@ locals {
   data_application_business_relevances = {
     for domain in local.data_existing : domain.name => {
       items = {
-        for application_business_relevance in try(domain.objects.application_filters.business_relevances, {}) : application_business_relevance.name => {}
+        for application_business_relevance in try(domain.objects.application_filter_conditions.business_relevances, {}) : application_business_relevance.name => {}
       }
-    } if length(try(domain.objects.application_filters.business_relevances, [])) > 0
+    } if length(try(domain.objects.application_filter_conditions.business_relevances, [])) > 0
   }
 }
 
@@ -148,9 +148,9 @@ locals {
   data_application_categories = {
     for domain in local.data_existing : domain.name => {
       items = {
-        for application_category in try(domain.objects.application_filters.categories, {}) : application_category.name => {}
+        for application_category in try(domain.objects.application_filter_conditions.categories, {}) : application_category.name => {}
       }
-    } if length(try(domain.objects.application_filters.categories, [])) > 0
+    } if length(try(domain.objects.application_filter_conditions.categories, [])) > 0
   }
 }
 
@@ -165,9 +165,9 @@ locals {
   data_application_risks = {
     for domain in local.data_existing : domain.name => {
       items = {
-        for application_risk in try(domain.objects.application_filters.risks, {}) : application_risk.name => {}
+        for application_risk in try(domain.objects.application_filter_conditions.risks, {}) : application_risk.name => {}
       }
-    } if length(try(domain.objects.application_filters.risks, [])) > 0
+    } if length(try(domain.objects.application_filter_conditions.risks, [])) > 0
   }
 }
 
@@ -182,9 +182,9 @@ locals {
   data_application_tags = {
     for domain in local.data_existing : domain.name => {
       items = {
-        for application_tag in try(domain.objects.application_filters.tags, {}) : application_tag.name => {}
+        for application_tag in try(domain.objects.application_filter_conditions.tags, {}) : application_tag.name => {}
       }
-    } if length(try(domain.objects.application_filters.tags, [])) > 0
+    } if length(try(domain.objects.application_filter_conditions.tags, [])) > 0
   }
 }
 
@@ -199,9 +199,9 @@ locals {
   data_application_types = {
     for domain in local.data_existing : domain.name => {
       items = {
-        for application_type in try(domain.objects.application_filters.types, {}) : application_type.name => {}
+        for application_type in try(domain.objects.application_filter_conditions.types, {}) : application_type.name => {}
       }
-    } if length(try(domain.objects.application_filters.types, [])) > 0
+    } if length(try(domain.objects.application_filter_conditions.types, [])) > 0
   }
 }
 
