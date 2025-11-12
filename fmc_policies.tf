@@ -879,7 +879,7 @@ locals {
               action        = rule.action
               rule_type     = rule.rule_type
               enabled       = try(rule.enabled, local.defaults.fmc.domains.policies.prefilter_policies.rules.enabled, null)
-              bidirectional = rule.rule_type == "TUNNEL" ? try(rule.bidirectional, local.defaults.fmc.domains.policies.prefilter_policies.rules.bidirectional) : null
+              bidirectional = rule.rule_type == "TUNNEL" ? try(rule.bidirectional, local.defaults.fmc.domains.policies.prefilter_policies.rules.bidirectional) : false
               destination_interfaces = [for destination_interface in try(rule.destination_interfaces, []) : {
                 id = try(
                   values({
