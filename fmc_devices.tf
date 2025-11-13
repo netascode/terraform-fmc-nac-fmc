@@ -19,7 +19,7 @@ locals {
         for device in try(domain.devices.devices, []) : {
           domain           = domain.name
           name             = device.name
-          host_name        = device.host
+          host        = device.host
           licenses         = device.licenses
           registration_key = device.registration_key
 
@@ -66,7 +66,7 @@ resource "fmc_device" "device" {
 
   domain                   = each.value.domain
   name                     = each.value.name
-  host_name                = each.value.host_name
+  host                     = each.value.host
   registration_key         = each.value.registration_key
   access_control_policy_id = each.value.access_control_policy_id
   licenses                 = each.value.licenses
