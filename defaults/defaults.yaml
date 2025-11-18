@@ -51,7 +51,6 @@ defaults:
               duplex: "AUTO"
               mode: "NONE"
               flow_control_send: false
-              ip_based_monitoring: false
               mtu: 1500
               nve_only: false
               priority: 0
@@ -60,7 +59,6 @@ defaults:
                 enabled: true
             sub_interfaces:
               mode: "NONE"
-              ip_based_monitoring: false
               mtu: 1500
               nve_only: false
               priority: 0
