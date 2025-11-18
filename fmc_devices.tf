@@ -19,7 +19,7 @@ locals {
         for device in try(domain.devices.devices, []) : {
           domain           = domain.name
           name             = device.name
-          host        = device.host
+          host             = device.host
           licenses         = device.licenses
           registration_key = device.registration_key
 

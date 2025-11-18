@@ -98,12 +98,13 @@ locals {
               interface_logical_name = bfd.interface_logical_name
               device_name            = device.name
               device_id              = data.fmc_device.device["${domain.name}:${device.name}"].id
+              vrf_name               = vrf.name
               domain                 = domain.name
             }
           ] if vrf.name == "Global"
         ]
       ]
-    ]) : "${item.domain}:${item.device_name}:${item.interface_logical_name}" => item
+    ]) : "${item.domain}:${item.device_name}:${item.vrf_name}:${item.interface_logical_name}" => item
   }
 
   resource_device_bfd = {
@@ -146,7 +147,7 @@ locals {
           ] if vrf.name == "Global"
         ]
       ]
-    ]) : "${item.domain}:${item.device_name}:${item.internal_id}" => item
+    ]) : "${item.domain}:${item.device_name}:${item.vrf_name}:${item.internal_id}" => item
   }
 }
 
@@ -198,51 +199,8 @@ locals {
             for ipv4_static_route in try(vrf.ipv4_static_routes, []) : {
               device_name            = device.name
               device_id              = local.map_devices["${domain.name}:${device.name}"].id
-              domain                 = domain.name
-              name                   = ipv4_static_route.name
-              interface_logical_name = ipv4_static_route.interface_logical_name
-              interface_id           = local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${ipv4_static_route.interface_logical_name}"].id
-              destination_networks = [for destination_network in ipv4_static_route.selected_networks : {
-                id = try(
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_objects["${domain_path}:${destination_network}"].id
-                    if contains(keys(local.map_network_objects), "${domain_path}:${destination_network}")
-                  })[0],
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_group_objects["${domain_path}:${destination_network}"].id
-                    if contains(keys(local.map_network_group_objects), "${domain_path}:${destination_network}")
-                  })[0],
-                )
-              }]
-              metric_value         = try(ipv4_static_route.metric, local.defaults.fmc.domains.devices.devices.vrfs.ipv4_static_routes.metric_value, null)
-              is_tunneled          = try(ipv4_static_route.is_tunneled, local.defaults.fmc.domains.devices.devices.vrfs.ipv4_static_routes.is_tunneled, null)
-              gateway_host_literal = try(ipv4_static_route.gateway.literal, null)
-              gateway_host_object_id = try(ipv4_static_route.gateway.object, "") != "" ? try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${ipv4_static_route.gateway.object}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${ipv4_static_route.gateway.object}")
-                })[0],
-              ) : null
-            }
-          ] if vrf.name == "Global"
-        ]
-      ]
-    ]) : "${item.domain}:${item.device_name}:${item.name}" => item
-  }
-
-  resource_device_vrf_ipv4_static_route = {
-    for item in flatten([
-      for domain in local.domains : [
-        for device in try(domain.devices.devices, []) : [
-          for vrf in try(device.vrfs, []) : [
-            for ipv4_static_route in try(vrf.ipv4_static_routes, []) : {
-              device_name            = device.name
-              device_id              = local.map_devices["${domain.name}:${device.name}"].id
-              vrf_id                 = local.map_vrfs["${domain.name}:${device.name}:${vrf.name}"].id
               vrf_name               = vrf.name
+              vrf_id                 = vrf.name == "Global" ? null : local.map_vrfs["${domain.name}:${device.name}:${vrf.name}"].id
               domain                 = domain.name
               name                   = ipv4_static_route.name
               interface_logical_name = ipv4_static_route.interface_logical_name
@@ -261,7 +219,7 @@ locals {
                   })[0],
                 )
               }]
-              metric_value         = try(ipv4_static_route.metric, local.defaults.fmc.domains.devices.devices.vrfs.ipv4_static_routes.metric_value, null)
+              metric               = try(ipv4_static_route.metric, local.defaults.fmc.domains.devices.devices.vrfs.ipv4_static_routes.metric, null)
               is_tunneled          = try(ipv4_static_route.is_tunneled, local.defaults.fmc.domains.devices.devices.vrfs.ipv4_static_routes.is_tunneled, null)
               gateway_host_literal = try(ipv4_static_route.gateway.literal, null)
               gateway_host_object_id = try(ipv4_static_route.gateway.object, "") != "" ? try(
@@ -272,12 +230,11 @@ locals {
                 })[0],
               ) : null
             }
-          ] if vrf.name != "Global"
+          ]
         ]
       ]
     ]) : "${item.domain}:${item.device_name}:${item.vrf_name}:${item.name}" => item
   }
-
 }
 
 resource "fmc_device_ipv4_static_route" "device_ipv4_static_route" {
@@ -285,46 +242,11 @@ resource "fmc_device_ipv4_static_route" "device_ipv4_static_route" {
 
   domain                 = each.value.domain
   device_id              = each.value.device_id
-  interface_logical_name = each.value.interface_logical_name
-  interface_id           = each.value.interface_id
-  destination_networks   = each.value.destination_networks
-  metric_value           = each.value.metric_value
-  gateway_host_literal   = each.value.gateway_host_literal
-  gateway_host_object_id = each.value.gateway_host_object_id
-  is_tunneled            = each.value.is_tunneled
-
-  depends_on = [
-    # data.fmc_hosts.module,
-    # fmc_hosts.module,
-    # fmc_host.module,
-    # data.fmc_networks.module,
-    # fmc_networks.module,
-    # fmc_network_groups.module,
-    # data.fmc_device.module,
-    # fmc_device.module,
-    # fmc_device_ha_pair.module,
-    # data.fmc_device_ha_pair.module,
-    # fmc_device_cluster.module,
-    # data.fmc_device_cluster.module,
-    # fmc_device_physical_interface.module,
-    # data.fmc_device_physical_interface.module,
-    # fmc_device_etherchannel_interface.module,
-    # data.fmc_device_etherchannel_interface.module,
-    # fmc_device_subinterface.module,
-    # data.fmc_device_subinterface.module,
-  ]
-}
-
-resource "fmc_device_vrf_ipv4_static_route" "device_vrf_ipv4_static_route" {
-  for_each = local.resource_device_vrf_ipv4_static_route
-
-  domain                 = each.value.domain
   vrf_id                 = each.value.vrf_id
-  device_id              = each.value.device_id
   interface_logical_name = each.value.interface_logical_name
   interface_id           = each.value.interface_id
   destination_networks   = each.value.destination_networks
-  metric_value           = each.value.metric_value
+  metric                 = each.value.metric
   gateway_host_literal   = each.value.gateway_host_literal
   gateway_host_object_id = each.value.gateway_host_object_id
   is_tunneled            = each.value.is_tunneled
@@ -348,8 +270,6 @@ resource "fmc_device_vrf_ipv4_static_route" "device_vrf_ipv4_static_route" {
     # data.fmc_device_etherchannel_interface.module,
     # fmc_device_subinterface.module,
     # data.fmc_device_subinterface.module,
-    # fmc_device_vrf.module,
-    # data.fmc_device_vrf.module
   ]
 }
 
@@ -365,51 +285,8 @@ locals {
             for ipv6_static_route in try(vrf.ipv6_static_routes, []) : {
               device_name            = device.name
               device_id              = local.map_devices["${domain.name}:${device.name}"].id
-              domain                 = domain.name
-              name                   = ipv6_static_route.name
-              interface_logical_name = ipv6_static_route.interface_logical_name
-              interface_id           = local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${ipv6_static_route.interface_logical_name}"].id
-              destination_networks = [for destination_network in ipv6_static_route.selected_networks : {
-                id = try(
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_objects["${domain_path}:${destination_network}"].id
-                    if contains(keys(local.map_network_objects), "${domain_path}:${destination_network}")
-                  })[0],
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_group_objects["${domain_path}:${destination_network}"].id
-                    if contains(keys(local.map_network_group_objects), "${domain_path}:${destination_network}")
-                  })[0],
-                )
-              }]
-              metric_value         = try(ipv6_static_route.metric, local.defaults.fmc.domains.devices.devices.vrfs.ipv6_static_routes.metric_value, null)
-              is_tunneled          = try(ipv6_static_route.is_tunneled, local.defaults.fmc.domains.devices.devices.vrfs.ipv6_static_routes.is_tunneled, null)
-              gateway_host_literal = try(ipv6_static_route.gateway.literal, null)
-              gateway_host_object_id = try(ipv6_static_route.gateway.object, "") != "" ? try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${ipv6_static_route.gateway.object}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${ipv6_static_route.gateway.object}")
-                })[0],
-              ) : null
-            }
-          ] if vrf.name == "Global"
-        ]
-      ]
-    ]) : "${item.domain}:${item.device_name}:${item.name}" => item
-  }
-
-  resource_device_vrf_ipv6_static_route = {
-    for item in flatten([
-      for domain in local.domains : [
-        for device in try(domain.devices.devices, []) : [
-          for vrf in try(device.vrfs, []) : [
-            for ipv6_static_route in try(vrf.ipv6_static_routes, []) : {
-              device_name            = device.name
-              device_id              = local.map_devices["${domain.name}:${device.name}"].id
-              vrf_id                 = local.map_vrfs["${domain.name}:${device.name}:${vrf.name}"].id
               vrf_name               = vrf.name
+              vrf_id                 = vrf.name == "Global" ? null : local.map_vrfs["${domain.name}:${device.name}:${vrf.name}"].id
               domain                 = domain.name
               name                   = ipv6_static_route.name
               interface_logical_name = ipv6_static_route.interface_logical_name
@@ -428,7 +305,7 @@ locals {
                   })[0],
                 )
               }]
-              metric_value         = try(ipv6_static_route.metric, local.defaults.fmc.domains.devices.devices.vrfs.ipv6_static_routes.metric_value, null)
+              metric               = try(ipv6_static_route.metric, local.defaults.fmc.domains.devices.devices.vrfs.ipv6_static_routes.metric, null)
               is_tunneled          = try(ipv6_static_route.is_tunneled, local.defaults.fmc.domains.devices.devices.vrfs.ipv6_static_routes.is_tunneled, null)
               gateway_host_literal = try(ipv6_static_route.gateway.literal, null)
               gateway_host_object_id = try(ipv6_static_route.gateway.object, "") != "" ? try(
@@ -439,7 +316,7 @@ locals {
                 })[0],
               ) : null
             }
-          ] if vrf.name != "Global"
+          ]
         ]
       ]
     ]) : "${item.domain}:${item.device_name}:${item.vrf_name}:${item.name}" => item
@@ -452,46 +329,11 @@ resource "fmc_device_ipv6_static_route" "device_ipv6_static_route" {
 
   domain                 = each.value.domain
   device_id              = each.value.device_id
-  interface_logical_name = each.value.interface_logical_name
-  interface_id           = each.value.interface_id
-  destination_networks   = each.value.destination_networks
-  metric_value           = each.value.metric_value
-  gateway_host_literal   = each.value.gateway_host_literal
-  gateway_host_object_id = each.value.gateway_host_object_id
-  is_tunneled            = each.value.is_tunneled
-
-  depends_on = [
-    # data.fmc_hosts.module,
-    # fmc_hosts.module,
-    # fmc_host.module,
-    # data.fmc_networks.module,
-    # fmc_networks.module,
-    # fmc_network_groups.module,
-    # data.fmc_device.module,
-    # fmc_device.module,
-    # fmc_device_ha_pair.module,
-    # data.fmc_device_ha_pair.module,
-    # fmc_device_cluster.module,
-    # data.fmc_device_cluster.module,
-    # fmc_device_physical_interface.module,
-    # data.fmc_device_physical_interface.module,
-    # fmc_device_etherchannel_interface.module,
-    # data.fmc_device_etherchannel_interface.module,
-    # fmc_device_subinterface.module,
-    # data.fmc_device_subinterface.module,
-  ]
-}
-
-resource "fmc_device_vrf_ipv6_static_route" "device_vrf_ipv6_static_route" {
-  for_each = local.resource_device_vrf_ipv6_static_route
-
-  domain                 = each.value.domain
   vrf_id                 = each.value.vrf_id
-  device_id              = each.value.device_id
   interface_logical_name = each.value.interface_logical_name
   interface_id           = each.value.interface_id
   destination_networks   = each.value.destination_networks
-  metric_value           = each.value.metric_value
+  metric                 = each.value.metric
   gateway_host_literal   = each.value.gateway_host_literal
   gateway_host_object_id = each.value.gateway_host_object_id
   is_tunneled            = each.value.is_tunneled
@@ -515,8 +357,6 @@ resource "fmc_device_vrf_ipv6_static_route" "device_vrf_ipv6_static_route" {
     # data.fmc_device_etherchannel_interface.module,
     # fmc_device_subinterface.module,
     # data.fmc_device_subinterface.module,
-    # fmc_device_vrf.module,
-    # data.fmc_device_vrf.module
   ]
 }
 
@@ -634,6 +474,7 @@ locals {
             device_name = device.name
             device_id   = local.map_devices["${domain.name}:${device.name}"].id
             vrf_name    = vrf.name
+            vrf_id      = vrf.name == "Global" ? null : local.map_vrfs["${domain.name}:${device.name}:${vrf.name}"].id
 
             ipv4_aggregate_addresses = [for ipv4_aggregate_address in try(vrf.bgp.ipv4_aggregate_addresses, {}) : {
               advertise_map_id = try(local.map_route_maps[ipv4_aggregate_address.advertise_map].id, null)
