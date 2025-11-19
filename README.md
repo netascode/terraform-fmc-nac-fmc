@@ -186,7 +186,6 @@ module "fmc" {
 | [fmc_applications.applications](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/data-sources/applications) | data source |
 | [fmc_bfd_template.bfd_template](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/data-sources/bfd_template) | data source |
 | [fmc_device.device](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/data-sources/device) | data source |
-| [fmc_device_bfd.device_bfd](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/data-sources/device_bfd) | data source |
 | [fmc_device_bgp_general_settings.device_bgp_general_settings](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/data-sources/device_bgp_general_settings) | data source |
 | [fmc_device_cluster.device_cluster](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/data-sources/device_cluster) | data source |
 | [fmc_device_etherchannel_interface.device_etherchannel_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/data-sources/device_etherchannel_interface) | data source |
