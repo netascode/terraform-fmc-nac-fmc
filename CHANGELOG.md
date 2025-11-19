@@ -17,7 +17,7 @@ It is suggested to:
 - (BREAKING CHANGE) Access Control Policy and Access Rules: renamed `enable_syslog` to `send_syslog`
 - (BREAKING CHANGE) BFD Template: Rename multiple fields
 - (BREAKING CHANGE) Renamed existing.fmc.domains.objects.[standard_acl, extended_acl] to standard_access_lists and extended_access_lists to align with names used in fmc.objects
-- (Enh) Add support for switch between bulk and individual operations for subset of objects (see: fmc.module_configuration)
+- (Enh) Add support for switch between bulk and individual operations for subset of objects (see: fmc.nac_configuration)
 - (Enh) Add support for `application filters` and `tunnel zones`
 
 ## 0.0.5

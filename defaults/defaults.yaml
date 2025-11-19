@@ -1,7 +1,7 @@
 ---
 defaults:
   fmc:
-    module_configuration:
+    nac_configuration:
       bulk: false
     domains:
       devices:

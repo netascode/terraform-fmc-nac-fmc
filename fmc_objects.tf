@@ -10,7 +10,7 @@ locals {
     } if length(try(domain.objects.hosts, [])) > 0
   }
 
-  hosts_bulk = try(local.fmc.module_configuration.hosts_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+  hosts_bulk = try(local.fmc.nac_configuration.hosts_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
   # Create a map, key is domain name, value is list of hosts for that domain
   resource_hosts = {
@@ -77,7 +77,7 @@ locals {
     } if length(try(domain.objects.networks, [])) > 0
   }
 
-  networks_bulk = try(local.fmc.module_configuration.networks_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+  networks_bulk = try(local.fmc.nac_configuration.networks_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
   resource_networks = {
     for domain in local.domains : domain.name => [
@@ -139,7 +139,7 @@ locals {
     } if length(try(domain.objects.ranges, [])) > 0
   }
 
-  ranges_bulk = try(local.fmc.module_configuration.ranges_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+  ranges_bulk = try(local.fmc.nac_configuration.ranges_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
   resource_ranges = {
     for domain in local.domains : domain.name => [
@@ -201,7 +201,7 @@ locals {
     } if length(try(domain.objects.fqdns, [])) > 0
   }
 
-  fqdns_bulk = try(local.fmc.module_configuration.fqdns_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+  fqdns_bulk = try(local.fmc.nac_configuration.fqdns_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
   resource_fqdns = {
     for domain in local.domains : domain.name => [
@@ -335,7 +335,7 @@ locals {
     } if length(try(domain.objects.ports, [])) > 0
   }
 
-  ports_bulk = try(local.fmc.module_configuration.ports_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+  ports_bulk = try(local.fmc.nac_configuration.ports_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
   resource_ports = {
     for domain in local.domains : domain.name => {
@@ -400,7 +400,7 @@ locals {
     } if length(try(domain.objects.icmpv4s, [])) > 0
   }
 
-  icmpv4s_bulk = try(local.fmc.module_configuration.icmpv4s_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+  icmpv4s_bulk = try(local.fmc.nac_configuration.icmpv4s_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
   resource_icmpv4s = {
     for domain in local.domains : domain.name => {
@@ -465,7 +465,7 @@ locals {
     } if length(try(domain.objects.port_groups, [])) > 0
   }
 
-  port_groups_bulk = try(local.fmc.module_configuration.port_groups_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+  port_groups_bulk = try(local.fmc.nac_configuration.port_groups_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
   resource_port_groups = {
     for domain in local.domains : domain.name => {
@@ -578,7 +578,7 @@ locals {
     } if length(try(domain.objects.urls, [])) > 0
   }
 
-  urls_bulk = try(local.fmc.module_configuration.urls_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+  urls_bulk = try(local.fmc.nac_configuration.urls_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
   resource_urls = {
     for domain in local.domains : domain.name => {
@@ -640,7 +640,7 @@ locals {
     } if length(try(domain.objects.url_groups, [])) > 0
   }
 
-  url_groups_bulk = try(local.fmc.module_configuration.url_groups_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+  url_groups_bulk = try(local.fmc.nac_configuration.url_groups_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
   resource_url_groups = {
     for domain in local.domains : domain.name => {
@@ -713,7 +713,7 @@ locals {
     } if length(try(domain.objects.vlan_tags, [])) > 0
   }
 
-  vlan_tags_bulk = try(local.fmc.module_configuration.vlan_tags_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+  vlan_tags_bulk = try(local.fmc.nac_configuration.vlan_tags_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
   resource_vlan_tags = {
     for domain in local.domains : domain.name => {
@@ -777,7 +777,7 @@ locals {
     } if length(try(domain.objects.vlan_tag_groups, [])) > 0
   }
 
-  vlan_tag_groups_bulk = try(local.fmc.module_configuration.vlan_tag_groups_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+  vlan_tag_groups_bulk = try(local.fmc.nac_configuration.vlan_tag_groups_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
   resource_vlan_tag_groups = {
     for domain in local.domains : domain.name => {
@@ -850,7 +850,7 @@ locals {
     } if length(try(domain.objects.sgts, [])) > 0
   }
 
-  sgts_bulk = try(local.fmc.module_configuration.sgts_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+  sgts_bulk = try(local.fmc.nac_configuration.sgts_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
   resource_sgts = {
     for domain in local.domains : domain.name => {
@@ -930,7 +930,7 @@ locals {
     } if length(try(domain.objects.tunnel_zones, [])) > 0
   }
 
-  tunnel_zones_bulk = try(local.fmc.module_configuration.tunnel_zones_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+  tunnel_zones_bulk = try(local.fmc.nac_configuration.tunnel_zones_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
   resource_tunnel_zones = {
     for domain in local.domains : domain.name => {
@@ -988,7 +988,7 @@ locals {
     } if length(try(domain.objects.security_zones, [])) > 0
   }
 
-  security_zones_bulk = try(local.fmc.module_configuration.security_zones_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+  security_zones_bulk = try(local.fmc.nac_configuration.security_zones_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
   resource_security_zones = {
     for domain in local.domains : domain.name => {
@@ -1046,7 +1046,7 @@ locals {
     } if length(try(domain.objects.application_filters, [])) > 0
   }
 
-  application_filters_bulk = try(local.fmc.module_configuration.application_filters_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+  application_filters_bulk = try(local.fmc.nac_configuration.application_filters_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
   resource_application_filters = {
     for domain in local.domains : domain.name => {
@@ -1151,7 +1151,7 @@ locals {
     } if length(try(domain.objects.time_ranges, [])) > 0
   }
 
-  time_ranges_bulk = try(local.fmc.module_configuration.time_ranges_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+  time_ranges_bulk = try(local.fmc.nac_configuration.time_ranges_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
   resource_time_ranges = {
     for domain in local.domains : domain.name => [
@@ -1170,7 +1170,7 @@ locals {
           range_start_day  = try(recurrence.range_start_day, null)
           range_start_time = try(recurrence.range_start_time, null)
         }]
-        description = try(time_range.description, local.defaults.fmc.module_configuration.time_ranges.description, null)
+        description = try(time_range.description, local.defaults.fmc.domains.objects.time_ranges.description, null)
       } if !contains(try(keys(local.data_time_ranges[domain.name].items), []), time_range.name)
     ] if length(try(domain.objects.time_ranges, [])) > 0
   }
@@ -1224,7 +1224,7 @@ locals {
     } if length(try(domain.objects.ipv4_address_pools, [])) > 0
   }
 
-  ipv4_address_pools_bulk = try(local.fmc.module_configuration.ipv4_address_pools_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+  ipv4_address_pools_bulk = try(local.fmc.nac_configuration.ipv4_address_pools_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
   resource_ipv4_address_pools = {
     for domain in local.domains : domain.name => {
@@ -1289,7 +1289,7 @@ locals {
     } if length(try(domain.objects.ipv6_address_pools, [])) > 0
   }
 
-  ipv6_address_pools_bulk = try(local.fmc.module_configuration.ipv6_address_pools_bulk, local.fmc.module_configuration.bulk, local.defaults.fmc.module_configuration.bulk)
+  ipv6_address_pools_bulk = try(local.fmc.nac_configuration.ipv6_address_pools_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
   resource_ipv6_address_pools = {
     for domain in local.domains : domain.name => {
