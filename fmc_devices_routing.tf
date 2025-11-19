@@ -89,24 +89,6 @@ resource "fmc_device_vrf" "device_vrf" {
 ###    DEVICE BFDs
 ##########################################################
 locals {
-  data_device_bfd = {
-    for item in flatten([
-      for domain in local.data_existing : [
-        for device in try(domain.devices.devices, []) : [
-          for vrf in try(device.vrfs, []) : [
-            for bfd in try(device.bfds, []) : {
-              interface_logical_name = bfd.interface_logical_name
-              device_name            = device.name
-              device_id              = data.fmc_device.device["${domain.name}:${device.name}"].id
-              vrf_name               = vrf.name
-              domain                 = domain.name
-            }
-          ] if vrf.name == "Global"
-        ]
-      ]
-    ]) : "${item.domain}:${item.device_name}:${item.vrf_name}:${item.interface_logical_name}" => item
-  }
-
   resource_device_bfd = {
     for item in flatten([
       for domain in local.domains : [
@@ -149,14 +131,6 @@ locals {
       ]
     ]) : "${item.domain}:${item.device_name}:${item.vrf_name}:${item.internal_id}" => item
   }
-}
-
-data "fmc_device_bfd" "device_bfd" {
-  for_each = local.data_device_bfd
-
-  domain                 = each.value.domain
-  interface_logical_name = each.value.interface_logical_name
-  device_id              = each.value.device_id
 }
 
 resource "fmc_device_bfd" "device_bfd" {
