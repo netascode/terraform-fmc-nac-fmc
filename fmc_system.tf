@@ -39,7 +39,7 @@ locals {
             id   = local.map_devices["${domain.name}:${device.name}"].id
             type = local.map_devices["${domain.name}:${device.name}"].type
             name = device.name
-          } if try(device.access_control_policy, null) == acp_policy_value.name && !contains(try(keys(local.resource_device), []), "${domain.name}:${device.name}")
+          } if try(device.access_control_policy, null) == acp_policy_value.name && contains(try(keys(local.data_device), []), "${domain.name}:${device.name}")
         ]
       ])
     }
