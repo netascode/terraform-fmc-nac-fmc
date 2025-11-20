@@ -1,11 +1,11 @@
-## 0.0.6 (Unreleased)
+## 0.1.0
 
-!!!!
-- (BREAKING CHANGE) Resources have names changed. Upgrading from any previous version will trigger re-create of all the resources.
-It is suggested to:
-- destroy current environment and re-apply it after upgrade
-- OR remove state and import resources from FMC without destroying them
-!!!!
+> **BACKWARDS INCOMPATIBILITY**\
+This version is not backwards compatible, as the names of resources have changed.\
+Upgrading from any previous version will trigger the re-creation of all resources.\
+It is suggested to either\
+(1) destroy the current environment and re-apply it after the upgrade\
+(2) remove the state and import resources from FMC without destroying them\
 
 - (BREAKING CHANGE) Rename `ftd_auto_nat_rules` and `ftd_manual_nat_rules` under `ftd_nat_policy`
 - (BREAKING CHANGE) Rename cluster `data_devices` to `data_nodes` with corresponding attributes

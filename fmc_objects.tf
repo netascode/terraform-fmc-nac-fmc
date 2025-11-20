@@ -1280,7 +1280,6 @@ resource "fmc_ipv4_address_pool" "ipv4_address_pool" {
 ###    IPV6 ADDRESS POOLS
 ##########################################################
 locals {
-
   data_ipv6_address_pools = {
     for domain in local.data_existing : domain.name => {
       items = {
