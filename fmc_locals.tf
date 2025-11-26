@@ -16,6 +16,7 @@ locals {
   help_protocol_mapping = {
     "TCP"  = "6",
     "UDP"  = "17",
-    "ICMP" = "1"
+    "ICMP" = "1",
+    "GRE"  = "47"
   }
 }
