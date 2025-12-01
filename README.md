@@ -135,6 +135,7 @@ module "fmc" {
 | [fmc_hosts.hosts](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/resources/hosts) | resource |
 | [fmc_icmpv4.icmpv4](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/resources/icmpv4) | resource |
 | [fmc_icmpv4s.icmpv4s](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/resources/icmpv4s) | resource |
+| [fmc_interface_group.interface_group](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/resources/interface_group) | resource |
 | [fmc_intrusion_policy.intrusion_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/resources/intrusion_policy) | resource |
 | [fmc_intrusion_policy.intrusion_policy_l2](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/resources/intrusion_policy) | resource |
 | [fmc_ipv4_address_pool.ipv4_address_pool](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/resources/ipv4_address_pool) | resource |
@@ -205,6 +206,7 @@ module "fmc" {
 | [fmc_health_policy.health_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/data-sources/health_policy) | data source |
 | [fmc_hosts.hosts](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/data-sources/hosts) | data source |
 | [fmc_icmpv4s.icmpv4s](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/data-sources/icmpv4s) | data source |
+| [fmc_interface_group.interface_group](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/data-sources/interface_group) | data source |
 | [fmc_intrusion_policy.intrusion_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/data-sources/intrusion_policy) | data source |
 | [fmc_ipv4_address_pools.ipv4_address_pools](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/data-sources/ipv4_address_pools) | data source |
 | [fmc_ipv6_address_pools.ipv6_address_pools](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc8/docs/data-sources/ipv6_address_pools) | data source |
