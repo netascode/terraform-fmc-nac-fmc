@@ -1,3 +1,7 @@
+## 0.1.1 (Unreleased)
+
+- Add interface_group support (no interface assignment)
+
 ## 0.1.0
 
 > **BACKWARDS INCOMPATIBILITY**\

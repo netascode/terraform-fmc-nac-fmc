@@ -227,6 +227,8 @@ defaults:
             log_interval: 300
         security_zones:
           interface_type: "ROUTED"
+        interface_groups:
+          interface_type: "ROUTED"
         bfd_templates:
           echo: false
           authentication_type: "NONE"

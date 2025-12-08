@@ -1035,6 +1035,64 @@ resource "fmc_security_zone" "security_zone" {
 }
 
 ##########################################################
+###    INTERFACE GROUP
+##########################################################
+locals {
+  data_interface_groups = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for interface_group in try(domain.objects.interface_groups, []) : interface_group.name => {}
+      }
+    } if length(try(domain.objects.interface_groups, [])) > 0
+  }
+
+  interface_groups_bulk = try(local.fmc.nac_configuration.interface_groups_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_interface_groups = {
+    for domain in local.domains : domain.name => {
+      for interface_group in try(domain.objects.interface_groups, []) : interface_group.name => {
+        domain         = domain.name
+        name           = interface_group.name
+        interface_type = try(interface_group.interface_type, local.defaults.fmc.domains.objects.interface_groups.interface_type)
+      } if !contains(try(keys(local.data_interface_groups[domain.name].items), []), interface_group.name)
+    } if length(try(domain.objects.interface_groups, [])) > 0
+  }
+
+  resource_interface_group = !local.interface_groups_bulk ? {
+    for item in flatten([
+      for domain, interface_groups in local.resource_interface_groups : [
+        for interface_group in values(interface_groups) : {
+          key  = "${domain}:${interface_group.name}"
+          item = interface_group
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_interface_groups" "interface_groups" {
+  for_each = local.data_interface_groups
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_interface_groups" "interface_groups" {
+  for_each = local.interface_groups_bulk ? local.resource_interface_groups : {}
+
+  domain = each.key
+  items  = { for interface_group in each.value : interface_group.name => interface_group }
+}
+
+resource "fmc_interface_group" "interface_group" {
+  for_each = !local.interface_groups_bulk ? local.resource_interface_group : {}
+
+  domain         = each.value.item.domain
+  name           = each.value.item.name
+  interface_type = each.value.item.interface_type
+}
+
+##########################################################
 ###    APPLICATION FILTERS
 ##########################################################
 locals {
@@ -1142,7 +1200,6 @@ resource "fmc_application_filter" "application_filter" {
 ###    TIME RANGES
 ##########################################################
 locals {
-
   data_time_ranges = {
     for domain in local.data_existing : domain.name => {
       items = {
@@ -1973,6 +2030,41 @@ locals {
         for security_zone_name, security_zone_values in security_zones.items : "${domain}:${security_zone_name}" => { id = security_zone_values.id, type = security_zone_values.type }
       }
     ]...),
+  )
+}
+
+######
+### map_interface_groups
+######
+locals {
+  map_interface_groups = merge(
+
+    # Interface Groups - bulk mode outputs
+    local.interface_groups_bulk ? merge([
+      for domain, interface_groups in fmc_interface_groups.interface_groups : {
+        for interface_group_name, interface_group_values in interface_groups.items : "${domain}:${interface_group_name}" => { id = interface_group_values.id, type = interface_group_values.type }
+      }
+    ]...) : {},
+
+    # Interface Groups - individual mode outputs
+    !local.interface_groups_bulk ? { for key, resource in fmc_interface_group.interface_group : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # Interface Groups - data sources
+    merge([
+      for domain, interface_group in data.fmc_interface_groups.interface_groups : {
+        for interface_group_name, interface_group_values in interface_group.items : "${domain}:${interface_group_name}" => { id = interface_group_values.id, type = interface_group_values.type }
+      }
+    ]...)
+  )
+}
+
+######
+### map_security_zones_and_interface_groups
+######
+locals {
+  map_security_zones_and_interface_groups = merge(
+    local.map_security_zones,
+    local.map_interface_groups,
   )
 }
 

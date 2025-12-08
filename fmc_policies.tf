@@ -99,6 +99,7 @@ locals {
                     domain_path => local.map_network_group_objects["${domain_path}:${destination_network_object}"].id
                     if contains(keys(local.map_network_group_objects), "${domain_path}:${destination_network_object}")
                   })[0],
+                  tobool("ERROR: destination_network_object '${destination_network_object}' not found in domain '${domain.name}'. Related domains: ${jsonencode(local.related_domains[domain.name])}")
                 )
                 type = try(
                   values({
@@ -494,8 +495,8 @@ locals {
             destination_interface_id = try(manual_rule.destination_interface, "") != "" ? try(
               values({
                 for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_security_zones["${domain_path}:${manual_rule.destination_interface}"].id
-                if contains(keys(local.map_security_zones), "${domain_path}:${manual_rule.destination_interface}")
+                domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${manual_rule.destination_interface}"].id
+                if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${manual_rule.destination_interface}")
             })[0]) : null
             fall_through                      = try(manual_rule.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_nat_rules.fall_through, null)
             interface_in_original_destination = try(manual_rule.interface_in_original_destination, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_nat_rules.interface_in_original_destination, null)
@@ -544,8 +545,8 @@ locals {
             source_interface_id = try(manual_rule.source_interface, null) != null ? try(
               values({
                 for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_security_zones["${domain_path}:${manual_rule.source_interface}"].id
-                if contains(keys(local.map_security_zones), "${domain_path}:${manual_rule.source_interface}")
+                domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${manual_rule.source_interface}"].id
+                if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${manual_rule.source_interface}")
             })[0]) : null
             translate_dns = try(manual_rule.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_nat_rules.translate_dns, null)
             translated_destination_id = try(manual_rule.translated_destination, "") != "" ? try(
