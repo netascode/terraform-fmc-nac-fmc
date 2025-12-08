@@ -1038,18 +1038,15 @@ resource "fmc_security_zone" "security_zone" {
 ###    INTERFACE GROUP
 ##########################################################
 locals {
-  data_interface_group = {
-    for item in flatten([
-      for domain in local.data_existing : [
-        for interface_group in try(domain.objects.interface_groups, {}) : {
-          name   = interface_group.name
-          domain = domain.name
-        }
-      ]
-    ]) : "${item.domain}:${item.name}" => item
+  data_interface_groups = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for interface_group in try(domain.objects.interface_groups, []) : interface_group.name => {}
+      }
+    } if length(try(domain.objects.interface_groups, [])) > 0
   }
 
-  interface_groups_bulk = false
+  interface_groups_bulk = try(local.fmc.nac_configuration.interface_groups_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
   resource_interface_groups = {
     for domain in local.domains : domain.name => {
@@ -1057,7 +1054,7 @@ locals {
         domain         = domain.name
         name           = interface_group.name
         interface_type = try(interface_group.interface_type, local.defaults.fmc.domains.objects.interface_groups.interface_type)
-      } if !contains(try(keys(local.data_interface_group[domain.name].items), []), interface_group.name)
+      } if !contains(try(keys(local.data_interface_groups[domain.name].items), []), interface_group.name)
     } if length(try(domain.objects.interface_groups, [])) > 0
   }
 
@@ -1073,11 +1070,18 @@ locals {
   } : {}
 }
 
-data "fmc_interface_group" "interface_group" {
-  for_each = local.data_interface_group
+data "fmc_interface_groups" "interface_groups" {
+  for_each = local.data_interface_groups
 
-  name   = each.value.name
-  domain = each.value.domain
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_interface_groups" "interface_groups" {
+  for_each = local.interface_groups_bulk ? local.resource_interface_groups : {}
+
+  domain = each.key
+  items  = { for interface_group in each.value : interface_group.name => interface_group }
 }
 
 resource "fmc_interface_group" "interface_group" {
@@ -2035,12 +2039,19 @@ locals {
 locals {
   map_interface_groups = merge(
 
+    # Interface Groups - bulk mode outputs
+    local.interface_groups_bulk ? merge([
+      for domain, interface_groups in fmc_interface_groups.interface_groups : {
+        for interface_group_name, interface_group_values in interface_groups.items : "${domain}:${interface_group_name}" => { id = interface_group_values.id, type = interface_group_values.type }
+      }
+    ]...) : {},
+
     # Interface Groups - individual mode outputs
     !local.interface_groups_bulk ? { for key, resource in fmc_interface_group.interface_group : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
 
     # Interface Groups - data sources
     merge([
-      for domain, interface_group in data.fmc_interface_group.interface_group : {
+      for domain, interface_group in data.fmc_interface_groups.interface_groups : {
         for interface_group_name, interface_group_values in interface_group.items : "${domain}:${interface_group_name}" => { id = interface_group_values.id, type = interface_group_values.type }
       }
     ]...)
