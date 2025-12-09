@@ -1,6 +1,7 @@
 ## 0.1.1 (Unreleased)
 
-- Add interface_group support (no interface assignment)
+- Add `interface_group` support (no interface assignment)
+- Add `chassis` management support
 
 ## 0.1.0
 

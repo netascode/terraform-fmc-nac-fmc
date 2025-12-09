@@ -1662,6 +1662,66 @@ resource "fmc_bfd_template" "bfd_template" {
 }
 
 ##########################################################
+###    RESOURCE PROFILES
+##########################################################
+locals {
+  data_resource_profiles = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for resource_profile in try(domain.objects.resource_profiles, []) : resource_profile.name => {}
+      }
+    } if length(try(domain.objects.resource_profiles, [])) > 0
+  }
+
+  resource_profiles_bulk = try(local.fmc.nac_configuration.resource_profiles_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_resource_profiles = {
+    for domain in local.domains : domain.name => [
+      for resource_profile in try(domain.objects.resource_profiles, []) : {
+        domain         = domain.name
+        name           = resource_profile.name
+        number_of_cpus = resource_profile.number_of_cpus
+        description    = try(resource_profile.description, local.defaults.fmc.domains.objects.resource_profiles.description, null)
+      } if !contains(try(keys(local.data_resource_profiles[domain.name].items), []), resource_profile.name)
+    ] if length(try(domain.objects.resource_profiles, [])) > 0
+  }
+
+  resource_resource_profile = !local.resource_profiles_bulk ? {
+    for item in flatten([
+      for domain, resource_profiles in local.resource_resource_profiles : [
+        for resource_profile in resource_profiles : {
+          key  = "${domain}:${resource_profile.name}"
+          item = resource_profile
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_resource_profiles" "resource_profiles" {
+  for_each = local.data_resource_profiles
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_resource_profiles" "resource_profiles" {
+  for_each = local.resource_profiles_bulk ? local.resource_resource_profiles : {}
+
+  domain = each.key
+  items  = { for resource_profile in each.value : resource_profile.name => resource_profile }
+}
+
+resource "fmc_resource_profile" "resource_profile" {
+  for_each = !local.resource_profiles_bulk ? local.resource_resource_profile : {}
+
+  domain         = each.value.item.domain
+  name           = each.value.item.name
+  number_of_cpus = each.value.item.number_of_cpus
+  description    = each.value.item.description
+}
+
+##########################################################
 ###    MAPS combine _data and _resources for a given object type
 ##########################################################
 ######
@@ -2168,6 +2228,30 @@ locals {
   )
 }
 
+######
+### map_resource_profiles
+######
+locals {
+  map_resource_profiles = merge(
+
+    # Resource Profiles - bulk mode outputs
+    local.resource_profiles_bulk ? merge([
+      for domain, resource_profiles in fmc_resource_profiles.resource_profiles : {
+        for resource_profile_name, resource_profile_values in resource_profiles.items : "${domain}:${resource_profile_name}" => { id = resource_profile_values.id, type = resource_profile_values.type }
+      }
+    ]...) : {},
+
+    # Resource Profiles - individual mode outputs
+    !local.resource_profiles_bulk ? { for key, resource in fmc_resource_profile.resource_profile : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # Resource Profiles - data sources
+    merge([
+      for domain, resource_profiles in data.fmc_resource_profiles.resource_profiles : {
+        for resource_profile_name, resource_profile_values in resource_profiles.items : "${domain}:${resource_profile_name}" => { id = resource_profile_values.id, type = resource_profile_values.type }
+      }
+    ]...),
+  )
+}
 
 ######
 ### map_standard_access_lists
