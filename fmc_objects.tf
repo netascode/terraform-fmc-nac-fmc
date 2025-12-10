@@ -1769,7 +1769,6 @@ resource "fmc_extended_community_lists" "extended_community_lists" {
   items  = { for extended_community_list in each.value : extended_community_list.name => extended_community_list }
 }
 
-# Handle individual mode (resource per host) 
 resource "fmc_extended_community_list" "extended_community_list" {
   for_each = !local.extended_community_lists_bulk ? local.resource_extended_community_list : {}
 
@@ -1777,6 +1776,152 @@ resource "fmc_extended_community_list" "extended_community_list" {
   name        = each.value.item.name
   sub_type    = each.value.item.sub_type
   entries     = each.value.item.entries
+}
+
+##########################################################
+###    POLICY LISTS
+##########################################################
+locals {
+  data_policy_lists = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for policy_list in try(domain.objects.policy_lists, []) : policy_list.name => {}
+      }
+    } if length(try(domain.objects.policy_lists, [])) > 0
+  }
+
+  policy_lists_bulk = try(local.fmc.nac_configuration.policy_lists_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_policy_lists = {
+    for domain in local.domains : domain.name => [
+      for policy_list in try(domain.objects.policy_lists, []) : {
+        domain      = domain.name
+        name        = policy_list.name
+        action      = policy_list.action
+        interfaces = [for interface in try(policy_list.interfaces, []) : {
+          id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${interface}"].id
+            if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${interface}")
+          })[0]
+        }]
+        interface_names = length(try(policy_list.interface_literals, [])) > 0 ? policy_list.interface_literals : null
+        address_standard_access_lists = length(try(policy_list.address_standard_access_lists, [])) > 0 ? [for address_standard_access_list in policy_list.address_standard_access_lists : {
+          id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_standard_access_lists["${domain_path}:${address_standard_access_list}"].id
+            if contains(keys(local.map_standard_access_lists), "${domain_path}:${address_standard_access_list}")
+          })[0]
+        }] : null
+        address_ipv4_prefix_lists = length(try(policy_list.address_ipv4_prefix_lists, [])) > 0 ? [for address_ipv4_prefix_list in policy_list.address_ipv4_prefix_lists : {
+          id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_ipv4_prefix_lists["${domain_path}:${address_ipv4_prefix_list}"].id
+            if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${address_ipv4_prefix_list}")
+          })[0]
+        }] : null
+        next_hop_standard_access_lists = length(try(policy_list.next_hop_standard_access_lists, [])) > 0 ? [for next_hop_standard_access_list in policy_list.next_hop_standard_access_lists : {
+          id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_standard_access_lists["${domain_path}:${next_hop_standard_access_list}"].id
+            if contains(keys(local.map_standard_access_lists), "${domain_path}:${next_hop_standard_access_list}")
+          })[0]
+        }] : null
+        next_hop_ipv4_prefix_lists = length(try(policy_list.next_hop_ipv4_prefix_lists, [])) > 0 ? [for next_hop_ipv4_prefix_list in policy_list.next_hop_ipv4_prefix_lists : {
+          id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_ipv4_prefix_lists["${domain_path}:${next_hop_ipv4_prefix_list}"].id
+            if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${next_hop_ipv4_prefix_list}")
+          })[0]
+        }] : null
+        route_source_standard_access_lists = length(try(policy_list.route_source_standard_access_lists, [])) > 0 ? [for route_source_standard_access_list in policy_list.route_source_standard_access_lists : {
+          id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_standard_access_lists["${domain_path}:${route_source_standard_access_list}"].id
+            if contains(keys(local.map_standard_access_lists), "${domain_path}:${route_source_standard_access_list}")
+          })[0]
+        }] : null
+        route_source_ipv4_prefix_lists = length(try(policy_list.route_source_ipv4_prefix_lists, [])) > 0 ? [for route_source_ipv4_prefix_list in policy_list.route_source_ipv4_prefix_lists : {
+          id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_ipv4_prefix_lists["${domain_path}:${route_source_ipv4_prefix_list}"].id
+            if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${route_source_ipv4_prefix_list}")
+          })[0]
+        }] : null
+        as_paths = [for as_path in try(policy_list.as_paths, []) : {
+          id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_as_paths["${domain_path}:${as_path}"].id
+            if contains(keys(local.map_as_paths), "${domain_path}:${as_path}")
+          })[0]
+        }]
+        community_lists = [for community_list in try(policy_list.community_lists, []) : {
+          id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_community_lists["${domain_path}:${community_list}"].id
+            if contains(keys(local.map_community_lists), "${domain_path}:${community_list}")
+          })[0]
+        }]
+        extended_community_lists = [for extended_community_list in try(policy_list.extended_community_lists, []) : {
+          id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_extended_community_lists["${domain_path}:${extended_community_list}"].id
+            if contains(keys(local.map_extended_community_lists), "${domain_path}:${extended_community_list}")
+          })[0]
+        }]
+        match_community_exactly = try(policy_list.match_community_exactly, local.defaults.fmc.domains.objects.policy_lists.match_community_exactly, null)
+        metric = try(policy_list.metric, local.defaults.fmc.domains.objects.policy_lists.metric, null)
+        tag = try(policy_list.tag, local.defaults.fmc.domains.objects.policy_lists.tag, null)
+      } if !contains(try(keys(local.data_policy_lists[domain.name].items), []), policy_list.name)
+    ] if length(try(domain.objects.policy_lists, [])) > 0
+  }
+
+  resource_policy_list = !local.policy_lists_bulk ? {
+    for item in flatten([
+      for domain, policy_lists in local.resource_policy_lists : [
+        for policy_list in policy_lists : {
+          key  = "${domain}:${policy_list.name}"
+          item = policy_list
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_policy_lists" "policy_lists" {
+  for_each = local.data_policy_lists
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_policy_lists" "policy_lists" {
+  for_each = local.policy_lists_bulk ? local.resource_policy_lists : {}
+
+  domain = each.key
+  items  = { for policy_list in each.value : policy_list.name => policy_list }
+}
+
+resource "fmc_policy_list" "policy_list" {
+  for_each = !local.policy_lists_bulk ? local.resource_policy_list : {}
+
+  domain      = each.value.item.domain
+  name        = each.value.item.name
+  action      = each.value.item.action
+  interfaces  = each.value.item.interfaces
+  interface_names = each.value.item.interface_names
+  address_standard_access_lists = each.value.item.address_standard_access_lists
+  address_ipv4_prefix_lists     = each.value.item.address_ipv4_prefix_lists
+  next_hop_standard_access_lists = each.value.item.next_hop_standard_access_lists
+  next_hop_ipv4_prefix_lists     = each.value.item.next_hop_ipv4_prefix_lists
+  route_source_standard_access_lists = each.value.item.route_source_standard_access_lists
+  route_source_ipv4_prefix_lists     = each.value.item.route_source_ipv4_prefix_lists
+  as_paths                     = each.value.item.as_paths
+  community_lists             = each.value.item.community_lists
+  extended_community_lists    = each.value.item.extended_community_lists
+  match_community_exactly     = each.value.item.match_community_exactly
+  metric                      = each.value.item.metric
+  tag                         = each.value.item.tag
 }
 
 ##########################################################
@@ -2719,6 +2864,98 @@ locals {
 
     # Variable Sets - data sources
     { for key, resource in data.fmc_variable_set.variable_set : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+  )
+}
+
+######
+### map_ipv4_prefix_lists
+######
+locals {
+  map_ipv4_prefix_lists = merge(
+
+    # IPv4 Prefix Lists - bulk mode outputs
+    local.ipv4_prefix_lists_bulk ? merge([
+      for domain, ipv4_prefix_lists in fmc_ipv4_prefix_lists.ipv4_prefix_lists : {
+        for ipv4_prefix_list_name, ipv4_prefix_list_values in ipv4_prefix_lists.items : "${domain}:${ipv4_prefix_list_name}" => { id = ipv4_prefix_list_values.id, type = ipv4_prefix_list_values.type }
+      }
+    ]...) : {},
+
+    # IPv4 Prefix Lists - individual mode outputs
+    !local.ipv4_prefix_lists_bulk ? { for key, resource in fmc_ipv4_prefix_list.ipv4_prefix_list : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # IPv4 Prefix Lists - data sources
+    merge([
+      for domain, ipv4_prefix_lists in data.fmc_ipv4_prefix_lists.ipv4_prefix_lists : {
+        for ipv4_prefix_list_name, ipv4_prefix_list_values in ipv4_prefix_lists.items : "${domain}:${ipv4_prefix_list_name}" => { id = ipv4_prefix_list_values.id, type = ipv4_prefix_list_values.type }
+      }
+    ]...)
+  )
+}
+
+######
+### map_community_lists
+######
+locals {
+  map_community_lists = merge(
+
+    # Standard Community Lists - bulk mode outputs
+    local.standard_community_lists_bulk ? merge([
+      for domain, standard_community_lists in fmc_standard_community_lists.standard_community_lists : {
+        for standard_community_list_name, standard_community_list_values in standard_community_lists.items : "${domain}:${standard_community_list_name}" => { id = standard_community_list_values.id, type = standard_community_list_values.type }
+      }
+    ]...) : {},
+
+    # Standard Community Lists - individual mode outputs
+    !local.standard_community_lists_bulk ? { for key, resource in fmc_standard_community_list.standard_community_list : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # Standard Community Lists - data sources
+    merge([
+      for domain, standard_community_lists in data.fmc_standard_community_lists.standard_community_lists : {
+        for standard_community_list_name, standard_community_list_values in standard_community_lists.items : "${domain}:${standard_community_list_name}" => { id = standard_community_list_values.id, type = standard_community_list_values.type }
+      }
+    ]...),
+
+    # Expanded Community Lists - bulk mode outputs
+    local.expanded_community_lists_bulk ? merge([
+      for domain, expanded_community_lists in fmc_expanded_community_lists.expanded_community_lists : {
+        for expanded_community_list_name, expanded_community_list_values in expanded_community_lists.items : "${domain}:${expanded_community_list_name}" => { id = expanded_community_list_values.id, type = expanded_community_list_values.type }
+      }
+    ]...) : {},
+
+    # Expanded Community Lists - individual mode outputs
+    !local.expanded_community_lists_bulk ? { for key, resource in fmc_expanded_community_list.expanded_community_list : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # Expanded Community Lists - data sources
+    merge([
+      for domain, expanded_community_lists in data.fmc_expanded_community_lists.expanded_community_lists : {
+        for expanded_community_list_name, expanded_community_list_values in expanded_community_lists.items : "${domain}:${expanded_community_list_name}" => { id = expanded_community_list_values.id, type = expanded_community_list_values.type }
+      }
+    ]...)
+  )
+}
+
+######
+### map_extended_community_lists
+######
+locals {
+  map_extended_community_lists = merge(
+
+    # Extended Community Lists - bulk mode outputs
+    local.extended_community_lists_bulk ? merge([
+      for domain, extended_community_lists in fmc_extended_community_lists.extended_community_lists : {
+        for extended_community_list_name, extended_community_list_values in extended_community_lists.items : "${domain}:${extended_community_list_name}" => { id = extended_community_list_values.id, type = extended_community_list_values.type }
+      }
+    ]...) : {},
+
+    # Extended Community Lists - individual mode outputs
+    !local.extended_community_lists_bulk ? { for key, resource in fmc_extended_community_list.extended_community_list : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # Extended Community Lists - data sources
+    merge([
+      for domain, extended_community_lists in data.fmc_extended_community_lists.extended_community_lists : {
+        for extended_community_list_name, extended_community_list_values in extended_community_lists.items : "${domain}:${extended_community_list_name}" => { id = extended_community_list_values.id, type = extended_community_list_values.type }
+      }
+    ]...),
   )
 }
 
