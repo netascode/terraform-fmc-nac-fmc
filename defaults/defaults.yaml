@@ -78,6 +78,8 @@ defaults:
           etherchannel_interfaces:
             admin_state: ENABLED
             auto_negotiation: true
+          logical_devices:
+            admin_state: ENABLED
         ftd_platform_settings:
           description: " "
           http_access:
@@ -225,6 +227,8 @@ defaults:
         ipv4_address_pools:
           overridable: false
         ipv6_address_pools:
+          overridable: false
+        as_paths:
           overridable: false
         extended_access_lists:
           entries:

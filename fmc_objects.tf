@@ -1397,6 +1397,69 @@ resource "fmc_ipv6_address_pool" "ipv6_address_pool" {
 }
 
 ##########################################################
+###    AS PATHS
+##########################################################
+locals {
+  data_as_paths = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for as_path in try(domain.objects.as_paths, []) : as_path.name => {}
+      }
+    } if length(try(domain.objects.as_paths, [])) > 0
+  }
+
+  as_paths_bulk = try(local.fmc.nac_configuration.as_paths_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_as_paths = {
+    for domain in local.domains : domain.name => [
+      for as_path in try(domain.objects.as_paths, []) : {
+        domain      = domain.name
+        name        = as_path.name
+        overridable = try(as_path.overridable, local.defaults.fmc.domains.objects.as_paths.overridable, null)
+        entries = [for entry in as_path.entries : {
+          action = entry.action
+          regular_expression = entry.regular_expression
+        }]
+      } if !contains(try(keys(local.data_as_paths[domain.name].items), []), as_path.name)
+    ] if length(try(domain.objects.as_paths, [])) > 0
+  }
+
+  resource_as_path = !local.as_paths_bulk ? {
+    for item in flatten([
+      for domain, as_paths in local.resource_as_paths : [
+        for as_path in as_paths : {
+          key  = "${domain}:${as_path.name}"
+          item = as_path
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_as_paths" "as_paths" {
+  for_each = local.data_as_paths
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_as_paths" "as_paths" {
+  for_each = local.as_paths_bulk ? local.resource_as_paths : {}
+
+  domain = each.key
+  items  = { for as_path in each.value : as_path.name => as_path }
+}
+
+resource "fmc_as_path" "as_path" {
+  for_each = !local.as_paths_bulk ? local.resource_as_path : {}
+
+  domain      = each.value.item.domain
+  name        = each.value.item.name
+  overridable = each.value.item.overridable
+  entries     = each.value.item.entries
+}
+
+##########################################################
 ###    STANDARD ACCESS LISTS
 ##########################################################
 locals {
@@ -2248,6 +2311,31 @@ locals {
     merge([
       for domain, resource_profiles in data.fmc_resource_profiles.resource_profiles : {
         for resource_profile_name, resource_profile_values in resource_profiles.items : "${domain}:${resource_profile_name}" => { id = resource_profile_values.id, type = resource_profile_values.type }
+      }
+    ]...),
+  )
+}
+
+######
+### map_as_paths
+######
+locals {
+  map_as_paths = merge(
+
+    # As Paths - bulk mode outputs
+    local.as_paths_bulk ? merge([
+      for domain, as_paths in fmc_as_paths.as_paths : {
+        for as_path_name, as_path_values in as_paths.items : "${domain}:${as_path_name}" => { id = as_path_values.id, type = as_path_values.type }
+      }
+    ]...) : {},
+
+    # As Paths - individual mode outputs
+    !local.as_paths_bulk ? { for key, resource in fmc_as_path.as_path : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # As Paths - data sources
+    merge([
+      for domain, as_paths in data.fmc_as_paths.as_paths : {
+        for as_path_name, as_path_values in as_paths.items : "${domain}:${as_path_name}" => { id = as_path_values.id, type = as_path_values.type }
       }
     ]...),
   )
