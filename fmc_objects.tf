@@ -1588,6 +1588,198 @@ resource "fmc_ipv6_prefix_list" "ipv6_prefix_list" {
 }
 
 ##########################################################
+###    STANDARD COMMUNITY LISTS
+##########################################################
+locals {
+  data_standard_community_lists = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for standard_community_list in try(domain.objects.standard_community_lists, []) : standard_community_list.name => {}
+      }
+    } if length(try(domain.objects.standard_community_lists, [])) > 0
+  }
+
+  standard_community_lists_bulk = try(local.fmc.nac_configuration.standard_community_lists_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_standard_community_lists = {
+    for domain in local.domains : domain.name => [
+      for standard_community_list in try(domain.objects.standard_community_lists, []) : {
+        domain      = domain.name
+        name        = standard_community_list.name
+        entries = [for entry in standard_community_list.entries : {
+          action = entry.action
+          communities = join(" ", entry.communities)
+          internet = try(entry.internet, local.defaults.fmc.domains.objects.standard_community_lists.entries.internet, null)
+          no_advertise = try(entry.no_advertise,  local.defaults.fmc.domains.objects.standard_community_lists.entries.no_advertise, null)
+          no_export = try(entry.no_export, local.defaults.fmc.domains.objects.standard_community_lists.entries.no_export, null)
+        }]
+      } if !contains(try(keys(local.data_standard_community_lists[domain.name].items), []), standard_community_list.name)
+    ] if length(try(domain.objects.standard_community_lists, [])) > 0
+  }
+
+  resource_standard_community_list = !local.standard_community_lists_bulk ? {
+    for item in flatten([
+      for domain, standard_community_lists in local.resource_standard_community_lists : [
+        for standard_community_list in standard_community_lists : {
+          key  = "${domain}:${standard_community_list.name}"
+          item = standard_community_list
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_standard_community_lists" "standard_community_lists" {
+  for_each = local.data_standard_community_lists
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_standard_community_lists" "standard_community_lists" {
+  for_each = local.standard_community_lists_bulk ? local.resource_standard_community_lists : {}
+
+  domain = each.key
+  items  = { for standard_community_list in each.value : standard_community_list.name => standard_community_list }
+}
+
+# Handle individual mode (resource per host) 
+resource "fmc_standard_community_list" "standard_community_list" {
+  for_each = !local.standard_community_lists_bulk ? local.resource_standard_community_list : {}
+
+  domain      = each.value.item.domain
+  name        = each.value.item.name
+  entries     = each.value.item.entries
+}
+
+##########################################################
+###    EXPANDED COMMUNITY LISTS
+##########################################################
+locals {
+  data_expanded_community_lists = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for expanded_community_list in try(domain.objects.expanded_community_lists, []) : expanded_community_list.name => {}
+      }
+    } if length(try(domain.objects.expanded_community_lists, [])) > 0
+  }
+
+  expanded_community_lists_bulk = try(local.fmc.nac_configuration.expanded_community_lists_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_expanded_community_lists = {
+    for domain in local.domains : domain.name => [
+      for expanded_community_list in try(domain.objects.expanded_community_lists, []) : {
+        domain      = domain.name
+        name        = expanded_community_list.name
+        entries = [for entry in expanded_community_list.entries : {
+          action = entry.action
+          regular_expression = entry.regular_expression
+        }]
+      } if !contains(try(keys(local.data_expanded_community_lists[domain.name].items), []), expanded_community_list.name)
+    ] if length(try(domain.objects.expanded_community_lists, [])) > 0
+  }
+
+  resource_expanded_community_list = !local.expanded_community_lists_bulk ? {
+    for item in flatten([
+      for domain, expanded_community_lists in local.resource_expanded_community_lists : [
+        for expanded_community_list in expanded_community_lists : {
+          key  = "${domain}:${expanded_community_list.name}"
+          item = expanded_community_list
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_expanded_community_lists" "expanded_community_lists" {
+  for_each = local.data_expanded_community_lists
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_expanded_community_lists" "expanded_community_lists" {
+  for_each = local.expanded_community_lists_bulk ? local.resource_expanded_community_lists : {}
+
+  domain = each.key
+  items  = { for expanded_community_list in each.value : expanded_community_list.name => expanded_community_list }
+}
+
+# Handle individual mode (resource per host) 
+resource "fmc_expanded_community_list" "expanded_community_list" {
+  for_each = !local.expanded_community_lists_bulk ? local.resource_expanded_community_list : {}
+
+  domain      = each.value.item.domain
+  name        = each.value.item.name
+  entries     = each.value.item.entries
+}
+
+##########################################################
+###    EXTENDED COMMUNITY LISTS
+##########################################################
+locals {
+  data_extended_community_lists = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for extended_community_list in try(domain.objects.extended_community_lists, []) : extended_community_list.name => {}
+      }
+    } if length(try(domain.objects.extended_community_lists, [])) > 0
+  }
+
+  extended_community_lists_bulk = try(local.fmc.nac_configuration.extended_community_lists_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_extended_community_lists = {
+    for domain in local.domains : domain.name => [
+      for extended_community_list in try(domain.objects.extended_community_lists, []) : {
+        domain      = domain.name
+        name        = extended_community_list.name
+        sub_type    = extended_community_list.sub_type
+        entries = [for entry in extended_community_list.entries : {
+          action = entry.action
+          route_target = extended_community_list.sub_type == "Standard" ? entry.route_target : null
+          regular_expression = extended_community_list.sub_type == "Expanded" ? entry.regular_expression : null
+        }]
+      } if !contains(try(keys(local.data_extended_community_lists[domain.name].items), []), extended_community_list.name)
+    ] if length(try(domain.objects.extended_community_lists, [])) > 0
+  }
+
+  resource_extended_community_list = !local.extended_community_lists_bulk ? {
+    for item in flatten([
+      for domain, extended_community_lists in local.resource_extended_community_lists : [
+        for extended_community_list in extended_community_lists : {
+          key  = "${domain}:${extended_community_list.name}"
+          item = extended_community_list
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_extended_community_lists" "extended_community_lists" {
+  for_each = local.data_extended_community_lists
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_extended_community_lists" "extended_community_lists" {
+  for_each = local.extended_community_lists_bulk ? local.resource_extended_community_lists : {}
+
+  domain = each.key
+  items  = { for extended_community_list in each.value : extended_community_list.name => extended_community_list }
+}
+
+# Handle individual mode (resource per host) 
+resource "fmc_extended_community_list" "extended_community_list" {
+  for_each = !local.extended_community_lists_bulk ? local.resource_extended_community_list : {}
+
+  domain      = each.value.item.domain
+  name        = each.value.item.name
+  sub_type    = each.value.item.sub_type
+  entries     = each.value.item.entries
+}
+
+##########################################################
 ###    STANDARD ACCESS LISTS
 ##########################################################
 locals {

@@ -242,3 +242,8 @@ defaults:
         bfd_templates:
           echo: false
           authentication_type: "NONE"
+        standard_community_lists:
+          entries:
+            internet: false
+            no_advertise: false
+            no_export: false
