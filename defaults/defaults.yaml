@@ -47,8 +47,6 @@ defaults:
               ipv4_synchronization: false
             physical_interfaces:
               enabled: true
-              speed: "AUTO"
-              duplex: "AUTO"
               mode: "NONE"
               flow_control_send: false
               mtu: 1500
@@ -72,6 +70,14 @@ defaults:
           failed_interfaces_limit: 1
           ha_link_use_ipv6: false
           state_link_use_ipv6: false
+        chassis:
+          physical_interfaces:
+            admin_state: ENABLED
+            duplex: FULL
+            fec_mode: AUTO
+          etherchannel_interfaces:
+            admin_state: ENABLED
+            auto_negotiation: true
         ftd_platform_settings:
           description: " "
           http_access:
