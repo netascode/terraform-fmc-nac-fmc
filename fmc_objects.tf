@@ -1460,6 +1460,134 @@ resource "fmc_as_path" "as_path" {
 }
 
 ##########################################################
+###    IPv4 PREFIX LISTS
+##########################################################
+locals {
+  data_ipv4_prefix_lists = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for ipv4_prefix_list in try(domain.objects.ipv4_prefix_lists, []) : ipv4_prefix_list.name => {}
+      }
+    } if length(try(domain.objects.ipv4_prefix_lists, [])) > 0
+  }
+
+  ipv4_prefix_lists_bulk = try(local.fmc.nac_configuration.ipv4_prefix_lists_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_ipv4_prefix_lists = {
+    for domain in local.domains : domain.name => [
+      for ipv4_prefix_list in try(domain.objects.ipv4_prefix_lists, []) : {
+        domain      = domain.name
+        name        = ipv4_prefix_list.name
+        entries = [for entry in ipv4_prefix_list.entries : {
+          action = entry.action
+          prefix = entry.prefix
+          min_prefix_length = entry.min_prefix_length
+          max_prefix_length = entry.max_prefix_length
+        }]
+      } if !contains(try(keys(local.data_ipv4_prefix_lists[domain.name].items), []), ipv4_prefix_list.name)
+    ] if length(try(domain.objects.ipv4_prefix_lists, [])) > 0
+  }
+
+  resource_ipv4_prefix_list = !local.ipv4_prefix_lists_bulk ? {
+    for item in flatten([
+      for domain, ipv4_prefix_lists in local.resource_ipv4_prefix_lists : [
+        for ipv4_prefix_list in ipv4_prefix_lists : {
+          key  = "${domain}:${ipv4_prefix_list.name}"
+          item = ipv4_prefix_list
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_ipv4_prefix_lists" "ipv4_prefix_lists" {
+  for_each = local.data_ipv4_prefix_lists
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_ipv4_prefix_lists" "ipv4_prefix_lists" {
+  for_each = local.ipv4_prefix_lists_bulk ? local.resource_ipv4_prefix_lists : {}
+
+  domain = each.key
+  items  = { for ipv4_prefix_list in each.value : ipv4_prefix_list.name => ipv4_prefix_list }
+}
+
+# Handle individual mode (resource per host) 
+resource "fmc_ipv4_prefix_list" "ipv4_prefix_list" {
+  for_each = !local.ipv4_prefix_lists_bulk ? local.resource_ipv4_prefix_list : {}
+
+  domain      = each.value.item.domain
+  name        = each.value.item.name
+  entries     = each.value.item.entries
+}
+
+##########################################################
+###    IPv6 PREFIX LISTS
+##########################################################
+locals {
+  data_ipv6_prefix_lists = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for ipv6_prefix_list in try(domain.objects.ipv6_prefix_lists, []) : ipv6_prefix_list.name => {}
+      }
+    } if length(try(domain.objects.ipv6_prefix_lists, [])) > 0
+  }
+
+  ipv6_prefix_lists_bulk = try(local.fmc.nac_configuration.ipv6_prefix_lists_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_ipv6_prefix_lists = {
+    for domain in local.domains : domain.name => [
+      for ipv6_prefix_list in try(domain.objects.ipv6_prefix_lists, []) : {
+        domain      = domain.name
+        name        = ipv6_prefix_list.name
+        entries = [for entry in ipv6_prefix_list.entries : {
+          action = entry.action
+          prefix = entry.prefix
+          min_prefix_length = entry.min_prefix_length
+          max_prefix_length = entry.max_prefix_length
+        }]
+      } if !contains(try(keys(local.data_ipv6_prefix_lists[domain.name].items), []), ipv6_prefix_list.name)
+    ] if length(try(domain.objects.ipv6_prefix_lists, [])) > 0
+  }
+
+  resource_ipv6_prefix_list = !local.ipv6_prefix_lists_bulk ? {
+    for item in flatten([
+      for domain, ipv6_prefix_lists in local.resource_ipv6_prefix_lists : [
+        for ipv6_prefix_list in ipv6_prefix_lists : {
+          key  = "${domain}:${ipv6_prefix_list.name}"
+          item = ipv6_prefix_list
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_ipv6_prefix_lists" "ipv6_prefix_lists" {
+  for_each = local.data_ipv6_prefix_lists
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_ipv6_prefix_lists" "ipv6_prefix_lists" {
+  for_each = local.ipv6_prefix_lists_bulk ? local.resource_ipv6_prefix_lists : {}
+
+  domain = each.key
+  items  = { for ipv6_prefix_list in each.value : ipv6_prefix_list.name => ipv6_prefix_list }
+}
+
+# Handle individual mode (resource per host) 
+resource "fmc_ipv6_prefix_list" "ipv6_prefix_list" {
+  for_each = !local.ipv6_prefix_lists_bulk ? local.resource_ipv6_prefix_list : {}
+
+  domain      = each.value.item.domain
+  name        = each.value.item.name
+  entries     = each.value.item.entries
+}
+
+##########################################################
 ###    STANDARD ACCESS LISTS
 ##########################################################
 locals {
