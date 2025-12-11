@@ -1,7 +1,8 @@
 ## 0.1.1 (Unreleased)
 
+- (BREAKING CHANGE): Moved configuration of standby IP for High Availability Pairs
 - Add `interface_group` support (no interface assignment)
-- Add `chassis` management support
+- Add support for chassis management
 
 ## 0.1.0
 
