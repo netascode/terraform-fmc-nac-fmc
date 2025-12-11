@@ -1417,7 +1417,7 @@ locals {
         name        = as_path.name
         overridable = try(as_path.overridable, local.defaults.fmc.domains.objects.as_paths.overridable, null)
         entries = [for entry in as_path.entries : {
-          action = entry.action
+          action             = entry.action
           regular_expression = entry.regular_expression
         }]
       } if !contains(try(keys(local.data_as_paths[domain.name].items), []), as_path.name)
@@ -1476,11 +1476,11 @@ locals {
   resource_ipv4_prefix_lists = {
     for domain in local.domains : domain.name => [
       for ipv4_prefix_list in try(domain.objects.ipv4_prefix_lists, []) : {
-        domain      = domain.name
-        name        = ipv4_prefix_list.name
+        domain = domain.name
+        name   = ipv4_prefix_list.name
         entries = [for entry in ipv4_prefix_list.entries : {
-          action = entry.action
-          prefix = entry.prefix
+          action            = entry.action
+          prefix            = entry.prefix
           min_prefix_length = entry.min_prefix_length
           max_prefix_length = entry.max_prefix_length
         }]
@@ -1518,9 +1518,9 @@ resource "fmc_ipv4_prefix_lists" "ipv4_prefix_lists" {
 resource "fmc_ipv4_prefix_list" "ipv4_prefix_list" {
   for_each = !local.ipv4_prefix_lists_bulk ? local.resource_ipv4_prefix_list : {}
 
-  domain      = each.value.item.domain
-  name        = each.value.item.name
-  entries     = each.value.item.entries
+  domain  = each.value.item.domain
+  name    = each.value.item.name
+  entries = each.value.item.entries
 }
 
 ##########################################################
@@ -1540,11 +1540,11 @@ locals {
   resource_ipv6_prefix_lists = {
     for domain in local.domains : domain.name => [
       for ipv6_prefix_list in try(domain.objects.ipv6_prefix_lists, []) : {
-        domain      = domain.name
-        name        = ipv6_prefix_list.name
+        domain = domain.name
+        name   = ipv6_prefix_list.name
         entries = [for entry in ipv6_prefix_list.entries : {
-          action = entry.action
-          prefix = entry.prefix
+          action            = entry.action
+          prefix            = entry.prefix
           min_prefix_length = entry.min_prefix_length
           max_prefix_length = entry.max_prefix_length
         }]
@@ -1582,9 +1582,9 @@ resource "fmc_ipv6_prefix_lists" "ipv6_prefix_lists" {
 resource "fmc_ipv6_prefix_list" "ipv6_prefix_list" {
   for_each = !local.ipv6_prefix_lists_bulk ? local.resource_ipv6_prefix_list : {}
 
-  domain      = each.value.item.domain
-  name        = each.value.item.name
-  entries     = each.value.item.entries
+  domain  = each.value.item.domain
+  name    = each.value.item.name
+  entries = each.value.item.entries
 }
 
 ##########################################################
@@ -1604,14 +1604,14 @@ locals {
   resource_standard_community_lists = {
     for domain in local.domains : domain.name => [
       for standard_community_list in try(domain.objects.standard_community_lists, []) : {
-        domain      = domain.name
-        name        = standard_community_list.name
+        domain = domain.name
+        name   = standard_community_list.name
         entries = [for entry in standard_community_list.entries : {
-          action = entry.action
-          communities = join(" ", entry.communities)
-          internet = try(entry.internet, local.defaults.fmc.domains.objects.standard_community_lists.entries.internet, null)
-          no_advertise = try(entry.no_advertise,  local.defaults.fmc.domains.objects.standard_community_lists.entries.no_advertise, null)
-          no_export = try(entry.no_export, local.defaults.fmc.domains.objects.standard_community_lists.entries.no_export, null)
+          action       = entry.action
+          communities  = join(" ", entry.communities)
+          internet     = try(entry.internet, local.defaults.fmc.domains.objects.standard_community_lists.entries.internet, null)
+          no_advertise = try(entry.no_advertise, local.defaults.fmc.domains.objects.standard_community_lists.entries.no_advertise, null)
+          no_export    = try(entry.no_export, local.defaults.fmc.domains.objects.standard_community_lists.entries.no_export, null)
         }]
       } if !contains(try(keys(local.data_standard_community_lists[domain.name].items), []), standard_community_list.name)
     ] if length(try(domain.objects.standard_community_lists, [])) > 0
@@ -1647,9 +1647,9 @@ resource "fmc_standard_community_lists" "standard_community_lists" {
 resource "fmc_standard_community_list" "standard_community_list" {
   for_each = !local.standard_community_lists_bulk ? local.resource_standard_community_list : {}
 
-  domain      = each.value.item.domain
-  name        = each.value.item.name
-  entries     = each.value.item.entries
+  domain  = each.value.item.domain
+  name    = each.value.item.name
+  entries = each.value.item.entries
 }
 
 ##########################################################
@@ -1669,10 +1669,10 @@ locals {
   resource_expanded_community_lists = {
     for domain in local.domains : domain.name => [
       for expanded_community_list in try(domain.objects.expanded_community_lists, []) : {
-        domain      = domain.name
-        name        = expanded_community_list.name
+        domain = domain.name
+        name   = expanded_community_list.name
         entries = [for entry in expanded_community_list.entries : {
-          action = entry.action
+          action             = entry.action
           regular_expression = entry.regular_expression
         }]
       } if !contains(try(keys(local.data_expanded_community_lists[domain.name].items), []), expanded_community_list.name)
@@ -1709,9 +1709,9 @@ resource "fmc_expanded_community_lists" "expanded_community_lists" {
 resource "fmc_expanded_community_list" "expanded_community_list" {
   for_each = !local.expanded_community_lists_bulk ? local.resource_expanded_community_list : {}
 
-  domain      = each.value.item.domain
-  name        = each.value.item.name
-  entries     = each.value.item.entries
+  domain  = each.value.item.domain
+  name    = each.value.item.name
+  entries = each.value.item.entries
 }
 
 ##########################################################
@@ -1731,12 +1731,12 @@ locals {
   resource_extended_community_lists = {
     for domain in local.domains : domain.name => [
       for extended_community_list in try(domain.objects.extended_community_lists, []) : {
-        domain      = domain.name
-        name        = extended_community_list.name
-        sub_type    = extended_community_list.sub_type
+        domain   = domain.name
+        name     = extended_community_list.name
+        sub_type = extended_community_list.sub_type
         entries = [for entry in extended_community_list.entries : {
-          action = entry.action
-          route_target = extended_community_list.sub_type == "Standard" ? entry.route_target : null
+          action             = entry.action
+          route_target       = extended_community_list.sub_type == "Standard" ? entry.route_target : null
           regular_expression = extended_community_list.sub_type == "Expanded" ? entry.regular_expression : null
         }]
       } if !contains(try(keys(local.data_extended_community_lists[domain.name].items), []), extended_community_list.name)
@@ -1772,10 +1772,10 @@ resource "fmc_extended_community_lists" "extended_community_lists" {
 resource "fmc_extended_community_list" "extended_community_list" {
   for_each = !local.extended_community_lists_bulk ? local.resource_extended_community_list : {}
 
-  domain      = each.value.item.domain
-  name        = each.value.item.name
-  sub_type    = each.value.item.sub_type
-  entries     = each.value.item.entries
+  domain   = each.value.item.domain
+  name     = each.value.item.name
+  sub_type = each.value.item.sub_type
+  entries  = each.value.item.entries
 }
 
 ##########################################################
@@ -1795,9 +1795,9 @@ locals {
   resource_policy_lists = {
     for domain in local.domains : domain.name => [
       for policy_list in try(domain.objects.policy_lists, []) : {
-        domain      = domain.name
-        name        = policy_list.name
-        action      = policy_list.action
+        domain = domain.name
+        name   = policy_list.name
+        action = policy_list.action
         interfaces = [for interface in try(policy_list.interfaces, []) : {
           id = values({
             for domain_path in local.related_domains[domain.name] :
@@ -1870,8 +1870,8 @@ locals {
           })[0]
         }]
         match_community_exactly = try(policy_list.match_community_exactly, local.defaults.fmc.domains.objects.policy_lists.match_community_exactly, null)
-        metric = try(policy_list.metric, local.defaults.fmc.domains.objects.policy_lists.metric, null)
-        tag = try(policy_list.tag, local.defaults.fmc.domains.objects.policy_lists.tag, null)
+        metric                  = try(policy_list.metric, local.defaults.fmc.domains.objects.policy_lists.metric, null)
+        tag                     = try(policy_list.tag, local.defaults.fmc.domains.objects.policy_lists.tag, null)
       } if !contains(try(keys(local.data_policy_lists[domain.name].items), []), policy_list.name)
     ] if length(try(domain.objects.policy_lists, [])) > 0
   }
@@ -1905,23 +1905,23 @@ resource "fmc_policy_lists" "policy_lists" {
 resource "fmc_policy_list" "policy_list" {
   for_each = !local.policy_lists_bulk ? local.resource_policy_list : {}
 
-  domain      = each.value.item.domain
-  name        = each.value.item.name
-  action      = each.value.item.action
-  interfaces  = each.value.item.interfaces
-  interface_names = each.value.item.interface_names
-  address_standard_access_lists = each.value.item.address_standard_access_lists
-  address_ipv4_prefix_lists     = each.value.item.address_ipv4_prefix_lists
-  next_hop_standard_access_lists = each.value.item.next_hop_standard_access_lists
-  next_hop_ipv4_prefix_lists     = each.value.item.next_hop_ipv4_prefix_lists
+  domain                             = each.value.item.domain
+  name                               = each.value.item.name
+  action                             = each.value.item.action
+  interfaces                         = each.value.item.interfaces
+  interface_names                    = each.value.item.interface_names
+  address_standard_access_lists      = each.value.item.address_standard_access_lists
+  address_ipv4_prefix_lists          = each.value.item.address_ipv4_prefix_lists
+  next_hop_standard_access_lists     = each.value.item.next_hop_standard_access_lists
+  next_hop_ipv4_prefix_lists         = each.value.item.next_hop_ipv4_prefix_lists
   route_source_standard_access_lists = each.value.item.route_source_standard_access_lists
   route_source_ipv4_prefix_lists     = each.value.item.route_source_ipv4_prefix_lists
-  as_paths                     = each.value.item.as_paths
-  community_lists             = each.value.item.community_lists
-  extended_community_lists    = each.value.item.extended_community_lists
-  match_community_exactly     = each.value.item.match_community_exactly
-  metric                      = each.value.item.metric
-  tag                         = each.value.item.tag
+  as_paths                           = each.value.item.as_paths
+  community_lists                    = each.value.item.community_lists
+  extended_community_lists           = each.value.item.extended_community_lists
+  match_community_exactly            = each.value.item.match_community_exactly
+  metric                             = each.value.item.metric
+  tag                                = each.value.item.tag
 }
 
 ##########################################################

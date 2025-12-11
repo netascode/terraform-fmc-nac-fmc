@@ -239,21 +239,45 @@ resource "fmc_device_deploy" "device_deploy" {
   deployment_note = each.value.deployment_note
 
   depends_on = [
-    fmc_device.device,
-    data.fmc_device.device,
     fmc_device_physical_interface.device_physical_interface,
-    data.fmc_device_physical_interface.device_physical_interface,
     fmc_device_etherchannel_interface.device_etherchannel_interface,
-    data.fmc_device_etherchannel_interface.device_etherchannel_interface,
     fmc_device_subinterface.device_subinterface,
-    data.fmc_device_subinterface.device_subinterface,
     fmc_device_ha_pair.device_ha_pair,
-    data.fmc_device_ha_pair.device_ha_pair,
     fmc_device_ha_pair_monitoring.device_ha_pair_monitoring,
     fmc_device_cluster.device_cluster,
-    data.fmc_device_cluster.device_cluster,
     fmc_policy_assignment.access_control_policy,
     fmc_policy_assignment.ftd_nat_policy,
     fmc_policy_assignment.ftd_platform_settings,
+    fmc_device_deploy.chassis_deploy,
+  ]
+}
+
+locals {
+  resource_deploy_chassis = {
+    for item in flatten([
+      for domain in local.domains : {
+        domain          = domain.name
+        ignore_warning  = try(local.fmc.system.deployment.ignore_warning, local.defaults.fmc.domains.devices.devices.deploy_ignore_warning, null)
+        deployment_note = try(local.fmc.system.deployment.deployment_note, local.defaults.fmc.domains.devices.devices.deploy_deployment_note, null)
+        device_id_list = flatten([
+          for chassis in try(domain.devices.chassis, []) : [local.map_chassis["${domain.name}:${chassis.name}"].id] if try(chassis.deploy, false)
+        ])
+      }
+    ]) : item.domain => item if length(item.device_id_list) > 0
+  }
+}
+
+resource "fmc_device_deploy" "chassis_deploy" {
+  for_each = var.manage_deployment ? local.resource_deploy_chassis : {}
+
+  domain          = each.value.domain
+  device_id_list  = each.value.device_id_list
+  ignore_warning  = each.value.ignore_warning
+  deployment_note = each.value.deployment_note
+
+  depends_on = [
+    fmc_chassis_physical_interface.chassis_physical_interface,
+    fmc_chassis_etherchannel_interface.chassis_etherchannel_interface,
+    fmc_chassis_subinterface.chassis_subinterface,
   ]
 }

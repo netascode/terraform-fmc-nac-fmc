@@ -197,19 +197,51 @@ locals {
   resource_device_ha_pair_monitoring = {
     for item in flatten([
       for domain in local.domains : [
-        for ha_pair in try(domain.devices.ha_pairs, []) : [
-          for monitored_interface in try(ha_pair.interfaces, []) : {
-            domain               = domain.name
-            device_name          = ha_pair.name
-            ha_pair_id           = try(fmc_device_ha_pair.device_ha_pair["${domain.name}:${ha_pair.name}"].id, data.fmc_device_ha_pair.device_ha_pair["${domain.name}:${ha_pair.name}"].id)
-            logical_name         = local.map_interfaces_by_logical_names["${domain.name}:${ha_pair.primary_device}:${monitored_interface.interface_logical_name}"].logical_name # To build TF dependency on the interface
-            monitor_interface    = monitored_interface.monitor_interface
-            ipv4_standby_address = try(monitored_interface.ipv4_standby_address, null)
-            ipv6_addresses = [for ipv6_address in try(monitored_interface.ipv6_addresses, {}) : {
-              active_address  = ipv6_address.active_address
-              standby_address = ipv6_address.standby_address
-            }]
-          }
+        for device in try(domain.devices.devices, []) : [
+          for vrf in try(device.vrfs, []) : concat(
+            [
+              for physical_interface in try(vrf.physical_interfaces, []) : {
+                domain               = domain.name
+                device_name          = device.name
+                ha_pair_id           = local.map_device_to_container[local.map_devices["${domain.name}:${device.name}"].id].id
+                logical_name         = local.map_interfaces_by_names["${domain.name}:${device.name}:${physical_interface.name}"].logical_name # To build TF dependency on the interface
+                monitor_interface    = physical_interface.monitor_interface
+                ipv4_standby_address = try(physical_interface.ipv4_standby_address, null)
+                ipv6_addresses = [for ipv6_address in try(physical_interface.ipv6_addresses, {}) : {
+                  active_address  = ipv6_address.active_address
+                  standby_address = ipv6_address.standby_address
+                }]
+              } if(try(physical_interface.monitor_interface, null) != null && (try(physical_interface.ipv4_standby_address, null) != null || length(try(physical_interface.ipv6_addresses, {})) > 0))
+            ],
+            [
+              for subinterface in try(vrf.sub_interfaces, []) : {
+                domain               = domain.name
+                device_name          = device.name
+                ha_pair_id           = local.map_device_to_container[local.map_devices["${domain.name}:${device.name}"].id].id
+                logical_name         = local.map_interfaces_by_names["${domain.name}:${device.name}:${subinterface.name}"].logical_name # To build TF dependency on the interface
+                monitor_interface    = subinterface.monitor_interface
+                ipv4_standby_address = try(subinterface.ipv4_standby_address, null)
+                ipv6_addresses = [for ipv6_address in try(subinterface.ipv6_addresses, {}) : {
+                  active_address  = ipv6_address.active_address
+                  standby_address = ipv6_address.standby_address
+                }]
+              } if(try(subinterface.monitor_interface, null) != null && (try(subinterface.ipv4_standby_address, null) != null || length(try(subinterface.ipv6_addresses, {})) > 0))
+            ],
+            [
+              for etherchannel_interface in try(vrf.etherchannel_interfaces, []) : {
+                domain               = domain.name
+                device_name          = device.name
+                ha_pair_id           = local.map_device_to_container[local.map_devices["${domain.name}:${device.name}"].id].id
+                logical_name         = local.map_interfaces_by_names["${domain.name}:${device.name}:${etherchannel_interface.name}"].logical_name # To build TF dependency on the interface
+                monitor_interface    = etherchannel_interface.monitor_interface
+                ipv4_standby_address = try(etherchannel_interface.ipv4_standby_address, null)
+                ipv6_addresses = [for ipv6_address in try(etherchannel_interface.ipv6_addresses, {}) : {
+                  active_address  = ipv6_address.active_address
+                  standby_address = ipv6_address.standby_address
+                }]
+              } if(try(etherchannel_interface.monitor_interface, null) != null && (try(etherchannel_interface.ipv4_standby_address, null) != null || length(try(etherchannel_interface.ipv6_addresses, {})) > 0))
+            ]
+          )
         ]
       ]
     ]) : "${item.domain}:${item.device_name}:${item.logical_name}" => item
@@ -226,17 +258,73 @@ resource "fmc_device_ha_pair_monitoring" "device_ha_pair_monitoring" {
   ipv4_standby_address = each.value.ipv4_standby_address
   # Caveats - IPv6 standby address cannot be removed via API/Terraform/Module
   #ipv6_addresses        = each.value.ipv6_addresses
+}
 
-  depends_on = [
-    # data.fmc_device_ha_pair.module,
-    # fmc_device_ha_pair.module,
-    # fmc_device_physical_interface.module,
-    # data.fmc_device_physical_interface.module,
-    # fmc_device_etherchannel_interface.module,
-    # data.fmc_device_etherchannel_interface.module,
-    # fmc_device_subinterface.module,
-    # data.fmc_device_subinterface.module,
-  ]
+##########################################################
+###    DEVICE HA PAIR FAILOVER INTERFACE MAC ADDRESS
+##########################################################
+locals {
+  resource_device_ha_pair_failover_interface_mac_address = {
+    for item in flatten([
+      for domain in local.domains : [
+        for device in try(domain.devices.devices, []) : [
+          for vrf in try(device.vrfs, []) : concat(
+            [
+              for physical_interface in try(vrf.physical_interfaces, []) : {
+                domain              = domain.name
+                device_name         = device.name
+                ha_pair_id          = local.map_device_to_container[local.map_devices["${domain.name}:${device.name}"].id].id
+                name                = physical_interface.name
+                interface_name      = physical_interface.name
+                interface_id        = local.map_interfaces_by_names["${domain.name}:${device.name}:${physical_interface.name}"].id
+                interface_type      = local.map_interfaces_by_names["${domain.name}:${device.name}:${physical_interface.name}"].type
+                active_mac_address  = physical_interface.ha_active_mac_address
+                standby_mac_address = physical_interface.ha_standby_mac_address
+              } if(try(physical_interface.ha_active_mac_address, null) != null && try(physical_interface.ha_standby_mac_address, null) != null)
+            ],
+            [
+              for subinterface in try(vrf.sub_interfaces, []) : {
+                domain              = domain.name
+                device_name         = device.name
+                ha_pair_id          = local.map_device_to_container[local.map_devices["${domain.name}:${device.name}"].id].id
+                name                = subinterface.name
+                interface_name      = split(".", subinterface.name)[length(split(".", subinterface.name)) - 2]
+                interface_id        = local.map_interfaces_by_names["${domain.name}:${device.name}:${subinterface.name}"].id
+                interface_type      = local.map_interfaces_by_names["${domain.name}:${device.name}:${subinterface.name}"].type
+                active_mac_address  = subinterface.ha_active_mac_address
+                standby_mac_address = subinterface.ha_standby_mac_address
+              } if(try(subinterface.ha_active_mac_address, null) != null && try(subinterface.ha_standby_mac_address, null) != null)
+            ],
+            [
+              for etherchannel_interface in try(vrf.etherchannel_interfaces, []) : {
+                domain              = domain.name
+                device_name         = device.name
+                ha_pair_id          = local.map_device_to_container[local.map_devices["${domain.name}:${device.name}"].id].id
+                name                = etherchannel_interface.name
+                interface_name      = etherchannel_interface.name
+                interface_id        = local.map_interfaces_by_names["${domain.name}:${device.name}:${etherchannel_interface.name}"].id
+                interface_type      = local.map_interfaces_by_names["${domain.name}:${device.name}:${etherchannel_interface.name}"].type
+                active_mac_address  = etherchannel_interface.ha_active_mac_address
+                standby_mac_address = etherchannel_interface.ha_standby_mac_address
+              } if(try(etherchannel_interface.ha_active_mac_address, null) != null && try(etherchannel_interface.ha_standby_mac_address, null) != null)
+            ]
+          )
+        ]
+      ]
+    ]) : "${item.domain}:${item.device_name}:${item.name}" => item
+  }
+}
+
+resource "fmc_device_ha_pair_failover_interface_mac_address" "device_ha_pair_failover_interface_mac_address" {
+  for_each = local.resource_device_ha_pair_failover_interface_mac_address
+
+  domain              = each.value.domain
+  ha_pair_id          = each.value.ha_pair_id
+  interface_name      = each.value.interface_name
+  interface_id        = each.value.interface_id
+  interface_type      = each.value.interface_type
+  active_mac_address  = each.value.active_mac_address
+  standby_mac_address = each.value.standby_mac_address
 }
 
 ##########################################################
@@ -2275,15 +2363,16 @@ locals {
 ### map_ftd_platform_settings
 ######
 locals {
-  map_ftd_platform_settings = merge({
-    for item in flatten([
-      for ftd_platform_setting_key, ftd_platform_setting_value in local.resource_ftd_platform_settings : {
-        name   = ftd_platform_setting_value.name
-        id     = fmc_ftd_platform_settings.ftd_platform_settings[ftd_platform_setting_key].id
-        type   = fmc_ftd_platform_settings.ftd_platform_settings[ftd_platform_setting_key].type
-        domain = ftd_platform_setting_value.domain
-      }
-    ]) : "${item.domain}:${item.name}" => item
+  map_ftd_platform_settings = merge(
+    {
+      for item in flatten([
+        for ftd_platform_setting_key, ftd_platform_setting_value in local.resource_ftd_platform_settings : {
+          name   = ftd_platform_setting_value.name
+          id     = fmc_ftd_platform_settings.ftd_platform_settings[ftd_platform_setting_key].id
+          type   = fmc_ftd_platform_settings.ftd_platform_settings[ftd_platform_setting_key].type
+          domain = ftd_platform_setting_value.domain
+        }
+      ]) : "${item.domain}:${item.name}" => item
     },
     {
       for item in flatten([
@@ -2296,7 +2385,16 @@ locals {
       ]) : "${item.domain}:${item.name}" => item
     },
   )
+}
 
+######
+### map_device_to_container
+######
+locals {
+  map_device_to_container = merge(
+    { for key, ha_pair in data.fmc_device_ha_pair.device_ha_pair : ha_pair.primary_device_id => { id = ha_pair.id } },
+    { for key, ha_pair in fmc_device_ha_pair.device_ha_pair : ha_pair.primary_device_id => { id = ha_pair.id } }
+  )
 }
 
 ######
