@@ -1855,20 +1855,32 @@ locals {
             if contains(keys(local.map_as_paths), "${domain_path}:${as_path}")
           })[0]
         }]
-        community_lists = [for community_list in try(policy_list.community_lists, []) : {
-          id = values({
+        community_lists = [for item in [
+          for community_list in try(policy_list.community_lists, []) : {
+            id = one([
+              for domain_path in local.related_domains[domain.name] :
+              local.map_community_lists["${domain_path}:${community_list}"].id
+              if contains(keys(local.map_community_lists), "${domain_path}:${community_list}")
+            ])
+          }
+        ] : item if item.id != null]
+        extended_community_lists = [for item in [
+          for extended_community_list in try(policy_list.community_lists, []) : {
+            id = one([
+              for domain_path in local.related_domains[domain.name] :
+              local.map_extended_community_lists["${domain_path}:${extended_community_list}"].id
+              if contains(keys(local.map_extended_community_lists), "${domain_path}:${extended_community_list}")
+            ])
+          }
+        ] : item if item.id != null]
+        _validate_community_lists = [
+          for community_list in try(policy_list.community_lists, []) :
+          anytrue([
             for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_community_lists["${domain_path}:${community_list}"].id
-            if contains(keys(local.map_community_lists), "${domain_path}:${community_list}")
-          })[0]
-        }]
-        extended_community_lists = [for extended_community_list in try(policy_list.extended_community_lists, []) : {
-          id = values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_extended_community_lists["${domain_path}:${extended_community_list}"].id
-            if contains(keys(local.map_extended_community_lists), "${domain_path}:${extended_community_list}")
-          })[0]
-        }]
+            contains(keys(local.map_community_lists), "${domain_path}:${community_list}") ||
+            contains(keys(local.map_extended_community_lists), "${domain_path}:${community_list}")
+          ]) ? true : tobool("ERROR: Community list '${community_list}' in policy list '${policy_list.name}' (domain: ${domain.name}) not found in map_community_lists or map_extended_community_lists")
+        ]
         match_community_exactly = try(policy_list.match_community_exactly, local.defaults.fmc.domains.objects.policy_lists.match_community_exactly, null)
         metric                  = try(policy_list.metric, local.defaults.fmc.domains.objects.policy_lists.metric, null)
         tag                     = try(policy_list.tag, local.defaults.fmc.domains.objects.policy_lists.tag, null)
@@ -1922,6 +1934,242 @@ resource "fmc_policy_list" "policy_list" {
   match_community_exactly            = each.value.item.match_community_exactly
   metric                             = each.value.item.metric
   tag                                = each.value.item.tag
+}
+
+##########################################################
+###    ROUTE MAPS
+##########################################################
+locals {
+  data_route_map = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for route_map in try(domain.objects.route_maps, {}) : {
+          name   = route_map.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_route_map = {
+    for item in flatten([
+      for domain in local.domains : [
+        for route_map in try(domain.objects.route_maps, {}) : {
+          domain      = domain.name
+          name        = route_map.name
+          overridable = try(route_map.overridable, local.defaults.fmc.domains.objects.route_maps.overridable, null)
+          entries = [for entry in route_map.entries : {
+            action = entry.action
+            match_security_zones = [for security_zone in try(entry.match.security_zones, []) : {
+              id = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_security_zones["${domain_path}:${security_zone}"].id
+                if contains(keys(local.map_security_zones), "${domain_path}:${security_zone}")
+              })[0]
+            }]
+            match_interface_names = try(entry.match.interface_literals, null)
+            match_ipv4_address_access_lists = [for ipv4_address_access_list in try(entry.match.ipv4_address_access_lists, []) : {
+              id = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_access_lists["${domain_path}:${ipv4_address_access_list}"].id
+                if contains(keys(local.map_access_lists), "${domain_path}:${ipv4_address_access_list}")
+              })[0]
+              type = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_access_lists["${domain_path}:${ipv4_address_access_list}"].type
+                if contains(keys(local.map_access_lists), "${domain_path}:${ipv4_address_access_list}")
+              })[0]
+            }]
+            match_ipv4_address_prefix_lists = [for ipv4_address_prefix_list in try(entry.match.ipv4_address_prefix_lists, []) : {
+              id = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_ipv4_prefix_lists["${domain_path}:${ipv4_address_prefix_list}"].id
+                if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${ipv4_address_prefix_list}")
+              })[0]
+              type = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_ipv4_prefix_lists["${domain_path}:${ipv4_address_prefix_list}"].type
+                if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${ipv4_address_prefix_list}")
+              })[0]
+            }]
+            match_ipv4_next_hop_access_lists = [for ipv4_next_hop_access_list in try(entry.match.ipv4_next_hop_access_lists, []) : {
+              id = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_access_lists["${domain_path}:${ipv4_next_hop_access_list}"].id
+                if contains(keys(local.map_access_lists), "${domain_path}:${ipv4_next_hop_access_list}")
+              })[0]
+              type = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_access_lists["${domain_path}:${ipv4_next_hop_access_list}"].type
+                if contains(keys(local.map_access_lists), "${domain_path}:${ipv4_next_hop_access_list}")
+              })[0]
+            }]
+            match_ipv4_next_hop_prefix_lists = [for ipv4_next_hop_prefix_list in try(entry.match.ipv4_next_hop_prefix_lists, []) : {
+              id = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_ipv4_prefix_lists["${domain_path}:${ipv4_next_hop_prefix_list}"].id
+                if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${ipv4_next_hop_prefix_list}")
+              })[0]
+              type = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_ipv4_prefix_lists["${domain_path}:${ipv4_next_hop_prefix_list}"].type
+                if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${ipv4_next_hop_prefix_list}")
+              })[0]
+            }]
+            match_ipv4_route_source_access_lists = [for ipv4_route_source_access_list in try(entry.match.ipv4_route_source_access_lists, []) : {
+              id = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_access_lists["${domain_path}:${ipv4_route_source_access_list}"].id
+                if contains(keys(local.map_access_lists), "${domain_path}:${ipv4_route_source_access_list}")
+              })[0]
+              type = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_access_lists["${domain_path}:${ipv4_route_source_access_list}"].type
+                if contains(keys(local.map_access_lists), "${domain_path}:${ipv4_route_source_access_list}")
+              })[0]
+            }]
+            match_ipv4_route_source_prefix_lists = [for ipv4_route_source_prefix_list in try(entry.match.ipv4_route_source_prefix_lists, []) : {
+              id = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_ipv4_prefix_lists["${domain_path}:${ipv4_route_source_prefix_list}"].id
+                if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${ipv4_route_source_prefix_list}")
+              })[0]
+              type = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_ipv4_prefix_lists["${domain_path}:${ipv4_route_source_prefix_list}"].type
+                if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${ipv4_route_source_prefix_list}")
+              })[0]
+            }]
+            match_ipv6_address_extended_access_list_id = try(entry.match.ipv6_address_extended_access_list, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_extended_access_lists["${domain_path}:${entry.match.ipv6_address_extended_access_list}"].id
+              if contains(keys(local.map_extended_access_lists), "${domain_path}:${entry.match.ipv6_address_extended_access_list}")
+            })[0] : null
+            match_ipv6_address_prefix_list_id = try(entry.match.ipv6_address_prefix_list, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_ipv6_prefix_lists["${domain_path}:${entry.match.ipv6_address_prefix_list}"].id
+              if contains(keys(local.map_ipv6_prefix_lists), "${domain_path}:${entry.match.ipv6_address_prefix_list}")
+            })[0] : null
+            match_ipv6_next_hop_extended_access_list_id = try(entry.match.ipv6_next_hop_extended_access_list, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_extended_access_lists["${domain_path}:${entry.match.ipv6_next_hop_extended_access_list}"].id
+              if contains(keys(local.map_extended_access_lists), "${domain_path}:${entry.match.ipv6_next_hop_extended_access_list}")
+            })[0] : null
+            match_ipv6_next_hop_prefix_list_id = try(entry.match.ipv6_next_hop_prefix_list, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_ipv6_prefix_lists["${domain_path}:${entry.match.ipv6_next_hop_prefix_list}"].id
+              if contains(keys(local.map_ipv6_prefix_lists), "${domain_path}:${entry.match.ipv6_next_hop_prefix_list}")
+            })[0] : null
+            match_ipv6_route_source_extended_access_list_id = try(entry.match.ipv6_route_source_extended_access_list, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_extended_access_lists["${domain_path}:${entry.match.ipv6_route_source_extended_access_list}"].id
+              if contains(keys(local.map_extended_access_lists), "${domain_path}:${entry.match.ipv6_route_source_extended_access_list}")
+            })[0] : null
+            match_ipv6_route_source_prefix_list_id = try(entry.match.ipv6_route_source_prefix_list, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_ipv6_prefix_lists["${domain_path}:${entry.match.ipv6_route_source_prefix_list}"].id
+              if contains(keys(local.map_ipv6_prefix_lists), "${domain_path}:${entry.match.ipv6_route_source_prefix_list}")
+            })[0] : null
+            match_bgp_as_paths = [for as_path in try(entry.match.bgp_as_paths, []) : {
+              id = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_as_paths["${domain_path}:${as_path}"].id
+                if contains(keys(local.map_as_paths), "${domain_path}:${as_path}")
+              })[0]
+            }]
+            match_bgp_community_lists = [for item in [
+              for community_list in try(entry.match.bgp_community_lists, []) : {
+                id = one([
+                  for domain_path in local.related_domains[domain.name] :
+                  local.map_community_lists["${domain_path}:${community_list}"].id
+                  if contains(keys(local.map_community_lists), "${domain_path}:${community_list}")
+                ])
+              }
+            ] : item if item.id != null]
+            match_bgp_extended_community_lists = [for item in [
+              for extended_community_list in try(entry.match.bgp_community_lists, []) : {
+                id = one([
+                  for domain_path in local.related_domains[domain.name] :
+                  local.map_extended_community_lists["${domain_path}:${extended_community_list}"].id
+                  if contains(keys(local.map_extended_community_lists), "${domain_path}:${extended_community_list}")
+                ])
+              }
+            ] : item if item.id != null]
+            match_bgp_policy_lists = [for bgp_policy_list in try(entry.match.bgp_policy_lists, []) : {
+              id = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_policy_lists["${domain_path}:${bgp_policy_list}"].id
+                if contains(keys(local.map_policy_lists), "${domain_path}:${bgp_policy_list}")
+              })[0]
+            }]
+            _validate_bgp_community_lists = [
+              for community_list in try(entry.match.bgp_community_lists, []) :
+              anytrue([
+                for domain_path in local.related_domains[domain.name] :
+                contains(keys(local.map_community_lists), "${domain_path}:${community_list}") ||
+                contains(keys(local.map_extended_community_lists), "${domain_path}:${community_list}")
+              ]) ? true : tobool("ERROR: BGP community list '${community_list}' in route map '${route_map.name}' (domain: ${domain.name}) not found in map_community_lists or map_extended_community_lists")
+            ]
+            match_route_metrics                                    = try(entry.match.route_metrics, null)
+            match_tags                                             = try(entry.match.tags, null)
+            match_route_type_external_1                            = try(entry.match.route_type_external_1, null)
+            match_route_type_external_2                            = try(entry.match.route_type_external_2, null)
+            match_route_type_internal                              = try(entry.match.route_type_internal, null)
+            match_route_type_local                                 = try(entry.match.route_type_local, null)
+            match_route_type_nssa_external_1                       = try(entry.match.route_type_nssa_external_1, null)
+            match_route_type_nssa_external_2                       = try(entry.match.route_type_nssa_external_2, null)
+            set_metric_bandwidth                                   = try(entry.set.metric_bandwidth, null)
+            set_metric_type                                        = try(entry.set.metric_type, null)
+            set_bgp_as_path_prepend                                = try(entry.set.bgp_as_path_prepend, null)
+            set_bgp_as_path_prepend_last_as                        = try(entry.set.bgp_as_path_prepend_last_as, null)
+            set_bgp_as_path_convert_route_tag_into_as_path         = try(entry.set.bgp_as_path_convert_route_tag_into_as_path, null)
+            set_bgp_community_none                                 = try(entry.set.bgp_community_none, null)
+            set_bgp_community_specific_community                   = try(entry.set.bgp_community_specific_community, null)
+            set_bgp_community_add_to_existing_communities          = try(entry.set.bgp_community_add_to_existing_communities, null)
+            set_bgp_community_internet                             = try(entry.set.bgp_community_internet, null)
+            set_bgp_community_no_advertise                         = try(entry.set.bgp_community_no_advertise, null)
+            set_bgp_community_no_export                            = try(entry.set.bgp_community_no_export, null)
+            set_bgp_community_route_target                         = try(join(",", entry.set.bgp_community_route_targets), null)
+            set_bgp_community_add_to_existing_extended_communities = try(entry.set.bgp_community_add_to_existing_extended_communities, null)
+            set_bgp_automatic_tag                                  = try(entry.set.bgp_automatic_tag, null)
+            set_bgp_local_preference                               = try(entry.set.bgp_local_preference, null)
+            set_bgp_weight                                         = try(entry.set.bgp_weight, null)
+            set_bgp_origin                                         = try(entry.set.bgp_origin, null)
+            set_bgp_ipv4_next_hop                                  = try(entry.set.bgp_ipv4_next_hop, null)
+            set_bgp_ipv4_next_hop_specific_ips                     = try(entry.set.bgp_ipv4_next_hop_specific_ips, null)
+            set_bgp_ipv4_prefix_list_id = try(entry.set.bgp_ipv4_prefix_list, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_ipv4_prefix_lists["${domain_path}:${entry.set.bgp_ipv4_prefix_list}"].id
+              if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${entry.set.bgp_ipv4_prefix_list}")
+            })[0] : null
+            set_bgp_ipv6_next_hop              = try(entry.set.bgp_ipv6_next_hop, null)
+            set_bgp_ipv6_next_hop_specific_ips = try(entry.set.bgp_ipv6_next_hop_specific_ips, null)
+            set_bgp_ipv6_prefix_list_id = try(entry.set.bgp_ipv6_prefix_list, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_ipv6_prefix_lists["${domain_path}:${entry.set.bgp_ipv6_prefix_list}"].id
+              if contains(keys(local.map_ipv6_prefix_lists), "${domain_path}:${entry.set.bgp_ipv6_prefix_list}")
+            })[0] : null
+          }]
+        } if !contains(try(keys(local.data_route_map), {}), "${domain.name}:${route_map.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_route_map" "route_map" {
+  for_each = local.data_route_map
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_route_map" "route_map" {
+  for_each = local.resource_route_map
+
+  domain      = each.value.domain
+  name        = each.value.name
+  entries     = each.value.entries
+  overridable = each.value.overridable
 }
 
 ##########################################################
@@ -2843,6 +3091,16 @@ locals {
 }
 
 ######
+### map_access_lists
+######
+locals {
+  map_access_lists = merge(
+    local.map_standard_access_lists,
+    local.map_extended_access_lists,
+  )
+}
+
+######
 ### map_bfd_templates
 ######
 locals {
@@ -2887,6 +3145,31 @@ locals {
     merge([
       for domain, ipv4_prefix_lists in data.fmc_ipv4_prefix_lists.ipv4_prefix_lists : {
         for ipv4_prefix_list_name, ipv4_prefix_list_values in ipv4_prefix_lists.items : "${domain}:${ipv4_prefix_list_name}" => { id = ipv4_prefix_list_values.id, type = ipv4_prefix_list_values.type }
+      }
+    ]...)
+  )
+}
+
+######
+### map_ipv6_prefix_lists
+######
+locals {
+  map_ipv6_prefix_lists = merge(
+
+    # IPv6 Prefix Lists - bulk mode outputs
+    local.ipv6_prefix_lists_bulk ? merge([
+      for domain, ipv6_prefix_lists in fmc_ipv6_prefix_lists.ipv6_prefix_lists : {
+        for ipv6_prefix_list_name, ipv6_prefix_list_values in ipv6_prefix_lists.items : "${domain}:${ipv6_prefix_list_name}" => { id = ipv6_prefix_list_values.id, type = ipv6_prefix_list_values.type }
+      }
+    ]...) : {},
+
+    # IPv6 Prefix Lists - individual mode outputs
+    !local.ipv6_prefix_lists_bulk ? { for key, resource in fmc_ipv6_prefix_list.ipv6_prefix_list : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # IPv6 Prefix Lists - data sources
+    merge([
+      for domain, ipv6_prefix_lists in data.fmc_ipv6_prefix_lists.ipv6_prefix_lists : {
+        for ipv6_prefix_list_name, ipv6_prefix_list_values in ipv6_prefix_lists.items : "${domain}:${ipv6_prefix_list_name}" => { id = ipv6_prefix_list_values.id, type = ipv6_prefix_list_values.type }
       }
     ]...)
   )
@@ -2960,6 +3243,32 @@ locals {
 }
 
 ######
+### map_policy_lists
+######
+locals {
+  map_policy_lists = merge(
+
+    # Policy lists - bulk mode outputs
+    local.policy_lists_bulk ? merge([
+      for domain, policy_lists in fmc_policy_lists.policy_lists : {
+        for policy_list_name, policy_list_values in policy_lists.items : "${domain}:${policy_list_name}" => { id = policy_list_values.id, type = policy_list_values.type }
+      }
+    ]...) : {},
+
+    # Policy lists - individual mode outputs
+    !local.policy_lists_bulk ? { for key, resource in fmc_policy_list.policy_list : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # Policy lists - data sources
+    merge([
+      for domain, policy_lists in data.fmc_policy_lists.policy_lists : {
+        for policy_list_name, policy_list_values in policy_lists.items : "${domain}:${policy_list_name}" => { id = policy_list_values.id, type = policy_list_values.type }
+      }
+    ]...),
+  )
+}
+
+
+######
 ### FAKE - TODO
 ######
 
@@ -2967,5 +3276,4 @@ locals {
   map_url_categories  = {}
   map_ipv6_dhcp_pools = {}
   map_route_maps      = {}
-  map_prefix_lists    = {}
 }
