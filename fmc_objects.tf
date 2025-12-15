@@ -2130,7 +2130,7 @@ locals {
             set_bgp_community_no_advertise                         = try(entry.set.bgp_community_no_advertise, null)
             set_bgp_community_no_export                            = try(entry.set.bgp_community_no_export, null)
             set_bgp_community_route_target                         = try(join(",", entry.set.bgp_community_route_targets), null)
-            set_bgp_community_add_to_existing_extended_communities = try(entry.set.bgp_community_add_to_existing_extended_communities, null)
+            set_bgp_community_add_to_existing_extended_communities = try(entry.set.bgp_community_add_to_existing_extended_communities, local.defaults.fmc.domains.objects.route_maps.entries.set.bgp_community_add_to_existing_extended_communities, null)
             set_bgp_automatic_tag                                  = try(entry.set.bgp_automatic_tag, null)
             set_bgp_local_preference                               = try(entry.set.bgp_local_preference, null)
             set_bgp_weight                                         = try(entry.set.bgp_weight, null)

@@ -230,6 +230,11 @@ defaults:
           overridable: false
         as_paths:
           overridable: false
+        route_maps:
+          overridable: false
+          entries:
+            set:
+              bgp_community_add_to_existing_extended_communities: false
         extended_access_lists:
           entries:
             logging: "DEFAULT"
