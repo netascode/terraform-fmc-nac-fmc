@@ -224,6 +224,8 @@ defaults:
           overridable: false
         icmpv4s:
           overridable: false
+        icmpv6s:
+          overridable: false
         ipv4_address_pools:
           overridable: false
         ipv6_address_pools:

@@ -454,6 +454,71 @@ resource "fmc_icmpv4" "icmpv4" {
 }
 
 ##########################################################
+###    ICMPv6s
+##########################################################
+locals {
+  data_icmpv6s = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for icmpv6 in try(domain.objects.icmpv6s, []) : icmpv6.name => {}
+      }
+    } if length(try(domain.objects.icmpv6s, [])) > 0
+  }
+
+  icmpv6s_bulk = try(local.fmc.nac_configuration.icmpv6s_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_icmpv6s = {
+    for domain in local.domains : domain.name => {
+      for icmpv6 in try(domain.objects.icmpv6s, []) : icmpv6.name => {
+        domain      = domain.name
+        name        = icmpv6.name
+        icmp_type   = try(icmpv6.icmp_type, null)
+        code        = try(icmpv6.code, null)
+        description = try(icmpv6.description, local.defaults.fmc.domains.objects.icmpv6s.description, null)
+        overridable = try(icmpv6.overridable, local.defaults.fmc.domains.objects.icmpv6s.overridable, null)
+      } if !contains(try(keys(local.data_icmpv6s[domain.name].items), []), icmpv6.name)
+    } if length(try(domain.objects.icmpv6s, [])) > 0
+  }
+
+  resource_icmpv6 = !local.icmpv6s_bulk ? {
+    for item in flatten([
+      for domain, icmpv6s in local.resource_icmpv6s : [
+        for icmpv6 in values(icmpv6s) : {
+          key  = "${domain}:${icmpv6.name}"
+          item = icmpv6
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+
+}
+
+data "fmc_icmpv6s" "icmpv6s" {
+  for_each = local.data_icmpv6s
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_icmpv6s" "icmpv6s" {
+  for_each = local.icmpv6s_bulk ? local.resource_icmpv6s : {}
+
+  domain = each.key
+  items  = { for icmpv6 in values(each.value) : icmpv6.name => icmpv6 }
+}
+
+resource "fmc_icmpv6" "icmpv6" {
+  for_each = !local.icmpv6s_bulk ? local.resource_icmpv6 : {}
+
+  domain      = each.value.item.domain
+  name        = each.value.item.name
+  icmp_type   = each.value.item.icmp_type
+  code        = each.value.item.code
+  description = each.value.item.description
+  overridable = each.value.item.overridable
+}
+
+##########################################################
 ###    PORT GROUPS
 ##########################################################
 locals {
@@ -2599,7 +2664,7 @@ locals {
 }
 
 ######
-### map_services => Port, ICMPv4
+### map_services => Port, ICMPv4, ICMPv6
 ######
 locals {
   map_services = merge(
@@ -2635,6 +2700,23 @@ locals {
     merge([
       for domain, icmpv4s in data.fmc_icmpv4s.icmpv4s : {
         for icmpv4_name, icmpv4_values in icmpv4s.items : "${domain}:${icmpv4_name}" => { id = icmpv4_values.id, type = icmpv4_values.type }
+      }
+    ]...),
+
+    # ICMPv6s - bulk mode outputs
+    local.icmpv6s_bulk ? merge([
+      for domain, icmpv6s in fmc_icmpv6s.icmpv6s : {
+        for icmpv6_name, icmpv6_values in icmpv6s.items : "${domain}:${icmpv6_name}" => { id = icmpv6_values.id, type = icmpv6_values.type }
+      }
+    ]...) : {},
+
+    # ICMPv6s - individual mode outputs
+    !local.icmpv6s_bulk ? { for key, resource in fmc_icmpv6.icmpv6 : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # ICMPv6s - data sources
+    merge([
+      for domain, icmpv6s in data.fmc_icmpv6s.icmpv6s : {
+        for icmpv6_name, icmpv6_values in icmpv6s.items : "${domain}:${icmpv6_name}" => { id = icmpv6_values.id, type = icmpv6_values.type }
       }
     ]...),
   )
