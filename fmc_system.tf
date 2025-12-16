@@ -59,11 +59,7 @@ resource "fmc_policy_assignment" "access_control_policy" {
     # fmc_device.module,
     # data.fmc_device.module,
     fmc_device_ha_pair.device_ha_pair,
-    data.fmc_device_ha_pair.device_ha_pair,
     fmc_device_cluster.device_cluster,
-    data.fmc_device_cluster.device_cluster,
-    fmc_access_control_policy.access_control_policy,
-    data.fmc_access_control_policy.access_control_policy
   ]
 }
 
@@ -103,11 +99,7 @@ resource "fmc_policy_assignment" "health_policy" {
     # fmc_device.module,
     # data.fmc_device.module,
     fmc_device_ha_pair.device_ha_pair,
-    data.fmc_device_ha_pair.device_ha_pair,
     fmc_device_cluster.device_cluster,
-    data.fmc_device_cluster.device_cluster,
-    fmc_health_policy.health_policy,
-    data.fmc_health_policy.health_policy,
   ]
 }
 
@@ -144,14 +136,8 @@ resource "fmc_policy_assignment" "ftd_nat_policy" {
   targets                 = each.value.targets
 
   depends_on = [
-    # fmc_device.module,
-    # data.fmc_device.module,
     fmc_device_ha_pair.device_ha_pair,
-    data.fmc_device_ha_pair.device_ha_pair,
     fmc_device_cluster.device_cluster,
-    data.fmc_device_cluster.device_cluster,
-    fmc_ftd_nat_policy.ftd_nat_policy,
-    data.fmc_ftd_nat_policy.ftd_nat_policy,
   ]
 }
 
@@ -187,14 +173,9 @@ resource "fmc_policy_assignment" "ftd_platform_settings" {
   targets                 = each.value.targets
 
   depends_on = [
-    # fmc_device.module,
-    # data.fmc_device.module,
     fmc_device_ha_pair.device_ha_pair,
-    data.fmc_device_ha_pair.device_ha_pair,
     fmc_device_cluster.device_cluster,
-    data.fmc_device_cluster.device_cluster,
     fmc_ftd_platform_settings.ftd_platform_settings,
-    data.fmc_ftd_platform_settings.ftd_platform_settings,
     fmc_ftd_platform_settings_banner.ftd_platform_settings_banner,
     fmc_ftd_platform_settings_http_access.ftd_platform_settings_http_access,
     fmc_ftd_platform_settings_icmp_access.ftd_platform_settings_icmp_access,

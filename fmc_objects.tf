@@ -3267,6 +3267,19 @@ locals {
   )
 }
 
+######
+### map_route_maps
+######
+locals {
+  map_route_maps = merge(
+
+    # Route Maps - individual mode outputs
+    { for key, resource in fmc_route_map.route_map : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+
+    # Route Maps - data sources
+    { for key, data_source in data.fmc_route_map.route_map : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+  )
+}
 
 ######
 ### FAKE - TODO
@@ -3275,5 +3288,4 @@ locals {
 locals {
   map_url_categories  = {}
   map_ipv6_dhcp_pools = {}
-  map_route_maps      = {}
 }
