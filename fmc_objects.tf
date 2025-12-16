@@ -2563,6 +2563,70 @@ resource "fmc_resource_profile" "resource_profile" {
 }
 
 ##########################################################
+###    GEOLOCATIONS
+##########################################################
+locals {
+  data_geolocations = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for geolocation in try(domain.objects.geolocations, []) : geolocation.name => {}
+      }
+    } if length(try(domain.objects.geolocations, [])) > 0
+  }
+
+  geolocations_bulk = try(local.fmc.nac_configuration.geolocations_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_geolocations = {
+    for domain in local.domains : domain.name => [
+      for geolocation in try(domain.objects.geolocations, []) : {
+        domain      = domain.name
+        name        = geolocation.name
+        continents = [for continent in try(geolocation.continents, []) : {
+          id = data.fmc_continents.continents["Global"].items[continent].id
+        }]
+        countries = [for country in try(geolocation.countries, []) : {
+          id = data.fmc_countries.countries["Global"].items[country].id
+        }]
+      } if !contains(try(keys(local.data_geolocations[domain.name].items), []), geolocation.name)
+    ] if length(try(domain.objects.geolocations, [])) > 0
+  }
+
+  resource_geolocation = !local.geolocations_bulk ? {
+    for item in flatten([
+      for domain, geolocations in local.resource_geolocations : [
+        for geolocation in geolocations : {
+          key  = "${domain}:${geolocation.name}"
+          item = geolocation
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_geolocations" "geolocations" {
+  for_each = local.data_geolocations
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_geolocations" "geolocations" {
+  for_each = local.geolocations_bulk ? local.resource_geolocations : {}
+
+  domain = each.key
+  items  = { for geolocation in each.value : geolocation.name => geolocation }
+}
+
+resource "fmc_geolocation" "geolocation" {
+  for_each = !local.geolocations_bulk ? local.resource_geolocation : {}
+
+  domain      = each.value.item.domain
+  name        = each.value.item.name
+  continents = each.value.item.continents
+  countries  = each.value.item.countries
+}
+
+##########################################################
 ###    MAPS combine _data and _resources for a given object type
 ##########################################################
 ######
@@ -3360,6 +3424,31 @@ locals {
 
     # Route Maps - data sources
     { for key, data_source in data.fmc_route_map.route_map : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+  )
+}
+
+######
+### map_geolocations
+######
+locals {
+  map_geolocations = merge(
+
+    # Geolocations - bulk mode outputs
+    local.geolocations_bulk ? merge([
+      for domain, geolocations in fmc_geolocations.geolocations : {
+        for geolocation_name, geolocation_values in geolocations.items : "${domain}:${geolocation_name}" => { id = geolocation_values.id, type = geolocation_values.type }
+      }
+    ]...) : {},
+
+    # Geolocations - individual mode outputs
+    !local.geolocations_bulk ? { for key, resource in fmc_geolocation.geolocation : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # Geolocations - data sources
+    merge([
+      for domain, geolocations in data.fmc_geolocations.geolocations : {
+        for geolocation_name, geolocation_values in geolocations.items : "${domain}:${geolocation_name}" => { id = geolocation_values.id, type = geolocation_values.type }
+      }
+    ]...),
   )
 }
 
