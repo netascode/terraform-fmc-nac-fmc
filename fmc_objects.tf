@@ -2579,8 +2579,8 @@ locals {
   resource_geolocations = {
     for domain in local.domains : domain.name => [
       for geolocation in try(domain.objects.geolocations, []) : {
-        domain      = domain.name
-        name        = geolocation.name
+        domain = domain.name
+        name   = geolocation.name
         continents = [for continent in try(geolocation.continents, []) : {
           id = data.fmc_continents.continents["Global"].items[continent].id
         }]
@@ -2620,10 +2620,69 @@ resource "fmc_geolocations" "geolocations" {
 resource "fmc_geolocation" "geolocation" {
   for_each = !local.geolocations_bulk ? local.resource_geolocation : {}
 
-  domain      = each.value.item.domain
-  name        = each.value.item.name
+  domain     = each.value.item.domain
+  name       = each.value.item.name
   continents = each.value.item.continents
   countries  = each.value.item.countries
+}
+
+##########################################################
+###    SERVICE ACCESS
+##########################################################
+locals {
+  data_service_access = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for service_access in try(domain.objects.service_accesses, {}) : {
+          name   = service_access.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_service_access = {
+    for item in flatten([
+      for domain in local.domains : [
+        for service_access in try(domain.objects.service_accesses, {}) : {
+          domain         = domain.name
+          name           = service_access.name
+          default_action = service_access.default_action
+          rules = [for rule in service_access.rules : {
+            action = rule.action
+            geolocation_sources = [for geolocation_source in try(rule.geolocation_sources, []) : {
+              id = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_geolocation_sources["${domain_path}:${geolocation_source}"].id
+                if contains(keys(local.map_geolocation_sources), "${domain_path}:${geolocation_source}")
+              })[0],
+              type = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_geolocation_sources["${domain_path}:${geolocation_source}"].type
+                if contains(keys(local.map_geolocation_sources), "${domain_path}:${geolocation_source}")
+              })[0],
+            }]
+          } if !contains(try(keys(local.data_service_access), {}), "${domain.name}:${service_access.name}")]
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_service_access" "service_access" {
+  for_each = local.data_service_access
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_service_access" "service_access" {
+  for_each = local.resource_service_access
+
+  domain         = each.value.domain
+  name           = each.value.name
+  default_action = each.value.default_action
+  rules          = each.value.rules
 }
 
 ##########################################################
@@ -3428,10 +3487,24 @@ locals {
 }
 
 ######
-### map_geolocations
+### map_geolocation_sources
 ######
 locals {
-  map_geolocations = merge(
+  map_geolocation_sources = merge(
+
+    # Countries - data sources
+    merge([
+      for domain, countries in data.fmc_countries.countries : {
+        for country_name, country_values in countries.items : "${domain}:${country_name}" => { id = country_values.id, type = country_values.type }
+      }
+    ]...),
+
+    # Continents - data sources
+    merge([
+      for domain, continents in data.fmc_continents.continents : {
+        for continent_name, continent_values in continents.items : "${domain}:${continent_name}" => { id = continent_values.id, type = continent_values.type }
+      }
+    ]...),
 
     # Geolocations - bulk mode outputs
     local.geolocations_bulk ? merge([
