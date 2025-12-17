@@ -2662,8 +2662,8 @@ locals {
                 if contains(keys(local.map_geolocation_sources), "${domain_path}:${geolocation_source}")
               })[0],
             }]
-          } if !contains(try(keys(local.data_service_access), {}), "${domain.name}:${service_access.name}")]
-        }
+          }]
+        } if !contains(try(keys(local.data_service_access), {}), "${domain.name}:${service_access.name}")
       ]
     ]) : "${item.domain}:${item.name}" => item
   }
@@ -2942,4 +2942,184 @@ resource "fmc_ikev2_policy" "ikev2_policy" {
   prf_algorithms        = each.value.item.prf_algorithms
   lifetime              = each.value.item.lifetime
   priority              = each.value.item.priority
+}
+
+##########################################################
+###    TRUSTED CERTIFICATE AUTHORITY
+##########################################################
+locals {
+  data_trusted_certificate_authority = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for trusted_certificate_authority in try(domain.objects.trusted_certificate_authorities, {}) : {
+          name   = trusted_certificate_authority.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_trusted_certificate_authority = {
+    for item in flatten([
+      for domain in local.domains : [
+        for trusted_certificate_authority in try(domain.objects.trusted_certificate_authorities, {}) : {
+          domain      = domain.name
+          name        = trusted_certificate_authority.name
+          certificate = try(trusted_certificate_authority.certificate, file(trusted_certificate_authority.certificate_file))
+        } if !contains(try(keys(local.data_trusted_certificate_authority), {}), "${domain.name}:${trusted_certificate_authority.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_trusted_certificate_authority" "trusted_certificate_authority" {
+  for_each = local.data_trusted_certificate_authority
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_trusted_certificate_authority" "trusted_certificate_authority" {
+  for_each = local.resource_trusted_certificate_authority
+
+  domain      = each.value.domain
+  name        = each.value.name
+  certificate = each.value.certificate
+}
+
+##########################################################
+###    INTERNAL CERTIFICATE AUTHORITY
+##########################################################
+locals {
+  data_internal_certificate_authority = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for internal_certificate_authority in try(domain.objects.internal_certificate_authorities, {}) : {
+          name   = internal_certificate_authority.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_internal_certificate_authority = {
+    for item in flatten([
+      for domain in local.domains : [
+        for internal_certificate_authority in try(domain.objects.internal_certificate_authorities, {}) : {
+          domain      = domain.name
+          name        = internal_certificate_authority.name
+          certificate = try(internal_certificate_authority.certificate, file(internal_certificate_authority.certificate_file))
+          private_key = try(internal_certificate_authority.private_key, file(internal_certificate_authority.private_key_file))
+          password    = try(internal_certificate_authority.password, null)
+        } if !contains(try(keys(local.data_internal_certificate_authority), {}), "${domain.name}:${internal_certificate_authority.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_internal_certificate_authority" "internal_certificate_authority" {
+  for_each = local.data_internal_certificate_authority
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_internal_certificate_authority" "internal_certificate_authority" {
+  for_each = local.resource_internal_certificate_authority
+
+  domain      = each.value.domain
+  name        = each.value.name
+  certificate = each.value.certificate
+  private_key = each.value.private_key
+  password    = each.value.password
+}
+
+##########################################################
+###    INTERNAL CERTIFICATES
+##########################################################
+locals {
+  data_internal_certificates = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for internal_certificate in try(domain.objects.internal_certificates, {}) : {
+          name   = internal_certificate.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_internal_certificates = {
+    for item in flatten([
+      for domain in local.domains : [
+        for internal_certificate in try(domain.objects.internal_certificates, {}) : {
+          domain      = domain.name
+          name        = internal_certificate.name
+          certificate = try(internal_certificate.certificate, file(internal_certificate.certificate_file))
+          private_key = try(internal_certificate.private_key, file(internal_certificate.private_key_file))
+          password    = try(internal_certificate.password, null)
+        } if !contains(try(keys(local.data_internal_certificates), {}), "${domain.name}:${internal_certificate.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_internal_certificate" "internal_certificate" {
+  for_each = local.data_internal_certificates
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_internal_certificate" "internal_certificate" {
+  for_each = local.resource_internal_certificates
+
+  domain      = each.value.domain
+  name        = each.value.name
+  certificate = each.value.certificate
+  private_key = each.value.private_key
+  password    = each.value.password
+}
+
+##########################################################
+###    EXTERNAL CERTIFICATES
+##########################################################
+locals {
+  data_external_certificates = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for external_certificate in try(domain.objects.external_certificates, {}) : {
+          name   = external_certificate.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_external_certificates = {
+    for item in flatten([
+      for domain in local.domains : [
+        for external_certificate in try(domain.objects.external_certificates, {}) : {
+          domain      = domain.name
+          name        = external_certificate.name
+          certificate = try(external_certificate.certificate, file(external_certificate.certificate_file))
+        } if !contains(try(keys(local.data_external_certificates), {}), "${domain.name}:${external_certificate.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_external_certificate" "external_certificate" {
+  for_each = local.data_external_certificates
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_external_certificate" "external_certificate" {
+  for_each = local.resource_external_certificates
+
+  domain      = each.value.domain
+  name        = each.value.name
+  certificate = each.value.certificate
 }
