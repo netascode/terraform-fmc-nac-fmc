@@ -65,6 +65,8 @@ defaults:
                 enabled: true
             etherchannel_interfaces:
               mode: "NONE"
+            loopback_interfaces:
+              enabled: true
         ha_pairs:
           encryption_enabled: false
           failed_interfaces_limit: 1

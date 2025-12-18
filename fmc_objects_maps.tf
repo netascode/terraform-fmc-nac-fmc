@@ -841,6 +841,125 @@ locals {
 }
 
 ######
+### map_ikev1_policies
+######
+locals {
+  map_ikev1_policies = merge(
+
+    # IKEv1 Policies - bulk mode outputs
+    merge([
+      for domain, ikev1_policies in fmc_ikev1_policies.ikev1_policies : {
+        for ikev1_policy_name, ikev1_policy_values in ikev1_policies.items : "${domain}:${ikev1_policy_name}" => { id = ikev1_policy_values.id, type = ikev1_policy_values.type }
+      }
+    ]...),
+
+    # IKEv1 Policies - individual mode outputs
+    !local.ikev1_policies_bulk ? { for key, resource in fmc_ikev1_policy.ikev1_policy : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # IKEv1 Policies - data sources
+    merge([
+      for domain, ikev1_policies in data.fmc_ikev1_policies.ikev1_policies : {
+        for ikev1_policy_name, ikev1_policy_values in ikev1_policies.items : "${domain}:${ikev1_policy_name}" => { id = ikev1_policy_values.id, type = ikev1_policy_values.type }
+      }
+    ]...),
+  )
+}
+
+######
+### map_ikev2_policies
+######
+locals {
+  map_ikev2_policies = merge(
+
+    # IKEv2 Policies - bulk mode outputs
+    merge([
+      for domain, ikev2_policies in fmc_ikev2_policies.ikev2_policies : {
+        for ikev2_policy_name, ikev2_policy_values in ikev2_policies.items : "${domain}:${ikev2_policy_name}" => { id = ikev2_policy_values.id, type = ikev2_policy_values.type }
+      }
+    ]...),
+
+    # IKEv2 Policies - individual mode outputs
+    !local.ikev2_policies_bulk ? { for key, resource in fmc_ikev2_policy.ikev2_policy : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # IKEv2 Policies - data sources
+    merge([
+      for domain, ikev2_policies in data.fmc_ikev2_policies.ikev2_policies : {
+        for ikev2_policy_name, ikev2_policy_values in ikev2_policies.items : "${domain}:${ikev2_policy_name}" => { id = ikev2_policy_values.id, type = ikev2_policy_values.type }
+      }
+    ]...),
+  )
+}
+
+######
+### map_ikev1_ipsec_proposals
+######
+locals {
+  map_ikev1_ipsec_proposals = merge(
+
+    # IKEv1 IPsec Proposals - bulk mode outputs
+    merge([
+      for domain, ikev1_ipsec_proposals in fmc_ikev1_ipsec_proposals.ikev1_ipsec_proposals : {
+        for ikev1_ipsec_proposal_name, ikev1_ipsec_proposal_values in ikev1_ipsec_proposals.items : "${domain}:${ikev1_ipsec_proposal_name}" => { id = ikev1_ipsec_proposal_values.id, type = ikev1_ipsec_proposal_values.type }
+      }
+    ]...),
+
+    # IKEv1 IPsec Proposals - individual mode outputs
+    !local.ikev1_ipsec_proposals_bulk ? { for key, resource in fmc_ikev1_ipsec_proposal.ikev1_ipsec_proposal : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # IKEv1 IPsec Proposals - data sources
+    merge([
+      for domain, ikev1_policies in data.fmc_ikev1_ipsec_proposals.ikev1_ipsec_proposals : {
+        for ikev1_policy_name, ikev1_policy_values in ikev1_policies.items : "${domain}:${ikev1_policy_name}" => { id = ikev1_policy_values.id, type = ikev1_policy_values.type }
+      }
+    ]...),
+  )
+}
+
+######
+### map_ikev2_ipsec_proposals
+######
+locals {
+  map_ikev2_ipsec_proposals = merge(
+
+    # IKEv2 IPsec Proposals - bulk mode outputs
+    merge([
+      for domain, ikev2_ipsec_proposals in fmc_ikev2_ipsec_proposals.ikev2_ipsec_proposals : {
+        for ikev2_ipsec_proposal_name, ikev2_ipsec_proposal_values in ikev2_ipsec_proposals.items : "${domain}:${ikev2_ipsec_proposal_name}" => { id = ikev2_ipsec_proposal_values.id, type = ikev2_ipsec_proposal_values.type }
+      }
+    ]...),
+
+    # IKEv2 IPsec Proposals - individual mode outputs
+    !local.ikev2_ipsec_proposals_bulk ? { for key, resource in fmc_ikev2_ipsec_proposal.ikev2_ipsec_proposal : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # IKEv2 IPsec Proposals - data sources
+    merge([
+      for domain, ikev2_policies in data.fmc_ikev2_ipsec_proposals.ikev2_ipsec_proposals : {
+        for ikev2_policy_name, ikev2_policy_values in ikev2_policies.items : "${domain}:${ikev2_policy_name}" => { id = ikev2_policy_values.id, type = ikev2_policy_values.type }
+      }
+    ]...),
+  )
+}
+
+
+######
+### map_certiticate_enrollments
+######
+locals {
+  map_certificate_enrollments = merge(
+
+    # Certificate Enrollments - individual mode outputs
+    { for key, resource in fmc_certificate_enrollment.certificate_enrollment : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+
+    # Certificate Enrollments ACME - individual mode outputs
+    { for key, resource in fmc_certificate_enrollment.certificate_enrollment_acme : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+
+    # Certificate Enrollments - data sources
+    { for key, data_source in data.fmc_certificate_enrollment.certificate_enrollment : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+  )
+}
+
+
+######
 ### FAKE - TODO
 ######
 locals {

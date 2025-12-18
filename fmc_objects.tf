@@ -3038,7 +3038,7 @@ resource "fmc_internal_certificate_authority" "internal_certificate_authority" {
 ###    INTERNAL CERTIFICATES
 ##########################################################
 locals {
-  data_internal_certificates = {
+  data_internal_certificate = {
     for item in flatten([
       for domain in local.data_existing : [
         for internal_certificate in try(domain.objects.internal_certificates, {}) : {
@@ -3058,14 +3058,14 @@ locals {
           certificate = try(internal_certificate.certificate, file(internal_certificate.certificate_file))
           private_key = try(internal_certificate.private_key, file(internal_certificate.private_key_file))
           password    = try(internal_certificate.password, null)
-        } if !contains(try(keys(local.data_internal_certificates), {}), "${domain.name}:${internal_certificate.name}")
+        } if !contains(try(keys(local.data_internal_certificate), {}), "${domain.name}:${internal_certificate.name}")
       ]
     ]) : "${item.domain}:${item.name}" => item
   }
 }
 
 data "fmc_internal_certificate" "internal_certificate" {
-  for_each = local.data_internal_certificates
+  for_each = local.data_internal_certificate
 
   name   = each.value.name
   domain = each.value.domain
@@ -3085,7 +3085,7 @@ resource "fmc_internal_certificate" "internal_certificate" {
 ###    EXTERNAL CERTIFICATES
 ##########################################################
 locals {
-  data_external_certificates = {
+  data_external_certificate = {
     for item in flatten([
       for domain in local.data_existing : [
         for external_certificate in try(domain.objects.external_certificates, {}) : {
@@ -3103,14 +3103,14 @@ locals {
           domain      = domain.name
           name        = external_certificate.name
           certificate = try(external_certificate.certificate, file(external_certificate.certificate_file))
-        } if !contains(try(keys(local.data_external_certificates), {}), "${domain.name}:${external_certificate.name}")
+        } if !contains(try(keys(local.data_external_certificate), {}), "${domain.name}:${external_certificate.name}")
       ]
     ]) : "${item.domain}:${item.name}" => item
   }
 }
 
 data "fmc_external_certificate" "external_certificate" {
-  for_each = local.data_external_certificates
+  for_each = local.data_external_certificate
 
   name   = each.value.name
   domain = each.value.domain
@@ -3122,4 +3122,262 @@ resource "fmc_external_certificate" "external_certificate" {
   domain      = each.value.domain
   name        = each.value.name
   certificate = each.value.certificate
+}
+
+##########################################################
+###    CERTIFICATE ENROLLMENTS (NON ACME)
+##########################################################
+locals {
+  data_certificate_enrollment = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for certificate_enrollment in try(domain.objects.certificate_enrollments, {}) : {
+          name   = certificate_enrollment.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_certificate_enrollment = {
+    for item in flatten([
+      for domain in local.domains : [
+        for certificate_enrollment in try(domain.objects.certificate_enrollments, {}) : {
+          domain                        = domain.name
+          name                          = certificate_enrollment.name
+          description                   = try(certificate_enrollment.description, local.defaults.fmc.domains.objects.certificate_enrollments.description, null)
+          enrollment_type               = certificate_enrollment.enrollment_type
+          validation_usage_ipsec_client = try(certificate_enrollment.validation_usage_ipsec_client, null)
+          validation_usage_ssl_client   = try(certificate_enrollment.validation_usage_ssl_client, null)
+          validation_usage_ssl_server   = try(certificate_enrollment.validation_usage_ssl_server, null)
+          skip_ca_flag_check            = try(certificate_enrollment.skip_ca_flag_check, null)
+          # EST
+          est_enrollment_url = try(certificate_enrollment.est.enrollment_url, null)
+          est_username       = try(certificate_enrollment.est.username, null)
+          est_password       = try(certificate_enrollment.est.password, null)
+          est_fingerprint    = try(certificate_enrollment.est.fingerprint, null)
+          est_source_interface_id = try(certificate_enrollment.est.source_interface, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${certificate_enrollment.est.source_interface}"].id
+            if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${certificate_enrollment.est.source_interface}")
+          })[0] : null
+          est_source_interface_name                = try(certificate_enrollment.est.source_interface, null)
+          est_ignore_server_certificate_validation = try(certificate_enrollment.est.ignore_server_certificate_validation, null)
+          # SCEP
+          scep_enrollment_url     = try(certificate_enrollment.scep.enrollment_url, null)
+          scep_challenge_password = try(certificate_enrollment.scep.challenge_password, null)
+          scep_retry_period       = try(certificate_enrollment.scep.retry_period, null)
+          scep_retry_count        = try(certificate_enrollment.scep.retry_count, null)
+          scep_fingerprint        = try(certificate_enrollment.scep.fingerprint, null)
+          # Manual
+          manual_ca_certificate = try(certificate_enrollment.manual.ca_certificate, file(certificate_enrollment.manual.ca_certificate_file), null)
+          manual_ca_only        = try(certificate_enrollment.manual.ca_certificate, file(certificate_enrollment.manual.ca_certificate_file), null) != null ? true : null
+          # PKCS12
+          pkcs12_certificate            = try(certificate_enrollment.pkcs12.certificate, file(certificate_enrollment.pkcs12.certificate_file), null)
+          pkcs12_certificate_passphrase = try(certificate_enrollment.pkcs12.passphrase, null)
+          # Certificate Parameters
+          certificate_include_fqdn                 = try(certificate_enrollment.certificate_parameters.include_fqdn, null)
+          certificate_custom_fqdn                  = try(certificate_enrollment.certificate_parameters.custom_fqdn, null)
+          certificate_alternate_fqdn               = try(join(",", certificate_enrollment.certificate_parameters.alternate_fqdns), null)
+          certificate_include_device_ip            = try(certificate_enrollment.certificate_parameters.include_device_ip, null)
+          certificate_common_name                  = try(certificate_enrollment.certificate_parameters.common_name, null)
+          certificate_organizational_unit          = try(certificate_enrollment.certificate_parameters.organizational_unit, null)
+          certificate_organization                 = try(certificate_enrollment.certificate_parameters.organization, null)
+          certificate_locality                     = try(certificate_enrollment.certificate_parameters.locality, null)
+          certificate_state                        = try(certificate_enrollment.certificate_parameters.state, null)
+          certificate_country_code                 = try(certificate_enrollment.certificate_parameters.country_code, null)
+          certificate_email                        = try(certificate_enrollment.certificate_parameters.email, null)
+          certificate_include_device_serial_number = try(certificate_enrollment.certificate_parameters.include_device_serial_number, null)
+          # Key
+          key_name               = try(certificate_enrollment.key.name, null)
+          key_size               = try(certificate_enrollment.key.size, null)
+          key_type               = try(certificate_enrollment.key.type, null)
+          ignore_ipsec_key_usage = try(certificate_enrollment.key.ignore_ipsec_key_usage, null)
+          # Revocation
+          revocation_evaluation_priority                                     = try(certificate_enrollment.revocation.evaluation_priority, null)
+          consider_certificate_valid_if_revocation_information_not_reachable = try(certificate_enrollment.revocation.consider_certificate_valid_if_revocation_information_not_reachable, null)
+          crl_use_distribution_point_from_the_certificate                    = try(certificate_enrollment.revocation.crl_use_distribution_point_from_the_certificate, null)
+          crl_static_urls                                                    = try(certificate_enrollment.revocation.crl_static_urls, null)
+          ocsp_url                                                           = try(certificate_enrollment.revocation.ocsp_url, null)
+        } if !contains(try(keys(local.data_certificate_enrollment), {}), "${domain.name}:${certificate_enrollment.name}") && (certificate_enrollment.enrollment_type != "ACME")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_certificate_enrollment" "certificate_enrollment" {
+  for_each = local.data_certificate_enrollment
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_certificate_enrollment" "certificate_enrollment" {
+  for_each = local.resource_certificate_enrollment
+
+  domain                                                             = each.value.domain
+  name                                                               = each.value.name
+  description                                                        = each.value.description
+  enrollment_type                                                    = each.value.enrollment_type
+  validation_usage_ipsec_client                                      = each.value.validation_usage_ipsec_client
+  validation_usage_ssl_client                                        = each.value.validation_usage_ssl_client
+  validation_usage_ssl_server                                        = each.value.validation_usage_ssl_server
+  skip_ca_flag_check                                                 = each.value.skip_ca_flag_check
+  est_enrollment_url                                                 = each.value.est_enrollment_url
+  est_username                                                       = each.value.est_username
+  est_password                                                       = each.value.est_password
+  est_fingerprint                                                    = each.value.est_fingerprint
+  est_source_interface_id                                            = each.value.est_source_interface_id
+  est_source_interface_name                                          = each.value.est_source_interface_name
+  est_ignore_server_certificate_validation                           = each.value.est_ignore_server_certificate_validation
+  scep_enrollment_url                                                = each.value.scep_enrollment_url
+  scep_challenge_password                                            = each.value.scep_challenge_password
+  scep_retry_period                                                  = each.value.scep_retry_period
+  scep_retry_count                                                   = each.value.scep_retry_count
+  scep_fingerprint                                                   = each.value.scep_fingerprint
+  manual_ca_certificate                                              = each.value.manual_ca_certificate
+  manual_ca_only                                                     = each.value.manual_ca_only
+  pkcs12_certificate                                                 = each.value.pkcs12_certificate
+  pkcs12_certificate_passphrase                                      = each.value.pkcs12_certificate_passphrase
+  certificate_include_fqdn                                           = each.value.certificate_include_fqdn
+  certificate_custom_fqdn                                            = each.value.certificate_custom_fqdn
+  certificate_alternate_fqdn                                         = each.value.certificate_alternate_fqdn
+  certificate_include_device_ip                                      = each.value.certificate_include_device_ip
+  certificate_common_name                                            = each.value.certificate_common_name
+  certificate_organizational_unit                                    = each.value.certificate_organizational_unit
+  certificate_organization                                           = each.value.certificate_organization
+  certificate_locality                                               = each.value.certificate_locality
+  certificate_state                                                  = each.value.certificate_state
+  certificate_country_code                                           = each.value.certificate_country_code
+  certificate_email                                                  = each.value.certificate_email
+  certificate_include_device_serial_number                           = each.value.certificate_include_device_serial_number
+  key_name                                                           = each.value.key_name
+  key_size                                                           = each.value.key_size
+  key_type                                                           = each.value.key_type
+  ignore_ipsec_key_usage                                             = each.value.ignore_ipsec_key_usage
+  revocation_evaluation_priority                                     = each.value.revocation_evaluation_priority
+  consider_certificate_valid_if_revocation_information_not_reachable = each.value.consider_certificate_valid_if_revocation_information_not_reachable
+  crl_use_distribution_point_from_the_certificate                    = each.value.crl_use_distribution_point_from_the_certificate
+  crl_static_urls                                                    = each.value.crl_static_urls
+  ocsp_url                                                           = each.value.ocsp_url
+}
+
+##########################################################
+###    CERTIFICATE ENROLLMENTS (ACME)
+##########################################################
+locals {
+  resource_certificate_enrollment_acme = {
+    for item in flatten([
+      for domain in local.domains : [
+        for certificate_enrollment in try(domain.objects.certificate_enrollments, {}) : {
+          domain                        = domain.name
+          name                          = certificate_enrollment.name
+          description                   = try(certificate_enrollment.description, local.defaults.fmc.domains.objects.certificate_enrollments.description, null)
+          enrollment_type               = certificate_enrollment.enrollment_type
+          validation_usage_ipsec_client = try(certificate_enrollment.validation_usage_ipsec_client, null)
+          validation_usage_ssl_client   = try(certificate_enrollment.validation_usage_ssl_client, null)
+          validation_usage_ssl_server   = try(certificate_enrollment.validation_usage_ssl_server, null)
+          skip_ca_flag_check            = try(certificate_enrollment.skip_ca_flag_check, null)
+          # ACME
+          acme_enrollment_url          = try(certificate_enrollment.acme.enrollment_url, null)
+          acme_authentication_protocol = try(certificate_enrollment.acme.authentication_protocol, local.defaults.fmc.domains.objects.certificate_enrollments.acme.authentication_protocol, null)
+          acme_authentication_interface_id = try(certificate_enrollment.acme.authentication_interface, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${certificate_enrollment.acme.authentication_interface}"].id
+            if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${certificate_enrollment.acme.authentication_interface}")
+          })[0] : null
+          acme_authentication_interface_name = try(certificate_enrollment.acme.authentication_interface, null)
+          acme_source_interface_id = try(certificate_enrollment.acme.source_interface, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${certificate_enrollment.acme.source_interface}"].id
+            if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${certificate_enrollment.acme.source_interface}")
+          })[0] : null
+          acme_source_interface_name = try(certificate_enrollment.acme.source_interface, null)
+          acme_ca_only_certificate_id = try(certificate_enrollment.acme.ca_only_certificate, null) != null ? try(
+            values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => fmc_certificate_enrollment.certificate_enrollment["${domain_path}:${certificate_enrollment.acme.ca_only_certificate}"].id
+              if contains(keys(fmc_certificate_enrollment.certificate_enrollment), "${domain_path}:${certificate_enrollment.acme.ca_only_certificate}")
+            })[0],
+            values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => data.fmc_certificate_enrollment.certificate_enrollment["${domain_path}:${certificate_enrollment.acme.ca_only_certificate}"].id
+              if contains(keys(data.fmc_certificate_enrollment.certificate_enrollment), "${domain_path}:${certificate_enrollment.acme.ca_only_certificate}")
+            })[0],
+          ) : null
+          acme_auto_enrollment                  = try(certificate_enrollment.acme.auto_enrollment, null)
+          acme_auto_enrollment_lifetime         = try(certificate_enrollment.acme.auto_enrollment_lifetime, null)
+          acme_auto_enrollment_key_regeneration = try(certificate_enrollment.acme.auto_enrollment_key_regeneration, null)
+          # Certificate Parameters
+          certificate_include_fqdn                 = try(certificate_enrollment.certificate_parameters.include_fqdn, null)
+          certificate_custom_fqdn                  = try(certificate_enrollment.certificate_parameters.custom_fqdn, null)
+          certificate_alternate_fqdn               = try(join(",", certificate_enrollment.certificate_parameters.alternate_fqdns), null)
+          certificate_include_device_ip            = try(certificate_enrollment.certificate_parameters.include_device_ip, null)
+          certificate_common_name                  = try(certificate_enrollment.certificate_parameters.common_name, null)
+          certificate_organizational_unit          = try(certificate_enrollment.certificate_parameters.organizational_unit, null)
+          certificate_organization                 = try(certificate_enrollment.certificate_parameters.organization, null)
+          certificate_locality                     = try(certificate_enrollment.certificate_parameters.locality, null)
+          certificate_state                        = try(certificate_enrollment.certificate_parameters.state, null)
+          certificate_country_code                 = try(certificate_enrollment.certificate_parameters.country_code, null)
+          certificate_email                        = try(certificate_enrollment.certificate_parameters.email, null)
+          certificate_include_device_serial_number = try(certificate_enrollment.certificate_parameters.include_device_serial_number, null)
+          # Key
+          key_name               = try(certificate_enrollment.key.name, null)
+          key_size               = try(certificate_enrollment.key.size, null)
+          key_type               = try(certificate_enrollment.key.type, null)
+          ignore_ipsec_key_usage = try(certificate_enrollment.key.ignore_ipsec_key_usage, null)
+          # Revocation
+          revocation_evaluation_priority                                     = try(certificate_enrollment.revocation.evaluation_priority, null)
+          consider_certificate_valid_if_revocation_information_not_reachable = try(certificate_enrollment.revocation.consider_certificate_valid_if_revocation_information_not_reachable, null)
+          crl_use_distribution_point_from_the_certificate                    = try(certificate_enrollment.revocation.crl_use_distribution_point_from_the_certificate, null)
+          crl_static_urls                                                    = try(certificate_enrollment.revocation.crl_static_urls, null)
+          ocsp_url                                                           = try(certificate_enrollment.revocation.ocsp_url, null)
+        } if !contains(try(keys(local.data_certificate_enrollment), {}), "${domain.name}:${certificate_enrollment.name}") && (certificate_enrollment.enrollment_type == "ACME")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+resource "fmc_certificate_enrollment" "certificate_enrollment_acme" {
+  for_each = local.resource_certificate_enrollment_acme
+
+  domain                                                             = each.value.domain
+  name                                                               = each.value.name
+  description                                                        = each.value.description
+  enrollment_type                                                    = each.value.enrollment_type
+  validation_usage_ipsec_client                                      = each.value.validation_usage_ipsec_client
+  validation_usage_ssl_client                                        = each.value.validation_usage_ssl_client
+  validation_usage_ssl_server                                        = each.value.validation_usage_ssl_server
+  skip_ca_flag_check                                                 = each.value.skip_ca_flag_check
+  acme_enrollment_url                                                = each.value.acme_enrollment_url
+  acme_authentication_protocol                                       = each.value.acme_authentication_protocol
+  acme_authentication_interface_id                                   = each.value.acme_authentication_interface_id
+  acme_authentication_interface_name                                 = each.value.acme_authentication_interface_name
+  acme_source_interface_id                                           = each.value.acme_source_interface_id
+  acme_source_interface_name                                         = each.value.acme_source_interface_name
+  acme_ca_only_certificate_id                                        = each.value.acme_ca_only_certificate_id
+  acme_auto_enrollment                                               = each.value.acme_auto_enrollment
+  acme_auto_enrollment_lifetime                                      = each.value.acme_auto_enrollment_lifetime
+  acme_auto_enrollment_key_regeneration                              = each.value.acme_auto_enrollment_key_regeneration
+  certificate_include_fqdn                                           = each.value.certificate_include_fqdn
+  certificate_custom_fqdn                                            = each.value.certificate_custom_fqdn
+  certificate_alternate_fqdn                                         = each.value.certificate_alternate_fqdn
+  certificate_include_device_ip                                      = each.value.certificate_include_device_ip
+  certificate_common_name                                            = each.value.certificate_common_name
+  certificate_organizational_unit                                    = each.value.certificate_organizational_unit
+  certificate_organization                                           = each.value.certificate_organization
+  certificate_locality                                               = each.value.certificate_locality
+  certificate_state                                                  = each.value.certificate_state
+  certificate_country_code                                           = each.value.certificate_country_code
+  certificate_email                                                  = each.value.certificate_email
+  certificate_include_device_serial_number                           = each.value.certificate_include_device_serial_number
+  key_name                                                           = each.value.key_name
+  key_size                                                           = each.value.key_size
+  key_type                                                           = each.value.key_type
+  ignore_ipsec_key_usage                                             = each.value.ignore_ipsec_key_usage
+  revocation_evaluation_priority                                     = each.value.revocation_evaluation_priority
+  consider_certificate_valid_if_revocation_information_not_reachable = each.value.consider_certificate_valid_if_revocation_information_not_reachable
+  crl_use_distribution_point_from_the_certificate                    = each.value.crl_use_distribution_point_from_the_certificate
+  crl_static_urls                                                    = each.value.crl_static_urls
+  ocsp_url                                                           = each.value.ocsp_url
 }
