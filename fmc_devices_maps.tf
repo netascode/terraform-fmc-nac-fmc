@@ -198,6 +198,50 @@ locals {
         }
       ]) : "${item.domain}:${item.device_name}:${item.logical_name}" => item if item.logical_name != null
     },
+    {
+      for item in flatten([
+        for loopback_interface_key, loopback_interface_value in local.resource_device_loopback_interface : {
+          name         = loopback_interface_value.name
+          device_name  = loopback_interface_value.device_name
+          id           = fmc_device_loopback_interface.device_loopback_interface[loopback_interface_key].id
+          logical_name = try(loopback_interface_value.logical_name, null)
+          domain       = loopback_interface_value.domain
+        }
+      ]) : "${item.domain}:${item.device_name}:${item.logical_name}" => item if item.logical_name != null
+    },
+    {
+      for item in flatten([
+        for loopback_interface_key, loopback_interface_value in local.data_device_loopback_interface : {
+          name         = loopback_interface_value.name
+          device_name  = loopback_interface_value.device_name
+          id           = data.fmc_device_loopback_interface.device_loopback_interface[loopback_interface_key].id
+          logical_name = try(data.fmc_device_loopback_interface.device_loopback_interface[loopback_interface_key].logical_name, null)
+          domain       = loopback_interface_value.domain
+        }
+      ]) : "${item.domain}:${item.device_name}:${item.logical_name}" => item if item.logical_name != null
+    },
+    {
+      for item in flatten([
+        for tunnel_interface_key, tunnel_interface_value in local.resource_device_vti_interface : {
+          name         = tunnel_interface_value.name
+          device_name  = tunnel_interface_value.device_name
+          id           = fmc_device_vti_interface.device_vti_interface[tunnel_interface_key].id
+          logical_name = try(tunnel_interface_value.logical_name, null)
+          domain       = tunnel_interface_value.domain
+        }
+      ]) : "${item.domain}:${item.device_name}:${item.logical_name}" => item if item.logical_name != null
+    },
+    {
+      for item in flatten([
+        for tunnel_interface_key, tunnel_interface_value in local.data_device_vti_interface : {
+          name         = tunnel_interface_value.name
+          device_name  = tunnel_interface_value.device_name
+          id           = data.fmc_device_vti_interface.device_vti_interface[tunnel_interface_key].id
+          logical_name = try(data.fmc_device_vti_interface.device_vti_interface[tunnel_interface_key].logical_name, null)
+          domain       = tunnel_interface_value.domain
+        }
+      ]) : "${item.domain}:${item.device_name}:${item.logical_name}" => item if item.logical_name != null
+    },
   )
 }
 
@@ -328,6 +372,35 @@ locals {
     { for key, ha_pair in fmc_device_ha_pair.device_ha_pair : ha_pair.primary_device_id => { id = ha_pair.id } }
   )
 }
+
+######
+### map_loopback_interfaces
+######
+locals {
+  map_loopback_interfaces = merge(
+    {
+      for item in flatten([
+        for loopback_interface_key, loopback_interface_value in local.resource_device_loopback_interface : {
+          name        = loopback_interface_value.name
+          device_name = loopback_interface_value.device_name
+          id          = fmc_device_loopback_interface.device_loopback_interface[loopback_interface_key].id
+          domain      = loopback_interface_value.domain
+        }
+      ]) : "${item.domain}:${item.device_name}:${item.name}" => item
+    },
+    {
+      for item in flatten([
+        for loopback_interface_key, loopback_interface_value in local.data_device_loopback_interface : {
+          name        = loopback_interface_value.name
+          device_name = loopback_interface_value.device_name
+          id          = data.fmc_device_loopback_interface.device_loopback_interface[loopback_interface_key].id
+          domain      = loopback_interface_value.domain
+        }
+      ]) : "${item.domain}:${item.device_name}:${item.name}" => item
+    },
+  )
+}
+
 
 ######
 ### FAKE - TODO

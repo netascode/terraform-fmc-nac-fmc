@@ -1037,14 +1037,13 @@ locals {
             for loopback_interface in try(vrf.loopback_interfaces, []) : {
               domain      = domain.name
               name        = loopback_interface.name
-              loopback_id = split(".", loopback_interface.name)[length(split(".", loopback_interface.name)) - 1]
               device_name = device.name
               device_id   = data.fmc_device.device["${domain.name}:${device.name}"].id
             }
           ]
         ]
       ]
-    ]) : "${item.domain}:${item.device_name}:${item.loopback_id}" => item
+    ]) : "${item.domain}:${item.device_name}:${item.name}" => item
   }
 
   resource_device_loopback_interface = {
@@ -1055,7 +1054,7 @@ locals {
             for loopback_interface in try(vrf.loopback_interfaces, []) : {
               domain              = domain.name
               device_name         = device.name
-              name                = "Loopback.${loopback_interface.id}"
+              name                = "Loopback${loopback_interface.id}"
               device_id           = local.map_devices["${domain.name}:${device.name}"].id
               loopback_id         = loopback_interface.id
               description         = try(loopback_interface.description, local.defaults.fmc.domains.devices.devices.vrfs.loopback_interfaces.description, null)
@@ -1067,11 +1066,11 @@ locals {
                 address = ipv6_address.address
                 prefix  = ipv6_address.prefix
               }]
-            } if(!contains(try(keys(local.data_device_loopback_interface), []), "${domain.name}:${device.name}:${loopback_interface.id}") && vrf.name == "Global")
+            } if(!contains(try(keys(local.data_device_loopback_interface), []), "${domain.name}:${device.name}:Loopback${loopback_interface.id}") && vrf.name == "Global")
           ]
         ]
       ]
-    ]) : "${item.domain}:${item.device_name}:${item.loopback_id}" => item
+    ]) : "${item.domain}:${item.device_name}:${item.name}" => item
   }
 }
 
@@ -1096,6 +1095,136 @@ resource "fmc_device_loopback_interface" "device_loopback_interface" {
   ipv4_static_netmask = each.value.ipv4_static_netmask
   ipv6_addresses      = each.value.ipv6_addresses
 }
+
+##########################################################
+###    DEVICE VIRTUAL TUNNEL INTERFACES (VTI)
+##########################################################
+locals {
+  data_device_vti_interface = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for device in try(domain.devices.devices, []) : [
+          for vrf in try(device.vrfs, []) : [
+            for vti_interface in try(vrf.virtual_tunnel_interfaces, []) : {
+              domain      = domain.name
+              name        = vti_interface.name
+              vti_id      = split(".", vti_interface.name)[length(split(".", vti_interface.name)) - 1]
+              device_name = device.name
+              device_id   = data.fmc_device.device["${domain.name}:${device.name}"].id
+            }
+          ]
+        ]
+      ]
+    ]) : "${item.domain}:${item.device_name}:${item.name}" => item
+  }
+
+  resource_device_vti_interface = {
+    for item in flatten([
+      for domain in local.domains : [
+        for device in try(domain.devices.devices, []) : [
+          for vrf in try(device.vrfs, []) : [
+            for vti_interface in try(vrf.virtual_tunnel_interfaces, []) : {
+              domain                       = domain.name
+              device_name                  = device.name
+              name                         = vti_interface.tunnel_type == "STATIC" ? "Tunnel${vti_interface.id}" : "Virtual-Template${vti_interface.id}"
+              device_id                    = local.map_devices["${domain.name}:${device.name}"].id
+              logical_name                 = vti_interface.logical_name
+              tunnel_id                    = vti_interface.id
+              tunnel_mode                  = vti_interface.tunnel_mode
+              tunnel_source_interface_name = vti_interface.tunnel_source_interface
+              tunnel_source_interface_id = try(vti_interface.tunnel_source_interface, null) != null ? try(
+                values({
+                  for domain_path in local.related_domains[domain.name] :
+                  domain_path => local.map_interfaces_by_names["${domain_path}:${device.name}:${vti_interface.tunnel_source_interface}"].id
+                  if contains(keys(local.map_interfaces_by_names), "${domain_path}:${device.name}:${vti_interface.tunnel_source_interface}")
+                })[0],
+                values({
+                  for domain_path in local.related_domains[domain.name] :
+                  domain_path => local.map_loopback_interfaces["${domain_path}:${device.name}:${vti_interface.tunnel_source_interface}"].id
+                  if contains(keys(local.map_loopback_interfaces), "${domain_path}:${device.name}:${vti_interface.tunnel_source_interface}")
+                })[0],
+              ) : null
+              tunnel_type              = vti_interface.tunnel_type
+              borrow_ip_interface_name = try(vti_interface.borrow_ip_interface, null)
+              borrow_ip_interface_id = try(vti_interface.borrow_ip_interface, null) != null ? try(
+                values({
+                  for domain_path in local.related_domains[domain.name] :
+                  domain_path => local.map_interfaces_by_names["${domain_path}:${device.name}:${vti_interface.borrow_ip_interface}"].id
+                  if contains(keys(local.map_interfaces_by_names), "${domain_path}:${device.name}:${vti_interface.borrow_ip_interface}")
+                })[0],
+                values({
+                  for domain_path in local.related_domains[domain.name] :
+                  domain_path => local.map_loopback_interfaces["${domain_path}:${device.name}:${vti_interface.borrow_ip_interface}"].id
+                  if contains(keys(local.map_loopback_interfaces), "${domain_path}:${device.name}:${vti_interface.borrow_ip_interface}")
+                })[0],
+              ) : null
+              description                       = try(vti_interface.description, local.defaults.fmc.domains.devices.devices.vrfs.virtual_tunnel_interfaces.description, null)
+              enabled                           = try(vti_interface.enabled, local.defaults.fmc.domains.devices.devices.vrfs.virtual_tunnel_interfaces.enabled, null)
+              http_based_application_monitoring = try(vti_interface.http_based_application_monitoring, local.defaults.fmc.domains.devices.devices.vrfs.virtual_tunnel_interfaces.http_based_application_monitoring, null)
+              ip_based_monitoring               = try(vti_interface.ip_based_monitoring_peer_ip, null) != null ? true : false
+              ip_based_monitoring_type          = try(vti_interface.ip_based_monitoring_peer_ip, null) != null ? (strcontains(vti_interface.ip_based_monitoring_peer_ip, ".") ? "PEER_IPV4" : "PEER_IPV6") : null
+              ip_based_monitoring_peer_ip       = try(vti_interface.ip_based_monitoring_peer_ip, null)
+              ipv4_static_address               = try(vti_interface.ipv4_static_address, null)
+              ipv4_static_netmask               = try(vti_interface.ipv4_static_netmask, null)
+              ipv6_address                      = try(vti_interface.ipv6_address, null)
+              ipv6_prefix                       = try(vti_interface.ipv6_prefix, null)
+              priority                          = try(vti_interface.priority, local.defaults.fmc.domains.devices.devices.vrfs.virtual_tunnel_interfaces.priority, null)
+              security_zone_id = try(vti_interface.security_zone, null) != null ? try(
+                values({
+                  for domain_path in local.related_domains[domain.name] :
+                  domain_path => local.map_security_zones["${domain_path}:${vti_interface.security_zone}"].id
+                  if contains(keys(local.map_security_zones), "${domain_path}:${vti_interface.security_zone}")
+              })[0]) : null
+              tunnel_source_interface_ipv6_address = try(vti_interface.tunnel_source_interface_ipv6_address, null)
+              } if(
+              (
+                (!contains(try(keys(local.data_device_vti_interface), []), "${domain.name}:${device.name}:Tunnel${vti_interface.id}") && vti_interface.tunnel_type == "STATIC") ||
+                (!contains(try(keys(local.data_device_vti_interface), []), "${domain.name}:${device.name}:Virtual-Template${vti_interface.id}") && vti_interface.tunnel_type == "DYNAMIC")
+              )
+            && vrf.name == "Global")
+          ]
+        ]
+      ]
+    ]) : "${item.domain}:${item.device_name}:${item.name}" => item
+  }
+}
+
+data "fmc_device_vti_interface" "device_vti_interface" {
+  for_each = local.data_device_vti_interface
+
+  domain    = each.value.domain
+  name      = each.value.name
+  device_id = each.value.device_id
+}
+
+resource "fmc_device_vti_interface" "device_vti_interface" {
+  for_each = local.resource_device_vti_interface
+
+  domain                               = each.value.domain
+  device_id                            = each.value.device_id
+  logical_name                         = each.value.logical_name
+  tunnel_id                            = each.value.tunnel_id
+  tunnel_mode                          = each.value.tunnel_mode
+  tunnel_source_interface_name         = each.value.tunnel_source_interface_name
+  tunnel_source_interface_id           = each.value.tunnel_source_interface_id
+  tunnel_type                          = each.value.tunnel_type
+  borrow_ip_interface_name             = each.value.borrow_ip_interface_name
+  borrow_ip_interface_id               = each.value.borrow_ip_interface_id
+  description                          = each.value.description
+  enabled                              = each.value.enabled
+  http_based_application_monitoring    = each.value.http_based_application_monitoring
+  ip_based_monitoring                  = each.value.ip_based_monitoring
+  ip_based_monitoring_type             = each.value.ip_based_monitoring_type
+  ip_based_monitoring_peer_ip          = each.value.ip_based_monitoring_peer_ip
+  ipv4_static_address                  = each.value.ipv4_static_address
+  ipv4_static_netmask                  = each.value.ipv4_static_netmask
+  ipv6_address                         = each.value.ipv6_address
+  ipv6_prefix                          = each.value.ipv6_prefix
+  priority                             = each.value.priority
+  security_zone_id                     = each.value.security_zone_id
+  tunnel_source_interface_ipv6_address = each.value.tunnel_source_interface_ipv6_address
+}
+
 
 ##########################################################
 ###    CHASSIS

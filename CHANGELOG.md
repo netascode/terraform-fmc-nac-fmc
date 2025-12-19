@@ -2,8 +2,10 @@
 
 - (BREAKING CHANGE): Moved configuration of standby IP for High Availability Pairs
 - Add `interface_group` support (no interface assignment)
+- Add missing objects for full BGP support
 - Add support for chassis management
-- Add missing elements for full BGP support
+- Add support for Site to site VPNs with required objects
+
 
 ## 0.1.0
 

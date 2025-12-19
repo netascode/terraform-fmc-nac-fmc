@@ -67,6 +67,10 @@ defaults:
               mode: "NONE"
             loopback_interfaces:
               enabled: true
+            virtual_tunnel_interfaces:
+              enabled: true
+              http_based_application_monitoring: true
+              priority: 0
         ha_pairs:
           encryption_enabled: false
           failed_interfaces_limit: 1
@@ -256,3 +260,7 @@ defaults:
             internet: false
             no_advertise: false
             no_export: false
+      vpns:
+        site_to_site:
+          ikev1: false
+          ikev2: false
