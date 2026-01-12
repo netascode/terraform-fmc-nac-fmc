@@ -865,7 +865,7 @@ locals {
 data "fmc_device_subinterface" "device_subinterface" {
   for_each = local.data_device_subinterface
 
-  domain    = each.value.domain_name
+  domain    = each.value.domain
   name      = each.value.name
   device_id = each.value.device_id
 }
@@ -1770,7 +1770,7 @@ locals {
           device_name  = subinterface_value.device_name
           id           = data.fmc_device_subinterface.device_subinterface[subinterface_key].id
           logical_name = try(data.fmc_device_subinterface.device_subinterface[subinterface_key].logical_name, null)
-          domain_name  = subinterface_value.domain_name
+          domain  = subinterface_value.domain
         }
       ]) : "${item.domain}:${item.device_name}:${item.name}" => item
     },
