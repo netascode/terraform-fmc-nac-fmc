@@ -61,7 +61,7 @@ locals {
           items = { for endpoint in vpn_s2s.endpoints : (endpoint.name) => {
             extranet_device             = endpoint.extranet_device
             peer_type                   = endpoint.peer_type
-            allow_incoming_ikev2_routes = try(endpoint.allow_incoming_ikev2_routes, null)
+            allow_incoming_ikev2_routes = try(endpoint.allow_incoming_ikev2_routes, local.defaults.fmc.domains.vpns.site_to_site.endpoints.allow_incoming_ikev2_routes, null)
             backup_interface_id = try(endpoint.backup_interface_logical_name, null) != null ? values({
               for domain_path in local.related_domains[domain.name] :
               domain_path => local.map_interfaces_by_logical_names["${domain_path}:${endpoint.name}:${endpoint.backup_interface_logical_name}"].id
@@ -70,7 +70,7 @@ locals {
             backup_interface_public_ip_address = try(endpoint.backup_interface_public_ip_address, null)
             backup_local_identity_type         = try(endpoint.backup_local_identity_type, null)
             backup_local_identity_string       = try(endpoint.backup_local_identity_string, null)
-            connection_type                    = try(endpoint.connection_type, null)
+            connection_type                    = try(endpoint.connection_type, local.defaults.fmc.domains.vpns.site_to_site.endpoints.connection_type, null)
             device_id = endpoint.extranet_device == false ? (
               values({
                 for domain_path in local.related_domains[domain.name] :
@@ -79,7 +79,7 @@ locals {
               })[0]
             ) : null
             extranet_dynamic_ip = try(endpoint.extranet_dynamic_ip, null)
-            extranet_ip_address = try(endpoint.extranet_ip_address, null)
+            extranet_ip_address = try(join(",", endpoint.extranet_ip_addresses), null)
             interface_id = try(endpoint.interface_logical_name, null) != null ? values({
               for domain_path in local.related_domains[domain.name] :
               domain_path => local.map_interfaces_by_logical_names["${domain_path}:${endpoint.name}:${endpoint.interface_logical_name}"].id
@@ -92,11 +92,15 @@ locals {
             nat_exemption               = try(endpoint.nat_exemption, null)
             nat_exemption_inside_interface_id = try(endpoint.nat_exemption_inside_interface, null) != null ? values({
               for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_interfaces_by_logical_names["${domain_path}:${endpoint.name}:${endpoint.nat_exemption_inside_interface}"].id
-              if contains(keys(local.map_interfaces_by_logical_names), "${domain_path}:${endpoint.name}:${endpoint.nat_exemption_inside_interface}")
+              domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${endpoint.nat_exemption_inside_interface}"].id
+              if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${endpoint.nat_exemption_inside_interface}")
             })[0] : null
-            nat_traversal                     = try(endpoint.nat_traversal, null)
-            override_remote_vpn_filter_acl_id = null ######## TODO
+            nat_traversal = try(endpoint.nat_traversal, local.defaults.fmc.domains.vpns.site_to_site.endpoints.nat_traversal, null)
+            override_remote_vpn_filter_access_list_id = try(endpoint.override_remote_vpn_filter_access_list, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_extended_access_lists["${domain_path}:${endpoint.override_remote_vpn_filter_access_list}"].id
+              if contains(keys(local.map_extended_access_lists), "${domain_path}:${endpoint.override_remote_vpn_filter_access_list}")
+            })[0] : null
             protected_networks = [for protected_network in try(endpoint.protected_networks, []) : {
               id = values({
                 for domain_path in local.related_domains[domain.name] :
@@ -104,11 +108,19 @@ locals {
                 if contains(keys(local.map_network_objects), "${domain_path}:${protected_network}")
               })[0]
             }]
-            protected_networks_acl_id        = null ######## TODO
-            reverse_route_injection          = try(endpoint.reverse_route_injection, null)
-            send_vti_ip_to_peer              = try(endpoint.send_vti_ip_to_peer, null)
-            send_tunnel_interface_ip_to_peer = try(endpoint.send_tunnel_interface_ip_to_peer, null)
-            vpn_filter_acl_id                = null ######## TODO
+            protected_networks_access_list_id = try(endpoint.protected_networks_access_list, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_extended_access_lists["${domain_path}:${endpoint.protected_networks_access_list}"].id
+              if contains(keys(local.map_extended_access_lists), "${domain_path}:${endpoint.protected_networks_access_list}")
+            })[0] : null
+            reverse_route_injection                  = try(endpoint.reverse_route_injection, local.defaults.fmc.domains.vpns.site_to_site.endpoints.reverse_route_injection, null)
+            send_virtual_tunnel_interface_ip_to_peer = try(endpoint.send_virtual_tunnel_interface_ip_to_peer, null)
+            send_tunnel_interface_ip_to_peer         = try(endpoint.send_tunnel_interface_ip_to_peer, null)
+            vpn_filter_access_list_id = try(endpoint.vpn_filter_access_list, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_extended_access_lists["${domain_path}:${endpoint.vpn_filter_access_list}"].id
+              if contains(keys(local.map_extended_access_lists), "${domain_path}:${endpoint.vpn_filter_access_list}")
+            })[0] : null
           } }
         } if contains(keys(vpn_s2s), "endpoints")
       ]
@@ -166,7 +178,7 @@ locals {
               if contains(keys(local.map_certificate_enrollments), "${domain_path}:${vpn_s2s.ike_settings.ikev2_certificate}")
             })[0]
           ) : null
-          ikev2_enforce_hex_based_pre_shared_key = try(vpn_s2s.ike_settings.ikev2_enforce_hex_based_pre_shared_key, null)
+          ikev2_enforce_hex_based_pre_shared_key = try(vpn_s2s.ike_settings.ikev2_enforce_hex_based_pre_shared_key, local.defaults.fmc.domains.vpns.site_to_site.ike_settings.ikev2_enforce_hex_based_pre_shared_key, null)
           ikev2_manual_pre_shared_key            = try(vpn_s2s.ike_settings.ikev2_manual_pre_shared_key, null)
           ikev2_policies = [for ikev2_policy in try(vpn_s2s.ike_settings.ikev2_policies, []) : {
             id = values({
@@ -212,7 +224,7 @@ locals {
           vpn_s2s_name           = vpn_s2s.name
           vpn_s2s_id             = try(fmc_vpn_s2s.vpn_s2s["${domain.name}:${vpn_s2s.name}"].id, data.fmc_vpn_s2s.vpn_s2s["${domain.name}:${vpn_s2s.name}"].id)
           crypto_map_type        = try(vpn_s2s.ipsec_settings.crypto_map_type, null)
-          do_not_fragment_policy = try(vpn_s2s.ipsec_settings.do_not_fragment_policy, null)
+          do_not_fragment_policy = try(vpn_s2s.ipsec_settings.do_not_fragment_policy, local.defaults.fmc.domains.vpns.site_to_site.ipsec_settings.do_not_fragment_policy, null)
           ikev1_ipsec_proposals = [for ikev1_ipsec_proposal in try(vpn_s2s.ipsec_settings.ikev1_ipsec_proposals, []) : {
             id = values({
               for domain_path in local.related_domains[domain.name] :
@@ -229,18 +241,18 @@ locals {
             })[0]
             name = ikev2_ipsec_proposal
           }]
-          ikev2_mode                                = try(vpn_s2s.ipsec_settings.ikev2_mode, null)
-          lifetime_duration                         = try(vpn_s2s.ipsec_settings.lifetime_duration, null)
-          lifetime_size                             = try(vpn_s2s.ipsec_settings.lifetime_size, null)
-          perfect_forward_secrecy                   = try(vpn_s2s.ipsec_settings.perfect_forward_secrecy, null)
+          ikev2_mode                                = try(vpn_s2s.ipsec_settings.ikev2_mode, local.defaults.fmc.domains.vpns.site_to_site.ipsec_settings.ikev2_mode, null)
+          lifetime_duration                         = try(vpn_s2s.ipsec_settings.lifetime_duration, local.defaults.fmc.domains.vpns.site_to_site.ipsec_settings.lifetime_duration, null)
+          lifetime_size                             = try(vpn_s2s.ipsec_settings.lifetime_size, local.defaults.fmc.domains.vpns.site_to_site.ipsec_settings.lifetime_size, null)
+          perfect_forward_secrecy                   = try(vpn_s2s.ipsec_settings.perfect_forward_secrecy, local.defaults.fmc.domains.vpns.site_to_site.ipsec_settings.perfect_forward_secrecy, null)
           perfect_forward_secrecy_modulus_group     = try(vpn_s2s.ipsec_settings.perfect_forward_secrecy_modulus_group, null)
-          reverse_route_injection                   = try(vpn_s2s.ipsec_settings.reverse_route_injection, null)
-          security_association_strength_enforcement = try(vpn_s2s.ipsec_settings.security_association_strength_enforcement, null)
-          tfc                                       = try(vpn_s2s.ipsec_settings.tfc, null)
-          tfc_burst_bytes                           = try(vpn_s2s.ipsec_settings.tfc_burst_bytes, null)
-          tfc_payload_bytes                         = try(vpn_s2s.ipsec_settings.tfc_payload_bytes, null)
-          tfc_timeout                               = try(vpn_s2s.ipsec_settings.tfc_timeout, null)
-          validate_incoming_icmp_error_messages     = try(vpn_s2s.ipsec_settings.validate_incoming_icmp_error_messages, null)
+          reverse_route_injection                   = try(vpn_s2s.ipsec_settings.reverse_route_injection, local.defaults.fmc.domains.vpns.site_to_site.ipsec_settings.reverse_route_injection, null)
+          security_association_strength_enforcement = try(vpn_s2s.ipsec_settings.security_association_strength_enforcement, local.defaults.fmc.domains.vpns.site_to_site.ipsec_settings.security_association_strength_enforcement, null)
+          tfc                                       = try(vpn_s2s.ipsec_settings.tfc, local.defaults.fmc.domains.vpns.site_to_site.ipsec_settings.tfc, null)
+          tfc_burst_bytes                           = try(vpn_s2s.ipsec_settings.tfc_burst_bytes, local.defaults.fmc.domains.vpns.site_to_site.ipsec_settings.tfc_burst_bytes, null)
+          tfc_payload_bytes                         = try(vpn_s2s.ipsec_settings.tfc_payload_bytes, local.defaults.fmc.domains.vpns.site_to_site.ipsec_settings.tfc_payload_bytes, null)
+          tfc_timeout                               = try(vpn_s2s.ipsec_settings.tfc_timeout, local.defaults.fmc.domains.vpns.site_to_site.ipsec_settings.tfc_timeout, null)
+          validate_incoming_icmp_error_messages     = try(vpn_s2s.ipsec_settings.validate_incoming_icmp_error_messages, local.defaults.fmc.domains.vpns.site_to_site.ipsec_settings.validate_incoming_icmp_error_messages, null)
         } if contains(keys(vpn_s2s), "ipsec_settings")
       ]
     ]) : "${item.domain}:${item.vpn_s2s_name}" => item
@@ -281,30 +293,30 @@ locals {
           domain                                                              = domain.name
           vpn_s2s_name                                                        = vpn_s2s.name
           vpn_s2s_id                                                          = try(fmc_vpn_s2s.vpn_s2s["${domain.name}:${vpn_s2s.name}"].id, data.fmc_vpn_s2s.vpn_s2s["${domain.name}:${vpn_s2s.name}"].id)
-          ike_keepalive                                                       = try(vpn_s2s.advanced_settings.ike_keepalive, null)
-          ike_keepalive_threshold                                             = try(vpn_s2s.advanced_settings.ike_keepalive_threshold, null)
-          ike_keepalive_retry_interval                                        = try(vpn_s2s.advanced_settings.ike_keepalive_retry_interval, null)
-          ike_identity_sent_to_peers                                          = try(vpn_s2s.advanced_settings.ike_identity_sent_to_peers, null)
-          ike_peer_identity_validation                                        = try(vpn_s2s.advanced_settings.ike_peer_identity_validation, null)
-          ike_aggressive_mode                                                 = try(vpn_s2s.advanced_settings.ike_aggressive_mode, null)
-          ike_notification_on_tunnel_disconnect                               = try(vpn_s2s.advanced_settings.ike_notification_on_tunnel_disconnect, null)
-          ikev2_cookie_challenge                                              = try(vpn_s2s.advanced_settings.ikev2_cookie_challenge, null)
-          ikev2_threshold_to_challenge_incoming_cookies                       = try(vpn_s2s.advanced_settings.ikev2_threshold_to_challenge_incoming_cookies, null)
-          ikev2_number_of_sas_allowed_in_negotiation                          = try(vpn_s2s.advanced_settings.ikev2_number_of_sas_allowed_in_negotiation, null)
-          ikev2_maximum_number_of_sas_allowed                                 = try(vpn_s2s.advanced_settings.ikev2_maximum_number_of_sas_allowed, null)
-          ipsec_fragmentation_before_encryption                               = try(vpn_s2s.advanced_settings.ipsec_fragmentation_before_encryption, null)
-          ipsec_path_maximum_transmission_unit_aging_reset_interval           = try(vpn_s2s.advanced_settings.ipsec_path_maximum_transmission_unit_aging_reset_interval, null)
-          spoke_to_spoke_connectivity_through_hub                             = try(vpn_s2s.advanced_settings.spoke_to_spoke_connectivity_through_hub, null)
-          nat_keepalive_message_traversal                                     = try(vpn_s2s.advanced_settings.nat_keepalive_message_traversal_interval, null) != null ? true : null
-          nat_keepalive_message_traversal_interval                            = try(vpn_s2s.advanced_settings.nat_keepalive_message_traversal_interval, null)
-          vpn_idle_timeout                                                    = try(vpn_s2s.advanced_settings.vpn_idle_timeout_value, null) != null ? true : null
-          vpn_idle_timeout_value                                              = try(vpn_s2s.advanced_settings.vpn_idle_timeout_value, null)
-          sgt_propagation_over_vti                                            = try(vpn_s2s.advanced_settings.sgt_propagation_over_vti, null)
-          bypass_access_control_policy_for_decrypted_traffic                  = try(vpn_s2s.advanced_settings.bypass_access_control_policy_for_decrypted_traffic, null)
-          cert_use_certificate_map_configured_in_endpoint_to_determine_tunnel = try(vpn_s2s.advanced_settings.cert_use_certificate_map_configured_in_endpoint_to_determine_tunnel, null)
-          cert_use_ou_to_determine_tunnel                                     = try(vpn_s2s.advanced_settings.cert_use_ou_to_determine_tunnel, null)
-          cert_use_ike_identity_to_determine_tunnel                           = try(vpn_s2s.advanced_settings.cert_use_ike_identity_to_determine_tunnel, null)
-          cert_use_peer_ip_address_to_determine_tunnel                        = try(vpn_s2s.advanced_settings.cert_use_peer_ip_address_to_determine_tunnel, null)
+          ike_keepalive                                                       = try(vpn_s2s.advanced_settings.ike_keepalive, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.ike_keepalive, null)
+          ike_keepalive_threshold                                             = try(vpn_s2s.advanced_settings.ike_keepalive_threshold, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.ike_keepalive_threshold, null)
+          ike_keepalive_retry_interval                                        = try(vpn_s2s.advanced_settings.ike_keepalive_retry_interval, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.ike_keepalive_retry_interval, null)
+          ike_identity_sent_to_peers                                          = try(vpn_s2s.advanced_settings.ike_identity_sent_to_peers, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.ike_identity_sent_to_peers, null)
+          ike_peer_identity_validation                                        = try(vpn_s2s.advanced_settings.ike_peer_identity_validation, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.ike_peer_identity_validation, null)
+          ike_aggressive_mode                                                 = try(vpn_s2s.advanced_settings.ike_aggressive_mode, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.ike_aggressive_mode, null)
+          ike_notification_on_tunnel_disconnect                               = try(vpn_s2s.advanced_settings.ike_notification_on_tunnel_disconnect, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.ike_notification_on_tunnel_disconnect, null)
+          ikev2_cookie_challenge                                              = try(vpn_s2s.advanced_settings.ikev2_cookie_challenge, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.ikev2_cookie_challenge, null)
+          ikev2_threshold_to_challenge_incoming_cookies                       = try(vpn_s2s.advanced_settings.ikev2_threshold_to_challenge_incoming_cookies, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.ikev2_threshold_to_challenge_incoming_cookies, null)
+          ikev2_number_of_sas_allowed_in_negotiation                          = try(vpn_s2s.advanced_settings.ikev2_number_of_sas_allowed_in_negotiation, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.ikev2_number_of_sas_allowed_in_negotiation, null)
+          ikev2_maximum_number_of_sas_allowed                                 = try(vpn_s2s.advanced_settings.ikev2_maximum_number_of_sas_allowed, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.ikev2_maximum_number_of_sas_allowed, null)
+          ipsec_fragmentation_before_encryption                               = try(vpn_s2s.advanced_settings.ipsec_fragmentation_before_encryption, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.ipsec_fragmentation_before_encryption, null)
+          ipsec_path_maximum_transmission_unit_aging_reset_interval           = try(vpn_s2s.advanced_settings.ipsec_path_maximum_transmission_unit_aging_reset_interval, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.ipsec_path_maximum_transmission_unit_aging_reset_interval, null)
+          spoke_to_spoke_connectivity_through_hub                             = try(vpn_s2s.advanced_settings.spoke_to_spoke_connectivity_through_hub, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.spoke_to_spoke_connectivity_through_hub, null)
+          nat_keepalive_message_traversal                                     = try(vpn_s2s.advanced_settings.nat_keepalive_message_traversal_interval, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.nat_keepalive_message_traversal_interval, null) != null ? true : null
+          nat_keepalive_message_traversal_interval                            = try(vpn_s2s.advanced_settings.nat_keepalive_message_traversal_interval, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.nat_keepalive_message_traversal_interval, null)
+          vpn_idle_timeout                                                    = try(vpn_s2s.advanced_settings.vpn_idle_timeout_value, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.vpn_idle_timeout_value, null) != null ? true : null
+          vpn_idle_timeout_value                                              = try(vpn_s2s.advanced_settings.vpn_idle_timeout_value, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.vpn_idle_timeout_value, null)
+          sgt_propagation_over_vti                                            = try(vpn_s2s.advanced_settings.sgt_propagation_over_vti, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.sgt_propagation_over_vti, null)
+          bypass_access_control_policy_for_decrypted_traffic                  = try(vpn_s2s.advanced_settings.bypass_access_control_policy_for_decrypted_traffic, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.bypass_access_control_policy_for_decrypted_traffic, null)
+          cert_use_certificate_map_configured_in_endpoint_to_determine_tunnel = try(vpn_s2s.advanced_settings.cert_use_certificate_map_configured_in_endpoint_to_determine_tunnel, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.cert_use_certificate_map_configured_in_endpoint_to_determine_tunnel, null)
+          cert_use_ou_to_determine_tunnel                                     = try(vpn_s2s.advanced_settings.cert_use_ou_to_determine_tunnel, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.cert_use_ou_to_determine_tunnel, null)
+          cert_use_ike_identity_to_determine_tunnel                           = try(vpn_s2s.advanced_settings.cert_use_ike_identity_to_determine_tunnel, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.cert_use_ike_identity_to_determine_tunnel, null)
+          cert_use_peer_ip_address_to_determine_tunnel                        = try(vpn_s2s.advanced_settings.cert_use_peer_ip_address_to_determine_tunnel, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.cert_use_peer_ip_address_to_determine_tunnel, null)
         } if contains(keys(vpn_s2s), "advanced_settings")
       ]
     ]) : "${item.domain}:${item.vpn_s2s_name}" => item

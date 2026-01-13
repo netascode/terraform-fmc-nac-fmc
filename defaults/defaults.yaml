@@ -264,3 +264,44 @@ defaults:
         site_to_site:
           ikev1: false
           ikev2: false
+          advanced_settings:
+            bypass_access_control_policy_for_decrypted_traffic: false
+            cert_use_certificate_map_configured_in_endpoint_to_determine_tunnel: false
+            cert_use_ike_identity_to_determine_tunnel: true
+            cert_use_ou_to_determine_tunnel: true
+            cert_use_peer_ip_address_to_determine_tunnel: true
+            ike_aggressive_mode: false
+            ike_identity_sent_to_peers: AUTO_OR_DN
+            ike_keepalive: ENABLED
+            ike_keepalive_retry_interval: 2
+            ike_keepalive_threshold: 10
+            ike_notification_on_tunnel_disconnect: false
+            ike_peer_identity_validation: REQUIRED
+            ikev2_cookie_challenge: CUSTOM
+            ikev2_number_of_sas_allowed_in_negotiation: 100
+            ikev2_threshold_to_challenge_incoming_cookies: 50
+            ipsec_fragmentation_before_encryption: true
+            nat_keepalive_message_traversal: true
+            nat_keepalive_message_traversal_interval: 20
+            sgt_propagation_over_vti: false
+            spoke_to_spoke_connectivity_through_hub: false
+            vpn_idle_timeout: true
+            vpn_idle_timeout_value: 30
+          ipsec_settings:
+            do_not_fragment_policy: NONE
+            ikev2_mode: TUNNEL
+            lifetime_duration: 28800
+            lifetime_size: 4608000
+            perfect_forward_secrecy: false
+            reverse_route_injection: true
+            security_association_strength_enforcement: false
+            tfc: false
+            tfc_burst_bytes: 0
+            tfc_payload_bytes: 0
+            tfc_timeout: 0
+            validate_incoming_icmp_error_messages: false
+          endpoints:
+            reverse_route_injection: false
+            nat_traversal: true
+            connection_type: ORIGINATE_ONLY
+            allow_incoming_ikev2_routes: true

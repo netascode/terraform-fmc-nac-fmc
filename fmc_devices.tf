@@ -1100,7 +1100,7 @@ resource "fmc_device_loopback_interface" "device_loopback_interface" {
 ###    DEVICE VIRTUAL TUNNEL INTERFACES (VTI)
 ##########################################################
 locals {
-  data_device_vti_interface = {
+  data_device_virtual_tunnel_interface = {
     for item in flatten([
       for domain in local.data_existing : [
         for device in try(domain.devices.devices, []) : [
@@ -1118,7 +1118,7 @@ locals {
     ]) : "${item.domain}:${item.device_name}:${item.name}" => item
   }
 
-  resource_device_vti_interface = {
+  resource_device_virtual_tunnel_interface = {
     for item in flatten([
       for domain in local.domains : [
         for device in try(domain.devices.devices, []) : [
@@ -1178,8 +1178,8 @@ locals {
               tunnel_source_interface_ipv6_address = try(vti_interface.tunnel_source_interface_ipv6_address, null)
               } if(
               (
-                (!contains(try(keys(local.data_device_vti_interface), []), "${domain.name}:${device.name}:Tunnel${vti_interface.id}") && vti_interface.tunnel_type == "STATIC") ||
-                (!contains(try(keys(local.data_device_vti_interface), []), "${domain.name}:${device.name}:Virtual-Template${vti_interface.id}") && vti_interface.tunnel_type == "DYNAMIC")
+                (!contains(try(keys(local.data_device_virtual_tunnel_interface), []), "${domain.name}:${device.name}:Tunnel${vti_interface.id}") && vti_interface.tunnel_type == "STATIC") ||
+                (!contains(try(keys(local.data_device_virtual_tunnel_interface), []), "${domain.name}:${device.name}:Virtual-Template${vti_interface.id}") && vti_interface.tunnel_type == "DYNAMIC")
               )
             && vrf.name == "Global")
           ]
@@ -1189,16 +1189,16 @@ locals {
   }
 }
 
-data "fmc_device_vti_interface" "device_vti_interface" {
-  for_each = local.data_device_vti_interface
+data "fmc_device_virtual_tunnel_interface" "device_virtual_tunnel_interface" {
+  for_each = local.data_device_virtual_tunnel_interface
 
   domain    = each.value.domain
   name      = each.value.name
   device_id = each.value.device_id
 }
 
-resource "fmc_device_vti_interface" "device_vti_interface" {
-  for_each = local.resource_device_vti_interface
+resource "fmc_device_virtual_tunnel_interface" "device_virtual_tunnel_interface" {
+  for_each = local.resource_device_virtual_tunnel_interface
 
   domain                               = each.value.domain
   device_id                            = each.value.device_id

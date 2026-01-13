@@ -119,8 +119,8 @@ module "fmc" {
 | fmc_device_loopback_interface.device_loopback_interface | resource |
 | fmc_device_physical_interface.device_physical_interface | resource |
 | fmc_device_subinterface.device_subinterface | resource |
+| fmc_device_virtual_tunnel_interface.device_virtual_tunnel_interface | resource |
 | fmc_device_vrf.device_vrf | resource |
-| fmc_device_vti_interface.device_vti_interface | resource |
 | fmc_dynamic_objects.dynamic_objects | resource |
 | fmc_expanded_community_list.expanded_community_list | resource |
 | fmc_expanded_community_lists.expanded_community_lists | resource |
@@ -252,8 +252,8 @@ module "fmc" {
 | fmc_device_loopback_interface.device_loopback_interface | data source |
 | fmc_device_physical_interface.device_physical_interface | data source |
 | fmc_device_subinterface.device_subinterface | data source |
+| fmc_device_virtual_tunnel_interface.device_virtual_tunnel_interface | data source |
 | fmc_device_vrf.device_vrf | data source |
-| fmc_device_vti_interface.device_vti_interface | data source |
 | fmc_dynamic_objects.dynamic_objects | data source |
 | fmc_endpoint_device_types.endpoint_device_types | data source |
 | fmc_expanded_community_lists.expanded_community_lists | data source |

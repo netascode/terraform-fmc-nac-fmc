@@ -121,7 +121,7 @@ locals {
           device_name  = subinterface_value.device_name
           id           = data.fmc_device_subinterface.device_subinterface[subinterface_key].id
           logical_name = try(data.fmc_device_subinterface.device_subinterface[subinterface_key].logical_name, null)
-          domain_name  = subinterface_value.domain_name
+          domain       = subinterface_value.domain
         }
       ]) : "${item.domain}:${item.device_name}:${item.name}" => item
     },
@@ -222,10 +222,10 @@ locals {
     },
     {
       for item in flatten([
-        for tunnel_interface_key, tunnel_interface_value in local.resource_device_vti_interface : {
+        for tunnel_interface_key, tunnel_interface_value in local.resource_device_virtual_tunnel_interface : {
           name         = tunnel_interface_value.name
           device_name  = tunnel_interface_value.device_name
-          id           = fmc_device_vti_interface.device_vti_interface[tunnel_interface_key].id
+          id           = fmc_device_virtual_tunnel_interface.device_virtual_tunnel_interface[tunnel_interface_key].id
           logical_name = try(tunnel_interface_value.logical_name, null)
           domain       = tunnel_interface_value.domain
         }
@@ -233,11 +233,11 @@ locals {
     },
     {
       for item in flatten([
-        for tunnel_interface_key, tunnel_interface_value in local.data_device_vti_interface : {
+        for tunnel_interface_key, tunnel_interface_value in local.data_device_virtual_tunnel_interface : {
           name         = tunnel_interface_value.name
           device_name  = tunnel_interface_value.device_name
-          id           = data.fmc_device_vti_interface.device_vti_interface[tunnel_interface_key].id
-          logical_name = try(data.fmc_device_vti_interface.device_vti_interface[tunnel_interface_key].logical_name, null)
+          id           = data.fmc_device_virtual_tunnel_interface.device_virtual_tunnel_interface[tunnel_interface_key].id
+          logical_name = try(data.fmc_device_virtual_tunnel_interface.device_virtual_tunnel_interface[tunnel_interface_key].logical_name, null)
           domain       = tunnel_interface_value.domain
         }
       ]) : "${item.domain}:${item.device_name}:${item.logical_name}" => item if item.logical_name != null
