@@ -311,7 +311,7 @@ locals {
           nat_keepalive_message_traversal_interval                            = try(vpn_s2s.advanced_settings.nat_keepalive_message_traversal_interval, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.nat_keepalive_message_traversal_interval, null)
           vpn_idle_timeout                                                    = try(vpn_s2s.advanced_settings.vpn_idle_timeout_value, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.vpn_idle_timeout_value, null) != null ? true : null
           vpn_idle_timeout_value                                              = try(vpn_s2s.advanced_settings.vpn_idle_timeout_value, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.vpn_idle_timeout_value, null)
-          sgt_propagation_over_vti                                            = try(vpn_s2s.advanced_settings.sgt_propagation_over_vti, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.sgt_propagation_over_vti, null)
+          sgt_propagation_over_virtual_tunnel_interface                       = try(vpn_s2s.advanced_settings.sgt_propagation_over_virtual_tunnel_interface, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.sgt_propagation_over_virtual_tunnel_interface, null)
           bypass_access_control_policy_for_decrypted_traffic                  = try(vpn_s2s.advanced_settings.bypass_access_control_policy_for_decrypted_traffic, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.bypass_access_control_policy_for_decrypted_traffic, null)
           cert_use_certificate_map_configured_in_endpoint_to_determine_tunnel = try(vpn_s2s.advanced_settings.cert_use_certificate_map_configured_in_endpoint_to_determine_tunnel, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.cert_use_certificate_map_configured_in_endpoint_to_determine_tunnel, null)
           cert_use_ou_to_determine_tunnel                                     = try(vpn_s2s.advanced_settings.cert_use_ou_to_determine_tunnel, local.defaults.fmc.domains.vpns.site_to_site.advanced_settings.cert_use_ou_to_determine_tunnel, null)
@@ -346,7 +346,7 @@ resource "fmc_vpn_s2s_advanced_settings" "vpn_s2s_advanced_settings" {
   nat_keepalive_message_traversal_interval                            = each.value.nat_keepalive_message_traversal_interval
   vpn_idle_timeout                                                    = each.value.vpn_idle_timeout
   vpn_idle_timeout_value                                              = each.value.vpn_idle_timeout_value
-  sgt_propagation_over_vti                                            = each.value.sgt_propagation_over_vti
+  sgt_propagation_over_virtual_tunnel_interface                       = each.value.sgt_propagation_over_virtual_tunnel_interface
   bypass_access_control_policy_for_decrypted_traffic                  = each.value.bypass_access_control_policy_for_decrypted_traffic
   cert_use_certificate_map_configured_in_endpoint_to_determine_tunnel = each.value.cert_use_certificate_map_configured_in_endpoint_to_determine_tunnel
   cert_use_ou_to_determine_tunnel                                     = each.value.cert_use_ou_to_determine_tunnel
