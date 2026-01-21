@@ -454,6 +454,71 @@ resource "fmc_icmpv4" "icmpv4" {
 }
 
 ##########################################################
+###    ICMPv6s
+##########################################################
+locals {
+  data_icmpv6s = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for icmpv6 in try(domain.objects.icmpv6s, []) : icmpv6.name => {}
+      }
+    } if length(try(domain.objects.icmpv6s, [])) > 0
+  }
+
+  icmpv6s_bulk = try(local.fmc.nac_configuration.icmpv6s_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_icmpv6s = {
+    for domain in local.domains : domain.name => {
+      for icmpv6 in try(domain.objects.icmpv6s, []) : icmpv6.name => {
+        domain      = domain.name
+        name        = icmpv6.name
+        icmp_type   = try(icmpv6.icmp_type, null)
+        code        = try(icmpv6.code, null)
+        description = try(icmpv6.description, local.defaults.fmc.domains.objects.icmpv6s.description, null)
+        overridable = try(icmpv6.overridable, local.defaults.fmc.domains.objects.icmpv6s.overridable, null)
+      } if !contains(try(keys(local.data_icmpv6s[domain.name].items), []), icmpv6.name)
+    } if length(try(domain.objects.icmpv6s, [])) > 0
+  }
+
+  resource_icmpv6 = !local.icmpv6s_bulk ? {
+    for item in flatten([
+      for domain, icmpv6s in local.resource_icmpv6s : [
+        for icmpv6 in values(icmpv6s) : {
+          key  = "${domain}:${icmpv6.name}"
+          item = icmpv6
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+
+}
+
+data "fmc_icmpv6s" "icmpv6s" {
+  for_each = local.data_icmpv6s
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_icmpv6s" "icmpv6s" {
+  for_each = local.icmpv6s_bulk ? local.resource_icmpv6s : {}
+
+  domain = each.key
+  items  = { for icmpv6 in values(each.value) : icmpv6.name => icmpv6 }
+}
+
+resource "fmc_icmpv6" "icmpv6" {
+  for_each = !local.icmpv6s_bulk ? local.resource_icmpv6 : {}
+
+  domain      = each.value.item.domain
+  name        = each.value.item.name
+  icmp_type   = each.value.item.icmp_type
+  code        = each.value.item.code
+  description = each.value.item.description
+  overridable = each.value.item.overridable
+}
+
+##########################################################
 ###    PORT GROUPS
 ##########################################################
 locals {
@@ -1397,6 +1462,782 @@ resource "fmc_ipv6_address_pool" "ipv6_address_pool" {
 }
 
 ##########################################################
+###    AS PATHS
+##########################################################
+locals {
+  data_as_paths = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for as_path in try(domain.objects.as_paths, []) : as_path.name => {}
+      }
+    } if length(try(domain.objects.as_paths, [])) > 0
+  }
+
+  as_paths_bulk = try(local.fmc.nac_configuration.as_paths_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_as_paths = {
+    for domain in local.domains : domain.name => [
+      for as_path in try(domain.objects.as_paths, []) : {
+        domain      = domain.name
+        name        = as_path.name
+        overridable = try(as_path.overridable, local.defaults.fmc.domains.objects.as_paths.overridable, null)
+        entries = [for entry in as_path.entries : {
+          action             = entry.action
+          regular_expression = entry.regular_expression
+        }]
+      } if !contains(try(keys(local.data_as_paths[domain.name].items), []), as_path.name)
+    ] if length(try(domain.objects.as_paths, [])) > 0
+  }
+
+  resource_as_path = !local.as_paths_bulk ? {
+    for item in flatten([
+      for domain, as_paths in local.resource_as_paths : [
+        for as_path in as_paths : {
+          key  = "${domain}:${as_path.name}"
+          item = as_path
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_as_paths" "as_paths" {
+  for_each = local.data_as_paths
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_as_paths" "as_paths" {
+  for_each = local.as_paths_bulk ? local.resource_as_paths : {}
+
+  domain = each.key
+  items  = { for as_path in each.value : as_path.name => as_path }
+}
+
+resource "fmc_as_path" "as_path" {
+  for_each = !local.as_paths_bulk ? local.resource_as_path : {}
+
+  domain      = each.value.item.domain
+  name        = each.value.item.name
+  overridable = each.value.item.overridable
+  entries     = each.value.item.entries
+}
+
+##########################################################
+###    IPv4 PREFIX LISTS
+##########################################################
+locals {
+  data_ipv4_prefix_lists = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for ipv4_prefix_list in try(domain.objects.ipv4_prefix_lists, []) : ipv4_prefix_list.name => {}
+      }
+    } if length(try(domain.objects.ipv4_prefix_lists, [])) > 0
+  }
+
+  ipv4_prefix_lists_bulk = try(local.fmc.nac_configuration.ipv4_prefix_lists_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_ipv4_prefix_lists = {
+    for domain in local.domains : domain.name => [
+      for ipv4_prefix_list in try(domain.objects.ipv4_prefix_lists, []) : {
+        domain = domain.name
+        name   = ipv4_prefix_list.name
+        entries = [for entry in ipv4_prefix_list.entries : {
+          action            = entry.action
+          prefix            = entry.prefix
+          min_prefix_length = entry.min_prefix_length
+          max_prefix_length = entry.max_prefix_length
+        }]
+      } if !contains(try(keys(local.data_ipv4_prefix_lists[domain.name].items), []), ipv4_prefix_list.name)
+    ] if length(try(domain.objects.ipv4_prefix_lists, [])) > 0
+  }
+
+  resource_ipv4_prefix_list = !local.ipv4_prefix_lists_bulk ? {
+    for item in flatten([
+      for domain, ipv4_prefix_lists in local.resource_ipv4_prefix_lists : [
+        for ipv4_prefix_list in ipv4_prefix_lists : {
+          key  = "${domain}:${ipv4_prefix_list.name}"
+          item = ipv4_prefix_list
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_ipv4_prefix_lists" "ipv4_prefix_lists" {
+  for_each = local.data_ipv4_prefix_lists
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_ipv4_prefix_lists" "ipv4_prefix_lists" {
+  for_each = local.ipv4_prefix_lists_bulk ? local.resource_ipv4_prefix_lists : {}
+
+  domain = each.key
+  items  = { for ipv4_prefix_list in each.value : ipv4_prefix_list.name => ipv4_prefix_list }
+}
+
+# Handle individual mode (resource per host) 
+resource "fmc_ipv4_prefix_list" "ipv4_prefix_list" {
+  for_each = !local.ipv4_prefix_lists_bulk ? local.resource_ipv4_prefix_list : {}
+
+  domain  = each.value.item.domain
+  name    = each.value.item.name
+  entries = each.value.item.entries
+}
+
+##########################################################
+###    IPv6 PREFIX LISTS
+##########################################################
+locals {
+  data_ipv6_prefix_lists = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for ipv6_prefix_list in try(domain.objects.ipv6_prefix_lists, []) : ipv6_prefix_list.name => {}
+      }
+    } if length(try(domain.objects.ipv6_prefix_lists, [])) > 0
+  }
+
+  ipv6_prefix_lists_bulk = try(local.fmc.nac_configuration.ipv6_prefix_lists_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_ipv6_prefix_lists = {
+    for domain in local.domains : domain.name => [
+      for ipv6_prefix_list in try(domain.objects.ipv6_prefix_lists, []) : {
+        domain = domain.name
+        name   = ipv6_prefix_list.name
+        entries = [for entry in ipv6_prefix_list.entries : {
+          action            = entry.action
+          prefix            = entry.prefix
+          min_prefix_length = entry.min_prefix_length
+          max_prefix_length = entry.max_prefix_length
+        }]
+      } if !contains(try(keys(local.data_ipv6_prefix_lists[domain.name].items), []), ipv6_prefix_list.name)
+    ] if length(try(domain.objects.ipv6_prefix_lists, [])) > 0
+  }
+
+  resource_ipv6_prefix_list = !local.ipv6_prefix_lists_bulk ? {
+    for item in flatten([
+      for domain, ipv6_prefix_lists in local.resource_ipv6_prefix_lists : [
+        for ipv6_prefix_list in ipv6_prefix_lists : {
+          key  = "${domain}:${ipv6_prefix_list.name}"
+          item = ipv6_prefix_list
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_ipv6_prefix_lists" "ipv6_prefix_lists" {
+  for_each = local.data_ipv6_prefix_lists
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_ipv6_prefix_lists" "ipv6_prefix_lists" {
+  for_each = local.ipv6_prefix_lists_bulk ? local.resource_ipv6_prefix_lists : {}
+
+  domain = each.key
+  items  = { for ipv6_prefix_list in each.value : ipv6_prefix_list.name => ipv6_prefix_list }
+}
+
+# Handle individual mode (resource per host) 
+resource "fmc_ipv6_prefix_list" "ipv6_prefix_list" {
+  for_each = !local.ipv6_prefix_lists_bulk ? local.resource_ipv6_prefix_list : {}
+
+  domain  = each.value.item.domain
+  name    = each.value.item.name
+  entries = each.value.item.entries
+}
+
+##########################################################
+###    STANDARD COMMUNITY LISTS
+##########################################################
+locals {
+  data_standard_community_lists = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for standard_community_list in try(domain.objects.standard_community_lists, []) : standard_community_list.name => {}
+      }
+    } if length(try(domain.objects.standard_community_lists, [])) > 0
+  }
+
+  standard_community_lists_bulk = try(local.fmc.nac_configuration.standard_community_lists_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_standard_community_lists = {
+    for domain in local.domains : domain.name => [
+      for standard_community_list in try(domain.objects.standard_community_lists, []) : {
+        domain = domain.name
+        name   = standard_community_list.name
+        entries = [for entry in standard_community_list.entries : {
+          action       = entry.action
+          communities  = join(" ", entry.communities)
+          internet     = try(entry.internet, local.defaults.fmc.domains.objects.standard_community_lists.entries.internet, null)
+          no_advertise = try(entry.no_advertise, local.defaults.fmc.domains.objects.standard_community_lists.entries.no_advertise, null)
+          no_export    = try(entry.no_export, local.defaults.fmc.domains.objects.standard_community_lists.entries.no_export, null)
+        }]
+      } if !contains(try(keys(local.data_standard_community_lists[domain.name].items), []), standard_community_list.name)
+    ] if length(try(domain.objects.standard_community_lists, [])) > 0
+  }
+
+  resource_standard_community_list = !local.standard_community_lists_bulk ? {
+    for item in flatten([
+      for domain, standard_community_lists in local.resource_standard_community_lists : [
+        for standard_community_list in standard_community_lists : {
+          key  = "${domain}:${standard_community_list.name}"
+          item = standard_community_list
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_standard_community_lists" "standard_community_lists" {
+  for_each = local.data_standard_community_lists
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_standard_community_lists" "standard_community_lists" {
+  for_each = local.standard_community_lists_bulk ? local.resource_standard_community_lists : {}
+
+  domain = each.key
+  items  = { for standard_community_list in each.value : standard_community_list.name => standard_community_list }
+}
+
+# Handle individual mode (resource per host) 
+resource "fmc_standard_community_list" "standard_community_list" {
+  for_each = !local.standard_community_lists_bulk ? local.resource_standard_community_list : {}
+
+  domain  = each.value.item.domain
+  name    = each.value.item.name
+  entries = each.value.item.entries
+}
+
+##########################################################
+###    EXPANDED COMMUNITY LISTS
+##########################################################
+locals {
+  data_expanded_community_lists = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for expanded_community_list in try(domain.objects.expanded_community_lists, []) : expanded_community_list.name => {}
+      }
+    } if length(try(domain.objects.expanded_community_lists, [])) > 0
+  }
+
+  expanded_community_lists_bulk = try(local.fmc.nac_configuration.expanded_community_lists_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_expanded_community_lists = {
+    for domain in local.domains : domain.name => [
+      for expanded_community_list in try(domain.objects.expanded_community_lists, []) : {
+        domain = domain.name
+        name   = expanded_community_list.name
+        entries = [for entry in expanded_community_list.entries : {
+          action             = entry.action
+          regular_expression = entry.regular_expression
+        }]
+      } if !contains(try(keys(local.data_expanded_community_lists[domain.name].items), []), expanded_community_list.name)
+    ] if length(try(domain.objects.expanded_community_lists, [])) > 0
+  }
+
+  resource_expanded_community_list = !local.expanded_community_lists_bulk ? {
+    for item in flatten([
+      for domain, expanded_community_lists in local.resource_expanded_community_lists : [
+        for expanded_community_list in expanded_community_lists : {
+          key  = "${domain}:${expanded_community_list.name}"
+          item = expanded_community_list
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_expanded_community_lists" "expanded_community_lists" {
+  for_each = local.data_expanded_community_lists
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_expanded_community_lists" "expanded_community_lists" {
+  for_each = local.expanded_community_lists_bulk ? local.resource_expanded_community_lists : {}
+
+  domain = each.key
+  items  = { for expanded_community_list in each.value : expanded_community_list.name => expanded_community_list }
+}
+
+# Handle individual mode (resource per host) 
+resource "fmc_expanded_community_list" "expanded_community_list" {
+  for_each = !local.expanded_community_lists_bulk ? local.resource_expanded_community_list : {}
+
+  domain  = each.value.item.domain
+  name    = each.value.item.name
+  entries = each.value.item.entries
+}
+
+##########################################################
+###    EXTENDED COMMUNITY LISTS
+##########################################################
+locals {
+  data_extended_community_lists = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for extended_community_list in try(domain.objects.extended_community_lists, []) : extended_community_list.name => {}
+      }
+    } if length(try(domain.objects.extended_community_lists, [])) > 0
+  }
+
+  extended_community_lists_bulk = try(local.fmc.nac_configuration.extended_community_lists_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_extended_community_lists = {
+    for domain in local.domains : domain.name => [
+      for extended_community_list in try(domain.objects.extended_community_lists, []) : {
+        domain   = domain.name
+        name     = extended_community_list.name
+        sub_type = extended_community_list.sub_type
+        entries = [for entry in extended_community_list.entries : {
+          action             = entry.action
+          route_target       = extended_community_list.sub_type == "Standard" ? entry.route_target : null
+          regular_expression = extended_community_list.sub_type == "Expanded" ? entry.regular_expression : null
+        }]
+      } if !contains(try(keys(local.data_extended_community_lists[domain.name].items), []), extended_community_list.name)
+    ] if length(try(domain.objects.extended_community_lists, [])) > 0
+  }
+
+  resource_extended_community_list = !local.extended_community_lists_bulk ? {
+    for item in flatten([
+      for domain, extended_community_lists in local.resource_extended_community_lists : [
+        for extended_community_list in extended_community_lists : {
+          key  = "${domain}:${extended_community_list.name}"
+          item = extended_community_list
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_extended_community_lists" "extended_community_lists" {
+  for_each = local.data_extended_community_lists
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_extended_community_lists" "extended_community_lists" {
+  for_each = local.extended_community_lists_bulk ? local.resource_extended_community_lists : {}
+
+  domain = each.key
+  items  = { for extended_community_list in each.value : extended_community_list.name => extended_community_list }
+}
+
+resource "fmc_extended_community_list" "extended_community_list" {
+  for_each = !local.extended_community_lists_bulk ? local.resource_extended_community_list : {}
+
+  domain   = each.value.item.domain
+  name     = each.value.item.name
+  sub_type = each.value.item.sub_type
+  entries  = each.value.item.entries
+}
+
+##########################################################
+###    POLICY LISTS
+##########################################################
+locals {
+  data_policy_lists = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for policy_list in try(domain.objects.policy_lists, []) : policy_list.name => {}
+      }
+    } if length(try(domain.objects.policy_lists, [])) > 0
+  }
+
+  policy_lists_bulk = try(local.fmc.nac_configuration.policy_lists_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_policy_lists = {
+    for domain in local.domains : domain.name => [
+      for policy_list in try(domain.objects.policy_lists, []) : {
+        domain = domain.name
+        name   = policy_list.name
+        action = policy_list.action
+        interfaces = [for interface in try(policy_list.interfaces, []) : {
+          id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${interface}"].id
+            if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${interface}")
+          })[0]
+        }]
+        interface_names = length(try(policy_list.interface_literals, [])) > 0 ? policy_list.interface_literals : null
+        address_standard_access_lists = length(try(policy_list.address_standard_access_lists, [])) > 0 ? [for address_standard_access_list in policy_list.address_standard_access_lists : {
+          id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_standard_access_lists["${domain_path}:${address_standard_access_list}"].id
+            if contains(keys(local.map_standard_access_lists), "${domain_path}:${address_standard_access_list}")
+          })[0]
+        }] : null
+        address_ipv4_prefix_lists = length(try(policy_list.address_ipv4_prefix_lists, [])) > 0 ? [for address_ipv4_prefix_list in policy_list.address_ipv4_prefix_lists : {
+          id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_ipv4_prefix_lists["${domain_path}:${address_ipv4_prefix_list}"].id
+            if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${address_ipv4_prefix_list}")
+          })[0]
+        }] : null
+        next_hop_standard_access_lists = length(try(policy_list.next_hop_standard_access_lists, [])) > 0 ? [for next_hop_standard_access_list in policy_list.next_hop_standard_access_lists : {
+          id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_standard_access_lists["${domain_path}:${next_hop_standard_access_list}"].id
+            if contains(keys(local.map_standard_access_lists), "${domain_path}:${next_hop_standard_access_list}")
+          })[0]
+        }] : null
+        next_hop_ipv4_prefix_lists = length(try(policy_list.next_hop_ipv4_prefix_lists, [])) > 0 ? [for next_hop_ipv4_prefix_list in policy_list.next_hop_ipv4_prefix_lists : {
+          id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_ipv4_prefix_lists["${domain_path}:${next_hop_ipv4_prefix_list}"].id
+            if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${next_hop_ipv4_prefix_list}")
+          })[0]
+        }] : null
+        route_source_standard_access_lists = length(try(policy_list.route_source_standard_access_lists, [])) > 0 ? [for route_source_standard_access_list in policy_list.route_source_standard_access_lists : {
+          id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_standard_access_lists["${domain_path}:${route_source_standard_access_list}"].id
+            if contains(keys(local.map_standard_access_lists), "${domain_path}:${route_source_standard_access_list}")
+          })[0]
+        }] : null
+        route_source_ipv4_prefix_lists = length(try(policy_list.route_source_ipv4_prefix_lists, [])) > 0 ? [for route_source_ipv4_prefix_list in policy_list.route_source_ipv4_prefix_lists : {
+          id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_ipv4_prefix_lists["${domain_path}:${route_source_ipv4_prefix_list}"].id
+            if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${route_source_ipv4_prefix_list}")
+          })[0]
+        }] : null
+        as_paths = [for as_path in try(policy_list.as_paths, []) : {
+          id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_as_paths["${domain_path}:${as_path}"].id
+            if contains(keys(local.map_as_paths), "${domain_path}:${as_path}")
+          })[0]
+        }]
+        community_lists = [for item in [
+          for community_list in try(policy_list.community_lists, []) : {
+            id = one([
+              for domain_path in local.related_domains[domain.name] :
+              local.map_community_lists["${domain_path}:${community_list}"].id
+              if contains(keys(local.map_community_lists), "${domain_path}:${community_list}")
+            ])
+          }
+        ] : item if item.id != null]
+        extended_community_lists = [for item in [
+          for extended_community_list in try(policy_list.community_lists, []) : {
+            id = one([
+              for domain_path in local.related_domains[domain.name] :
+              local.map_extended_community_lists["${domain_path}:${extended_community_list}"].id
+              if contains(keys(local.map_extended_community_lists), "${domain_path}:${extended_community_list}")
+            ])
+          }
+        ] : item if item.id != null]
+        _validate_community_lists = [
+          for community_list in try(policy_list.community_lists, []) :
+          anytrue([
+            for domain_path in local.related_domains[domain.name] :
+            contains(keys(local.map_community_lists), "${domain_path}:${community_list}") ||
+            contains(keys(local.map_extended_community_lists), "${domain_path}:${community_list}")
+          ]) ? true : tobool("ERROR: Community list '${community_list}' in policy list '${policy_list.name}' (domain: ${domain.name}) not found in map_community_lists or map_extended_community_lists")
+        ]
+        match_community_exactly = try(policy_list.match_community_exactly, local.defaults.fmc.domains.objects.policy_lists.match_community_exactly, null)
+        metric                  = try(policy_list.metric, local.defaults.fmc.domains.objects.policy_lists.metric, null)
+        tag                     = try(policy_list.tag, local.defaults.fmc.domains.objects.policy_lists.tag, null)
+      } if !contains(try(keys(local.data_policy_lists[domain.name].items), []), policy_list.name)
+    ] if length(try(domain.objects.policy_lists, [])) > 0
+  }
+
+  resource_policy_list = !local.policy_lists_bulk ? {
+    for item in flatten([
+      for domain, policy_lists in local.resource_policy_lists : [
+        for policy_list in policy_lists : {
+          key  = "${domain}:${policy_list.name}"
+          item = policy_list
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_policy_lists" "policy_lists" {
+  for_each = local.data_policy_lists
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_policy_lists" "policy_lists" {
+  for_each = local.policy_lists_bulk ? local.resource_policy_lists : {}
+
+  domain = each.key
+  items  = { for policy_list in each.value : policy_list.name => policy_list }
+}
+
+resource "fmc_policy_list" "policy_list" {
+  for_each = !local.policy_lists_bulk ? local.resource_policy_list : {}
+
+  domain                             = each.value.item.domain
+  name                               = each.value.item.name
+  action                             = each.value.item.action
+  interfaces                         = each.value.item.interfaces
+  interface_names                    = each.value.item.interface_names
+  address_standard_access_lists      = each.value.item.address_standard_access_lists
+  address_ipv4_prefix_lists          = each.value.item.address_ipv4_prefix_lists
+  next_hop_standard_access_lists     = each.value.item.next_hop_standard_access_lists
+  next_hop_ipv4_prefix_lists         = each.value.item.next_hop_ipv4_prefix_lists
+  route_source_standard_access_lists = each.value.item.route_source_standard_access_lists
+  route_source_ipv4_prefix_lists     = each.value.item.route_source_ipv4_prefix_lists
+  as_paths                           = each.value.item.as_paths
+  community_lists                    = each.value.item.community_lists
+  extended_community_lists           = each.value.item.extended_community_lists
+  match_community_exactly            = each.value.item.match_community_exactly
+  metric                             = each.value.item.metric
+  tag                                = each.value.item.tag
+}
+
+##########################################################
+###    ROUTE MAPS
+##########################################################
+locals {
+  data_route_map = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for route_map in try(domain.objects.route_maps, {}) : {
+          name   = route_map.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_route_map = {
+    for item in flatten([
+      for domain in local.domains : [
+        for route_map in try(domain.objects.route_maps, {}) : {
+          domain      = domain.name
+          name        = route_map.name
+          overridable = try(route_map.overridable, local.defaults.fmc.domains.objects.route_maps.overridable, null)
+          entries = [for entry in route_map.entries : {
+            action = entry.action
+            match_security_zones = [for security_zone in try(entry.match.security_zones, []) : {
+              id = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_security_zones["${domain_path}:${security_zone}"].id
+                if contains(keys(local.map_security_zones), "${domain_path}:${security_zone}")
+              })[0]
+            }]
+            match_interface_names = try(entry.match.interface_literals, null)
+            match_ipv4_address_access_lists = [for ipv4_address_access_list in try(entry.match.ipv4_address_access_lists, []) : {
+              id = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_access_lists["${domain_path}:${ipv4_address_access_list}"].id
+                if contains(keys(local.map_access_lists), "${domain_path}:${ipv4_address_access_list}")
+              })[0]
+              type = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_access_lists["${domain_path}:${ipv4_address_access_list}"].type
+                if contains(keys(local.map_access_lists), "${domain_path}:${ipv4_address_access_list}")
+              })[0]
+            }]
+            match_ipv4_address_prefix_lists = [for ipv4_address_prefix_list in try(entry.match.ipv4_address_prefix_lists, []) : {
+              id = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_ipv4_prefix_lists["${domain_path}:${ipv4_address_prefix_list}"].id
+                if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${ipv4_address_prefix_list}")
+              })[0]
+              type = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_ipv4_prefix_lists["${domain_path}:${ipv4_address_prefix_list}"].type
+                if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${ipv4_address_prefix_list}")
+              })[0]
+            }]
+            match_ipv4_next_hop_access_lists = [for ipv4_next_hop_access_list in try(entry.match.ipv4_next_hop_access_lists, []) : {
+              id = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_access_lists["${domain_path}:${ipv4_next_hop_access_list}"].id
+                if contains(keys(local.map_access_lists), "${domain_path}:${ipv4_next_hop_access_list}")
+              })[0]
+              type = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_access_lists["${domain_path}:${ipv4_next_hop_access_list}"].type
+                if contains(keys(local.map_access_lists), "${domain_path}:${ipv4_next_hop_access_list}")
+              })[0]
+            }]
+            match_ipv4_next_hop_prefix_lists = [for ipv4_next_hop_prefix_list in try(entry.match.ipv4_next_hop_prefix_lists, []) : {
+              id = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_ipv4_prefix_lists["${domain_path}:${ipv4_next_hop_prefix_list}"].id
+                if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${ipv4_next_hop_prefix_list}")
+              })[0]
+              type = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_ipv4_prefix_lists["${domain_path}:${ipv4_next_hop_prefix_list}"].type
+                if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${ipv4_next_hop_prefix_list}")
+              })[0]
+            }]
+            match_ipv4_route_source_access_lists = [for ipv4_route_source_access_list in try(entry.match.ipv4_route_source_access_lists, []) : {
+              id = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_access_lists["${domain_path}:${ipv4_route_source_access_list}"].id
+                if contains(keys(local.map_access_lists), "${domain_path}:${ipv4_route_source_access_list}")
+              })[0]
+              type = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_access_lists["${domain_path}:${ipv4_route_source_access_list}"].type
+                if contains(keys(local.map_access_lists), "${domain_path}:${ipv4_route_source_access_list}")
+              })[0]
+            }]
+            match_ipv4_route_source_prefix_lists = [for ipv4_route_source_prefix_list in try(entry.match.ipv4_route_source_prefix_lists, []) : {
+              id = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_ipv4_prefix_lists["${domain_path}:${ipv4_route_source_prefix_list}"].id
+                if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${ipv4_route_source_prefix_list}")
+              })[0]
+              type = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_ipv4_prefix_lists["${domain_path}:${ipv4_route_source_prefix_list}"].type
+                if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${ipv4_route_source_prefix_list}")
+              })[0]
+            }]
+            match_ipv6_address_extended_access_list_id = try(entry.match.ipv6_address_extended_access_list, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_extended_access_lists["${domain_path}:${entry.match.ipv6_address_extended_access_list}"].id
+              if contains(keys(local.map_extended_access_lists), "${domain_path}:${entry.match.ipv6_address_extended_access_list}")
+            })[0] : null
+            match_ipv6_address_prefix_list_id = try(entry.match.ipv6_address_prefix_list, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_ipv6_prefix_lists["${domain_path}:${entry.match.ipv6_address_prefix_list}"].id
+              if contains(keys(local.map_ipv6_prefix_lists), "${domain_path}:${entry.match.ipv6_address_prefix_list}")
+            })[0] : null
+            match_ipv6_next_hop_extended_access_list_id = try(entry.match.ipv6_next_hop_extended_access_list, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_extended_access_lists["${domain_path}:${entry.match.ipv6_next_hop_extended_access_list}"].id
+              if contains(keys(local.map_extended_access_lists), "${domain_path}:${entry.match.ipv6_next_hop_extended_access_list}")
+            })[0] : null
+            match_ipv6_next_hop_prefix_list_id = try(entry.match.ipv6_next_hop_prefix_list, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_ipv6_prefix_lists["${domain_path}:${entry.match.ipv6_next_hop_prefix_list}"].id
+              if contains(keys(local.map_ipv6_prefix_lists), "${domain_path}:${entry.match.ipv6_next_hop_prefix_list}")
+            })[0] : null
+            match_ipv6_route_source_extended_access_list_id = try(entry.match.ipv6_route_source_extended_access_list, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_extended_access_lists["${domain_path}:${entry.match.ipv6_route_source_extended_access_list}"].id
+              if contains(keys(local.map_extended_access_lists), "${domain_path}:${entry.match.ipv6_route_source_extended_access_list}")
+            })[0] : null
+            match_ipv6_route_source_prefix_list_id = try(entry.match.ipv6_route_source_prefix_list, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_ipv6_prefix_lists["${domain_path}:${entry.match.ipv6_route_source_prefix_list}"].id
+              if contains(keys(local.map_ipv6_prefix_lists), "${domain_path}:${entry.match.ipv6_route_source_prefix_list}")
+            })[0] : null
+            match_bgp_as_paths = [for as_path in try(entry.match.bgp_as_paths, []) : {
+              id = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_as_paths["${domain_path}:${as_path}"].id
+                if contains(keys(local.map_as_paths), "${domain_path}:${as_path}")
+              })[0]
+            }]
+            match_bgp_community_lists = [for item in [
+              for community_list in try(entry.match.bgp_community_lists, []) : {
+                id = one([
+                  for domain_path in local.related_domains[domain.name] :
+                  local.map_community_lists["${domain_path}:${community_list}"].id
+                  if contains(keys(local.map_community_lists), "${domain_path}:${community_list}")
+                ])
+              }
+            ] : item if item.id != null]
+            match_bgp_extended_community_lists = [for item in [
+              for extended_community_list in try(entry.match.bgp_community_lists, []) : {
+                id = one([
+                  for domain_path in local.related_domains[domain.name] :
+                  local.map_extended_community_lists["${domain_path}:${extended_community_list}"].id
+                  if contains(keys(local.map_extended_community_lists), "${domain_path}:${extended_community_list}")
+                ])
+              }
+            ] : item if item.id != null]
+            match_bgp_policy_lists = [for bgp_policy_list in try(entry.match.bgp_policy_lists, []) : {
+              id = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_policy_lists["${domain_path}:${bgp_policy_list}"].id
+                if contains(keys(local.map_policy_lists), "${domain_path}:${bgp_policy_list}")
+              })[0]
+            }]
+            _validate_bgp_community_lists = [
+              for community_list in try(entry.match.bgp_community_lists, []) :
+              anytrue([
+                for domain_path in local.related_domains[domain.name] :
+                contains(keys(local.map_community_lists), "${domain_path}:${community_list}") ||
+                contains(keys(local.map_extended_community_lists), "${domain_path}:${community_list}")
+              ]) ? true : tobool("ERROR: BGP community list '${community_list}' in route map '${route_map.name}' (domain: ${domain.name}) not found in map_community_lists or map_extended_community_lists")
+            ]
+            match_route_metrics                                    = try(entry.match.route_metrics, null)
+            match_tags                                             = try(entry.match.tags, null)
+            match_route_type_external_1                            = try(entry.match.route_type_external_1, null)
+            match_route_type_external_2                            = try(entry.match.route_type_external_2, null)
+            match_route_type_internal                              = try(entry.match.route_type_internal, null)
+            match_route_type_local                                 = try(entry.match.route_type_local, null)
+            match_route_type_nssa_external_1                       = try(entry.match.route_type_nssa_external_1, null)
+            match_route_type_nssa_external_2                       = try(entry.match.route_type_nssa_external_2, null)
+            set_metric_bandwidth                                   = try(entry.set.metric_bandwidth, null)
+            set_metric_type                                        = try(entry.set.metric_type, null)
+            set_bgp_as_path_prepend                                = try(entry.set.bgp_as_path_prepend, null)
+            set_bgp_as_path_prepend_last_as                        = try(entry.set.bgp_as_path_prepend_last_as, null)
+            set_bgp_as_path_convert_route_tag_into_as_path         = try(entry.set.bgp_as_path_convert_route_tag_into_as_path, null)
+            set_bgp_community_none                                 = try(entry.set.bgp_community_none, null)
+            set_bgp_community_specific_community                   = try(entry.set.bgp_community_specific_community, null)
+            set_bgp_community_add_to_existing_communities          = try(entry.set.bgp_community_add_to_existing_communities, null)
+            set_bgp_community_internet                             = try(entry.set.bgp_community_internet, null)
+            set_bgp_community_no_advertise                         = try(entry.set.bgp_community_no_advertise, null)
+            set_bgp_community_no_export                            = try(entry.set.bgp_community_no_export, null)
+            set_bgp_community_route_target                         = try(join(",", entry.set.bgp_community_route_targets), null)
+            set_bgp_community_add_to_existing_extended_communities = try(entry.set.bgp_community_add_to_existing_extended_communities, local.defaults.fmc.domains.objects.route_maps.entries.set.bgp_community_add_to_existing_extended_communities, null)
+            set_bgp_automatic_tag                                  = try(entry.set.bgp_automatic_tag, null)
+            set_bgp_local_preference                               = try(entry.set.bgp_local_preference, null)
+            set_bgp_weight                                         = try(entry.set.bgp_weight, null)
+            set_bgp_origin                                         = try(entry.set.bgp_origin, null)
+            set_bgp_ipv4_next_hop                                  = try(entry.set.bgp_ipv4_next_hop, null)
+            set_bgp_ipv4_next_hop_specific_ips                     = try(entry.set.bgp_ipv4_next_hop_specific_ips, null)
+            set_bgp_ipv4_prefix_list_id = try(entry.set.bgp_ipv4_prefix_list, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_ipv4_prefix_lists["${domain_path}:${entry.set.bgp_ipv4_prefix_list}"].id
+              if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${entry.set.bgp_ipv4_prefix_list}")
+            })[0] : null
+            set_bgp_ipv6_next_hop              = try(entry.set.bgp_ipv6_next_hop, null)
+            set_bgp_ipv6_next_hop_specific_ips = try(entry.set.bgp_ipv6_next_hop_specific_ips, null)
+            set_bgp_ipv6_prefix_list_id = try(entry.set.bgp_ipv6_prefix_list, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_ipv6_prefix_lists["${domain_path}:${entry.set.bgp_ipv6_prefix_list}"].id
+              if contains(keys(local.map_ipv6_prefix_lists), "${domain_path}:${entry.set.bgp_ipv6_prefix_list}")
+            })[0] : null
+          }]
+        } if !contains(try(keys(local.data_route_map), {}), "${domain.name}:${route_map.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_route_map" "route_map" {
+  for_each = local.data_route_map
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_route_map" "route_map" {
+  for_each = local.resource_route_map
+
+  domain      = each.value.domain
+  name        = each.value.name
+  entries     = each.value.entries
+  overridable = each.value.overridable
+}
+
+##########################################################
 ###    STANDARD ACCESS LISTS
 ##########################################################
 locals {
@@ -1662,581 +2503,881 @@ resource "fmc_bfd_template" "bfd_template" {
 }
 
 ##########################################################
-###    MAPS combine _data and _resources for a given object type
+###    RESOURCE PROFILES
 ##########################################################
-######
-### map_network_objects
-######
 locals {
-  map_network_objects = merge(
-
-    # Hosts - bulk mode outputs
-    local.hosts_bulk ? merge([
-      for domain, hosts in fmc_hosts.hosts : {
-        for host_name, host_values in hosts.items : "${domain}:${host_name}" => { id = host_values.id, type = host_values.type }
+  data_resource_profiles = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for resource_profile in try(domain.objects.resource_profiles, []) : resource_profile.name => {}
       }
-    ]...) : {},
+    } if length(try(domain.objects.resource_profiles, [])) > 0
+  }
 
-    # Hosts - individual mode outputs
-    !local.hosts_bulk ? { for key, resource in fmc_host.host : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+  resource_profiles_bulk = try(local.fmc.nac_configuration.resource_profiles_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
-    # Hosts - data sources
-    merge([
-      for domain, hosts in data.fmc_hosts.hosts : {
-        for host_name, host_values in hosts.items : "${domain}:${host_name}" => { id = host_values.id, type = host_values.type }
-      }
-    ]...),
+  resource_resource_profiles = {
+    for domain in local.domains : domain.name => [
+      for resource_profile in try(domain.objects.resource_profiles, []) : {
+        domain         = domain.name
+        name           = resource_profile.name
+        number_of_cpus = resource_profile.number_of_cpus
+        description    = try(resource_profile.description, local.defaults.fmc.domains.objects.resource_profiles.description, null)
+      } if !contains(try(keys(local.data_resource_profiles[domain.name].items), []), resource_profile.name)
+    ] if length(try(domain.objects.resource_profiles, [])) > 0
+  }
 
-    # Networks - bulk mode outputs
-    local.networks_bulk ? merge([
-      for domain, networks in fmc_networks.networks : {
-        for network_name, network_values in networks.items : "${domain}:${network_name}" => { id = network_values.id, type = network_values.type }
-      }
-    ]...) : {},
-
-    # Networks - individual mode outputs
-    !local.networks_bulk ? { for key, resource in fmc_network.network : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
-
-    # Networks - data sources
-    merge([
-      for domain, networks in data.fmc_networks.networks : {
-        for network_name, network_values in networks.items : "${domain}:${network_name}" => { id = network_values.id, type = network_values.type }
-      }
-    ]...),
-
-    # Ranges - bulk mode outputs
-    local.ranges_bulk ? merge([
-      for domain, ranges in fmc_ranges.ranges : {
-        for range_name, range_values in ranges.items : "${domain}:${range_name}" => { id = range_values.id, type = range_values.type }
-      }
-    ]...) : {},
-
-    # Ranges - individual mode outputs
-    !local.ranges_bulk ? { for key, resource in fmc_range.range : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
-
-    # Ranges - data sources
-    merge([
-      for domain, ranges in data.fmc_ranges.ranges : {
-        for range_name, range_values in ranges.items : "${domain}:${range_name}" => { id = range_values.id, type = range_values.type }
-      }
-    ]...),
-
-    # FQDNs - bulk mode outputs
-    local.fqdns_bulk ? merge([
-      for domain, fqdns in fmc_fqdns.fqdns : {
-        for fqdn_name, fqdn_values in fqdns.items : "${domain}:${fqdn_name}" => { id = fqdn_values.id, type = fqdn_values.type }
-      }
-    ]...) : {},
-
-    # FQDNs - individual mode outputs
-    !local.fqdns_bulk ? { for key, resource in fmc_fqdn.fqdn : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
-
-    # FQDNs - data sources
-    merge([
-      for domain, fqdns in data.fmc_fqdns.fqdns : {
-        for fqdn_name, fqdn_values in fqdns.items : "${domain}:${fqdn_name}" => { id = fqdn_values.id, type = fqdn_values.type }
-      }
-    ]...),
-  )
+  resource_resource_profile = !local.resource_profiles_bulk ? {
+    for item in flatten([
+      for domain, resource_profiles in local.resource_resource_profiles : [
+        for resource_profile in resource_profiles : {
+          key  = "${domain}:${resource_profile.name}"
+          item = resource_profile
+        }
+      ]
+    ]) : item.key => item
+  } : {}
 }
 
-######
-### map_network_group_objects
-######
-locals {
-  map_network_group_objects = merge(
+data "fmc_resource_profiles" "resource_profiles" {
+  for_each = local.data_resource_profiles
 
-    # Network Groups - bulk mode outputs
-    merge([
-      for domain, network_groups in fmc_network_groups.network_groups : {
-        for network_group_name, network_group_values in network_groups.items : "${domain}:${network_group_name}" => { id = network_group_values.id, type = network_group_values.type }
-      }
-    ]...),
-
-    # Network Groups - data sources
-    merge([
-      for domain, network_groups in data.fmc_network_groups.network_groups : {
-        for network_group_name, network_group_values in network_groups.items : "${domain}:${network_group_name}" => { id = network_group_values.id, type = network_group_values.type }
-      }
-    ]...),
-  )
+  items  = each.value.items
+  domain = each.key
 }
 
-######
-### map_services => Port, ICMPv4
-######
-locals {
-  map_services = merge(
+resource "fmc_resource_profiles" "resource_profiles" {
+  for_each = local.resource_profiles_bulk ? local.resource_resource_profiles : {}
 
-    # Ports - bulk mode outputs
-    local.ports_bulk ? merge([
-      for domain, ports in fmc_ports.ports : {
-        for port_name, port_values in ports.items : "${domain}:${port_name}" => { id = port_values.id, type = port_values.type }
-      }
-    ]...) : {},
-
-    # Ports - individual mode outputs
-    !local.ports_bulk ? { for key, resource in fmc_port.port : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
-
-    # Ports - data sources
-    merge([
-      for domain, ports in data.fmc_ports.ports : {
-        for port_name, port_values in ports.items : "${domain}:${port_name}" => { id = port_values.id, type = port_values.type }
-      }
-    ]...),
-
-    # ICMPv4s - bulk mode outputs
-    local.icmpv4s_bulk ? merge([
-      for domain, icmpv4s in fmc_icmpv4s.icmpv4s : {
-        for icmpv4_name, icmpv4_values in icmpv4s.items : "${domain}:${icmpv4_name}" => { id = icmpv4_values.id, type = icmpv4_values.type }
-      }
-    ]...) : {},
-
-    # ICMPv4s - individual mode outputs
-    !local.icmpv4s_bulk ? { for key, resource in fmc_icmpv4.icmpv4 : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
-
-    # ICMPv4s - data sources
-    merge([
-      for domain, icmpv4s in data.fmc_icmpv4s.icmpv4s : {
-        for icmpv4_name, icmpv4_values in icmpv4s.items : "${domain}:${icmpv4_name}" => { id = icmpv4_values.id, type = icmpv4_values.type }
-      }
-    ]...),
-  )
+  domain = each.key
+  items  = { for resource_profile in each.value : resource_profile.name => resource_profile }
 }
 
-######
-### map_port_groups
-######
-locals {
-  map_port_groups = merge(
+resource "fmc_resource_profile" "resource_profile" {
+  for_each = !local.resource_profiles_bulk ? local.resource_resource_profile : {}
 
-    # Port Groups - bulk mode outputs
-    merge([
-      for domain, port_groups in fmc_port_groups.port_groups : {
-        for port_group_name, port_group_values in port_groups.items : "${domain}:${port_group_name}" => { id = port_group_values.id, type = port_group_values.type }
-      }
-    ]...),
-
-    # Port Groups - individual mode outputs
-    !local.port_groups_bulk ? { for key, resource in fmc_port_group.port_group : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
-
-    # Port Groups - data sources
-    merge([
-      for domain, port_groups in data.fmc_port_groups.port_groups : {
-        for port_group_name, port_group_values in port_groups.items : "${domain}:${port_group_name}" => { id = port_group_values.id, type = port_group_values.type }
-      }
-    ]...),
-  )
+  domain         = each.value.item.domain
+  name           = each.value.item.name
+  number_of_cpus = each.value.item.number_of_cpus
+  description    = each.value.item.description
 }
 
-######
-### map_dynamic_objects
-######
+##########################################################
+###    GEOLOCATIONS
+##########################################################
 locals {
-  map_dynamic_objects = merge(
-
-    # Dynamic Objects - bulk mode outputs
-    merge([
-      for domain, dynamic_objects in fmc_dynamic_objects.dynamic_objects : {
-        for dynamic_object_name, dynamic_object_values in dynamic_objects.items : "${domain}:${dynamic_object_name}" => { id = dynamic_object_values.id, type = dynamic_object_values.type }
+  data_geolocations = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for geolocation in try(domain.objects.geolocations, []) : geolocation.name => {}
       }
-    ]...),
+    } if length(try(domain.objects.geolocations, [])) > 0
+  }
 
-    # Dynamic Objects - data sources
-    merge([
-      for domain, dynamic_objects in data.fmc_dynamic_objects.dynamic_objects : {
-        for dynamic_object_name, dynamic_object_values in dynamic_objects.items : "${domain}:${dynamic_object_name}" => { id = dynamic_object_values.id, type = dynamic_object_values.type }
-      }
-    ]...),
-  )
+  geolocations_bulk = try(local.fmc.nac_configuration.geolocations_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_geolocations = {
+    for domain in local.domains : domain.name => [
+      for geolocation in try(domain.objects.geolocations, []) : {
+        domain = domain.name
+        name   = geolocation.name
+        continents = [for continent in try(geolocation.continents, []) : {
+          id = data.fmc_continents.continents["Global"].items[continent].id
+        }]
+        countries = [for country in try(geolocation.countries, []) : {
+          id = data.fmc_countries.countries["Global"].items[country].id
+        }]
+      } if !contains(try(keys(local.data_geolocations[domain.name].items), []), geolocation.name)
+    ] if length(try(domain.objects.geolocations, [])) > 0
+  }
+
+  resource_geolocation = !local.geolocations_bulk ? {
+    for item in flatten([
+      for domain, geolocations in local.resource_geolocations : [
+        for geolocation in geolocations : {
+          key  = "${domain}:${geolocation.name}"
+          item = geolocation
+        }
+      ]
+    ]) : item.key => item
+  } : {}
 }
 
-######
-### map_urls
-######
-locals {
-  map_urls = merge(
+data "fmc_geolocations" "geolocations" {
+  for_each = local.data_geolocations
 
-    # URLs - bulk mode outputs
-    local.urls_bulk ? merge([
-      for domain, urls in fmc_urls.urls : {
-        for url_name, url_values in urls.items : "${domain}:${url_name}" => { id = url_values.id, type = url_values.type }
-      }
-    ]...) : {},
-
-    # URLs - individual mode outputs
-    !local.urls_bulk ? { for key, resource in fmc_url.url : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
-
-    # URLs - data sources
-    merge([
-      for domain, urls in data.fmc_urls.urls : {
-        for url_name, url_values in urls.items : "${domain}:${url_name}" => { id = url_values.id, type = url_values.type }
-      }
-    ]...),
-  )
+  items  = each.value.items
+  domain = each.key
 }
 
-######
-### map_url_groups
-######
-locals {
-  map_url_groups = merge(
+resource "fmc_geolocations" "geolocations" {
+  for_each = local.geolocations_bulk ? local.resource_geolocations : {}
 
-    # URL Groups - bulk mode outputs
-    local.url_groups_bulk ? merge([
-      for domain, url_groups in fmc_url_groups.url_groups : {
-        for url_group_name, url_group_values in url_groups.items : "${domain}:${url_group_name}" => { id = url_group_values.id, type = url_group_values.type }
-      }
-    ]...) : {},
-
-    # URL Groups - individual mode outputs
-    !local.url_groups_bulk ? { for key, resource in fmc_url_group.url_group : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
-
-    # URL Groups - data sources
-    merge([
-      for domain, url_groups in data.fmc_url_groups.url_groups : {
-        for url_group_name, url_group_values in url_groups.items : "${domain}:${url_group_name}" => { id = url_group_values.id, type = url_group_values.type }
-      }
-    ]...),
-  )
+  domain = each.key
+  items  = { for geolocation in each.value : geolocation.name => geolocation }
 }
 
-######
-### map_vlan_tags
-######
-locals {
-  map_vlan_tags = merge(
+resource "fmc_geolocation" "geolocation" {
+  for_each = !local.geolocations_bulk ? local.resource_geolocation : {}
 
-    # VLAN Tags - bulk mode outputs
-    local.vlan_tags_bulk ? merge([
-      for domain, vlan_tags in fmc_vlan_tags.vlan_tags : {
-        for vlan_tag_name, vlan_tag_values in vlan_tags.items : "${domain}:${vlan_tag_name}" => { id = vlan_tag_values.id, type = vlan_tag_values.type }
-      }
-    ]...) : {},
-
-    # VLAN Tags - individual mode outputs
-    !local.vlan_tags_bulk ? { for key, resource in fmc_vlan_tag.vlan_tag : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
-
-    # VLAN Tags - data sources
-    merge([
-      for domain, vlan_tags in data.fmc_vlan_tags.vlan_tags : {
-        for vlan_tag_name, vlan_tag_values in vlan_tags.items : "${domain}:${vlan_tag_name}" => { id = vlan_tag_values.id, type = vlan_tag_values.type }
-      }
-    ]...),
-  )
+  domain     = each.value.item.domain
+  name       = each.value.item.name
+  continents = each.value.item.continents
+  countries  = each.value.item.countries
 }
 
-######
-### map_vlan_tag_groups
-######
+##########################################################
+###    SERVICE ACCESS
+##########################################################
 locals {
-  map_vlan_tag_groups = merge(
-    #
-    # VLAN Tag Groups - bulk mode outputs
-    local.vlan_tag_groups_bulk ? merge([
-      for domain, vlan_tag_groups in fmc_vlan_tag_groups.vlan_tag_groups : {
-        for vlan_tag_group_name, vlan_tag_group_values in vlan_tag_groups.items : "${domain}:${vlan_tag_group_name}" => { id = vlan_tag_group_values.id, type = vlan_tag_group_values.type }
-      }
-    ]...) : {},
+  data_service_access = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for service_access in try(domain.objects.service_accesses, {}) : {
+          name   = service_access.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
 
-    # VLAN Tag Groups - individual mode outputs
-    !local.vlan_tag_groups_bulk ? { for key, resource in fmc_vlan_tag_group.vlan_tag_group : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
-
-    # VLAN Tag Groups - data sources
-    merge([
-      for domain, vlan_tag_groups in data.fmc_vlan_tag_groups.vlan_tag_groups : {
-        for vlan_tag_group_name, vlan_tag_group_values in vlan_tag_groups.items : "${domain}:${vlan_tag_group_name}" => { id = vlan_tag_group_values.id, type = vlan_tag_group_values.type }
-      }
-    ]...),
-  )
+  resource_service_access = {
+    for item in flatten([
+      for domain in local.domains : [
+        for service_access in try(domain.objects.service_accesses, {}) : {
+          domain         = domain.name
+          name           = service_access.name
+          default_action = service_access.default_action
+          rules = [for rule in service_access.rules : {
+            action = rule.action
+            geolocation_sources = [for geolocation_source in try(rule.geolocation_sources, []) : {
+              id = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_geolocation_sources["${domain_path}:${geolocation_source}"].id
+                if contains(keys(local.map_geolocation_sources), "${domain_path}:${geolocation_source}")
+              })[0],
+              type = values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_geolocation_sources["${domain_path}:${geolocation_source}"].type
+                if contains(keys(local.map_geolocation_sources), "${domain_path}:${geolocation_source}")
+              })[0],
+            }]
+          }]
+        } if !contains(try(keys(local.data_service_access), {}), "${domain.name}:${service_access.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
 }
 
-######
-### map_sgts - SGT (data source + resource) + ISE SGT (data source)
-######
-locals {
-  map_sgts = merge(
+data "fmc_service_access" "service_access" {
+  for_each = local.data_service_access
 
-    # SGT - bulk mode outputs
-    local.sgts_bulk ? merge([
-      for domain, sgts in fmc_sgts.sgts : {
-        for sgt_name, sgt_values in sgts.items : "${domain}:${sgt_name}" => { id = sgt_values.id, type = sgt_values.type }
-      }
-    ]...) : {},
-
-    # SGT - individual mode outputs
-    !local.sgts_bulk ? { for key, resource in fmc_sgt.sgt : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
-
-    # SGT - data sources
-    merge([
-      for domain, sgts in data.fmc_sgts.sgts : {
-        for sgt_name, sgt_values in sgts.items : "${domain}:${sgt_name}" => { id = sgt_values.id, type = sgt_values.type }
-      }
-    ]...),
-
-    # ISE SGT - data sources
-    merge([
-      for domain, ise_sgts in data.fmc_ise_sgts.ise_sgts : {
-        for ise_sgt_name, ise_sgt_values in ise_sgts.items : "${domain}:${ise_sgt_name}" => { id = ise_sgt_values.id, type = ise_sgt_values.type }
-      }
-    ]...),
-  )
+  name   = each.value.name
+  domain = each.value.domain
 }
 
-######
-### map_tunnel_zones
-######
-locals {
-  map_tunnel_zones = merge(
+resource "fmc_service_access" "service_access" {
+  for_each = local.resource_service_access
 
-    # Tunnel Zones - bulk mode outputs
-    local.tunnel_zones_bulk ? merge([
-      for domain, tunnel_zones in fmc_tunnel_zones.tunnel_zones : {
-        for tunnel_zone_name, tunnel_zone_values in tunnel_zones.items : "${domain}:${tunnel_zone_name}" => { id = tunnel_zone_values.id, type = tunnel_zone_values.type }
-      }
-    ]...) : {},
-
-    # Tunnel Zones - individual mode outputs
-    !local.tunnel_zones_bulk ? { for key, resource in fmc_tunnel_zone.tunnel_zone : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
-
-    # Tunnel Zones - data sources
-    merge([
-      for domain, tunnel_zones in data.fmc_tunnel_zones.tunnel_zones : {
-        for tunnel_zone_name, tunnel_zone_values in tunnel_zones.items : "${domain}:${tunnel_zone_name}" => { id = tunnel_zone_values.id, type = tunnel_zone_values.type }
-      }
-    ]...),
-  )
+  domain         = each.value.domain
+  name           = each.value.name
+  default_action = each.value.default_action
+  rules          = each.value.rules
 }
 
-######
-### map_security_zones
-######
+##########################################################
+###    IKEV1 IPSEC PROPOSALS
+##########################################################
 locals {
-  map_security_zones = merge(
-
-    # Security Zones - bulk mode outputs
-    local.security_zones_bulk ? merge([
-      for domain, security_zones in fmc_security_zones.security_zones : {
-        for security_zone_name, security_zone_values in security_zones.items : "${domain}:${security_zone_name}" => { id = security_zone_values.id, type = security_zone_values.type }
+  data_ikev1_ipsec_proposals = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for ikev1_ipsec_proposal in try(domain.objects.ikev1_ipsec_proposals, []) : ikev1_ipsec_proposal.name => {}
       }
-    ]...) : {},
+    } if length(try(domain.objects.ikev1_ipsec_proposals, [])) > 0
+  }
 
-    # Security Zones - individual mode outputs
-    !local.security_zones_bulk ? { for key, resource in fmc_security_zone.security_zone : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+  ikev1_ipsec_proposals_bulk = try(local.fmc.nac_configuration.ikev1_ipsec_proposals_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
-    # Security Zones - data sources
-    merge([
-      for domain, security_zones in data.fmc_security_zones.security_zones : {
-        for security_zone_name, security_zone_values in security_zones.items : "${domain}:${security_zone_name}" => { id = security_zone_values.id, type = security_zone_values.type }
-      }
-    ]...),
-  )
+  resource_ikev1_ipsec_proposals = {
+    for domain in local.domains : domain.name => [
+      for ikev1_ipsec_proposal in try(domain.objects.ikev1_ipsec_proposals, []) : {
+        domain         = domain.name
+        name           = ikev1_ipsec_proposal.name
+        description    = try(ikev1_ipsec_proposal.description, local.defaults.fmc.domains.objects.ikev1_ipsec_proposals.description, null)
+        esp_encryption = ikev1_ipsec_proposal.esp_encryption
+        esp_hash       = ikev1_ipsec_proposal.esp_hash
+    }] if length(try(domain.objects.ikev1_ipsec_proposals, [])) > 0
+  }
+
+  resource_ikev1_ipsec_proposal = !local.ikev1_ipsec_proposals_bulk ? {
+    for item in flatten([
+      for domain, ikev1_ipsec_proposals in local.resource_ikev1_ipsec_proposals : [
+        for ikev1_ipsec_proposal in ikev1_ipsec_proposals : {
+          key  = "${domain}:${ikev1_ipsec_proposal.name}"
+          item = ikev1_ipsec_proposal
+        }
+      ]
+    ]) : item.key => item
+  } : {}
 }
 
-######
-### map_interface_groups
-######
-locals {
-  map_interface_groups = merge(
+data "fmc_ikev1_ipsec_proposals" "ikev1_ipsec_proposals" {
+  for_each = local.data_ikev1_ipsec_proposals
 
-    # Interface Groups - bulk mode outputs
-    local.interface_groups_bulk ? merge([
-      for domain, interface_groups in fmc_interface_groups.interface_groups : {
-        for interface_group_name, interface_group_values in interface_groups.items : "${domain}:${interface_group_name}" => { id = interface_group_values.id, type = interface_group_values.type }
-      }
-    ]...) : {},
-
-    # Interface Groups - individual mode outputs
-    !local.interface_groups_bulk ? { for key, resource in fmc_interface_group.interface_group : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
-
-    # Interface Groups - data sources
-    merge([
-      for domain, interface_group in data.fmc_interface_groups.interface_groups : {
-        for interface_group_name, interface_group_values in interface_group.items : "${domain}:${interface_group_name}" => { id = interface_group_values.id, type = interface_group_values.type }
-      }
-    ]...)
-  )
+  items  = each.value.items
+  domain = each.key
 }
 
-######
-### map_security_zones_and_interface_groups
-######
-locals {
-  map_security_zones_and_interface_groups = merge(
-    local.map_security_zones,
-    local.map_interface_groups,
-  )
+resource "fmc_ikev1_ipsec_proposals" "ikev1_ipsec_proposals" {
+  for_each = local.ikev1_ipsec_proposals_bulk ? local.resource_ikev1_ipsec_proposals : {}
+
+  domain = each.key
+  items  = { for ikev1_ipsec_proposal in each.value : ikev1_ipsec_proposal.name => ikev1_ipsec_proposal }
 }
 
-######
-### map_application_filters
-######
-locals {
-  map_application_filters = merge(
+resource "fmc_ikev1_ipsec_proposal" "ikev1_ipsec_proposal" {
+  for_each = !local.ikev1_ipsec_proposals_bulk ? local.resource_ikev1_ipsec_proposal : {}
 
-    # Application Filters - bulk mode outputs
-    local.application_filters_bulk ? merge([
-      for domain, application_filters in fmc_application_filters.application_filters : {
-        for application_filter_name, application_filter_values in application_filters.items : "${domain}:${application_filter_name}" => { id = application_filter_values.id, type = application_filter_values.type }
-      }
-    ]...) : {},
-
-    # Application Filters - individual mode outputs
-    !local.application_filters_bulk ? { for key, resource in fmc_application_filter.application_filter : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
-
-    # Application Filters - data sources
-    merge([
-      for domain, application_filters in data.fmc_application_filters.application_filters : {
-        for application_filter_name, application_filter_values in application_filters.items : "${domain}:${application_filter_name}" => { id = application_filter_values.id, type = application_filter_values.type }
-      }
-    ]...),
-  )
+  domain         = each.value.item.domain
+  name           = each.value.item.name
+  description    = each.value.item.description
+  esp_encryption = each.value.item.esp_encryption
+  esp_hash       = each.value.item.esp_hash
 }
 
-######
-### map_time_ranges
-######
+##########################################################
+###    IKEV1 POLICIES
+##########################################################
 locals {
-  map_time_ranges = merge(
-
-    # Time ranges - bulk mode outputs
-    local.time_ranges_bulk ? merge([
-      for domain, time_ranges in fmc_time_ranges.time_ranges : {
-        for time_range_name, time_range_values in time_ranges.items : "${domain}:${time_range_name}" => { id = time_range_values.id, type = time_range_values.type }
+  data_ikev1_policies = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for ikev1_policy in try(domain.objects.ikev1_policies, []) : ikev1_policy.name => {}
       }
-    ]...) : {},
+    } if length(try(domain.objects.ikev1_policies, [])) > 0
+  }
 
-    # Time ranges - individual mode outputs
-    !local.time_ranges_bulk ? { for key, resource in fmc_time_range.time_range : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+  ikev1_policies_bulk = try(local.fmc.nac_configuration.ikev1_policies_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
-    # Time ranges - data sources
-    merge([
-      for domain, time_ranges in data.fmc_time_ranges.time_ranges : {
-        for time_range_name, time_range_values in time_ranges.items : "${domain}:${time_range_name}" => { id = time_range_values.id, type = time_range_values.type }
-      }
-    ]...),
-  )
+  resource_ikev1_policies = {
+    for domain in local.domains : domain.name => [
+      for ikev1_policy in try(domain.objects.ikev1_policies, []) : {
+        domain                = domain.name
+        name                  = ikev1_policy.name
+        description           = try(ikev1_policy.description, local.defaults.fmc.domains.objects.ikev1_policies.description, null)
+        authentication_method = ikev1_policy.authentication_method
+        dh_group              = ikev1_policy.dh_group
+        encryption_algorithm  = ikev1_policy.encryption_algorithm
+        hash                  = ikev1_policy.hash
+        lifetime              = ikev1_policy.lifetime
+        priority              = ikev1_policy.priority
+    }] if length(try(domain.objects.ikev1_policies, [])) > 0
+  }
+
+  resource_ikev1_policy = !local.ikev1_policies_bulk ? {
+    for item in flatten([
+      for domain, ikev1_policies in local.resource_ikev1_policies : [
+        for ikev1_policy in ikev1_policies : {
+          key  = "${domain}:${ikev1_policy.name}"
+          item = ikev1_policy
+        }
+      ]
+    ]) : item.key => item
+  } : {}
 }
 
-######
-### map_ipv4_address_pools
-######
-locals {
-  map_ipv4_address_pools = merge(
+data "fmc_ikev1_policies" "ikev1_policies" {
+  for_each = local.data_ikev1_policies
 
-    # IPv4 Address Pools - bulk mode outputs
-    local.ipv4_address_pools_bulk ? merge([
-      for domain, ipv4_address_pools in fmc_ipv4_address_pools.ipv4_address_pools : {
-        for ipv4_address_pool_name, ipv4_address_pool_values in ipv4_address_pools.items : "${domain}:${ipv4_address_pool_name}" => { id = ipv4_address_pool_values.id, type = ipv4_address_pool_values.type }
-      }
-    ]...) : {},
-
-    # IPv4 Address Pools - individual mode outputs
-    !local.ipv4_address_pools_bulk ? { for key, resource in fmc_ipv4_address_pool.ipv4_address_pool : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
-
-    # IPv4 Address Pools - data sources
-    merge([
-      for domain, ipv4_address_pools in data.fmc_ipv4_address_pools.ipv4_address_pools : {
-        for ipv4_address_pool_name, ipv4_address_pool_values in ipv4_address_pools.items : "${domain}:${ipv4_address_pool_name}" => { id = ipv4_address_pool_values.id, type = ipv4_address_pool_values.type }
-      }
-    ]...)
-  )
+  items  = each.value.items
+  domain = each.key
 }
 
-######
-### map_ipv6_address_pools
-######
-locals {
-  map_ipv6_address_pools = merge(
+resource "fmc_ikev1_policies" "ikev1_policies" {
+  for_each = local.ikev1_policies_bulk ? local.resource_ikev1_policies : {}
 
-    # IPv6 Address Pools - bulk mode outputs
-    local.ipv6_address_pools_bulk ? merge([
-      for domain, ipv6_address_pools in fmc_ipv6_address_pools.ipv6_address_pools : {
-        for ipv6_address_pool_name, ipv6_address_pool_values in ipv6_address_pools.items : "${domain}:${ipv6_address_pool_name}" => { id = ipv6_address_pool_values.id, type = ipv6_address_pool_values.type }
+  domain = each.key
+  items  = { for ikev1_policy in each.value : ikev1_policy.name => ikev1_policy }
+}
+
+resource "fmc_ikev1_policy" "ikev1_policy" {
+  for_each = !local.ikev1_policies_bulk ? local.resource_ikev1_policy : {}
+
+  domain                = each.value.item.domain
+  name                  = each.value.item.name
+  description           = each.value.item.description
+  authentication_method = each.value.item.authentication_method
+  dh_group              = each.value.item.dh_group
+  encryption_algorithm  = each.value.item.encryption_algorithm
+  hash                  = each.value.item.hash
+  lifetime              = each.value.item.lifetime
+  priority              = each.value.item.priority
+}
+
+##########################################################
+###    IKEV2 IPSEC PROPOSALS
+##########################################################
+locals {
+  data_ikev2_ipsec_proposals = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for ikev2_ipsec_proposal in try(domain.objects.ikev2_ipsec_proposals, []) : ikev2_ipsec_proposal.name => {}
       }
-    ]...) : {},
+    } if length(try(domain.objects.ikev2_ipsec_proposals, [])) > 0
+  }
 
-    # IPv6 Address Pools - individual mode outputs
-    !local.ipv6_address_pools_bulk ? { for key, resource in fmc_ipv6_address_pool.ipv6_address_pool : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+  ikev2_ipsec_proposals_bulk = try(local.fmc.nac_configuration.ikev2_ipsec_proposals_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
 
-    # IPv6 Address Pools - data sources
-    merge([
-      for domain, ipv6_address_pools in data.fmc_ipv6_address_pools.ipv6_address_pools : {
-        for ipv6_address_pool_name, ipv6_address_pool_values in ipv6_address_pools.items : "${domain}:${ipv6_address_pool_name}" => { id = ipv6_address_pool_values.id, type = ipv6_address_pool_values.type }
+  resource_ikev2_ipsec_proposals = {
+    for domain in local.domains : domain.name => [
+      for ikev2_ipsec_proposal in try(domain.objects.ikev2_ipsec_proposals, []) : {
+        domain          = domain.name
+        name            = ikev2_ipsec_proposal.name
+        description     = try(ikev2_ipsec_proposal.description, local.defaults.fmc.domains.objects.ikev2_ipsec_proposals.description, null)
+        esp_encryptions = ikev2_ipsec_proposal.esp_encryptions
+        esp_hashes      = ikev2_ipsec_proposal.esp_hashes
+    }] if length(try(domain.objects.ikev2_ipsec_proposals, [])) > 0
+  }
+
+  resource_ikev2_ipsec_proposal = !local.ikev2_ipsec_proposals_bulk ? {
+    for item in flatten([
+      for domain, ikev2_ipsec_proposals in local.resource_ikev2_ipsec_proposals : [
+        for ikev2_ipsec_proposal in ikev2_ipsec_proposals : {
+          key  = "${domain}:${ikev2_ipsec_proposal.name}"
+          item = ikev2_ipsec_proposal
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_ikev2_ipsec_proposals" "ikev2_ipsec_proposals" {
+  for_each = local.data_ikev2_ipsec_proposals
+  items    = each.value.items
+  domain   = each.key
+}
+
+resource "fmc_ikev2_ipsec_proposals" "ikev2_ipsec_proposals" {
+  for_each = local.ikev2_ipsec_proposals_bulk ? local.resource_ikev2_ipsec_proposals : {}
+
+  domain = each.key
+  items  = { for ikev2_ipsec_proposal in each.value : ikev2_ipsec_proposal.name => ikev2_ipsec_proposal }
+}
+
+resource "fmc_ikev2_ipsec_proposal" "ikev2_ipsec_proposal" {
+  for_each = !local.ikev2_ipsec_proposals_bulk ? local.resource_ikev2_ipsec_proposal : {}
+
+  domain          = each.value.item.domain
+  name            = each.value.item.name
+  description     = each.value.item.description
+  esp_encryptions = each.value.item.esp_encryptions
+  esp_hashes      = each.value.item.esp_hashes
+}
+
+##########################################################
+###    IKEV2 POLICIES
+##########################################################
+locals {
+  data_ikev2_policies = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for ikev2_policy in try(domain.objects.ikev2_policies, []) : ikev2_policy.name => {}
       }
-    ]...)
-  )
+    } if length(try(domain.objects.ikev2_policies, [])) > 0
+  }
+
+  ikev2_policies_bulk = try(local.fmc.nac_configuration.ikev2_policies_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_ikev2_policies = {
+    for domain in local.domains : domain.name => [
+      for ikev2_policy in try(domain.objects.ikev2_policies, []) : {
+        domain                = domain.name
+        name                  = ikev2_policy.name
+        description           = try(ikev2_policy.description, local.defaults.fmc.domains.objects.ikev2_policies.description, null)
+        dh_groups             = ikev2_policy.dh_groups
+        encryption_algorithms = ikev2_policy.encryption_algorithms
+        integrity_algorithms  = ikev2_policy.integrity_algorithms
+        prf_algorithms        = ikev2_policy.prf_algorithms
+        lifetime              = ikev2_policy.lifetime
+        priority              = ikev2_policy.priority
+    }] if length(try(domain.objects.ikev2_policies, [])) > 0
+  }
+
+  resource_ikev2_policy = !local.ikev2_policies_bulk ? {
+    for item in flatten([
+      for domain, ikev2_policies in local.resource_ikev2_policies : [
+        for ikev2_policy in ikev2_policies : {
+          key  = "${domain}:${ikev2_policy.name}"
+          item = ikev2_policy
+        }
+      ]
+    ]) : item.key => item
+  } : {}
 }
 
+data "fmc_ikev2_policies" "ikev2_policies" {
+  for_each = local.data_ikev2_policies
 
-######
-### map_standard_access_lists
-######
-locals {
-  map_standard_access_lists = merge(
-
-    # Standard Access Lists - individual mode outputs
-    { for key, resource in fmc_standard_access_list.standard_access_list : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
-
-    # Standard Access Lists - data sources
-    merge([
-      for domain, standard_acls in data.fmc_standard_access_list.standard_access_list : {
-        for standard_acl_name, standard_acl_values in standard_acls.items : "${domain}:${standard_acl_name}" => { id = standard_acl_values.id, type = standard_acl_values.type }
-      }
-    ]...)
-  )
+  items  = each.value.items
+  domain = each.key
 }
 
-######
-### map_extended_access_lists
-######
-locals {
-  map_extended_access_lists = merge(
+resource "fmc_ikev2_policies" "ikev2_policies" {
+  for_each = local.ikev2_policies_bulk ? local.resource_ikev2_policies : {}
 
-    # Extended Access Lists - individual mode outputs
-    { for key, resource in fmc_extended_access_list.extended_access_list : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
-
-    # Extended Access Lists - data sources
-    merge([
-      for domain, extended_acls in data.fmc_extended_access_list.extended_access_list : {
-        for extended_acl_name, extended_acl_values in extended_acls.items : "${domain}:${extended_acl_name}" => { id = extended_acl_values.id, type = extended_acl_values.type }
-      }
-    ]...)
-  )
+  domain = each.key
+  items  = { for ikev2_policy in each.value : ikev2_policy.name => ikev2_policy }
 }
 
-######
-### map_bfd_templates
-######
-locals {
-  map_bfd_templates = merge(
+resource "fmc_ikev2_policy" "ikev2_policy" {
+  for_each = !local.ikev2_policies_bulk ? local.resource_ikev2_policy : {}
 
-    # BFD Templates - individual mode outputs
-    { for key, resource in fmc_bfd_template.bfd_template : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
-
-    # BFD Templates - data sources
-    { for key, data_source in data.fmc_bfd_template.bfd_template : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
-  )
+  domain                = each.value.item.domain
+  name                  = each.value.item.name
+  description           = each.value.item.description
+  dh_groups             = each.value.item.dh_groups
+  encryption_algorithms = each.value.item.encryption_algorithms
+  integrity_algorithms  = each.value.item.integrity_algorithms
+  prf_algorithms        = each.value.item.prf_algorithms
+  lifetime              = each.value.item.lifetime
+  priority              = each.value.item.priority
 }
 
-######
-### map_variable_sets
-######
+##########################################################
+###    TRUSTED CERTIFICATE AUTHORITY
+##########################################################
 locals {
-  map_variable_sets = merge(
+  data_trusted_certificate_authority = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for trusted_certificate_authority in try(domain.objects.trusted_certificate_authorities, {}) : {
+          name   = trusted_certificate_authority.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
 
-    # Variable Sets - data sources
-    { for key, resource in data.fmc_variable_set.variable_set : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
-  )
+  resource_trusted_certificate_authority = {
+    for item in flatten([
+      for domain in local.domains : [
+        for trusted_certificate_authority in try(domain.objects.trusted_certificate_authorities, {}) : {
+          domain      = domain.name
+          name        = trusted_certificate_authority.name
+          certificate = try(trusted_certificate_authority.certificate, file(trusted_certificate_authority.certificate_file))
+        } if !contains(try(keys(local.data_trusted_certificate_authority), {}), "${domain.name}:${trusted_certificate_authority.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
 }
 
-######
-### FAKE - TODO
-######
+data "fmc_trusted_certificate_authority" "trusted_certificate_authority" {
+  for_each = local.data_trusted_certificate_authority
 
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_trusted_certificate_authority" "trusted_certificate_authority" {
+  for_each = local.resource_trusted_certificate_authority
+
+  domain      = each.value.domain
+  name        = each.value.name
+  certificate = each.value.certificate
+}
+
+##########################################################
+###    INTERNAL CERTIFICATE AUTHORITY
+##########################################################
 locals {
-  map_url_categories  = {}
-  map_ipv6_dhcp_pools = {}
-  map_route_maps      = {}
-  map_prefix_lists    = {}
+  data_internal_certificate_authority = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for internal_certificate_authority in try(domain.objects.internal_certificate_authorities, {}) : {
+          name   = internal_certificate_authority.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_internal_certificate_authority = {
+    for item in flatten([
+      for domain in local.domains : [
+        for internal_certificate_authority in try(domain.objects.internal_certificate_authorities, {}) : {
+          domain      = domain.name
+          name        = internal_certificate_authority.name
+          certificate = try(internal_certificate_authority.certificate, file(internal_certificate_authority.certificate_file))
+          private_key = try(internal_certificate_authority.private_key, file(internal_certificate_authority.private_key_file))
+          password    = try(internal_certificate_authority.password, null)
+        } if !contains(try(keys(local.data_internal_certificate_authority), {}), "${domain.name}:${internal_certificate_authority.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_internal_certificate_authority" "internal_certificate_authority" {
+  for_each = local.data_internal_certificate_authority
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_internal_certificate_authority" "internal_certificate_authority" {
+  for_each = local.resource_internal_certificate_authority
+
+  domain      = each.value.domain
+  name        = each.value.name
+  certificate = each.value.certificate
+  private_key = each.value.private_key
+  password    = each.value.password
+}
+
+##########################################################
+###    INTERNAL CERTIFICATES
+##########################################################
+locals {
+  data_internal_certificate = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for internal_certificate in try(domain.objects.internal_certificates, {}) : {
+          name   = internal_certificate.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_internal_certificates = {
+    for item in flatten([
+      for domain in local.domains : [
+        for internal_certificate in try(domain.objects.internal_certificates, {}) : {
+          domain      = domain.name
+          name        = internal_certificate.name
+          certificate = try(internal_certificate.certificate, file(internal_certificate.certificate_file))
+          private_key = try(internal_certificate.private_key, file(internal_certificate.private_key_file))
+          password    = try(internal_certificate.password, null)
+        } if !contains(try(keys(local.data_internal_certificate), {}), "${domain.name}:${internal_certificate.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_internal_certificate" "internal_certificate" {
+  for_each = local.data_internal_certificate
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_internal_certificate" "internal_certificate" {
+  for_each = local.resource_internal_certificates
+
+  domain      = each.value.domain
+  name        = each.value.name
+  certificate = each.value.certificate
+  private_key = each.value.private_key
+  password    = each.value.password
+}
+
+##########################################################
+###    EXTERNAL CERTIFICATES
+##########################################################
+locals {
+  data_external_certificate = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for external_certificate in try(domain.objects.external_certificates, {}) : {
+          name   = external_certificate.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_external_certificates = {
+    for item in flatten([
+      for domain in local.domains : [
+        for external_certificate in try(domain.objects.external_certificates, {}) : {
+          domain      = domain.name
+          name        = external_certificate.name
+          certificate = try(external_certificate.certificate, file(external_certificate.certificate_file))
+        } if !contains(try(keys(local.data_external_certificate), {}), "${domain.name}:${external_certificate.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_external_certificate" "external_certificate" {
+  for_each = local.data_external_certificate
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_external_certificate" "external_certificate" {
+  for_each = local.resource_external_certificates
+
+  domain      = each.value.domain
+  name        = each.value.name
+  certificate = each.value.certificate
+}
+
+##########################################################
+###    CERTIFICATE ENROLLMENTS (NON ACME)
+##########################################################
+locals {
+  data_certificate_enrollment = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for certificate_enrollment in try(domain.objects.certificate_enrollments, {}) : {
+          name   = certificate_enrollment.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_certificate_enrollment = {
+    for item in flatten([
+      for domain in local.domains : [
+        for certificate_enrollment in try(domain.objects.certificate_enrollments, {}) : {
+          domain                        = domain.name
+          name                          = certificate_enrollment.name
+          description                   = try(certificate_enrollment.description, local.defaults.fmc.domains.objects.certificate_enrollments.description, null)
+          enrollment_type               = certificate_enrollment.enrollment_type
+          validation_usage_ipsec_client = try(certificate_enrollment.validation_usage_ipsec_client, null)
+          validation_usage_ssl_client   = try(certificate_enrollment.validation_usage_ssl_client, null)
+          validation_usage_ssl_server   = try(certificate_enrollment.validation_usage_ssl_server, null)
+          skip_ca_flag_check            = try(certificate_enrollment.skip_ca_flag_check, null)
+          # EST
+          est_enrollment_url = try(certificate_enrollment.est.enrollment_url, null)
+          est_username       = try(certificate_enrollment.est.username, null)
+          est_password       = try(certificate_enrollment.est.password, null)
+          est_fingerprint    = try(certificate_enrollment.est.fingerprint, null)
+          est_source_interface_id = try(certificate_enrollment.est.source_interface, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${certificate_enrollment.est.source_interface}"].id
+            if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${certificate_enrollment.est.source_interface}")
+          })[0] : null
+          est_source_interface_name                = try(certificate_enrollment.est.source_interface, null)
+          est_ignore_server_certificate_validation = try(certificate_enrollment.est.ignore_server_certificate_validation, null)
+          # SCEP
+          scep_enrollment_url     = try(certificate_enrollment.scep.enrollment_url, null)
+          scep_challenge_password = try(certificate_enrollment.scep.challenge_password, null)
+          scep_retry_period       = try(certificate_enrollment.scep.retry_period, null)
+          scep_retry_count        = try(certificate_enrollment.scep.retry_count, null)
+          scep_fingerprint        = try(certificate_enrollment.scep.fingerprint, null)
+          # Manual
+          manual_ca_certificate = try(certificate_enrollment.manual.ca_certificate, file(certificate_enrollment.manual.ca_certificate_file), null)
+          manual_ca_only        = try(certificate_enrollment.manual.ca_certificate, file(certificate_enrollment.manual.ca_certificate_file), null) != null ? true : null
+          # PKCS12
+          pkcs12_certificate            = try(certificate_enrollment.pkcs12.certificate, file(certificate_enrollment.pkcs12.certificate_file), null)
+          pkcs12_certificate_passphrase = try(certificate_enrollment.pkcs12.passphrase, null)
+          # Certificate Parameters
+          certificate_include_fqdn                 = try(certificate_enrollment.certificate_parameters.include_fqdn, null)
+          certificate_custom_fqdn                  = try(certificate_enrollment.certificate_parameters.custom_fqdn, null)
+          certificate_alternate_fqdn               = try(join(",", certificate_enrollment.certificate_parameters.alternate_fqdns), null)
+          certificate_include_device_ip            = try(certificate_enrollment.certificate_parameters.include_device_ip, null)
+          certificate_common_name                  = try(certificate_enrollment.certificate_parameters.common_name, null)
+          certificate_organizational_unit          = try(certificate_enrollment.certificate_parameters.organizational_unit, null)
+          certificate_organization                 = try(certificate_enrollment.certificate_parameters.organization, null)
+          certificate_locality                     = try(certificate_enrollment.certificate_parameters.locality, null)
+          certificate_state                        = try(certificate_enrollment.certificate_parameters.state, null)
+          certificate_country_code                 = try(certificate_enrollment.certificate_parameters.country_code, null)
+          certificate_email                        = try(certificate_enrollment.certificate_parameters.email, null)
+          certificate_include_device_serial_number = try(certificate_enrollment.certificate_parameters.include_device_serial_number, null)
+          # Key
+          key_name               = try(certificate_enrollment.key.name, null)
+          key_size               = try(certificate_enrollment.key.size, null)
+          key_type               = try(certificate_enrollment.key.type, null)
+          ignore_ipsec_key_usage = try(certificate_enrollment.key.ignore_ipsec_key_usage, null)
+          # Revocation
+          revocation_evaluation_priority                                     = try(certificate_enrollment.revocation.evaluation_priority, null)
+          consider_certificate_valid_if_revocation_information_not_reachable = try(certificate_enrollment.revocation.consider_certificate_valid_if_revocation_information_not_reachable, null)
+          crl_use_distribution_point_from_the_certificate                    = try(certificate_enrollment.revocation.crl_use_distribution_point_from_the_certificate, null)
+          crl_static_urls                                                    = try(certificate_enrollment.revocation.crl_static_urls, null)
+          ocsp_url                                                           = try(certificate_enrollment.revocation.ocsp_url, null)
+        } if !contains(try(keys(local.data_certificate_enrollment), {}), "${domain.name}:${certificate_enrollment.name}") && (certificate_enrollment.enrollment_type != "ACME")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_certificate_enrollment" "certificate_enrollment" {
+  for_each = local.data_certificate_enrollment
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_certificate_enrollment" "certificate_enrollment" {
+  for_each = local.resource_certificate_enrollment
+
+  domain                                                             = each.value.domain
+  name                                                               = each.value.name
+  description                                                        = each.value.description
+  enrollment_type                                                    = each.value.enrollment_type
+  validation_usage_ipsec_client                                      = each.value.validation_usage_ipsec_client
+  validation_usage_ssl_client                                        = each.value.validation_usage_ssl_client
+  validation_usage_ssl_server                                        = each.value.validation_usage_ssl_server
+  skip_ca_flag_check                                                 = each.value.skip_ca_flag_check
+  est_enrollment_url                                                 = each.value.est_enrollment_url
+  est_username                                                       = each.value.est_username
+  est_password                                                       = each.value.est_password
+  est_fingerprint                                                    = each.value.est_fingerprint
+  est_source_interface_id                                            = each.value.est_source_interface_id
+  est_source_interface_name                                          = each.value.est_source_interface_name
+  est_ignore_server_certificate_validation                           = each.value.est_ignore_server_certificate_validation
+  scep_enrollment_url                                                = each.value.scep_enrollment_url
+  scep_challenge_password                                            = each.value.scep_challenge_password
+  scep_retry_period                                                  = each.value.scep_retry_period
+  scep_retry_count                                                   = each.value.scep_retry_count
+  scep_fingerprint                                                   = each.value.scep_fingerprint
+  manual_ca_certificate                                              = each.value.manual_ca_certificate
+  manual_ca_only                                                     = each.value.manual_ca_only
+  pkcs12_certificate                                                 = each.value.pkcs12_certificate
+  pkcs12_certificate_passphrase                                      = each.value.pkcs12_certificate_passphrase
+  certificate_include_fqdn                                           = each.value.certificate_include_fqdn
+  certificate_custom_fqdn                                            = each.value.certificate_custom_fqdn
+  certificate_alternate_fqdn                                         = each.value.certificate_alternate_fqdn
+  certificate_include_device_ip                                      = each.value.certificate_include_device_ip
+  certificate_common_name                                            = each.value.certificate_common_name
+  certificate_organizational_unit                                    = each.value.certificate_organizational_unit
+  certificate_organization                                           = each.value.certificate_organization
+  certificate_locality                                               = each.value.certificate_locality
+  certificate_state                                                  = each.value.certificate_state
+  certificate_country_code                                           = each.value.certificate_country_code
+  certificate_email                                                  = each.value.certificate_email
+  certificate_include_device_serial_number                           = each.value.certificate_include_device_serial_number
+  key_name                                                           = each.value.key_name
+  key_size                                                           = each.value.key_size
+  key_type                                                           = each.value.key_type
+  ignore_ipsec_key_usage                                             = each.value.ignore_ipsec_key_usage
+  revocation_evaluation_priority                                     = each.value.revocation_evaluation_priority
+  consider_certificate_valid_if_revocation_information_not_reachable = each.value.consider_certificate_valid_if_revocation_information_not_reachable
+  crl_use_distribution_point_from_the_certificate                    = each.value.crl_use_distribution_point_from_the_certificate
+  crl_static_urls                                                    = each.value.crl_static_urls
+  ocsp_url                                                           = each.value.ocsp_url
+}
+
+##########################################################
+###    CERTIFICATE ENROLLMENTS (ACME)
+##########################################################
+locals {
+  resource_certificate_enrollment_acme = {
+    for item in flatten([
+      for domain in local.domains : [
+        for certificate_enrollment in try(domain.objects.certificate_enrollments, {}) : {
+          domain                        = domain.name
+          name                          = certificate_enrollment.name
+          description                   = try(certificate_enrollment.description, local.defaults.fmc.domains.objects.certificate_enrollments.description, null)
+          enrollment_type               = certificate_enrollment.enrollment_type
+          validation_usage_ipsec_client = try(certificate_enrollment.validation_usage_ipsec_client, null)
+          validation_usage_ssl_client   = try(certificate_enrollment.validation_usage_ssl_client, null)
+          validation_usage_ssl_server   = try(certificate_enrollment.validation_usage_ssl_server, null)
+          skip_ca_flag_check            = try(certificate_enrollment.skip_ca_flag_check, null)
+          # ACME
+          acme_enrollment_url          = try(certificate_enrollment.acme.enrollment_url, null)
+          acme_authentication_protocol = try(certificate_enrollment.acme.authentication_protocol, local.defaults.fmc.domains.objects.certificate_enrollments.acme.authentication_protocol, null)
+          acme_authentication_interface_id = try(certificate_enrollment.acme.authentication_interface, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${certificate_enrollment.acme.authentication_interface}"].id
+            if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${certificate_enrollment.acme.authentication_interface}")
+          })[0] : null
+          acme_authentication_interface_name = try(certificate_enrollment.acme.authentication_interface, null)
+          acme_source_interface_id = try(certificate_enrollment.acme.source_interface, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${certificate_enrollment.acme.source_interface}"].id
+            if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${certificate_enrollment.acme.source_interface}")
+          })[0] : null
+          acme_source_interface_name = try(certificate_enrollment.acme.source_interface, null)
+          acme_ca_only_certificate_id = try(certificate_enrollment.acme.ca_only_certificate, null) != null ? try(
+            values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => fmc_certificate_enrollment.certificate_enrollment["${domain_path}:${certificate_enrollment.acme.ca_only_certificate}"].id
+              if contains(keys(fmc_certificate_enrollment.certificate_enrollment), "${domain_path}:${certificate_enrollment.acme.ca_only_certificate}")
+            })[0],
+            values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => data.fmc_certificate_enrollment.certificate_enrollment["${domain_path}:${certificate_enrollment.acme.ca_only_certificate}"].id
+              if contains(keys(data.fmc_certificate_enrollment.certificate_enrollment), "${domain_path}:${certificate_enrollment.acme.ca_only_certificate}")
+            })[0],
+          ) : null
+          acme_auto_enrollment                  = try(certificate_enrollment.acme.auto_enrollment, null)
+          acme_auto_enrollment_lifetime         = try(certificate_enrollment.acme.auto_enrollment_lifetime, null)
+          acme_auto_enrollment_key_regeneration = try(certificate_enrollment.acme.auto_enrollment_key_regeneration, null)
+          # Certificate Parameters
+          certificate_include_fqdn                 = try(certificate_enrollment.certificate_parameters.include_fqdn, null)
+          certificate_custom_fqdn                  = try(certificate_enrollment.certificate_parameters.custom_fqdn, null)
+          certificate_alternate_fqdn               = try(join(",", certificate_enrollment.certificate_parameters.alternate_fqdns), null)
+          certificate_include_device_ip            = try(certificate_enrollment.certificate_parameters.include_device_ip, null)
+          certificate_common_name                  = try(certificate_enrollment.certificate_parameters.common_name, null)
+          certificate_organizational_unit          = try(certificate_enrollment.certificate_parameters.organizational_unit, null)
+          certificate_organization                 = try(certificate_enrollment.certificate_parameters.organization, null)
+          certificate_locality                     = try(certificate_enrollment.certificate_parameters.locality, null)
+          certificate_state                        = try(certificate_enrollment.certificate_parameters.state, null)
+          certificate_country_code                 = try(certificate_enrollment.certificate_parameters.country_code, null)
+          certificate_email                        = try(certificate_enrollment.certificate_parameters.email, null)
+          certificate_include_device_serial_number = try(certificate_enrollment.certificate_parameters.include_device_serial_number, null)
+          # Key
+          key_name               = try(certificate_enrollment.key.name, null)
+          key_size               = try(certificate_enrollment.key.size, null)
+          key_type               = try(certificate_enrollment.key.type, null)
+          ignore_ipsec_key_usage = try(certificate_enrollment.key.ignore_ipsec_key_usage, null)
+          # Revocation
+          revocation_evaluation_priority                                     = try(certificate_enrollment.revocation.evaluation_priority, null)
+          consider_certificate_valid_if_revocation_information_not_reachable = try(certificate_enrollment.revocation.consider_certificate_valid_if_revocation_information_not_reachable, null)
+          crl_use_distribution_point_from_the_certificate                    = try(certificate_enrollment.revocation.crl_use_distribution_point_from_the_certificate, null)
+          crl_static_urls                                                    = try(certificate_enrollment.revocation.crl_static_urls, null)
+          ocsp_url                                                           = try(certificate_enrollment.revocation.ocsp_url, null)
+        } if !contains(try(keys(local.data_certificate_enrollment), {}), "${domain.name}:${certificate_enrollment.name}") && (certificate_enrollment.enrollment_type == "ACME")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+resource "fmc_certificate_enrollment" "certificate_enrollment_acme" {
+  for_each = local.resource_certificate_enrollment_acme
+
+  domain                                                             = each.value.domain
+  name                                                               = each.value.name
+  description                                                        = each.value.description
+  enrollment_type                                                    = each.value.enrollment_type
+  validation_usage_ipsec_client                                      = each.value.validation_usage_ipsec_client
+  validation_usage_ssl_client                                        = each.value.validation_usage_ssl_client
+  validation_usage_ssl_server                                        = each.value.validation_usage_ssl_server
+  skip_ca_flag_check                                                 = each.value.skip_ca_flag_check
+  acme_enrollment_url                                                = each.value.acme_enrollment_url
+  acme_authentication_protocol                                       = each.value.acme_authentication_protocol
+  acme_authentication_interface_id                                   = each.value.acme_authentication_interface_id
+  acme_authentication_interface_name                                 = each.value.acme_authentication_interface_name
+  acme_source_interface_id                                           = each.value.acme_source_interface_id
+  acme_source_interface_name                                         = each.value.acme_source_interface_name
+  acme_ca_only_certificate_id                                        = each.value.acme_ca_only_certificate_id
+  acme_auto_enrollment                                               = each.value.acme_auto_enrollment
+  acme_auto_enrollment_lifetime                                      = each.value.acme_auto_enrollment_lifetime
+  acme_auto_enrollment_key_regeneration                              = each.value.acme_auto_enrollment_key_regeneration
+  certificate_include_fqdn                                           = each.value.certificate_include_fqdn
+  certificate_custom_fqdn                                            = each.value.certificate_custom_fqdn
+  certificate_alternate_fqdn                                         = each.value.certificate_alternate_fqdn
+  certificate_include_device_ip                                      = each.value.certificate_include_device_ip
+  certificate_common_name                                            = each.value.certificate_common_name
+  certificate_organizational_unit                                    = each.value.certificate_organizational_unit
+  certificate_organization                                           = each.value.certificate_organization
+  certificate_locality                                               = each.value.certificate_locality
+  certificate_state                                                  = each.value.certificate_state
+  certificate_country_code                                           = each.value.certificate_country_code
+  certificate_email                                                  = each.value.certificate_email
+  certificate_include_device_serial_number                           = each.value.certificate_include_device_serial_number
+  key_name                                                           = each.value.key_name
+  key_size                                                           = each.value.key_size
+  key_type                                                           = each.value.key_type
+  ignore_ipsec_key_usage                                             = each.value.ignore_ipsec_key_usage
+  revocation_evaluation_priority                                     = each.value.revocation_evaluation_priority
+  consider_certificate_valid_if_revocation_information_not_reachable = each.value.consider_certificate_valid_if_revocation_information_not_reachable
+  crl_use_distribution_point_from_the_certificate                    = each.value.crl_use_distribution_point_from_the_certificate
+  crl_static_urls                                                    = each.value.crl_static_urls
+  ocsp_url                                                           = each.value.ocsp_url
 }

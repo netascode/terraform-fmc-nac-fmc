@@ -232,3 +232,43 @@ data "fmc_endpoint_device_types" "endpoint_device_types" {
   items  = each.value.items
   domain = each.key
 }
+
+##########################################################
+###    COUNTRIES
+##########################################################
+locals {
+  data_countries = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for country in try(domain.objects.countries, {}) : country.name => {}
+      }
+    } if length(try(domain.objects.countries, [])) > 0
+  }
+}
+
+data "fmc_countries" "countries" {
+  for_each = local.data_countries
+
+  items  = each.value.items
+  domain = each.key
+}
+
+##########################################################
+###    CONTINENTS
+##########################################################
+locals {
+  data_continents = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for continent in try(domain.objects.continents, {}) : continent.name => {}
+      }
+    } if length(try(domain.objects.continents, [])) > 0
+  }
+}
+
+data "fmc_continents" "continents" {
+  for_each = local.data_continents
+
+  items  = each.value.items
+  domain = each.key
+}

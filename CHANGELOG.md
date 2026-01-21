@@ -1,6 +1,11 @@
 ## 0.1.1 (Unreleased)
 
-- Add interface_group support (no interface assignment)
+- (BREAKING CHANGE): Moved configuration of standby IP for High Availability Pairs
+- Add `interface_group` support (no interface assignment)
+- Add missing objects for full BGP support
+- Add support for chassis management
+- Add support for Site to site VPNs
+
 
 ## 0.1.0
 

@@ -47,8 +47,6 @@ defaults:
               ipv4_synchronization: false
             physical_interfaces:
               enabled: true
-              speed: "AUTO"
-              duplex: "AUTO"
               mode: "NONE"
               flow_control_send: false
               mtu: 1500
@@ -67,11 +65,27 @@ defaults:
                 enabled: true
             etherchannel_interfaces:
               mode: "NONE"
+            loopback_interfaces:
+              enabled: true
+            virtual_tunnel_interfaces:
+              enabled: true
+              http_based_application_monitoring: true
+              priority: 0
         ha_pairs:
           encryption_enabled: false
           failed_interfaces_limit: 1
           ha_link_use_ipv6: false
           state_link_use_ipv6: false
+        chassis:
+          physical_interfaces:
+            admin_state: ENABLED
+            duplex: FULL
+            fec_mode: AUTO
+          etherchannel_interfaces:
+            admin_state: ENABLED
+            auto_negotiation: true
+          logical_devices:
+            admin_state: ENABLED
         ftd_platform_settings:
           description: " "
           http_access:
@@ -216,10 +230,19 @@ defaults:
           overridable: false
         icmpv4s:
           overridable: false
+        icmpv6s:
+          overridable: false
         ipv4_address_pools:
           overridable: false
         ipv6_address_pools:
           overridable: false
+        as_paths:
+          overridable: false
+        route_maps:
+          overridable: false
+          entries:
+            set:
+              bgp_community_add_to_existing_extended_communities: false
         extended_access_lists:
           entries:
             logging: "DEFAULT"
@@ -232,3 +255,53 @@ defaults:
         bfd_templates:
           echo: false
           authentication_type: "NONE"
+        standard_community_lists:
+          entries:
+            internet: false
+            no_advertise: false
+            no_export: false
+      vpns:
+        site_to_site:
+          ikev1: false
+          ikev2: false
+          advanced_settings:
+            bypass_access_control_policy_for_decrypted_traffic: false
+            cert_use_certificate_map_configured_in_endpoint_to_determine_tunnel: false
+            cert_use_ike_identity_to_determine_tunnel: true
+            cert_use_ou_to_determine_tunnel: true
+            cert_use_peer_ip_address_to_determine_tunnel: true
+            ike_aggressive_mode: false
+            ike_identity_sent_to_peers: AUTO_OR_DN
+            ike_keepalive: ENABLED
+            ike_keepalive_retry_interval: 2
+            ike_keepalive_threshold: 10
+            ike_notification_on_tunnel_disconnect: false
+            ike_peer_identity_validation: REQUIRED
+            ikev2_cookie_challenge: CUSTOM
+            ikev2_number_of_sas_allowed_in_negotiation: 100
+            ikev2_threshold_to_challenge_incoming_cookies: 50
+            ipsec_fragmentation_before_encryption: true
+            nat_keepalive_message_traversal: true
+            nat_keepalive_message_traversal_interval: 20
+            sgt_propagation_over_virtual_tunnel_interface: false
+            spoke_to_spoke_connectivity_through_hub: false
+            vpn_idle_timeout: true
+            vpn_idle_timeout_value: 30
+          ipsec_settings:
+            do_not_fragment_policy: NONE
+            ikev2_mode: TUNNEL
+            lifetime_duration: 28800
+            lifetime_size: 4608000
+            perfect_forward_secrecy: false
+            reverse_route_injection: true
+            security_association_strength_enforcement: false
+            tfc: false
+            tfc_burst_bytes: 0
+            tfc_payload_bytes: 0
+            tfc_timeout: 0
+            validate_incoming_icmp_error_messages: false
+          endpoints:
+            reverse_route_injection: false
+            nat_traversal: true
+            connection_type: ORIGINATE_ONLY
+            allow_incoming_ikev2_routes: true
