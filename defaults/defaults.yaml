@@ -283,7 +283,7 @@ defaults:
             ipsec_fragmentation_before_encryption: true
             nat_keepalive_message_traversal: true
             nat_keepalive_message_traversal_interval: 20
-            sgt_propagation_over_virtual_tunnel_interface: false
+            sgt_propagation_over_vti: false
             spoke_to_spoke_connectivity_through_hub: false
             vpn_idle_timeout: true
             vpn_idle_timeout_value: 30
