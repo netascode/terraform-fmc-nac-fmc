@@ -3461,3 +3461,67 @@ resource "fmc_certificate_map" "certificate_map" {
   name        = each.value.item.name
   rules      = each.value.item.rules
 }
+
+##########################################################
+###    DNS SERVER GROUPS
+##########################################################
+locals {
+  data_dns_server_groups = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for dns_server_group in try(domain.objects.dns_server_groups, []) : dns_server_group.name => {}
+      }
+    } if length(try(domain.objects.dns_server_groups, [])) > 0
+  }
+
+  dns_server_groups_bulk = try(local.fmc.nac_configuration.dns_server_groups_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_dns_server_groups = {
+    for domain in local.domains : domain.name => [
+      for dns_server_group in try(domain.objects.dns_server_groups, []) : {
+        domain      = domain.name
+        name        = dns_server_group.name
+        default_domain = try(dns_server_group.default_domain, null)
+        retries     = try(dns_server_group.retries, local.defaults.fmc.domains.objects.dns_server_groups.retries, null)
+        timeout     = try(dns_server_group.timeout, local.defaults.fmc.domains.objects.dns_server_groups.timeout, null)
+        dns_servers = [for dns_server in try(dns_server_group.dns_servers, []) : {ip = dns_server}]
+      } if !contains(try(keys(local.data_dns_server_groups[domain.name].items), []), dns_server_group.name)
+    ] if length(try(domain.objects.dns_server_groups, [])) > 0
+  }
+
+  resource_dns_server_group = !local.dns_server_groups_bulk ? {
+    for item in flatten([
+      for domain, dns_server_groups in local.resource_dns_server_groups : [
+        for dns_server_group in dns_server_groups : {
+          key  = "${domain}:${dns_server_group.name}"
+          item = dns_server_group
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_dns_server_groups" "dns_server_groups" {
+  for_each = local.data_dns_server_groups
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_dns_server_groups" "dns_server_groups" {
+  for_each = local.dns_server_groups_bulk ? local.resource_dns_server_groups : {}
+
+  domain = each.key
+  items  = { for dns_server_group in each.value : dns_server_group.name => dns_server_group }
+}
+
+resource "fmc_dns_server_group" "dns_server_group" {
+  for_each = !local.dns_server_groups_bulk ? local.resource_dns_server_group : {}
+
+  domain      = each.value.item.domain
+  name        = each.value.item.name
+  default_domain = each.value.item.default_domain
+  retries     = each.value.item.retries
+  timeout     = each.value.item.timeout
+  dns_servers = each.value.item.dns_servers
+}
