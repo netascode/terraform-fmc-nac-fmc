@@ -2444,62 +2444,77 @@ resource "fmc_extended_access_list" "extended_access_list" {
 ###    BFD TEMPLATES
 ##########################################################
 locals {
-  data_bfd_template = {
-    for item in flatten([
-      for domain in local.data_existing : [
-        for bfd_template in try(domain.objects.bfd_templates, []) : [
-          {
-            name   = bfd_template.name
-            domain = domain.name
-        }]
-      ]
-    ]) : "${item.domain}:${item.name}" => item
+  data_bfd_templates = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for bfd_template in try(domain.objects.bfd_templates, []) : bfd_template.name => {}
+      }
+    } if length(try(domain.objects.bfd_templates, [])) > 0
   }
 
-  resource_bfd_template = {
-    for item in flatten([
-      for domain in local.domains : [
-        for bfd_template in try(domain.objects.bfd_templates, []) : {
-          domain                             = domain.name
-          name                               = bfd_template.name
-          hop_type                           = bfd_template.hop_type
-          echo                               = bfd_template.hop_type == "SINGLE_HOP" ? try(bfd_template.echo, local.defaults.fmc.domains.objects.bfd_templates.echo) == true ? "ENABLED" : "DISABLED" : null
-          interval_type                      = try(bfd_template.interval_type, null)
-          multiplier                         = try(bfd_template.multiplier, null)
-          minimum_transmit                   = try(bfd_template.minimum_transmit, null)
-          minimum_receive                    = try(bfd_template.minimum_receive, null)
-          authentication_type                = try(bfd_template.authentication_type, local.defaults.fmc.domains.objects.bfd_templates.authentication_type, null)
-          authentication_password            = try(bfd_template.authentication_password, null)
-          authentication_password_encryption = try(bfd_template.authentication_password_encryption, null)
-          authentication_key_id              = try(bfd_template.authentication_key_id, null)
-        } if !contains(try(keys(local.data_bfd_template), {}), "${domain.name}:${bfd_template.name}")
-      ]
-    ]) : "${item.domain}:${item.name}" => item
+  bfd_templates_bulk = try(local.fmc.nac_configuration.bfd_templates_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_bfd_templates = {
+    for domain in local.domains : domain.name => [
+      for bfd_template in try(domain.objects.bfd_templates, []) : {
+        domain                             = domain.name
+        name                               = bfd_template.name
+        hop_type                           = bfd_template.hop_type
+        echo                               = bfd_template.hop_type == "SINGLE_HOP" ? try(bfd_template.echo, local.defaults.fmc.domains.objects.bfd_templates.echo) == true ? "ENABLED" : "DISABLED" : null
+        interval_type                      = try(bfd_template.interval_type, null)
+        multiplier                         = try(bfd_template.multiplier, null)
+        minimum_transmit                   = try(bfd_template.minimum_transmit, null)
+        minimum_receive                    = try(bfd_template.minimum_receive, null)
+        authentication_type                = try(bfd_template.authentication_type, local.defaults.fmc.domains.objects.bfd_templates.authentication_type, null)
+        authentication_password            = try(bfd_template.authentication_password, null)
+        authentication_password_encryption = try(bfd_template.authentication_password_encryption, null)
+        authentication_key_id              = try(bfd_template.authentication_key_id, null)
+      } if !contains(try(keys(local.data_bfd_templates[domain.name].items), []), bfd_template.name)
+    ] if length(try(domain.objects.bfd_templates, [])) > 0
   }
+
+  resource_bfd_template = !local.bfd_templates_bulk ? {
+    for item in flatten([
+      for domain, bfd_templates in local.resource_bfd_templates : [
+        for bfd_template in bfd_templates : {
+          key  = "${domain}:${bfd_template.name}"
+          item = bfd_template
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+
 }
 
-data "fmc_bfd_template" "bfd_template" {
-  for_each = local.data_bfd_template
+data "fmc_bfd_templates" "bfd_templates" {
+  for_each = local.data_bfd_templates
 
-  name   = each.value.name
-  domain = each.value.domain
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_bfd_templates" "bfd_templates" {
+  for_each = local.bfd_templates_bulk ? local.resource_bfd_templates : {}
+
+  domain = each.key
+  items  = { for bfd_template in each.value : bfd_template.name => bfd_template }
 }
 
 resource "fmc_bfd_template" "bfd_template" {
-  for_each = local.resource_bfd_template
+  for_each = !local.bfd_templates_bulk ? local.resource_bfd_template : {}
 
-  name                               = each.value.name
-  domain                             = each.value.domain
-  hop_type                           = each.value.hop_type
-  echo                               = each.value.echo
-  interval_type                      = each.value.interval_type
-  minimum_transmit                   = each.value.minimum_transmit
-  multiplier                         = each.value.multiplier
-  minimum_receive                    = each.value.minimum_receive
-  authentication_password            = each.value.authentication_password
-  authentication_password_encryption = each.value.authentication_password_encryption
-  authentication_key_id              = each.value.authentication_key_id
-  authentication_type                = each.value.authentication_type
+  name                               = each.value.item.name
+  domain                             = each.value.item.domain
+  hop_type                           = each.value.item.hop_type
+  echo                               = each.value.item.echo
+  interval_type                      = each.value.item.interval_type
+  minimum_transmit                   = each.value.item.minimum_transmit
+  multiplier                         = each.value.item.multiplier
+  minimum_receive                    = each.value.item.minimum_receive
+  authentication_password            = each.value.item.authentication_password
+  authentication_password_encryption = each.value.item.authentication_password_encryption
+  authentication_key_id              = each.value.item.authentication_key_id
+  authentication_type                = each.value.item.authentication_type
 }
 
 ##########################################################
@@ -3380,4 +3395,69 @@ resource "fmc_certificate_enrollment" "certificate_enrollment_acme" {
   crl_use_distribution_point_from_the_certificate                    = each.value.crl_use_distribution_point_from_the_certificate
   crl_static_urls                                                    = each.value.crl_static_urls
   ocsp_url                                                           = each.value.ocsp_url
+}
+
+##########################################################
+###    CERTIFICATE MAPS
+##########################################################
+locals {
+  data_certificate_maps = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for certificate_map in try(domain.objects.certificate_maps, []) : certificate_map.name => {}
+      }
+    } if length(try(domain.objects.certificate_maps, [])) > 0
+  }
+
+  certificate_maps_bulk = try(local.fmc.nac_configuration.certificate_maps_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_certificate_maps = {
+    for domain in local.domains : domain.name => [
+      for certificate_map in try(domain.objects.certificate_maps, []) : {
+        domain      = domain.name
+        name        = certificate_map.name
+        rules = [
+          for rule in try(certificate_map.rules, []) : {
+            component = rule.component
+            field     = rule.field
+            operator  = rule.operator
+            value     = rule.value
+          }
+        ]
+      } if !contains(try(keys(local.data_certificate_maps[domain.name].items), []), certificate_map.name)
+    ] if length(try(domain.objects.certificate_maps, [])) > 0
+  }
+
+  resource_certificate_map = !local.certificate_maps_bulk ? {
+    for item in flatten([
+      for domain, certificate_maps in local.resource_certificate_maps : [
+        for certificate_map in certificate_maps : {
+          key  = "${domain}:${certificate_map.name}"
+          item = certificate_map
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_certificate_maps" "certificate_maps" {
+  for_each = local.data_certificate_maps
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_certificate_maps" "certificate_maps" {
+  for_each = local.certificate_maps_bulk ? local.resource_certificate_maps : {}
+
+  domain = each.key
+  items  = { for certificate_map in each.value : certificate_map.name => certificate_map }
+}
+
+resource "fmc_certificate_map" "certificate_map" {
+  for_each = !local.certificate_maps_bulk ? local.resource_certificate_map : {}
+
+  domain      = each.value.item.domain
+  name        = each.value.item.name
+  rules      = each.value.item.rules
 }

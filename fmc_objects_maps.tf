@@ -626,11 +626,22 @@ locals {
 locals {
   map_bfd_templates = merge(
 
+    # BFD Templates - bulk mode outputs
+    local.bfd_templates_bulk ? merge([
+      for domain, bfd_templates in fmc_bfd_templates.bfd_templates : {
+        for bfd_template_name, bfd_template_values in bfd_templates.items : "${domain}:${bfd_template_name}" => { id = bfd_template_values.id, type = bfd_template_values.type }
+      }
+    ]...) : {},
+
     # BFD Templates - individual mode outputs
-    { for key, resource in fmc_bfd_template.bfd_template : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+    !local.bfd_templates_bulk ? { for key, resource in fmc_bfd_template.bfd_template : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
 
     # BFD Templates - data sources
-    { for key, data_source in data.fmc_bfd_template.bfd_template : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+    merge([
+      for domain, bfd_templates in data.fmc_bfd_templates.bfd_templates : {
+        for bfd_template_name, bfd_template_values in bfd_templates.items : "${domain}:${bfd_template_name}" => { id = bfd_template_values.id, type = bfd_template_values.type }
+      }
+    ]...),
   )
 }
 

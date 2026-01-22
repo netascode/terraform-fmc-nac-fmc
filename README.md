@@ -97,6 +97,7 @@ module "fmc" {
 | [fmc_as_path.as_path](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/as_path) | resource |
 | [fmc_as_paths.as_paths](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/as_paths) | resource |
 | [fmc_bfd_template.bfd_template](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/bfd_template) | resource |
+| [fmc_bfd_templates.bfd_templates](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/bfd_templates) | resource |
 | [fmc_certificate_enrollment.certificate_enrollment](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/certificate_enrollment) | resource |
 | [fmc_certificate_enrollment.certificate_enrollment_acme](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/certificate_enrollment) | resource |
 | [fmc_chassis.chassis](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/chassis) | resource |
@@ -237,7 +238,7 @@ module "fmc" {
 | [fmc_application_types.application_types](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/application_types) | data source |
 | [fmc_applications.applications](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/applications) | data source |
 | [fmc_as_paths.as_paths](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/as_paths) | data source |
-| [fmc_bfd_template.bfd_template](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/bfd_template) | data source |
+| [fmc_bfd_templates.bfd_templates](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/bfd_templates) | data source |
 | [fmc_certificate_enrollment.certificate_enrollment](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/certificate_enrollment) | data source |
 | [fmc_chassis.chassis](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/chassis) | data source |
 | [fmc_chassis_etherchannel_interface.chassis_etherchannel_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/chassis_etherchannel_interface) | data source |
