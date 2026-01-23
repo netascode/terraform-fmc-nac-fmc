@@ -202,6 +202,7 @@ module "fmc" {
 | [fmc_range.range](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/range) | resource |
 | [fmc_ranges.ranges](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/ranges) | resource |
 | [fmc_realm_ad_ldap.realm_ad_ldap](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/realm_ad_ldap) | resource |
+| [fmc_realm_local.realm_local](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/realm_local) | resource |
 | [fmc_resource_profile.resource_profile](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/resource_profile) | resource |
 | [fmc_resource_profiles.resource_profiles](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/resource_profiles) | resource |
 | [fmc_route_map.route_map](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/route_map) | resource |
@@ -302,6 +303,7 @@ module "fmc" {
 | [fmc_prefilter_policy.prefilter_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/prefilter_policy) | data source |
 | [fmc_ranges.ranges](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/ranges) | data source |
 | [fmc_realm_ad_ldap.realm_ad_ldap](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/realm_ad_ldap) | data source |
+| [fmc_realm_local.realm_local](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/realm_local) | data source |
 | [fmc_resource_profiles.resource_profiles](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/resource_profiles) | data source |
 | [fmc_route_map.route_map](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/route_map) | data source |
 | [fmc_security_zones.security_zones](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/security_zones) | data source |

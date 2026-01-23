@@ -99,3 +99,46 @@ resource "fmc_realm_ad_ldap" "realm_ad_ldap" {
   update_hour                             = each.value.update_hour
   update_interval                         = each.value.update_interval
 }
+
+##########################################################
+###    REALM LOCAL
+##########################################################
+locals {
+  data_realm_local = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for realm_local in try(domain.integrations.local_realms, {}) : {
+          name   = realm_local.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_realm_local = {
+    for item in flatten([
+      for domain in local.domains : [
+        for realm_local in try(domain.integrations.local_realms, []) : {
+          domain      = domain.name
+          name        = realm_local.name
+          description = try(realm_local.description, null)
+        } if !contains(try(keys(local.data_realm_local), []), "${domain.name}:${realm_local.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_realm_local" "realm_local" {
+  for_each = local.data_realm_local
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_realm_local" "realm_local" {
+  for_each = local.resource_realm_local
+
+  domain      = each.value.domain
+  name        = each.value.name
+  description = each.value.description
+}
