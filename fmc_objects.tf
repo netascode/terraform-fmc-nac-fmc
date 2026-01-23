@@ -3525,3 +3525,87 @@ resource "fmc_dns_server_group" "dns_server_group" {
   timeout        = each.value.item.timeout
   dns_servers    = each.value.item.dns_servers
 }
+
+##########################################################
+###    RADIUS SERVER GROUPS
+##########################################################
+locals {
+  data_radius_server_group = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for radius_server_group in try(domain.objects.radius_server_groups, {}) : {
+          name   = radius_server_group.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_radius_server_group = {
+    for item in flatten([
+      for domain in local.domains : [
+        for radius_server_group in try(domain.objects.radius_server_groups, {}) : {
+          domain = domain.name
+          name   = radius_server_group.name
+          radius_servers = [for radius_server in radius_server_group.radius_servers : {
+            hostname            = radius_server.hostname
+            key                 = radius_server.key
+            accounting_port     = try(radius_server.accounting_port, local.defaults.fmc.domains.objects.radius_server_groups.radius_servers.accounting_port, null)
+            authentication_port = try(radius_server.authentication_port, local.defaults.fmc.domains.objects.radius_server_groups.radius_servers.authentication_port, null)
+            interface_id = try(radius_server.interface, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${radius_server.interface}"].id
+              if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${radius_server.interface}")
+            })[0] : null
+            message_authenticator = try(radius_server.message_authenticator, local.defaults.fmc.domains.objects.radius_server_groups.radius_servers.message_authenticator, null)
+            redirect_acl_id = try(radius_server.redirect_acl, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_extended_access_lists["${domain_path}:${radius_server.redirect_acl}"].id
+              if contains(keys(local.map_extended_access_lists), "${domain_path}:${radius_server.redirect_acl}")
+            })[0] : null
+            timeout                         = try(radius_server.timeout, local.defaults.fmc.domains.objects.radius_server_groups.radius_servers.timeout, null)
+            use_routing_to_select_interface = try(radius_server.interface, null) != null ? false : try(radius_server.use_routing_to_select_interface, local.defaults.fmc.domains.objects.radius_server_groups.radius_servers.use_routing_to_select_interface, null)
+            }
+          ]
+          ad_realm_id = try(radius_server_group.ad_realm, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_realm_ad_ldap["${domain_path}:${radius_server_group.ad_realm}"].id
+            if contains(keys(local.map_realm_ad_ldap), "${domain_path}:${radius_server_group.ad_realm}")
+          })[0] : null
+          authorize_only                  = try(radius_server_group.authorize_only, local.defaults.fmc.domains.objects.radius_server_groups.authorize_only, null)
+          description                     = try(radius_server_group.description, local.defaults.fmc.domains.objects.radius_server_groups.description, null)
+          dynamic_authorization           = try(radius_server_group.dynamic_authorization_port, null) != null ? true : false
+          dynamic_authorization_port      = try(radius_server_group.dynamic_authorization_port, null)
+          group_accounting_mode           = try(radius_server_group.group_accounting_mode, local.defaults.fmc.domains.objects.radius_server_groups.group_accounting_mode, null)
+          interim_account_update_interval = try(radius_server_group.interim_account_update_interval, local.defaults.fmc.domains.objects.radius_server_groups.interim_account_update_interval, null)
+          merge_downloadable_acl_order    = try(radius_server_group.merge_downloadable_acl_order, local.defaults.fmc.domains.objects.radius_server_groups.merge_downloadable_acl_order, null)
+          retry_interval                  = try(radius_server_group.retry_interval, local.defaults.fmc.domains.objects.radius_server_groups.retry_interval, null)
+        } if !contains(try(keys(local.data_radius_server_group), {}), "${domain.name}:${radius_server_group.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_radius_server_group" "radius_server_group" {
+  for_each = local.data_radius_server_group
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_radius_server_group" "radius_server_group" {
+  for_each = local.resource_radius_server_group
+
+  domain                          = each.value.domain
+  name                            = each.value.name
+  radius_servers                  = each.value.radius_servers
+  ad_realm_id                     = each.value.ad_realm_id
+  authorize_only                  = each.value.authorize_only
+  description                     = each.value.description
+  dynamic_authorization           = each.value.dynamic_authorization
+  dynamic_authorization_port      = each.value.dynamic_authorization_port
+  group_accounting_mode           = each.value.group_accounting_mode
+  interim_account_update_interval = each.value.interim_account_update_interval
+  merge_downloadable_acl_order    = each.value.merge_downloadable_acl_order
+  retry_interval                  = each.value.retry_interval
+}

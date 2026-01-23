@@ -199,6 +199,7 @@ module "fmc" {
 | [fmc_port_groups.port_groups](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/port_groups) | resource |
 | [fmc_ports.ports](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/ports) | resource |
 | [fmc_prefilter_policy.prefilter_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/prefilter_policy) | resource |
+| [fmc_radius_server_group.radius_server_group](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/radius_server_group) | resource |
 | [fmc_range.range](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/range) | resource |
 | [fmc_ranges.ranges](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/ranges) | resource |
 | [fmc_realm_ad_ldap.realm_ad_ldap](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/realm_ad_ldap) | resource |
@@ -301,6 +302,7 @@ module "fmc" {
 | [fmc_port_groups.port_groups](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/port_groups) | data source |
 | [fmc_ports.ports](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/ports) | data source |
 | [fmc_prefilter_policy.prefilter_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/prefilter_policy) | data source |
+| [fmc_radius_server_group.radius_server_group](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/radius_server_group) | data source |
 | [fmc_ranges.ranges](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/ranges) | data source |
 | [fmc_realm_ad_ldap.realm_ad_ldap](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/realm_ad_ldap) | data source |
 | [fmc_realm_local.realm_local](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/realm_local) | data source |

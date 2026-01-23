@@ -263,6 +263,16 @@ defaults:
         dns_server_groups:
           retries: 2
           timeout: 2
+        radius_server_groups:
+          group_accounting_mode: SINGLE
+          retry_interval: 10
+          authorize_only: false
+          radius_servers:
+            accounting_port: 1813
+            authentication_port: 1812
+            message_authenticator: true
+            timeout: 10
+            use_routing_to_select_interface: true
       vpns:
         site_to_site:
           ikev1: false
