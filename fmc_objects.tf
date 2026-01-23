@@ -3414,8 +3414,8 @@ locals {
   resource_certificate_maps = {
     for domain in local.domains : domain.name => [
       for certificate_map in try(domain.objects.certificate_maps, []) : {
-        domain      = domain.name
-        name        = certificate_map.name
+        domain = domain.name
+        name   = certificate_map.name
         rules = [
           for rule in try(certificate_map.rules, []) : {
             component = rule.component
@@ -3457,9 +3457,9 @@ resource "fmc_certificate_maps" "certificate_maps" {
 resource "fmc_certificate_map" "certificate_map" {
   for_each = !local.certificate_maps_bulk ? local.resource_certificate_map : {}
 
-  domain      = each.value.item.domain
-  name        = each.value.item.name
-  rules      = each.value.item.rules
+  domain = each.value.item.domain
+  name   = each.value.item.name
+  rules  = each.value.item.rules
 }
 
 ##########################################################
@@ -3479,12 +3479,12 @@ locals {
   resource_dns_server_groups = {
     for domain in local.domains : domain.name => [
       for dns_server_group in try(domain.objects.dns_server_groups, []) : {
-        domain      = domain.name
-        name        = dns_server_group.name
+        domain         = domain.name
+        name           = dns_server_group.name
         default_domain = try(dns_server_group.default_domain, null)
-        retries     = try(dns_server_group.retries, local.defaults.fmc.domains.objects.dns_server_groups.retries, null)
-        timeout     = try(dns_server_group.timeout, local.defaults.fmc.domains.objects.dns_server_groups.timeout, null)
-        dns_servers = [for dns_server in try(dns_server_group.dns_servers, []) : {ip = dns_server}]
+        retries        = try(dns_server_group.retries, local.defaults.fmc.domains.objects.dns_server_groups.retries, null)
+        timeout        = try(dns_server_group.timeout, local.defaults.fmc.domains.objects.dns_server_groups.timeout, null)
+        dns_servers    = [for dns_server in try(dns_server_group.dns_servers, []) : { ip = dns_server }]
       } if !contains(try(keys(local.data_dns_server_groups[domain.name].items), []), dns_server_group.name)
     ] if length(try(domain.objects.dns_server_groups, [])) > 0
   }
@@ -3518,10 +3518,10 @@ resource "fmc_dns_server_groups" "dns_server_groups" {
 resource "fmc_dns_server_group" "dns_server_group" {
   for_each = !local.dns_server_groups_bulk ? local.resource_dns_server_group : {}
 
-  domain      = each.value.item.domain
-  name        = each.value.item.name
+  domain         = each.value.item.domain
+  name           = each.value.item.name
   default_domain = each.value.item.default_domain
-  retries     = each.value.item.retries
-  timeout     = each.value.item.timeout
-  dns_servers = each.value.item.dns_servers
+  retries        = each.value.item.retries
+  timeout        = each.value.item.timeout
+  dns_servers    = each.value.item.dns_servers
 }

@@ -951,7 +951,6 @@ locals {
   )
 }
 
-
 ######
 ### map_certiticate_enrollments
 ######
@@ -969,6 +968,19 @@ locals {
   )
 }
 
+######
+### map_trusted_certificate_authorities
+######
+locals {
+  map_trusted_certificate_authorities = merge(
+
+    # Trusted Certificate Authorities - individual mode outputs
+    { for key, resource in fmc_trusted_certificate_authority.trusted_certificate_authority : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+
+    # Trusted Certificate Authorities - data sources
+    { for key, data_source in data.fmc_trusted_certificate_authority.trusted_certificate_authority : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+  )
+}
 
 ######
 ### FAKE - TODO

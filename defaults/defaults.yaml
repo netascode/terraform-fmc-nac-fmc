@@ -308,3 +308,14 @@ defaults:
             nat_traversal: true
             connection_type: ORIGINATE_ONLY
             allow_incoming_ikev2_routes: true
+      integrations:
+        ad_ldap_realms:
+          enabled: true
+          group_attribute: uniqueMember
+          timeout_captive_portal_users: 1440
+          timeout_failed_captive_portal_users: 1440
+          timeout_guest_captive_portal_users: 1440
+          timeout_ise_and_passive_indentity_users: 1440
+          timeout_terminal_server_agent_users: 1440
+          update_hour: 0
+          update_interval: 24
