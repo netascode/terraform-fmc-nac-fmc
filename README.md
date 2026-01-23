@@ -212,6 +212,7 @@ module "fmc" {
 | [fmc_service_access.service_access](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/service_access) | resource |
 | [fmc_sgt.sgt](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/sgt) | resource |
 | [fmc_sgts.sgts](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/sgts) | resource |
+| [fmc_single_sign_on_server.single_sign_on_server](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/single_sign_on_server) | resource |
 | [fmc_smart_license.smart_license](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/smart_license) | resource |
 | [fmc_standard_access_list.standard_access_list](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/standard_access_list) | resource |
 | [fmc_standard_community_list.standard_community_list](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/standard_community_list) | resource |
@@ -311,6 +312,7 @@ module "fmc" {
 | [fmc_security_zones.security_zones](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/security_zones) | data source |
 | [fmc_service_access.service_access](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/service_access) | data source |
 | [fmc_sgts.sgts](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/sgts) | data source |
+| [fmc_single_sign_on_server.single_sign_on_server](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/single_sign_on_server) | data source |
 | [fmc_snmp_alerts.snmp_alerts](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/snmp_alerts) | data source |
 | [fmc_standard_access_list.standard_access_list](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/standard_access_list) | data source |
 | [fmc_standard_community_lists.standard_community_lists](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/standard_community_lists) | data source |

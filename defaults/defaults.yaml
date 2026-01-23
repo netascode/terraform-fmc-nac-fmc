@@ -273,6 +273,11 @@ defaults:
             message_authenticator: true
             timeout: 10
             use_routing_to_select_interface: true
+        single_sign_on_servers:
+          request_timeout: 300
+          identity_provider_accessible_only_on_internal_network: false
+          request_identity_provider_reauthentication_at_each_login: false
+          request_signature_type: NO_SIGNATURE
       vpns:
         site_to_site:
           ikev1: false

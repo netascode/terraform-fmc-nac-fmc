@@ -958,13 +958,13 @@ locals {
   map_certificate_enrollments = merge(
 
     # Certificate Enrollments - individual mode outputs
-    { for key, resource in fmc_certificate_enrollment.certificate_enrollment : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+    { for key, resource in fmc_certificate_enrollment.certificate_enrollment : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type, name = resource.name } },
 
     # Certificate Enrollments ACME - individual mode outputs
-    { for key, resource in fmc_certificate_enrollment.certificate_enrollment_acme : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+    { for key, resource in fmc_certificate_enrollment.certificate_enrollment_acme : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type, name = resource.name } },
 
     # Certificate Enrollments - data sources
-    { for key, data_source in data.fmc_certificate_enrollment.certificate_enrollment : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+    { for key, data_source in data.fmc_certificate_enrollment.certificate_enrollment : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type, name = data_source.name } },
   )
 }
 

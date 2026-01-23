@@ -3609,3 +3609,78 @@ resource "fmc_radius_server_group" "radius_server_group" {
   merge_downloadable_acl_order    = each.value.merge_downloadable_acl_order
   retry_interval                  = each.value.retry_interval
 }
+
+##########################################################
+###    SINGLE SIGN ON SERVERS
+##########################################################
+locals {
+  data_single_sign_on_server = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for single_sign_on_server in try(domain.objects.single_sign_on_servers, {}) : {
+          name   = single_sign_on_server.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_single_sign_on_server = {
+    for item in flatten([
+      for domain in local.domains : [
+        for single_sign_on_server in try(domain.objects.single_sign_on_servers, {}) : {
+          domain  = domain.name
+          name    = single_sign_on_server.name
+          sso_url = single_sign_on_server.sso_url
+          identity_provider_certificate_id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_certificate_enrollments["${domain_path}:${single_sign_on_server.identity_provider_certificate}"].id
+            if contains(keys(local.map_certificate_enrollments), "${domain_path}:${single_sign_on_server.identity_provider_certificate}")
+          })[0]
+          identity_provider_certificate_name = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_certificate_enrollments["${domain_path}:${single_sign_on_server.identity_provider_certificate}"].name
+            if contains(keys(local.map_certificate_enrollments), "${domain_path}:${single_sign_on_server.identity_provider_certificate}")
+          })[0]
+          identity_provider_entity_id_url                          = single_sign_on_server.identity_provider_entity_id_url
+          base_url                                                 = try(single_sign_on_server.base_url, null)
+          identity_provider_accessible_only_on_internal_network    = try(single_sign_on_server.identity_provider_accessible_only_on_internal_network, local.defaults.fmc.domains.objects.single_sign_on_servers.identity_provider_accessible_only_on_internal_network, null)
+          logout_url                                               = try(single_sign_on_server.logout_url, null)
+          request_identity_provider_reauthentication_at_each_login = try(single_sign_on_server.request_identity_provider_reauthentication_at_each_login, local.defaults.fmc.domains.objects.single_sign_on_servers.request_identity_provider_reauthentication_at_each_login, null)
+          request_signature_type                                   = try(single_sign_on_server.request_signature_type, local.defaults.fmc.domains.objects.single_sign_on_servers.request_signature_type, null)
+          request_timeout                                          = try(single_sign_on_server.request_timeout, local.defaults.fmc.domains.objects.single_sign_on_servers.request_timeout, null)
+          service_provider_certificate_id = try(single_sign_on_server.service_provider_certificate_id, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_certificate_enrollments["${domain_path}:${single_sign_on_server.service_provider_certificate}"].id
+            if contains(keys(local.map_certificate_enrollments), "${domain_path}:${single_sign_on_server.service_provider_certificate}")
+          })[0] : null
+        } if !contains(try(keys(local.data_single_sign_on_server), {}), "${domain.name}:${single_sign_on_server.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_single_sign_on_server" "single_sign_on_server" {
+  for_each = local.data_single_sign_on_server
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_single_sign_on_server" "single_sign_on_server" {
+  for_each = local.resource_single_sign_on_server
+
+  domain                                                   = each.value.domain
+  name                                                     = each.value.name
+  sso_url                                                  = each.value.sso_url
+  identity_provider_certificate_id                         = each.value.identity_provider_certificate_id
+  identity_provider_certificate_name                       = each.value.identity_provider_certificate_name
+  identity_provider_entity_id_url                          = each.value.identity_provider_entity_id_url
+  base_url                                                 = each.value.base_url
+  identity_provider_accessible_only_on_internal_network    = each.value.identity_provider_accessible_only_on_internal_network
+  logout_url                                               = each.value.logout_url
+  request_identity_provider_reauthentication_at_each_login = each.value.request_identity_provider_reauthentication_at_each_login
+  request_signature_type                                   = each.value.request_signature_type
+  request_timeout                                          = each.value.request_timeout
+  service_provider_certificate_id                          = each.value.service_provider_certificate_id
+}
