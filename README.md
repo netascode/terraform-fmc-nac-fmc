@@ -207,6 +207,12 @@ module "fmc" {
 | [fmc_resource_profile.resource_profile](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/resource_profile) | resource |
 | [fmc_resource_profiles.resource_profiles](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/resource_profiles) | resource |
 | [fmc_route_map.route_map](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/route_map) | resource |
+| [fmc_secure_client_custom_attribute.secure_client_custom_attribute](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/secure_client_custom_attribute) | resource |
+| [fmc_secure_client_customization.secure_client_customization](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/secure_client_customization) | resource |
+| [fmc_secure_client_external_browser_package.secure_client_external_browser_package](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/secure_client_external_browser_package) | resource |
+| [fmc_secure_client_image.secure_client_image](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/secure_client_image) | resource |
+| [fmc_secure_client_posture_package.secure_client_posture_package](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/secure_client_posture_package) | resource |
+| [fmc_secure_client_profile.secure_client_profile](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/secure_client_profile) | resource |
 | [fmc_security_zone.security_zone](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/security_zone) | resource |
 | [fmc_security_zones.security_zones](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/security_zones) | resource |
 | [fmc_service_access.service_access](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/service_access) | resource |
@@ -309,6 +315,12 @@ module "fmc" {
 | [fmc_realm_local.realm_local](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/realm_local) | data source |
 | [fmc_resource_profiles.resource_profiles](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/resource_profiles) | data source |
 | [fmc_route_map.route_map](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/route_map) | data source |
+| [fmc_secure_client_custom_attribute.secure_client_custom_attribute](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/secure_client_custom_attribute) | data source |
+| [fmc_secure_client_customization.secure_client_customization](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/secure_client_customization) | data source |
+| [fmc_secure_client_external_browser_package.secure_client_external_browser_package](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/secure_client_external_browser_package) | data source |
+| [fmc_secure_client_image.secure_client_image](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/secure_client_image) | data source |
+| [fmc_secure_client_posture_package.secure_client_posture_package](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/secure_client_posture_package) | data source |
+| [fmc_secure_client_profile.secure_client_profile](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/secure_client_profile) | data source |
 | [fmc_security_zones.security_zones](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/security_zones) | data source |
 | [fmc_service_access.service_access](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/service_access) | data source |
 | [fmc_sgts.sgts](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/sgts) | data source |

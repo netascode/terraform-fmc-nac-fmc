@@ -3684,3 +3684,301 @@ resource "fmc_single_sign_on_server" "single_sign_on_server" {
   request_timeout                                          = each.value.request_timeout
   service_provider_certificate_id                          = each.value.service_provider_certificate_id
 }
+
+##########################################################
+###    SECURE CLIENT IMAGES
+##########################################################
+locals {
+  data_secure_client_image = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for secure_client_image in try(domain.objects.secure_client_images, {}) : {
+          name   = secure_client_image.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_secure_client_image = {
+    for item in flatten([
+      for domain in local.domains : [
+        for secure_client_image in try(domain.objects.secure_client_images, {}) : {
+          domain      = domain.name
+          name        = secure_client_image.name
+          description = try(secure_client_image.description, local.defaults.fmc.domains.objects.secure_client_images.description, null)
+          path        = secure_client_image.path
+        } if !contains(try(keys(local.data_secure_client_image), {}), "${domain.name}:${secure_client_image.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_secure_client_image" "secure_client_image" {
+  for_each = local.data_secure_client_image
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_secure_client_image" "secure_client_image" {
+  for_each = local.resource_secure_client_image
+
+  domain      = each.value.domain
+  name        = each.value.name
+  description = each.value.description
+  path        = each.value.path
+}
+
+##########################################################
+###    SECURE CLIENT PROFILES
+##########################################################
+locals {
+  data_secure_client_profile = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for secure_client_profile in try(domain.objects.secure_client_profiles, {}) : {
+          name   = secure_client_profile.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_secure_client_profile = {
+    for item in flatten([
+      for domain in local.domains : [
+        for secure_client_profile in try(domain.objects.secure_client_profiles, {}) : {
+          domain      = domain.name
+          name        = secure_client_profile.name
+          description = try(secure_client_profile.description, local.defaults.fmc.domains.objects.secure_client_profiles.description, null)
+          path        = secure_client_profile.path
+          file_type   = secure_client_profile.file_type
+        } if !contains(try(keys(local.data_secure_client_profile), {}), "${domain.name}:${secure_client_profile.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_secure_client_profile" "secure_client_profile" {
+  for_each = local.data_secure_client_profile
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_secure_client_profile" "secure_client_profile" {
+  for_each = local.resource_secure_client_profile
+
+  domain      = each.value.domain
+  name        = each.value.name
+  description = each.value.description
+  path        = each.value.path
+  file_type   = each.value.file_type
+}
+
+##########################################################
+###    SECURE CLIENT POSTURE PACKAGES
+##########################################################
+locals {
+  data_secure_client_posture_package = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for secure_client_posture_package in try(domain.objects.secure_client_posture_packages, {}) : {
+          name   = secure_client_posture_package.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_secure_client_posture_package = {
+    for item in flatten([
+      for domain in local.domains : [
+        for secure_client_posture_package in try(domain.objects.secure_client_posture_packages, {}) : {
+          domain      = domain.name
+          name        = secure_client_posture_package.name
+          description = try(secure_client_posture_package.description, local.defaults.fmc.domains.objects.secure_client_posture_packages.description, null)
+          path        = secure_client_posture_package.path
+        } if !contains(try(keys(local.data_secure_client_posture_package), {}), "${domain.name}:${secure_client_posture_package.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_secure_client_posture_package" "secure_client_posture_package" {
+  for_each = local.data_secure_client_posture_package
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_secure_client_posture_package" "secure_client_posture_package" {
+  for_each = local.resource_secure_client_posture_package
+
+  domain      = each.value.domain
+  name        = each.value.name
+  description = each.value.description
+  path        = each.value.path
+}
+
+##########################################################
+###    SECURE CLIENT EXTERNAL BROWSER PACKAGES
+##########################################################
+locals {
+  data_secure_client_external_browser_package = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for secure_client_external_browser_package in try(domain.objects.secure_client_external_browser_packages, {}) : {
+          name   = secure_client_external_browser_package.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_secure_client_external_browser_package = {
+    for item in flatten([
+      for domain in local.domains : [
+        for secure_client_external_browser_package in try(domain.objects.secure_client_external_browser_packages, {}) : {
+          domain      = domain.name
+          name        = secure_client_external_browser_package.name
+          description = try(secure_client_external_browser_package.description, local.defaults.fmc.domains.objects.secure_client_external_browser_packages.description, null)
+          path        = secure_client_external_browser_package.path
+        } if !contains(try(keys(local.data_secure_client_external_browser_package), {}), "${domain.name}:${secure_client_external_browser_package.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_secure_client_external_browser_package" "secure_client_external_browser_package" {
+  for_each = local.data_secure_client_external_browser_package
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_secure_client_external_browser_package" "secure_client_external_browser_package" {
+  for_each = local.resource_secure_client_external_browser_package
+
+  domain      = each.value.domain
+  name        = each.value.name
+  description = each.value.description
+  path        = each.value.path
+}
+
+##########################################################
+###    SECURE CLIENT CUSTOMIZATIONS
+##########################################################
+locals {
+  data_secure_client_customization = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for secure_client_customization in try(domain.objects.secure_client_customizations, {}) : {
+          name   = secure_client_customization.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_secure_client_customization = {
+    for item in flatten([
+      for domain in local.domains : [
+        for secure_client_customization in try(domain.objects.secure_client_customizations, {}) : {
+          domain             = domain.name
+          name               = secure_client_customization.name
+          description        = try(secure_client_customization.description, local.defaults.fmc.domains.objects.secure_client_customizations.description, null)
+          customization_type = secure_client_customization.customization_type
+          path               = secure_client_customization.path
+          language           = try(secure_client_customization.language, null)
+          operating_system   = try(secure_client_customization.operating_system, null)
+          script_type        = try(secure_client_customization.script_type, null)
+        } if !contains(try(keys(local.data_secure_client_customization), {}), "${domain.name}:${secure_client_customization.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_secure_client_customization" "secure_client_customization" {
+  for_each = local.data_secure_client_customization
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_secure_client_customization" "secure_client_customization" {
+  for_each = local.resource_secure_client_customization
+
+  domain             = each.value.domain
+  name               = each.value.name
+  description        = each.value.description
+  path               = each.value.path
+  customization_type = each.value.customization_type
+  language           = each.value.language
+  operating_system   = each.value.operating_system
+  script_type        = each.value.script_type
+}
+
+##########################################################
+###    SECURE CLIENT CUSTOM ATTRIBUTES
+##########################################################
+locals {
+  data_secure_client_custom_attribute = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for secure_client_custom_attribute in try(domain.objects.secure_client_custom_attributes, {}) : {
+          name   = secure_client_custom_attribute.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_secure_client_custom_attribute = {
+    for item in flatten([
+      for domain in local.domains : [
+        for secure_client_custom_attribute in try(domain.objects.secure_client_custom_attributes, {}) : {
+          domain                                     = domain.name
+          name                                       = secure_client_custom_attribute.name
+          attribute_type                             = secure_client_custom_attribute.attribute_type
+          defer_update_default_action                = try(secure_client_custom_attribute.defer_update_default_action, null)
+          defer_update_minimum_secure_client_version = try(secure_client_custom_attribute.defer_update_minimum_secure_client_version, null)
+          defer_update_prompt_dismiss_timeout        = try(secure_client_custom_attribute.defer_update_prompt_dismiss_timeout, null)
+          defer_update_prompt_type                   = try(secure_client_custom_attribute.defer_update_prompt_type, null)
+          description                                = try(secure_client_custom_attribute.description, local.defaults.fmc.domains.objects.secure_client_custom_attributes.description, null)
+          dynamic_split_tunnel_excluded_domains      = try(secure_client_custom_attribute.dynamic_split_tunnel_excluded_domains, null)
+          dynamic_split_tunnel_included_domains      = try(secure_client_custom_attribute.dynamic_split_tunnel_included_domains, null)
+          per_app_vpn_value                          = try(secure_client_custom_attribute.per_app_vpn_value, null)
+          user_defined_attribute_name                = try(secure_client_custom_attribute.user_defined_attribute_name, null)
+          user_defined_attribute_value               = try(secure_client_custom_attribute.user_defined_attribute_value, null)
+        } if !contains(try(keys(local.data_secure_client_custom_attribute), {}), "${domain.name}:${secure_client_custom_attribute.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_secure_client_custom_attribute" "secure_client_custom_attribute" {
+  for_each = local.data_secure_client_custom_attribute
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_secure_client_custom_attribute" "secure_client_custom_attribute" {
+  for_each = local.resource_secure_client_custom_attribute
+
+  domain                                     = each.value.domain
+  name                                       = each.value.name
+  description                                = each.value.description
+  attribute_type                             = each.value.attribute_type
+  defer_update_default_action                = each.value.defer_update_default_action
+  defer_update_minimum_secure_client_version = each.value.defer_update_minimum_secure_client_version
+  defer_update_prompt_dismiss_timeout        = each.value.defer_update_prompt_dismiss_timeout
+  defer_update_prompt_type                   = each.value.defer_update_prompt_type
+  dynamic_split_tunnel_excluded_domains      = each.value.dynamic_split_tunnel_excluded_domains
+  dynamic_split_tunnel_included_domains      = each.value.dynamic_split_tunnel_included_domains
+  per_app_vpn_value                          = each.value.per_app_vpn_value
+  user_defined_attribute_name                = each.value.user_defined_attribute_name
+  user_defined_attribute_value               = each.value.user_defined_attribute_value
+}
