@@ -3982,3 +3982,217 @@ resource "fmc_secure_client_custom_attribute" "secure_client_custom_attribute" {
   user_defined_attribute_name                = each.value.user_defined_attribute_name
   user_defined_attribute_value               = each.value.user_defined_attribute_value
 }
+
+##########################################################
+###    GROUP POLICIES
+##########################################################
+locals {
+  data_group_policy = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for group_policy in try(domain.objects.group_policies, {}) : {
+          name   = group_policy.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_group_policy = {
+    for item in flatten([
+      for domain in local.domains : [
+        for group_policy in try(domain.objects.group_policies, {}) : {
+          domain      = domain.name
+          name        = group_policy.name
+          description = try(group_policy.description, local.defaults.fmc.domains.objects.group_policies.description, null)
+          # General
+          protocol_ssl         = try(group_policy.general.protocol_ssl, local.defaults.fmc.domains.objects.group_policies.general.protocol_ssl, null)
+          protocol_ipsec_ikev2 = try(group_policy.general.protocol_ipsec_ikev2, local.defaults.fmc.domains.objects.group_policies.general.protocol_ipsec_ikev2, null)
+          ipv4_address_pools = [for ipv4_address_pool in try(group_policy.general.ipv4_address_pools, []) : {
+            id = values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_ipv4_address_pools["${domain_path}:${ipv4_address_pool}"].id
+              if contains(keys(local.map_ipv4_address_pools), "${domain_path}:${ipv4_address_pool}")
+            })[0]
+          }]
+          banner = try(group_policy.general.banner, null)
+          primary_dns_server_host_id = try(group_policy.general.primary_dns_server, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_hosts["${domain_path}:${group_policy.general.primary_dns_server}"].id
+            if contains(keys(local.map_hosts), "${domain_path}:${group_policy.general.primary_dns_server}")
+          })[0] : null
+          secondary_dns_server_host_id = try(group_policy.general.secondary_dns_server, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_hosts["${domain_path}:${group_policy.general.secondary_dns_server}"].id
+            if contains(keys(local.map_hosts), "${domain_path}:${group_policy.general.secondary_dns_server}")
+          })[0] : null
+          primary_wins_server_host_id = try(group_policy.general.primary_wins_server, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_hosts["${domain_path}:${group_policy.general.primary_wins_server}"].id
+            if contains(keys(local.map_hosts), "${domain_path}:${group_policy.general.primary_wins_server}")
+          })[0] : null
+          secondary_wins_server_host_id = try(group_policy.general.secondary_wins_server, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_hosts["${domain_path}:${group_policy.general.secondary_wins_server}"].id
+            if contains(keys(local.map_hosts), "${domain_path}:${group_policy.general.secondary_wins_server}")
+          })[0] : null
+          default_domain = try(group_policy.general.default_domain, null)
+          ipv4_dhcp_network_scope_network_object_id = try(group_policy.general.ipv4_dhcp_network_scope, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_network_objects["${domain_path}:${group_policy.general.ipv4_dhcp_network_scope}"].id
+            if contains(keys(local.map_network_objects), "${domain_path}:${group_policy.general.ipv4_dhcp_network_scope}")
+          })[0] : null
+          ipv4_split_tunnel_policy = try(group_policy.general.ipv4_split_tunnel_policy, local.defaults.fmc.domains.objects.group_policies.general.ipv4_split_tunnel_policy, null)
+          ipv6_split_tunnel_policy = try(group_policy.general.ipv6_split_tunnel_policy, local.defaults.fmc.domains.objects.group_policies.general.ipv6_split_tunnel_policy, null)
+          split_tunnel_access_list_id = try(group_policy.general.split_tunnel_access_list, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_access_lists["${domain_path}:${group_policy.general.split_tunnel_access_list}"].id
+            if contains(keys(local.map_access_lists), "${domain_path}:${group_policy.general.split_tunnel_access_list}")
+          })[0] : null
+          split_tunnel_access_list_type = try(group_policy.general.split_tunnel_access_list, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_access_lists["${domain_path}:${group_policy.general.split_tunnel_access_list}"].type
+            if contains(keys(local.map_access_lists), "${domain_path}:${group_policy.general.split_tunnel_access_list}")
+          })[0] : null
+          dns_request_split_tunnel_policy  = try(group_policy.general.dns_request_split_tunnel_policy, local.defaults.fmc.domains.objects.group_policies.general.dns_request_split_tunnel_policy, null)
+          dns_request_split_tunnel_domains = try(join(",", group_policy.general.dns_request_split_tunnel_domains), null)
+          # Secure Client
+          secure_client_profile_id = try(group_policy.secure_client.profile, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_secure_client_profiles["${domain_path}:${group_policy.secure_client.profile}"].id
+            if contains(keys(local.map_secure_client_profiles), "${domain_path}:${group_policy.secure_client.profile}")
+          })[0] : null
+          secure_client_management_profile_id = try(group_policy.secure_client.management_profile, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_secure_client_profiles["${domain_path}:${group_policy.secure_client.management_profile}"].id
+            if contains(keys(local.map_secure_client_profiles), "${domain_path}:${group_policy.secure_client.management_profile}")
+          })[0] : null
+          secure_client_modules = [for module in try(group_policy.secure_client.modules, []) : {
+            profile_id = try(module.profile_name, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_secure_client_profiles["${domain_path}:${module.profile_name}"].id
+              if contains(keys(local.map_secure_client_profiles), "${domain_path}:${module.profile_name}")
+            })[0] : null
+            type = try(module.profile_name, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_secure_client_profiles["${domain_path}:${module.profile_name}"].file_type
+              if contains(keys(local.map_secure_client_profiles), "${domain_path}:${module.profile_name}")
+            })[0] : try(module.type, null)
+            download_module = try(module.download_module, null)
+          }]
+          ssl_compression                      = try(group_policy.secure_client.ssl_compression, local.defaults.fmc.domains.objects.group_policies.secure_client.ssl_compression, null)
+          dtls_compression                     = try(group_policy.secure_client.dtls_compression, local.defaults.fmc.domains.objects.group_policies.secure_client.dtls_compression, null)
+          mtu_size                             = try(group_policy.secure_client.mtu_size, local.defaults.fmc.domains.objects.group_policies.secure_client.mtu_size, null)
+          ignore_df_bit                        = try(group_policy.secure_client.ignore_df_bit, local.defaults.fmc.domains.objects.group_policies.secure_client.ignore_df_bit, null)
+          keep_alive_messages                  = try(group_policy.secure_client.keep_alive_messages_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.keep_alive_messages_interval, null) != null ? true : null
+          keep_alive_messages_interval         = try(group_policy.secure_client.keep_alive_messages_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.keep_alive_messages_interval, null)
+          gateway_dead_peer_detection          = try(group_policy.secure_client.gateway_dead_peer_detection_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.gateway_dead_peer_detection_interval, null) != null ? true : null
+          gateway_dead_peer_detection_interval = try(group_policy.secure_client.gateway_dead_peer_detection_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.gateway_dead_peer_detection_interval, null)
+          client_dead_peer_detection           = try(group_policy.secure_client.client_dead_peer_detection_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.client_dead_peer_detection_interval, null) != null ? true : null
+          client_dead_peer_detection_interval  = try(group_policy.secure_client.client_dead_peer_detection_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.client_dead_peer_detection_interval, null)
+          client_bypass_protocol               = try(group_policy.secure_client.client_bypass_protocol, local.defaults.fmc.domains.objects.group_policies.secure_client.client_bypass_protocol, null)
+          ssl_rekey                            = try(group_policy.secure_client.ssl_rekey_method, group_policy.secure_client.ssl_rekey_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.ssl_rekey_method, local.defaults.fmc.domains.objects.group_policies.secure_client.ssl_rekey_interval, null) != null ? true : null
+          ssl_rekey_method                     = try(group_policy.secure_client.ssl_rekey_method, local.defaults.fmc.domains.objects.group_policies.secure_client.ssl_rekey_method, null)
+          ssl_rekey_interval                   = try(group_policy.secure_client.ssl_rekey_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.ssl_rekey_interval, null)
+          client_firewall_private_network_rules_access_list_id = try(group_policy.secure_client.client_firewall_private_network_rules_access_list, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_extended_access_lists["${domain_path}:${group_policy.secure_client.client_firewall_private_network_rules_access_list}"].id
+            if contains(keys(local.map_extended_access_lists), "${domain_path}:${group_policy.secure_client.client_firewall_private_network_rules_access_list}")
+          })[0] : null
+          client_firewall_public_network_rules_access_list_id = try(group_policy.secure_client.client_firewall_public_network_rules_access_list, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_extended_access_lists["${domain_path}:${group_policy.secure_client.client_firewall_public_network_rules_access_list}"].id
+            if contains(keys(local.map_extended_access_lists), "${domain_path}:${group_policy.secure_client.client_firewall_public_network_rules_access_list}")
+          })[0] : null
+          secure_client_custom_attributes = [for custom_attribute in try(group_policy.secure_client.custom_attributes, []) : {
+            id = values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_secure_client_custom_attributes["${domain_path}:${custom_attribute}"].id
+              if contains(keys(local.map_secure_client_custom_attributes), "${domain_path}:${custom_attribute}")
+            })[0]
+          }]
+          # Advanced
+          traffic_filter_access_list_id = try(group_policy.advanced.traffic_filter_access_list, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_extended_access_lists["${domain_path}:${group_policy.advanced.traffic_filter_access_list}"].id
+            if contains(keys(local.map_extended_access_lists), "${domain_path}:${group_policy.advanced.traffic_filter_access_list}")
+          })[0] : null
+          restrict_vpn_to_vlan = try(group_policy.advanced.restrict_vpn_to_vlan, null)
+          access_hours_time_range_id = try(group_policy.advanced.access_hours_time_range, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_time_ranges["${domain_path}:${group_policy.advanced.access_hours_time_range}"].id
+            if contains(keys(local.map_time_ranges), "${domain_path}:${group_policy.advanced.access_hours_time_range}")
+          })[0] : null
+          simultaneous_logins_per_user           = try(group_policy.advanced.simultaneous_logins_per_user, local.defaults.fmc.domains.objects.group_policies.advanced.simultaneous_logins_per_user, null)
+          maximum_connection_time                = try(group_policy.advanced.maximum_connection_time, local.defaults.fmc.domains.objects.group_policies.advanced.maximum_connection_time, null)
+          maximum_connection_time_alert_interval = try(group_policy.advanced.maximum_connection_time_alert_interval, local.defaults.fmc.domains.objects.group_policies.advanced.maximum_connection_time_alert_interval, null)
+          idle_timeout                           = try(group_policy.advanced.idle_timeout, local.defaults.fmc.domains.objects.group_policies.advanced.idle_timeout, null)
+          idle_timeout_alert_interval            = try(group_policy.advanced.idle_timeout_alert_interval, local.defaults.fmc.domains.objects.group_policies.advanced.idle_timeout_alert_interval, null)
+
+        } if !contains(try(keys(local.data_group_policy), {}), "${domain.name}:${group_policy.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_group_policy" "group_policy" {
+  for_each = local.data_group_policy
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_group_policy" "group_policy" {
+  for_each = local.resource_group_policy
+
+  domain      = each.value.domain
+  name        = each.value.name
+  description = each.value.description
+  # General
+  protocol_ssl                              = each.value.protocol_ssl
+  protocol_ipsec_ikev2                      = each.value.protocol_ipsec_ikev2
+  ipv4_address_pools                        = each.value.ipv4_address_pools
+  banner                                    = each.value.banner
+  primary_dns_server_host_id                = each.value.primary_dns_server_host_id
+  secondary_dns_server_host_id              = each.value.secondary_dns_server_host_id
+  primary_wins_server_host_id               = each.value.primary_wins_server_host_id
+  secondary_wins_server_host_id             = each.value.secondary_wins_server_host_id
+  default_domain                            = each.value.default_domain
+  ipv4_dhcp_network_scope_network_object_id = each.value.ipv4_dhcp_network_scope_network_object_id
+  ipv4_split_tunnel_policy                  = each.value.ipv4_split_tunnel_policy
+  ipv6_split_tunnel_policy                  = each.value.ipv6_split_tunnel_policy
+  split_tunnel_access_list_id               = each.value.split_tunnel_access_list_id
+  split_tunnel_access_list_type             = each.value.split_tunnel_access_list_type
+  dns_request_split_tunnel_policy           = each.value.dns_request_split_tunnel_policy
+  dns_request_split_tunnel_domains          = each.value.dns_request_split_tunnel_domains
+  # Secure Client
+  secure_client_profile_id                             = each.value.secure_client_profile_id
+  secure_client_management_profile_id                  = each.value.secure_client_management_profile_id
+  secure_client_modules                                = each.value.secure_client_modules
+  ssl_compression                                      = each.value.ssl_compression
+  dtls_compression                                     = each.value.dtls_compression
+  mtu_size                                             = each.value.mtu_size
+  ignore_df_bit                                        = each.value.ignore_df_bit
+  keep_alive_messages                                  = each.value.keep_alive_messages
+  keep_alive_messages_interval                         = each.value.keep_alive_messages_interval
+  gateway_dead_peer_detection                          = each.value.gateway_dead_peer_detection
+  gateway_dead_peer_detection_interval                 = each.value.gateway_dead_peer_detection_interval
+  client_dead_peer_detection                           = each.value.client_dead_peer_detection
+  client_dead_peer_detection_interval                  = each.value.client_dead_peer_detection_interval
+  client_bypass_protocol                               = each.value.client_bypass_protocol
+  ssl_rekey                                            = each.value.ssl_rekey
+  ssl_rekey_method                                     = each.value.ssl_rekey_method
+  ssl_rekey_interval                                   = each.value.ssl_rekey_interval
+  client_firewall_private_network_rules_access_list_id = each.value.client_firewall_private_network_rules_access_list_id
+  client_firewall_public_network_rules_access_list_id  = each.value.client_firewall_public_network_rules_access_list_id
+  secure_client_custom_attributes                      = each.value.secure_client_custom_attributes
+  # Advanced
+  traffic_filter_access_list_id          = each.value.traffic_filter_access_list_id
+  restrict_vpn_to_vlan                   = each.value.restrict_vpn_to_vlan
+  access_hours_time_range_id             = each.value.access_hours_time_range_id
+  simultaneous_logins_per_user           = each.value.simultaneous_logins_per_user
+  maximum_connection_time                = each.value.maximum_connection_time
+  maximum_connection_time_alert_interval = each.value.maximum_connection_time_alert_interval
+  idle_timeout                           = each.value.idle_timeout
+  idle_timeout_alert_interval            = each.value.idle_timeout_alert_interval
+}

@@ -4,10 +4,10 @@
 ##########################################################
 
 ######
-### map_network_objects
+### map_hosts
 ######
 locals {
-  map_network_objects = merge(
+  map_hosts = merge(
 
     # Hosts - bulk mode outputs
     local.hosts_bulk ? merge([
@@ -25,6 +25,16 @@ locals {
         for host_name, host_values in hosts.items : "${domain}:${host_name}" => { id = host_values.id, type = host_values.type }
       }
     ]...),
+  )
+}
+
+######
+### map_network_objects
+######
+locals {
+  map_network_objects = merge(
+
+    local.map_hosts,
 
     # Networks - bulk mode outputs
     local.networks_bulk ? merge([
@@ -981,6 +991,35 @@ locals {
     { for key, data_source in data.fmc_trusted_certificate_authority.trusted_certificate_authority : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
   )
 }
+
+######
+### map_secure_client_profiles
+######
+locals {
+  map_secure_client_profiles = merge(
+
+    # Secure Client Profiles - individual mode outputs
+    { for key, resource in fmc_secure_client_profile.secure_client_profile : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type, file_type = resource.file_type } },
+
+    # Secure Client Profiles - data sources
+    { for key, data_source in data.fmc_secure_client_profile.secure_client_profile : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type, file_type = data_source.file_type } },
+  )
+}
+
+######
+### map_secure_client_custom_attributes
+######
+locals {
+  map_secure_client_custom_attributes = merge(
+
+    # Secure Client Custom Attributes - individual mode outputs
+    { for key, resource in fmc_secure_client_custom_attribute.secure_client_custom_attribute : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+
+    # Secure Client Custom Attributes - data sources
+    { for key, data_source in data.fmc_secure_client_custom_attribute.secure_client_custom_attribute : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+  )
+}
+
 
 ######
 ### FAKE - TODO

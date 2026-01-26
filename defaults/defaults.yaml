@@ -278,6 +278,28 @@ defaults:
           identity_provider_accessible_only_on_internal_network: false
           request_identity_provider_reauthentication_at_each_login: false
           request_signature_type: NO_SIGNATURE
+        group_policies:
+          general:
+            protocol_ipsec_ikev2: true
+            protocol_ssl: true
+            dns_request_split_tunnel_policy: USE_SPLIT_TUNNEL_SETTING
+            ipv4_split_tunnel_policy: TUNNEL_ALL
+            ipv6_split_tunnel_policy: TUNNEL_ALL
+          secure_client:
+            client_dead_peer_detection_interval: 30
+            gateway_dead_peer_detection_interval: 30
+            keep_alive_messages_interval: 20
+            mtu_size: 1406
+            client_bypass_protocol: false
+            dtls_compression: DISABLED
+            ssl_compression: DISABLED
+            ignore_df_bit: false
+            ssl_rekey_interval: 4
+            ssl_rekey_method: NEW_TUNNEL
+          advanced:
+            idle_timeout: 30
+            idle_timeout_alert_interval: 1
+            simultaneous_logins_per_user: 3
       vpns:
         site_to_site:
           ikev1: false
