@@ -345,6 +345,39 @@ defaults:
             nat_traversal: true
             connection_type: ORIGINATE_ONLY
             allow_incoming_ikev2_routes: true
+        remote_access:
+          bypass_access_control_policy_for_decrypted_traffic: false
+          dtls_port: 443
+          protocol_ipsec_ikev2: true
+          protocol_ssl: true
+          web_access_port: 443
+          allow_users_to_select_connection_profile: true
+          address_assignment:
+            ipv4_use_internal_address_pool: true
+            ipv4_internal_address_pool_reuse_interval: 0
+            ipv4_use_authorization_server: true
+            ipv4_use_dhcp: true
+            ipv6_use_internal_address_pool: true
+            ipv6_use_authorization_server: true
+          load_balancing:
+            port: 9023
+            ikev2_redirect_phase: DURING_SA_AUTHENTICATION
+            send_fqdn_to_peer_devices_instead_of_ip: false
+          ipsec_crypto_maps:
+            client_services_port: 443
+            do_not_fragment_policy: NONE
+            lifetime_size: 4608000
+            reverse_route_injection: true
+            validate_incoming_icmp_error_messages: false
+          ipsec_ike_parameters:
+            ikev2_cookie_challenge: "CUSTOM"
+            ikev2_do_not_reboot_until_all_sessions_are_terminated: false
+            ikev2_identity_sent_to_peer: "AUTO_OR_DN"
+            ikev2_maximum_number_of_sas_allowed: -1
+            ikev2_notification_on_tunnel_disconnect: false
+            ikev2_number_of_sas_allowed_in_negotiation: 100
+            ikev2_threshold_to_challenge_incoming_cookies: 50
+            nat_keepalive_message_traversal_interval: 20
       integrations:
         ad_ldap_realms:
           enabled: true

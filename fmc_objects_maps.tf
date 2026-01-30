@@ -1020,6 +1020,118 @@ locals {
   )
 }
 
+######
+### map_secure_client_images
+######
+locals {
+  map_secure_client_images = merge(
+
+    # Secure Client Images - individual mode outputs
+    { for key, resource in fmc_secure_client_image.secure_client_image : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+
+    # Secure Client Images - data sources
+    { for key, data_source in data.fmc_secure_client_image.secure_client_image : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+  )
+}
+
+######
+### map_secure_client_customizations
+######
+locals {
+  map_secure_client_customizations = merge(
+
+    # Secure Client Customizations - individual mode outputs
+    { for key, resource in fmc_secure_client_customization.secure_client_customization : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+
+    # Secure Client Customizations - data sources
+    { for key, data_source in data.fmc_secure_client_customization.secure_client_customization : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+  )
+}
+
+######
+### map_service_accesses
+######
+locals {
+  map_service_accesses = merge(
+
+    # Service Access - individual mode outputs
+    { for key, resource in fmc_service_access.service_access : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+
+    # Service Access - data sources
+    merge([
+      for domain, service_accesses in data.fmc_service_access.service_access : {
+        for service_access_name, service_access_values in service_accesses.items : "${domain}:${service_access_name}" => { id = service_access_values.id, type = service_access_values.type }
+      }
+    ]...)
+  )
+}
+
+######
+### map_group_policies
+######
+locals {
+  map_group_policies = merge(
+
+    # Group Policies - individual mode outputs
+    { for key, resource in fmc_group_policy.group_policy : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+
+    # Group Policies - data sources
+    { for key, data_source in data.fmc_group_policy.group_policy : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+  )
+}
+
+######
+### map_radius_server_groups
+######
+locals {
+  map_radius_server_groups = merge(
+
+    # Radius Server Groups - individual mode outputs
+    { for key, resource in fmc_radius_server_group.radius_server_group : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+
+    # Radius Server Groups - data sources
+    { for key, data_source in data.fmc_radius_server_group.radius_server_group : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+  )
+}
+
+######
+### map_single_sign_on_servers
+######
+locals {
+  map_single_sign_on_servers = merge(
+
+    # Single Sign On Servers - individual mode outputs
+    { for key, resource in fmc_single_sign_on_server.single_sign_on_server : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+
+    # Single Sign On Servers - data sources
+    { for key, data_source in data.fmc_single_sign_on_server.single_sign_on_server : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+  )
+}
+
+######
+### map_certificate_maps
+######
+locals {
+  map_certificate_maps = merge(
+
+    # Certificate Maps - bulk mode outputs
+    local.certificate_maps_bulk ? merge([
+      for domain, certificate_maps in fmc_certificate_maps.certificate_maps : {
+        for certificate_map_name, certificate_map_values in certificate_maps.items : "${domain}:${certificate_map_name}" => { id = certificate_map_values.id, type = certificate_map_values.type }
+      }
+    ]...) : {},
+
+    # Certificate Maps - individual mode outputs
+    !local.certificate_maps_bulk ? { for key, resource in fmc_certificate_map.certificate_map : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # Certificate Maps - data sources
+    merge([
+      for domain, certificate_maps in data.fmc_certificate_maps.certificate_maps : {
+        for certificate_map_name, certificate_map_values in certificate_maps.items : "${domain}:${certificate_map_name}" => { id = certificate_map_values.id, type = certificate_map_values.type }
+      }
+    ]...),
+  )
+}
 
 ######
 ### FAKE - TODO
