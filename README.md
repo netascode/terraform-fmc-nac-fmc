@@ -97,8 +97,11 @@ module "fmc" {
 | [fmc_as_path.as_path](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/as_path) | resource |
 | [fmc_as_paths.as_paths](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/as_paths) | resource |
 | [fmc_bfd_template.bfd_template](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/bfd_template) | resource |
+| [fmc_bfd_templates.bfd_templates](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/bfd_templates) | resource |
 | [fmc_certificate_enrollment.certificate_enrollment](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/certificate_enrollment) | resource |
 | [fmc_certificate_enrollment.certificate_enrollment_acme](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/certificate_enrollment) | resource |
+| [fmc_certificate_map.certificate_map](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/certificate_map) | resource |
+| [fmc_certificate_maps.certificate_maps](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/certificate_maps) | resource |
 | [fmc_chassis.chassis](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/chassis) | resource |
 | [fmc_chassis_etherchannel_interface.chassis_etherchannel_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/chassis_etherchannel_interface) | resource |
 | [fmc_chassis_logical_device.chassis_logical_device](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/chassis_logical_device) | resource |
@@ -122,6 +125,8 @@ module "fmc" {
 | [fmc_device_subinterface.device_subinterface](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/device_subinterface) | resource |
 | [fmc_device_virtual_tunnel_interface.device_virtual_tunnel_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/device_virtual_tunnel_interface) | resource |
 | [fmc_device_vrf.device_vrf](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/device_vrf) | resource |
+| [fmc_dns_server_group.dns_server_group](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/dns_server_group) | resource |
+| [fmc_dns_server_groups.dns_server_groups](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/dns_server_groups) | resource |
 | [fmc_dynamic_objects.dynamic_objects](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/dynamic_objects) | resource |
 | [fmc_expanded_community_list.expanded_community_list](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/expanded_community_list) | resource |
 | [fmc_expanded_community_lists.expanded_community_lists](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/expanded_community_lists) | resource |
@@ -194,16 +199,26 @@ module "fmc" {
 | [fmc_port_groups.port_groups](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/port_groups) | resource |
 | [fmc_ports.ports](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/ports) | resource |
 | [fmc_prefilter_policy.prefilter_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/prefilter_policy) | resource |
+| [fmc_radius_server_group.radius_server_group](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/radius_server_group) | resource |
 | [fmc_range.range](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/range) | resource |
 | [fmc_ranges.ranges](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/ranges) | resource |
+| [fmc_realm_ad_ldap.realm_ad_ldap](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/realm_ad_ldap) | resource |
+| [fmc_realm_local.realm_local](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/realm_local) | resource |
 | [fmc_resource_profile.resource_profile](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/resource_profile) | resource |
 | [fmc_resource_profiles.resource_profiles](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/resource_profiles) | resource |
 | [fmc_route_map.route_map](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/route_map) | resource |
+| [fmc_secure_client_custom_attribute.secure_client_custom_attribute](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/secure_client_custom_attribute) | resource |
+| [fmc_secure_client_customization.secure_client_customization](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/secure_client_customization) | resource |
+| [fmc_secure_client_external_browser_package.secure_client_external_browser_package](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/secure_client_external_browser_package) | resource |
+| [fmc_secure_client_image.secure_client_image](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/secure_client_image) | resource |
+| [fmc_secure_client_posture_package.secure_client_posture_package](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/secure_client_posture_package) | resource |
+| [fmc_secure_client_profile.secure_client_profile](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/secure_client_profile) | resource |
 | [fmc_security_zone.security_zone](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/security_zone) | resource |
 | [fmc_security_zones.security_zones](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/security_zones) | resource |
 | [fmc_service_access.service_access](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/service_access) | resource |
 | [fmc_sgt.sgt](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/sgt) | resource |
 | [fmc_sgts.sgts](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/sgts) | resource |
+| [fmc_single_sign_on_server.single_sign_on_server](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/single_sign_on_server) | resource |
 | [fmc_smart_license.smart_license](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/smart_license) | resource |
 | [fmc_standard_access_list.standard_access_list](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/standard_access_list) | resource |
 | [fmc_standard_community_list.standard_community_list](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/resources/standard_community_list) | resource |
@@ -237,8 +252,9 @@ module "fmc" {
 | [fmc_application_types.application_types](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/application_types) | data source |
 | [fmc_applications.applications](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/applications) | data source |
 | [fmc_as_paths.as_paths](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/as_paths) | data source |
-| [fmc_bfd_template.bfd_template](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/bfd_template) | data source |
+| [fmc_bfd_templates.bfd_templates](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/bfd_templates) | data source |
 | [fmc_certificate_enrollment.certificate_enrollment](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/certificate_enrollment) | data source |
+| [fmc_certificate_maps.certificate_maps](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/certificate_maps) | data source |
 | [fmc_chassis.chassis](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/chassis) | data source |
 | [fmc_chassis_etherchannel_interface.chassis_etherchannel_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/chassis_etherchannel_interface) | data source |
 | [fmc_chassis_physical_interface.chassis_physical_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/chassis_physical_interface) | data source |
@@ -255,6 +271,7 @@ module "fmc" {
 | [fmc_device_subinterface.device_subinterface](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/device_subinterface) | data source |
 | [fmc_device_virtual_tunnel_interface.device_virtual_tunnel_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/device_virtual_tunnel_interface) | data source |
 | [fmc_device_vrf.device_vrf](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/device_vrf) | data source |
+| [fmc_dns_server_groups.dns_server_groups](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/dns_server_groups) | data source |
 | [fmc_dynamic_objects.dynamic_objects](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/dynamic_objects) | data source |
 | [fmc_endpoint_device_types.endpoint_device_types](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/endpoint_device_types) | data source |
 | [fmc_expanded_community_lists.expanded_community_lists](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/expanded_community_lists) | data source |
@@ -292,12 +309,22 @@ module "fmc" {
 | [fmc_port_groups.port_groups](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/port_groups) | data source |
 | [fmc_ports.ports](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/ports) | data source |
 | [fmc_prefilter_policy.prefilter_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/prefilter_policy) | data source |
+| [fmc_radius_server_group.radius_server_group](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/radius_server_group) | data source |
 | [fmc_ranges.ranges](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/ranges) | data source |
+| [fmc_realm_ad_ldap.realm_ad_ldap](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/realm_ad_ldap) | data source |
+| [fmc_realm_local.realm_local](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/realm_local) | data source |
 | [fmc_resource_profiles.resource_profiles](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/resource_profiles) | data source |
 | [fmc_route_map.route_map](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/route_map) | data source |
+| [fmc_secure_client_custom_attribute.secure_client_custom_attribute](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/secure_client_custom_attribute) | data source |
+| [fmc_secure_client_customization.secure_client_customization](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/secure_client_customization) | data source |
+| [fmc_secure_client_external_browser_package.secure_client_external_browser_package](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/secure_client_external_browser_package) | data source |
+| [fmc_secure_client_image.secure_client_image](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/secure_client_image) | data source |
+| [fmc_secure_client_posture_package.secure_client_posture_package](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/secure_client_posture_package) | data source |
+| [fmc_secure_client_profile.secure_client_profile](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/secure_client_profile) | data source |
 | [fmc_security_zones.security_zones](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/security_zones) | data source |
 | [fmc_service_access.service_access](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/service_access) | data source |
 | [fmc_sgts.sgts](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/sgts) | data source |
+| [fmc_single_sign_on_server.single_sign_on_server](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/single_sign_on_server) | data source |
 | [fmc_snmp_alerts.snmp_alerts](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/snmp_alerts) | data source |
 | [fmc_standard_access_list.standard_access_list](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/standard_access_list) | data source |
 | [fmc_standard_community_lists.standard_community_lists](https://registry.terraform.io/providers/CiscoDevNet/fmc/2.0.0-rc10/docs/data-sources/standard_community_lists) | data source |
