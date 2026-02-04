@@ -1,15 +1,14 @@
 terraform {
-  required_version = ">=1.8.0"
+  required_version = ">= 1.8.0"
 
   required_providers {
     fmc = {
       source  = "CiscoDevNet/fmc"
-      version = "2.0.0-rc10" # Terraform does not match pre-release versions on >, >=, <, <=, or ~> operators.
-      #version = ">=2.0.0" 
+      version = ">= 2.0.0"
     }
     utils = {
       source  = "netascode/utils"
-      version = ">= 1.0.2"
+      version = ">= 1.0.2, < 2.0.0"
     }
     local = {
       source  = "hashicorp/local"
