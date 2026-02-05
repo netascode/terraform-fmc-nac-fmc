@@ -2444,62 +2444,77 @@ resource "fmc_extended_access_list" "extended_access_list" {
 ###    BFD TEMPLATES
 ##########################################################
 locals {
-  data_bfd_template = {
-    for item in flatten([
-      for domain in local.data_existing : [
-        for bfd_template in try(domain.objects.bfd_templates, []) : [
-          {
-            name   = bfd_template.name
-            domain = domain.name
-        }]
-      ]
-    ]) : "${item.domain}:${item.name}" => item
+  data_bfd_templates = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for bfd_template in try(domain.objects.bfd_templates, []) : bfd_template.name => {}
+      }
+    } if length(try(domain.objects.bfd_templates, [])) > 0
   }
 
-  resource_bfd_template = {
-    for item in flatten([
-      for domain in local.domains : [
-        for bfd_template in try(domain.objects.bfd_templates, []) : {
-          domain                             = domain.name
-          name                               = bfd_template.name
-          hop_type                           = bfd_template.hop_type
-          echo                               = bfd_template.hop_type == "SINGLE_HOP" ? try(bfd_template.echo, local.defaults.fmc.domains.objects.bfd_templates.echo) == true ? "ENABLED" : "DISABLED" : null
-          interval_type                      = try(bfd_template.interval_type, null)
-          multiplier                         = try(bfd_template.multiplier, null)
-          minimum_transmit                   = try(bfd_template.minimum_transmit, null)
-          minimum_receive                    = try(bfd_template.minimum_receive, null)
-          authentication_type                = try(bfd_template.authentication_type, local.defaults.fmc.domains.objects.bfd_templates.authentication_type, null)
-          authentication_password            = try(bfd_template.authentication_password, null)
-          authentication_password_encryption = try(bfd_template.authentication_password_encryption, null)
-          authentication_key_id              = try(bfd_template.authentication_key_id, null)
-        } if !contains(try(keys(local.data_bfd_template), {}), "${domain.name}:${bfd_template.name}")
-      ]
-    ]) : "${item.domain}:${item.name}" => item
+  bfd_templates_bulk = try(local.fmc.nac_configuration.bfd_templates_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_bfd_templates = {
+    for domain in local.domains : domain.name => [
+      for bfd_template in try(domain.objects.bfd_templates, []) : {
+        domain                             = domain.name
+        name                               = bfd_template.name
+        hop_type                           = bfd_template.hop_type
+        echo                               = bfd_template.hop_type == "SINGLE_HOP" ? try(bfd_template.echo, local.defaults.fmc.domains.objects.bfd_templates.echo) == true ? "ENABLED" : "DISABLED" : null
+        interval_type                      = try(bfd_template.interval_type, null)
+        multiplier                         = try(bfd_template.multiplier, null)
+        minimum_transmit                   = try(bfd_template.minimum_transmit, null)
+        minimum_receive                    = try(bfd_template.minimum_receive, null)
+        authentication_type                = try(bfd_template.authentication_type, local.defaults.fmc.domains.objects.bfd_templates.authentication_type, null)
+        authentication_password            = try(bfd_template.authentication_password, null)
+        authentication_password_encryption = try(bfd_template.authentication_password_encryption, null)
+        authentication_key_id              = try(bfd_template.authentication_key_id, null)
+      } if !contains(try(keys(local.data_bfd_templates[domain.name].items), []), bfd_template.name)
+    ] if length(try(domain.objects.bfd_templates, [])) > 0
   }
+
+  resource_bfd_template = !local.bfd_templates_bulk ? {
+    for item in flatten([
+      for domain, bfd_templates in local.resource_bfd_templates : [
+        for bfd_template in bfd_templates : {
+          key  = "${domain}:${bfd_template.name}"
+          item = bfd_template
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+
 }
 
-data "fmc_bfd_template" "bfd_template" {
-  for_each = local.data_bfd_template
+data "fmc_bfd_templates" "bfd_templates" {
+  for_each = local.data_bfd_templates
 
-  name   = each.value.name
-  domain = each.value.domain
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_bfd_templates" "bfd_templates" {
+  for_each = local.bfd_templates_bulk ? local.resource_bfd_templates : {}
+
+  domain = each.key
+  items  = { for bfd_template in each.value : bfd_template.name => bfd_template }
 }
 
 resource "fmc_bfd_template" "bfd_template" {
-  for_each = local.resource_bfd_template
+  for_each = !local.bfd_templates_bulk ? local.resource_bfd_template : {}
 
-  name                               = each.value.name
-  domain                             = each.value.domain
-  hop_type                           = each.value.hop_type
-  echo                               = each.value.echo
-  interval_type                      = each.value.interval_type
-  minimum_transmit                   = each.value.minimum_transmit
-  multiplier                         = each.value.multiplier
-  minimum_receive                    = each.value.minimum_receive
-  authentication_password            = each.value.authentication_password
-  authentication_password_encryption = each.value.authentication_password_encryption
-  authentication_key_id              = each.value.authentication_key_id
-  authentication_type                = each.value.authentication_type
+  name                               = each.value.item.name
+  domain                             = each.value.item.domain
+  hop_type                           = each.value.item.hop_type
+  echo                               = each.value.item.echo
+  interval_type                      = each.value.item.interval_type
+  minimum_transmit                   = each.value.item.minimum_transmit
+  multiplier                         = each.value.item.multiplier
+  minimum_receive                    = each.value.item.minimum_receive
+  authentication_password            = each.value.item.authentication_password
+  authentication_password_encryption = each.value.item.authentication_password_encryption
+  authentication_key_id              = each.value.item.authentication_key_id
+  authentication_type                = each.value.item.authentication_type
 }
 
 ##########################################################
@@ -3380,4 +3395,804 @@ resource "fmc_certificate_enrollment" "certificate_enrollment_acme" {
   crl_use_distribution_point_from_the_certificate                    = each.value.crl_use_distribution_point_from_the_certificate
   crl_static_urls                                                    = each.value.crl_static_urls
   ocsp_url                                                           = each.value.ocsp_url
+}
+
+##########################################################
+###    CERTIFICATE MAPS
+##########################################################
+locals {
+  data_certificate_maps = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for certificate_map in try(domain.objects.certificate_maps, []) : certificate_map.name => {}
+      }
+    } if length(try(domain.objects.certificate_maps, [])) > 0
+  }
+
+  certificate_maps_bulk = try(local.fmc.nac_configuration.certificate_maps_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_certificate_maps = {
+    for domain in local.domains : domain.name => [
+      for certificate_map in try(domain.objects.certificate_maps, []) : {
+        domain = domain.name
+        name   = certificate_map.name
+        rules = [
+          for rule in try(certificate_map.rules, []) : {
+            component = rule.component
+            field     = rule.field
+            operator  = rule.operator
+            value     = rule.value
+          }
+        ]
+      } if !contains(try(keys(local.data_certificate_maps[domain.name].items), []), certificate_map.name)
+    ] if length(try(domain.objects.certificate_maps, [])) > 0
+  }
+
+  resource_certificate_map = !local.certificate_maps_bulk ? {
+    for item in flatten([
+      for domain, certificate_maps in local.resource_certificate_maps : [
+        for certificate_map in certificate_maps : {
+          key  = "${domain}:${certificate_map.name}"
+          item = certificate_map
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_certificate_maps" "certificate_maps" {
+  for_each = local.data_certificate_maps
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_certificate_maps" "certificate_maps" {
+  for_each = local.certificate_maps_bulk ? local.resource_certificate_maps : {}
+
+  domain = each.key
+  items  = { for certificate_map in each.value : certificate_map.name => certificate_map }
+}
+
+resource "fmc_certificate_map" "certificate_map" {
+  for_each = !local.certificate_maps_bulk ? local.resource_certificate_map : {}
+
+  domain = each.value.item.domain
+  name   = each.value.item.name
+  rules  = each.value.item.rules
+}
+
+##########################################################
+###    DNS SERVER GROUPS
+##########################################################
+locals {
+  data_dns_server_groups = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for dns_server_group in try(domain.objects.dns_server_groups, []) : dns_server_group.name => {}
+      }
+    } if length(try(domain.objects.dns_server_groups, [])) > 0
+  }
+
+  dns_server_groups_bulk = try(local.fmc.nac_configuration.dns_server_groups_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_dns_server_groups = {
+    for domain in local.domains : domain.name => [
+      for dns_server_group in try(domain.objects.dns_server_groups, []) : {
+        domain         = domain.name
+        name           = dns_server_group.name
+        default_domain = try(dns_server_group.default_domain, null)
+        retries        = try(dns_server_group.retries, local.defaults.fmc.domains.objects.dns_server_groups.retries, null)
+        timeout        = try(dns_server_group.timeout, local.defaults.fmc.domains.objects.dns_server_groups.timeout, null)
+        dns_servers    = [for dns_server in try(dns_server_group.dns_servers, []) : { ip = dns_server }]
+      } if !contains(try(keys(local.data_dns_server_groups[domain.name].items), []), dns_server_group.name)
+    ] if length(try(domain.objects.dns_server_groups, [])) > 0
+  }
+
+  resource_dns_server_group = !local.dns_server_groups_bulk ? {
+    for item in flatten([
+      for domain, dns_server_groups in local.resource_dns_server_groups : [
+        for dns_server_group in dns_server_groups : {
+          key  = "${domain}:${dns_server_group.name}"
+          item = dns_server_group
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_dns_server_groups" "dns_server_groups" {
+  for_each = local.data_dns_server_groups
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_dns_server_groups" "dns_server_groups" {
+  for_each = local.dns_server_groups_bulk ? local.resource_dns_server_groups : {}
+
+  domain = each.key
+  items  = { for dns_server_group in each.value : dns_server_group.name => dns_server_group }
+}
+
+resource "fmc_dns_server_group" "dns_server_group" {
+  for_each = !local.dns_server_groups_bulk ? local.resource_dns_server_group : {}
+
+  domain         = each.value.item.domain
+  name           = each.value.item.name
+  default_domain = each.value.item.default_domain
+  retries        = each.value.item.retries
+  timeout        = each.value.item.timeout
+  dns_servers    = each.value.item.dns_servers
+}
+
+##########################################################
+###    RADIUS SERVER GROUPS
+##########################################################
+locals {
+  data_radius_server_group = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for radius_server_group in try(domain.objects.radius_server_groups, {}) : {
+          name   = radius_server_group.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_radius_server_group = {
+    for item in flatten([
+      for domain in local.domains : [
+        for radius_server_group in try(domain.objects.radius_server_groups, {}) : {
+          domain = domain.name
+          name   = radius_server_group.name
+          radius_servers = [for radius_server in radius_server_group.radius_servers : {
+            hostname            = radius_server.hostname
+            key                 = radius_server.key
+            accounting_port     = try(radius_server.accounting_port, local.defaults.fmc.domains.objects.radius_server_groups.radius_servers.accounting_port, null)
+            authentication_port = try(radius_server.authentication_port, local.defaults.fmc.domains.objects.radius_server_groups.radius_servers.authentication_port, null)
+            interface_id = try(radius_server.interface, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${radius_server.interface}"].id
+              if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${radius_server.interface}")
+            })[0] : null
+            message_authenticator = try(radius_server.message_authenticator, local.defaults.fmc.domains.objects.radius_server_groups.radius_servers.message_authenticator, null)
+            redirect_access_list_id = try(radius_server.redirect_access_list, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_extended_access_lists["${domain_path}:${radius_server.redirect_access_list}"].id
+              if contains(keys(local.map_extended_access_lists), "${domain_path}:${radius_server.redirect_access_list}")
+            })[0] : null
+            timeout                         = try(radius_server.timeout, local.defaults.fmc.domains.objects.radius_server_groups.radius_servers.timeout, null)
+            use_routing_to_select_interface = try(radius_server.interface, null) != null ? false : try(radius_server.use_routing_to_select_interface, local.defaults.fmc.domains.objects.radius_server_groups.radius_servers.use_routing_to_select_interface, null)
+            }
+          ]
+          ad_realm_id = try(radius_server_group.ad_realm, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_realm_ad_ldap["${domain_path}:${radius_server_group.ad_realm}"].id
+            if contains(keys(local.map_realm_ad_ldap), "${domain_path}:${radius_server_group.ad_realm}")
+          })[0] : null
+          authorize_only                       = try(radius_server_group.authorize_only, local.defaults.fmc.domains.objects.radius_server_groups.authorize_only, null)
+          description                          = try(radius_server_group.description, local.defaults.fmc.domains.objects.radius_server_groups.description, null)
+          dynamic_authorization                = try(radius_server_group.dynamic_authorization_port, null) != null ? true : false
+          dynamic_authorization_port           = try(radius_server_group.dynamic_authorization_port, null)
+          group_accounting_mode                = try(radius_server_group.group_accounting_mode, local.defaults.fmc.domains.objects.radius_server_groups.group_accounting_mode, null)
+          interim_account_update_interval      = try(radius_server_group.interim_account_update_interval, local.defaults.fmc.domains.objects.radius_server_groups.interim_account_update_interval, null)
+          merge_downloadable_access_list_order = try(radius_server_group.merge_downloadable_access_list_order, local.defaults.fmc.domains.objects.radius_server_groups.merge_downloadable_access_list_order, null)
+          retry_interval                       = try(radius_server_group.retry_interval, local.defaults.fmc.domains.objects.radius_server_groups.retry_interval, null)
+        } if !contains(try(keys(local.data_radius_server_group), {}), "${domain.name}:${radius_server_group.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_radius_server_group" "radius_server_group" {
+  for_each = local.data_radius_server_group
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_radius_server_group" "radius_server_group" {
+  for_each = local.resource_radius_server_group
+
+  domain                               = each.value.domain
+  name                                 = each.value.name
+  radius_servers                       = each.value.radius_servers
+  ad_realm_id                          = each.value.ad_realm_id
+  authorize_only                       = each.value.authorize_only
+  description                          = each.value.description
+  dynamic_authorization                = each.value.dynamic_authorization
+  dynamic_authorization_port           = each.value.dynamic_authorization_port
+  group_accounting_mode                = each.value.group_accounting_mode
+  interim_account_update_interval      = each.value.interim_account_update_interval
+  merge_downloadable_access_list_order = each.value.merge_downloadable_access_list_order
+  retry_interval                       = each.value.retry_interval
+}
+
+##########################################################
+###    SINGLE SIGN ON SERVERS
+##########################################################
+locals {
+  data_single_sign_on_server = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for single_sign_on_server in try(domain.objects.single_sign_on_servers, {}) : {
+          name   = single_sign_on_server.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_single_sign_on_server = {
+    for item in flatten([
+      for domain in local.domains : [
+        for single_sign_on_server in try(domain.objects.single_sign_on_servers, {}) : {
+          domain  = domain.name
+          name    = single_sign_on_server.name
+          sso_url = single_sign_on_server.sso_url
+          identity_provider_certificate_id = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_certificate_enrollments["${domain_path}:${single_sign_on_server.identity_provider_certificate}"].id
+            if contains(keys(local.map_certificate_enrollments), "${domain_path}:${single_sign_on_server.identity_provider_certificate}")
+          })[0]
+          identity_provider_certificate_name = values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_certificate_enrollments["${domain_path}:${single_sign_on_server.identity_provider_certificate}"].name
+            if contains(keys(local.map_certificate_enrollments), "${domain_path}:${single_sign_on_server.identity_provider_certificate}")
+          })[0]
+          identity_provider_entity_id_url                          = single_sign_on_server.identity_provider_entity_id_url
+          base_url                                                 = try(single_sign_on_server.base_url, null)
+          identity_provider_accessible_only_on_internal_network    = try(single_sign_on_server.identity_provider_accessible_only_on_internal_network, local.defaults.fmc.domains.objects.single_sign_on_servers.identity_provider_accessible_only_on_internal_network, null)
+          logout_url                                               = try(single_sign_on_server.logout_url, null)
+          request_identity_provider_reauthentication_at_each_login = try(single_sign_on_server.request_identity_provider_reauthentication_at_each_login, local.defaults.fmc.domains.objects.single_sign_on_servers.request_identity_provider_reauthentication_at_each_login, null)
+          request_signature_type                                   = try(single_sign_on_server.request_signature_type, local.defaults.fmc.domains.objects.single_sign_on_servers.request_signature_type, null)
+          request_timeout                                          = try(single_sign_on_server.request_timeout, local.defaults.fmc.domains.objects.single_sign_on_servers.request_timeout, null)
+          service_provider_certificate_id = try(single_sign_on_server.service_provider_certificate_id, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_certificate_enrollments["${domain_path}:${single_sign_on_server.service_provider_certificate}"].id
+            if contains(keys(local.map_certificate_enrollments), "${domain_path}:${single_sign_on_server.service_provider_certificate}")
+          })[0] : null
+        } if !contains(try(keys(local.data_single_sign_on_server), {}), "${domain.name}:${single_sign_on_server.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_single_sign_on_server" "single_sign_on_server" {
+  for_each = local.data_single_sign_on_server
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_single_sign_on_server" "single_sign_on_server" {
+  for_each = local.resource_single_sign_on_server
+
+  domain                                                   = each.value.domain
+  name                                                     = each.value.name
+  sso_url                                                  = each.value.sso_url
+  identity_provider_certificate_id                         = each.value.identity_provider_certificate_id
+  identity_provider_certificate_name                       = each.value.identity_provider_certificate_name
+  identity_provider_entity_id_url                          = each.value.identity_provider_entity_id_url
+  base_url                                                 = each.value.base_url
+  identity_provider_accessible_only_on_internal_network    = each.value.identity_provider_accessible_only_on_internal_network
+  logout_url                                               = each.value.logout_url
+  request_identity_provider_reauthentication_at_each_login = each.value.request_identity_provider_reauthentication_at_each_login
+  request_signature_type                                   = each.value.request_signature_type
+  request_timeout                                          = each.value.request_timeout
+  service_provider_certificate_id                          = each.value.service_provider_certificate_id
+}
+
+##########################################################
+###    SECURE CLIENT IMAGES
+##########################################################
+locals {
+  data_secure_client_image = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for secure_client_image in try(domain.objects.secure_client_images, {}) : {
+          name   = secure_client_image.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_secure_client_image = {
+    for item in flatten([
+      for domain in local.domains : [
+        for secure_client_image in try(domain.objects.secure_client_images, {}) : {
+          domain      = domain.name
+          name        = secure_client_image.name
+          description = try(secure_client_image.description, local.defaults.fmc.domains.objects.secure_client_images.description, null)
+          path        = secure_client_image.path
+        } if !contains(try(keys(local.data_secure_client_image), {}), "${domain.name}:${secure_client_image.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_secure_client_image" "secure_client_image" {
+  for_each = local.data_secure_client_image
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_secure_client_image" "secure_client_image" {
+  for_each = local.resource_secure_client_image
+
+  domain      = each.value.domain
+  name        = each.value.name
+  description = each.value.description
+  path        = each.value.path
+}
+
+##########################################################
+###    SECURE CLIENT PROFILES
+##########################################################
+locals {
+  data_secure_client_profile = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for secure_client_profile in try(domain.objects.secure_client_profiles, {}) : {
+          name   = secure_client_profile.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_secure_client_profile = {
+    for item in flatten([
+      for domain in local.domains : [
+        for secure_client_profile in try(domain.objects.secure_client_profiles, {}) : {
+          domain      = domain.name
+          name        = secure_client_profile.name
+          description = try(secure_client_profile.description, local.defaults.fmc.domains.objects.secure_client_profiles.description, null)
+          path        = secure_client_profile.path
+          file_type   = secure_client_profile.file_type
+        } if !contains(try(keys(local.data_secure_client_profile), {}), "${domain.name}:${secure_client_profile.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_secure_client_profile" "secure_client_profile" {
+  for_each = local.data_secure_client_profile
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_secure_client_profile" "secure_client_profile" {
+  for_each = local.resource_secure_client_profile
+
+  domain      = each.value.domain
+  name        = each.value.name
+  description = each.value.description
+  path        = each.value.path
+  file_type   = each.value.file_type
+}
+
+##########################################################
+###    SECURE CLIENT POSTURE PACKAGES
+##########################################################
+locals {
+  data_secure_client_posture_package = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for secure_client_posture_package in try(domain.objects.secure_client_posture_packages, {}) : {
+          name   = secure_client_posture_package.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_secure_client_posture_package = {
+    for item in flatten([
+      for domain in local.domains : [
+        for secure_client_posture_package in try(domain.objects.secure_client_posture_packages, {}) : {
+          domain      = domain.name
+          name        = secure_client_posture_package.name
+          description = try(secure_client_posture_package.description, local.defaults.fmc.domains.objects.secure_client_posture_packages.description, null)
+          path        = secure_client_posture_package.path
+        } if !contains(try(keys(local.data_secure_client_posture_package), {}), "${domain.name}:${secure_client_posture_package.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_secure_client_posture_package" "secure_client_posture_package" {
+  for_each = local.data_secure_client_posture_package
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_secure_client_posture_package" "secure_client_posture_package" {
+  for_each = local.resource_secure_client_posture_package
+
+  domain      = each.value.domain
+  name        = each.value.name
+  description = each.value.description
+  path        = each.value.path
+}
+
+##########################################################
+###    SECURE CLIENT EXTERNAL BROWSER PACKAGES
+##########################################################
+locals {
+  data_secure_client_external_browser_package = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for secure_client_external_browser_package in try(domain.objects.secure_client_external_browser_packages, {}) : {
+          name   = secure_client_external_browser_package.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_secure_client_external_browser_package = {
+    for item in flatten([
+      for domain in local.domains : [
+        for secure_client_external_browser_package in try(domain.objects.secure_client_external_browser_packages, {}) : {
+          domain      = domain.name
+          name        = secure_client_external_browser_package.name
+          description = try(secure_client_external_browser_package.description, local.defaults.fmc.domains.objects.secure_client_external_browser_packages.description, null)
+          path        = secure_client_external_browser_package.path
+        } if !contains(try(keys(local.data_secure_client_external_browser_package), {}), "${domain.name}:${secure_client_external_browser_package.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_secure_client_external_browser_package" "secure_client_external_browser_package" {
+  for_each = local.data_secure_client_external_browser_package
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_secure_client_external_browser_package" "secure_client_external_browser_package" {
+  for_each = local.resource_secure_client_external_browser_package
+
+  domain      = each.value.domain
+  name        = each.value.name
+  description = each.value.description
+  path        = each.value.path
+}
+
+##########################################################
+###    SECURE CLIENT CUSTOMIZATIONS
+##########################################################
+locals {
+  data_secure_client_customization = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for secure_client_customization in try(domain.objects.secure_client_customizations, {}) : {
+          name   = secure_client_customization.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_secure_client_customization = {
+    for item in flatten([
+      for domain in local.domains : [
+        for secure_client_customization in try(domain.objects.secure_client_customizations, {}) : {
+          domain             = domain.name
+          name               = secure_client_customization.name
+          description        = try(secure_client_customization.description, local.defaults.fmc.domains.objects.secure_client_customizations.description, null)
+          customization_type = secure_client_customization.customization_type
+          path               = secure_client_customization.path
+          language           = try(secure_client_customization.language, null)
+          operating_system   = try(secure_client_customization.operating_system, null)
+          script_type        = try(secure_client_customization.script_type, null)
+        } if !contains(try(keys(local.data_secure_client_customization), {}), "${domain.name}:${secure_client_customization.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_secure_client_customization" "secure_client_customization" {
+  for_each = local.data_secure_client_customization
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_secure_client_customization" "secure_client_customization" {
+  for_each = local.resource_secure_client_customization
+
+  domain             = each.value.domain
+  name               = each.value.name
+  description        = each.value.description
+  path               = each.value.path
+  customization_type = each.value.customization_type
+  language           = each.value.language
+  operating_system   = each.value.operating_system
+  script_type        = each.value.script_type
+}
+
+##########################################################
+###    SECURE CLIENT CUSTOM ATTRIBUTES
+##########################################################
+locals {
+  data_secure_client_custom_attribute = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for secure_client_custom_attribute in try(domain.objects.secure_client_custom_attributes, {}) : {
+          name   = secure_client_custom_attribute.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_secure_client_custom_attribute = {
+    for item in flatten([
+      for domain in local.domains : [
+        for secure_client_custom_attribute in try(domain.objects.secure_client_custom_attributes, {}) : {
+          domain                                     = domain.name
+          name                                       = secure_client_custom_attribute.name
+          attribute_type                             = secure_client_custom_attribute.attribute_type
+          defer_update_default_action                = try(secure_client_custom_attribute.defer_update_default_action, null)
+          defer_update_minimum_secure_client_version = try(secure_client_custom_attribute.defer_update_minimum_secure_client_version, null)
+          defer_update_prompt_dismiss_timeout        = try(secure_client_custom_attribute.defer_update_prompt_dismiss_timeout, null)
+          defer_update_prompt_type                   = try(secure_client_custom_attribute.defer_update_prompt_type, null)
+          description                                = try(secure_client_custom_attribute.description, local.defaults.fmc.domains.objects.secure_client_custom_attributes.description, null)
+          dynamic_split_tunnel_excluded_domains      = try(secure_client_custom_attribute.dynamic_split_tunnel_excluded_domains, null)
+          dynamic_split_tunnel_included_domains      = try(secure_client_custom_attribute.dynamic_split_tunnel_included_domains, null)
+          per_app_vpn_value                          = try(secure_client_custom_attribute.per_app_vpn_value, null)
+          user_defined_attribute_name                = try(secure_client_custom_attribute.user_defined_attribute_name, null)
+          user_defined_attribute_value               = try(secure_client_custom_attribute.user_defined_attribute_value, null)
+        } if !contains(try(keys(local.data_secure_client_custom_attribute), {}), "${domain.name}:${secure_client_custom_attribute.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_secure_client_custom_attribute" "secure_client_custom_attribute" {
+  for_each = local.data_secure_client_custom_attribute
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_secure_client_custom_attribute" "secure_client_custom_attribute" {
+  for_each = local.resource_secure_client_custom_attribute
+
+  domain                                     = each.value.domain
+  name                                       = each.value.name
+  description                                = each.value.description
+  attribute_type                             = each.value.attribute_type
+  defer_update_default_action                = each.value.defer_update_default_action
+  defer_update_minimum_secure_client_version = each.value.defer_update_minimum_secure_client_version
+  defer_update_prompt_dismiss_timeout        = each.value.defer_update_prompt_dismiss_timeout
+  defer_update_prompt_type                   = each.value.defer_update_prompt_type
+  dynamic_split_tunnel_excluded_domains      = each.value.dynamic_split_tunnel_excluded_domains
+  dynamic_split_tunnel_included_domains      = each.value.dynamic_split_tunnel_included_domains
+  per_app_vpn_value                          = each.value.per_app_vpn_value
+  user_defined_attribute_name                = each.value.user_defined_attribute_name
+  user_defined_attribute_value               = each.value.user_defined_attribute_value
+}
+
+##########################################################
+###    GROUP POLICIES
+##########################################################
+locals {
+  data_group_policy = {
+    for item in flatten([
+      for domain in local.data_existing : [
+        for group_policy in try(domain.objects.group_policies, {}) : {
+          name   = group_policy.name
+          domain = domain.name
+        }
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+
+  resource_group_policy = {
+    for item in flatten([
+      for domain in local.domains : [
+        for group_policy in try(domain.objects.group_policies, {}) : {
+          domain      = domain.name
+          name        = group_policy.name
+          description = try(group_policy.description, local.defaults.fmc.domains.objects.group_policies.description, null)
+          # General
+          protocol_ssl         = try(group_policy.general.protocol_ssl, local.defaults.fmc.domains.objects.group_policies.general.protocol_ssl, null)
+          protocol_ipsec_ikev2 = try(group_policy.general.protocol_ipsec_ikev2, local.defaults.fmc.domains.objects.group_policies.general.protocol_ipsec_ikev2, null)
+          ipv4_address_pools = [for ipv4_address_pool in try(group_policy.general.ipv4_address_pools, []) : {
+            id = values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_ipv4_address_pools["${domain_path}:${ipv4_address_pool}"].id
+              if contains(keys(local.map_ipv4_address_pools), "${domain_path}:${ipv4_address_pool}")
+            })[0]
+          }]
+          banner = try(group_policy.general.banner, null)
+          primary_dns_server_host_id = try(group_policy.general.primary_dns_server, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_hosts["${domain_path}:${group_policy.general.primary_dns_server}"].id
+            if contains(keys(local.map_hosts), "${domain_path}:${group_policy.general.primary_dns_server}")
+          })[0] : null
+          secondary_dns_server_host_id = try(group_policy.general.secondary_dns_server, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_hosts["${domain_path}:${group_policy.general.secondary_dns_server}"].id
+            if contains(keys(local.map_hosts), "${domain_path}:${group_policy.general.secondary_dns_server}")
+          })[0] : null
+          primary_wins_server_host_id = try(group_policy.general.primary_wins_server, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_hosts["${domain_path}:${group_policy.general.primary_wins_server}"].id
+            if contains(keys(local.map_hosts), "${domain_path}:${group_policy.general.primary_wins_server}")
+          })[0] : null
+          secondary_wins_server_host_id = try(group_policy.general.secondary_wins_server, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_hosts["${domain_path}:${group_policy.general.secondary_wins_server}"].id
+            if contains(keys(local.map_hosts), "${domain_path}:${group_policy.general.secondary_wins_server}")
+          })[0] : null
+          default_domain = try(group_policy.general.default_domain, null)
+          ipv4_dhcp_network_scope_network_object_id = try(group_policy.general.ipv4_dhcp_network_scope, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_network_objects["${domain_path}:${group_policy.general.ipv4_dhcp_network_scope}"].id
+            if contains(keys(local.map_network_objects), "${domain_path}:${group_policy.general.ipv4_dhcp_network_scope}")
+          })[0] : null
+          ipv4_split_tunnel_policy = try(group_policy.general.ipv4_split_tunnel_policy, local.defaults.fmc.domains.objects.group_policies.general.ipv4_split_tunnel_policy, null)
+          ipv6_split_tunnel_policy = try(group_policy.general.ipv6_split_tunnel_policy, local.defaults.fmc.domains.objects.group_policies.general.ipv6_split_tunnel_policy, null)
+          split_tunnel_access_list_id = try(group_policy.general.split_tunnel_access_list, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_access_lists["${domain_path}:${group_policy.general.split_tunnel_access_list}"].id
+            if contains(keys(local.map_access_lists), "${domain_path}:${group_policy.general.split_tunnel_access_list}")
+          })[0] : null
+          split_tunnel_access_list_type = try(group_policy.general.split_tunnel_access_list, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_access_lists["${domain_path}:${group_policy.general.split_tunnel_access_list}"].type
+            if contains(keys(local.map_access_lists), "${domain_path}:${group_policy.general.split_tunnel_access_list}")
+          })[0] : null
+          dns_request_split_tunnel_policy  = try(group_policy.general.dns_request_split_tunnel_policy, local.defaults.fmc.domains.objects.group_policies.general.dns_request_split_tunnel_policy, null)
+          dns_request_split_tunnel_domains = try(join(",", group_policy.general.dns_request_split_tunnel_domains), null)
+          # Secure Client
+          secure_client_profile_id = try(group_policy.secure_client.profile, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_secure_client_profiles["${domain_path}:${group_policy.secure_client.profile}"].id
+            if contains(keys(local.map_secure_client_profiles), "${domain_path}:${group_policy.secure_client.profile}")
+          })[0] : null
+          secure_client_management_profile_id = try(group_policy.secure_client.management_profile, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_secure_client_profiles["${domain_path}:${group_policy.secure_client.management_profile}"].id
+            if contains(keys(local.map_secure_client_profiles), "${domain_path}:${group_policy.secure_client.management_profile}")
+          })[0] : null
+          secure_client_modules = [for module in try(group_policy.secure_client.modules, []) : {
+            profile_id = try(module.profile_name, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_secure_client_profiles["${domain_path}:${module.profile_name}"].id
+              if contains(keys(local.map_secure_client_profiles), "${domain_path}:${module.profile_name}")
+            })[0] : null
+            type = try(module.profile_name, null) != null ? values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_secure_client_profiles["${domain_path}:${module.profile_name}"].file_type
+              if contains(keys(local.map_secure_client_profiles), "${domain_path}:${module.profile_name}")
+            })[0] : try(module.type, null)
+            download_module = try(module.download_module, null)
+          }]
+          ssl_compression                      = try(group_policy.secure_client.ssl_compression, local.defaults.fmc.domains.objects.group_policies.secure_client.ssl_compression, null)
+          dtls_compression                     = try(group_policy.secure_client.dtls_compression, local.defaults.fmc.domains.objects.group_policies.secure_client.dtls_compression, null)
+          mtu_size                             = try(group_policy.secure_client.mtu_size, local.defaults.fmc.domains.objects.group_policies.secure_client.mtu_size, null)
+          ignore_df_bit                        = try(group_policy.secure_client.ignore_df_bit, local.defaults.fmc.domains.objects.group_policies.secure_client.ignore_df_bit, null)
+          keep_alive_messages                  = try(group_policy.secure_client.keep_alive_messages_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.keep_alive_messages_interval, null) != null ? true : null
+          keep_alive_messages_interval         = try(group_policy.secure_client.keep_alive_messages_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.keep_alive_messages_interval, null)
+          gateway_dead_peer_detection          = try(group_policy.secure_client.gateway_dead_peer_detection_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.gateway_dead_peer_detection_interval, null) != null ? true : null
+          gateway_dead_peer_detection_interval = try(group_policy.secure_client.gateway_dead_peer_detection_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.gateway_dead_peer_detection_interval, null)
+          client_dead_peer_detection           = try(group_policy.secure_client.client_dead_peer_detection_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.client_dead_peer_detection_interval, null) != null ? true : null
+          client_dead_peer_detection_interval  = try(group_policy.secure_client.client_dead_peer_detection_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.client_dead_peer_detection_interval, null)
+          client_bypass_protocol               = try(group_policy.secure_client.client_bypass_protocol, local.defaults.fmc.domains.objects.group_policies.secure_client.client_bypass_protocol, null)
+          ssl_rekey                            = try(group_policy.secure_client.ssl_rekey_method, group_policy.secure_client.ssl_rekey_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.ssl_rekey_method, local.defaults.fmc.domains.objects.group_policies.secure_client.ssl_rekey_interval, null) != null ? true : null
+          ssl_rekey_method                     = try(group_policy.secure_client.ssl_rekey_method, local.defaults.fmc.domains.objects.group_policies.secure_client.ssl_rekey_method, null)
+          ssl_rekey_interval                   = try(group_policy.secure_client.ssl_rekey_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.ssl_rekey_interval, null)
+          client_firewall_private_network_rules_access_list_id = try(group_policy.secure_client.client_firewall_private_network_rules_access_list, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_extended_access_lists["${domain_path}:${group_policy.secure_client.client_firewall_private_network_rules_access_list}"].id
+            if contains(keys(local.map_extended_access_lists), "${domain_path}:${group_policy.secure_client.client_firewall_private_network_rules_access_list}")
+          })[0] : null
+          client_firewall_public_network_rules_access_list_id = try(group_policy.secure_client.client_firewall_public_network_rules_access_list, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_extended_access_lists["${domain_path}:${group_policy.secure_client.client_firewall_public_network_rules_access_list}"].id
+            if contains(keys(local.map_extended_access_lists), "${domain_path}:${group_policy.secure_client.client_firewall_public_network_rules_access_list}")
+          })[0] : null
+          secure_client_custom_attributes = [for custom_attribute in try(group_policy.secure_client.custom_attributes, []) : {
+            id = values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_secure_client_custom_attributes["${domain_path}:${custom_attribute}"].id
+              if contains(keys(local.map_secure_client_custom_attributes), "${domain_path}:${custom_attribute}")
+            })[0]
+          }]
+          # Advanced
+          traffic_filter_access_list_id = try(group_policy.advanced.traffic_filter_access_list, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_extended_access_lists["${domain_path}:${group_policy.advanced.traffic_filter_access_list}"].id
+            if contains(keys(local.map_extended_access_lists), "${domain_path}:${group_policy.advanced.traffic_filter_access_list}")
+          })[0] : null
+          restrict_vpn_to_vlan = try(group_policy.advanced.restrict_vpn_to_vlan, null)
+          access_hours_time_range_id = try(group_policy.advanced.access_hours_time_range, null) != null ? values({
+            for domain_path in local.related_domains[domain.name] :
+            domain_path => local.map_time_ranges["${domain_path}:${group_policy.advanced.access_hours_time_range}"].id
+            if contains(keys(local.map_time_ranges), "${domain_path}:${group_policy.advanced.access_hours_time_range}")
+          })[0] : null
+          simultaneous_logins_per_user           = try(group_policy.advanced.simultaneous_logins_per_user, local.defaults.fmc.domains.objects.group_policies.advanced.simultaneous_logins_per_user, null)
+          maximum_connection_time                = try(group_policy.advanced.maximum_connection_time, local.defaults.fmc.domains.objects.group_policies.advanced.maximum_connection_time, null)
+          maximum_connection_time_alert_interval = try(group_policy.advanced.maximum_connection_time_alert_interval, local.defaults.fmc.domains.objects.group_policies.advanced.maximum_connection_time_alert_interval, null)
+          idle_timeout                           = try(group_policy.advanced.idle_timeout, local.defaults.fmc.domains.objects.group_policies.advanced.idle_timeout, null)
+          idle_timeout_alert_interval            = try(group_policy.advanced.idle_timeout_alert_interval, local.defaults.fmc.domains.objects.group_policies.advanced.idle_timeout_alert_interval, null)
+
+        } if !contains(try(keys(local.data_group_policy), {}), "${domain.name}:${group_policy.name}")
+      ]
+    ]) : "${item.domain}:${item.name}" => item
+  }
+}
+
+data "fmc_group_policy" "group_policy" {
+  for_each = local.data_group_policy
+
+  name   = each.value.name
+  domain = each.value.domain
+}
+
+resource "fmc_group_policy" "group_policy" {
+  for_each = local.resource_group_policy
+
+  domain      = each.value.domain
+  name        = each.value.name
+  description = each.value.description
+  # General
+  protocol_ssl                              = each.value.protocol_ssl
+  protocol_ipsec_ikev2                      = each.value.protocol_ipsec_ikev2
+  ipv4_address_pools                        = each.value.ipv4_address_pools
+  banner                                    = each.value.banner
+  primary_dns_server_host_id                = each.value.primary_dns_server_host_id
+  secondary_dns_server_host_id              = each.value.secondary_dns_server_host_id
+  primary_wins_server_host_id               = each.value.primary_wins_server_host_id
+  secondary_wins_server_host_id             = each.value.secondary_wins_server_host_id
+  default_domain                            = each.value.default_domain
+  ipv4_dhcp_network_scope_network_object_id = each.value.ipv4_dhcp_network_scope_network_object_id
+  ipv4_split_tunnel_policy                  = each.value.ipv4_split_tunnel_policy
+  ipv6_split_tunnel_policy                  = each.value.ipv6_split_tunnel_policy
+  split_tunnel_access_list_id               = each.value.split_tunnel_access_list_id
+  split_tunnel_access_list_type             = each.value.split_tunnel_access_list_type
+  dns_request_split_tunnel_policy           = each.value.dns_request_split_tunnel_policy
+  dns_request_split_tunnel_domains          = each.value.dns_request_split_tunnel_domains
+  # Secure Client
+  secure_client_profile_id                             = each.value.secure_client_profile_id
+  secure_client_management_profile_id                  = each.value.secure_client_management_profile_id
+  secure_client_modules                                = each.value.secure_client_modules
+  ssl_compression                                      = each.value.ssl_compression
+  dtls_compression                                     = each.value.dtls_compression
+  mtu_size                                             = each.value.mtu_size
+  ignore_df_bit                                        = each.value.ignore_df_bit
+  keep_alive_messages                                  = each.value.keep_alive_messages
+  keep_alive_messages_interval                         = each.value.keep_alive_messages_interval
+  gateway_dead_peer_detection                          = each.value.gateway_dead_peer_detection
+  gateway_dead_peer_detection_interval                 = each.value.gateway_dead_peer_detection_interval
+  client_dead_peer_detection                           = each.value.client_dead_peer_detection
+  client_dead_peer_detection_interval                  = each.value.client_dead_peer_detection_interval
+  client_bypass_protocol                               = each.value.client_bypass_protocol
+  ssl_rekey                                            = each.value.ssl_rekey
+  ssl_rekey_method                                     = each.value.ssl_rekey_method
+  ssl_rekey_interval                                   = each.value.ssl_rekey_interval
+  client_firewall_private_network_rules_access_list_id = each.value.client_firewall_private_network_rules_access_list_id
+  client_firewall_public_network_rules_access_list_id  = each.value.client_firewall_public_network_rules_access_list_id
+  secure_client_custom_attributes                      = each.value.secure_client_custom_attributes
+  # Advanced
+  traffic_filter_access_list_id          = each.value.traffic_filter_access_list_id
+  restrict_vpn_to_vlan                   = each.value.restrict_vpn_to_vlan
+  access_hours_time_range_id             = each.value.access_hours_time_range_id
+  simultaneous_logins_per_user           = each.value.simultaneous_logins_per_user
+  maximum_connection_time                = each.value.maximum_connection_time
+  maximum_connection_time_alert_interval = each.value.maximum_connection_time_alert_interval
+  idle_timeout                           = each.value.idle_timeout
+  idle_timeout_alert_interval            = each.value.idle_timeout_alert_interval
 }

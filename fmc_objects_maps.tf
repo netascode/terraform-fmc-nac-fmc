@@ -4,10 +4,10 @@
 ##########################################################
 
 ######
-### map_network_objects
+### map_hosts
 ######
 locals {
-  map_network_objects = merge(
+  map_hosts = merge(
 
     # Hosts - bulk mode outputs
     local.hosts_bulk ? merge([
@@ -25,6 +25,16 @@ locals {
         for host_name, host_values in hosts.items : "${domain}:${host_name}" => { id = host_values.id, type = host_values.type }
       }
     ]...),
+  )
+}
+
+######
+### map_network_objects
+######
+locals {
+  map_network_objects = merge(
+
+    local.map_hosts,
 
     # Networks - bulk mode outputs
     local.networks_bulk ? merge([
@@ -626,11 +636,22 @@ locals {
 locals {
   map_bfd_templates = merge(
 
+    # BFD Templates - bulk mode outputs
+    local.bfd_templates_bulk ? merge([
+      for domain, bfd_templates in fmc_bfd_templates.bfd_templates : {
+        for bfd_template_name, bfd_template_values in bfd_templates.items : "${domain}:${bfd_template_name}" => { id = bfd_template_values.id, type = bfd_template_values.type }
+      }
+    ]...) : {},
+
     # BFD Templates - individual mode outputs
-    { for key, resource in fmc_bfd_template.bfd_template : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+    !local.bfd_templates_bulk ? { for key, resource in fmc_bfd_template.bfd_template : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
 
     # BFD Templates - data sources
-    { for key, data_source in data.fmc_bfd_template.bfd_template : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+    merge([
+      for domain, bfd_templates in data.fmc_bfd_templates.bfd_templates : {
+        for bfd_template_name, bfd_template_values in bfd_templates.items : "${domain}:${bfd_template_name}" => { id = bfd_template_values.id, type = bfd_template_values.type }
+      }
+    ]...),
   )
 }
 
@@ -940,7 +961,6 @@ locals {
   )
 }
 
-
 ######
 ### map_certiticate_enrollments
 ######
@@ -948,16 +968,170 @@ locals {
   map_certificate_enrollments = merge(
 
     # Certificate Enrollments - individual mode outputs
-    { for key, resource in fmc_certificate_enrollment.certificate_enrollment : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+    { for key, resource in fmc_certificate_enrollment.certificate_enrollment : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type, name = resource.name } },
 
     # Certificate Enrollments ACME - individual mode outputs
-    { for key, resource in fmc_certificate_enrollment.certificate_enrollment_acme : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+    { for key, resource in fmc_certificate_enrollment.certificate_enrollment_acme : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type, name = resource.name } },
 
     # Certificate Enrollments - data sources
-    { for key, data_source in data.fmc_certificate_enrollment.certificate_enrollment : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+    { for key, data_source in data.fmc_certificate_enrollment.certificate_enrollment : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type, name = data_source.name } },
   )
 }
 
+######
+### map_trusted_certificate_authorities
+######
+locals {
+  map_trusted_certificate_authorities = merge(
+
+    # Trusted Certificate Authorities - individual mode outputs
+    { for key, resource in fmc_trusted_certificate_authority.trusted_certificate_authority : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+
+    # Trusted Certificate Authorities - data sources
+    { for key, data_source in data.fmc_trusted_certificate_authority.trusted_certificate_authority : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+  )
+}
+
+######
+### map_secure_client_profiles
+######
+locals {
+  map_secure_client_profiles = merge(
+
+    # Secure Client Profiles - individual mode outputs
+    { for key, resource in fmc_secure_client_profile.secure_client_profile : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type, file_type = resource.file_type } },
+
+    # Secure Client Profiles - data sources
+    { for key, data_source in data.fmc_secure_client_profile.secure_client_profile : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type, file_type = data_source.file_type } },
+  )
+}
+
+######
+### map_secure_client_custom_attributes
+######
+locals {
+  map_secure_client_custom_attributes = merge(
+
+    # Secure Client Custom Attributes - individual mode outputs
+    { for key, resource in fmc_secure_client_custom_attribute.secure_client_custom_attribute : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+
+    # Secure Client Custom Attributes - data sources
+    { for key, data_source in data.fmc_secure_client_custom_attribute.secure_client_custom_attribute : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+  )
+}
+
+######
+### map_secure_client_images
+######
+locals {
+  map_secure_client_images = merge(
+
+    # Secure Client Images - individual mode outputs
+    { for key, resource in fmc_secure_client_image.secure_client_image : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+
+    # Secure Client Images - data sources
+    { for key, data_source in data.fmc_secure_client_image.secure_client_image : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+  )
+}
+
+######
+### map_secure_client_customizations
+######
+locals {
+  map_secure_client_customizations = merge(
+
+    # Secure Client Customizations - individual mode outputs
+    { for key, resource in fmc_secure_client_customization.secure_client_customization : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+
+    # Secure Client Customizations - data sources
+    { for key, data_source in data.fmc_secure_client_customization.secure_client_customization : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+  )
+}
+
+######
+### map_service_accesses
+######
+locals {
+  map_service_accesses = merge(
+
+    # Service Access - individual mode outputs
+    { for key, resource in fmc_service_access.service_access : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+
+    # Service Access - data sources
+    merge([
+      for domain, service_accesses in data.fmc_service_access.service_access : {
+        for service_access_name, service_access_values in service_accesses.items : "${domain}:${service_access_name}" => { id = service_access_values.id, type = service_access_values.type }
+      }
+    ]...)
+  )
+}
+
+######
+### map_group_policies
+######
+locals {
+  map_group_policies = merge(
+
+    # Group Policies - individual mode outputs
+    { for key, resource in fmc_group_policy.group_policy : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+
+    # Group Policies - data sources
+    { for key, data_source in data.fmc_group_policy.group_policy : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+  )
+}
+
+######
+### map_radius_server_groups
+######
+locals {
+  map_radius_server_groups = merge(
+
+    # Radius Server Groups - individual mode outputs
+    { for key, resource in fmc_radius_server_group.radius_server_group : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+
+    # Radius Server Groups - data sources
+    { for key, data_source in data.fmc_radius_server_group.radius_server_group : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+  )
+}
+
+######
+### map_single_sign_on_servers
+######
+locals {
+  map_single_sign_on_servers = merge(
+
+    # Single Sign On Servers - individual mode outputs
+    { for key, resource in fmc_single_sign_on_server.single_sign_on_server : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+
+    # Single Sign On Servers - data sources
+    { for key, data_source in data.fmc_single_sign_on_server.single_sign_on_server : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
+  )
+}
+
+######
+### map_certificate_maps
+######
+locals {
+  map_certificate_maps = merge(
+
+    # Certificate Maps - bulk mode outputs
+    local.certificate_maps_bulk ? merge([
+      for domain, certificate_maps in fmc_certificate_maps.certificate_maps : {
+        for certificate_map_name, certificate_map_values in certificate_maps.items : "${domain}:${certificate_map_name}" => { id = certificate_map_values.id, type = certificate_map_values.type }
+      }
+    ]...) : {},
+
+    # Certificate Maps - individual mode outputs
+    !local.certificate_maps_bulk ? { for key, resource in fmc_certificate_map.certificate_map : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # Certificate Maps - data sources
+    merge([
+      for domain, certificate_maps in data.fmc_certificate_maps.certificate_maps : {
+        for certificate_map_name, certificate_map_values in certificate_maps.items : "${domain}:${certificate_map_name}" => { id = certificate_map_values.id, type = certificate_map_values.type }
+      }
+    ]...),
+  )
+}
 
 ######
 ### FAKE - TODO
