@@ -472,6 +472,11 @@ resource "fmc_vpn_ra" "vpn_ra" {
   secure_client_images                               = each.value.secure_client_images
   group_policies                                     = each.value.group_policies
   ikev2_policies                                     = each.value.ikev2_policies
+
+  depends_on = [
+    fmc_ikev2_ipsec_proposal.ikev2_ipsec_proposal,
+    fmc_ikev2_ipsec_proposals.ikev2_ipsec_proposals,
+  ]
 }
 
 ##########################################################
