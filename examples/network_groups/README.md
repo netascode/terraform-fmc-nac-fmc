@@ -35,9 +35,9 @@ existing:
   fmc:
     domains:
       - name: Global
-  
+
         objects:
-  
+
           networks:
             - name: any-ipv4
 ```
