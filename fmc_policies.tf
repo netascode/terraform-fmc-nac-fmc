@@ -447,8 +447,8 @@ locals {
             destination_interface_id = try(auto_rule.destination_interface, "") != "" ? try(
               values({
                 for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_security_zones["${domain_path}:${auto_rule.destination_interface}"].id
-                if contains(keys(local.map_security_zones), "${domain_path}:${auto_rule.destination_interface}")
+                domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${auto_rule.destination_interface}"].id
+                if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${auto_rule.destination_interface}")
             })[0]) : null
             fall_through = try(auto_rule.fall_through, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.fall_through, null)
             ipv6         = try(auto_rule.ipv6, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.ipv6, null)
@@ -467,8 +467,8 @@ locals {
             source_interface_id = try(auto_rule.source_interface, null) != null ? try(
               values({
                 for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_security_zones["${domain_path}:${auto_rule.source_interface}"].id
-                if contains(keys(local.map_security_zones), "${domain_path}:${auto_rule.source_interface}")
+                domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${auto_rule.source_interface}"].id
+                if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${auto_rule.source_interface}")
             })[0]) : null
             translate_dns = try(auto_rule.translate_dns, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.translate_dns, null)
             translated_network_id = try(auto_rule.translated_network, null) != null ? try(
@@ -926,9 +926,11 @@ locals {
                 )
               }]
               destination_port_literals = [for destination_port_literal in try(rule.destination_port_literals, []) : {
-                protocol = local.help_protocol_mapping[destination_port_literal.protocol]
-                port     = try(destination_port_literal.port, null)
-                #type      = destination_port_literal.protocol == "ICMP" ? "ICMPv4PortLiteral" : "PortLiteral"
+                protocol  = local.help_protocol_mapping[destination_port_literal.protocol]
+                port      = try(destination_port_literal.port, null)
+                icmp_type = try(destination_port_literal.icmp_type, null)
+                icmp_code = try(destination_port_literal.icmp_code, null)
+                type      = destination_port_literal.protocol == "ICMP" ? "ICMPv4PortLiteral" : "PortLiteral"
               }]
               destination_port_objects = [for destination_port_object in try(rule.destination_port_objects, []) : {
                 id = try(
@@ -1013,9 +1015,11 @@ locals {
                 )
               }]
               source_port_literals = [for source_port_literal in try(rule.source_port_literals, []) : {
-                protocol = local.help_protocol_mapping[source_port_literal.protocol]
-                port     = try(source_port_literal.port, null)
-                #type      = source_port_literal.protocol == "ICMP" ? "ICMPv4PortLiteral" : "PortLiteral"
+                protocol  = local.help_protocol_mapping[source_port_literal.protocol]
+                port      = try(source_port_literal.port, null)
+                icmp_type = try(source_port_literal.icmp_type, null)
+                icmp_code = try(source_port_literal.icmp_code, null)
+                type      = source_port_literal.protocol == "ICMP" ? "ICMPv4PortLiteral" : "PortLiteral"
               }]
               source_port_objects = [for source_port_object in try(rule.source_port_objects, []) : {
                 id = try(
