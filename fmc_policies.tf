@@ -212,8 +212,8 @@ locals {
                 )
               }]
               source_port_literals = [for source_port_literal in try(rule.source_port_literals, []) : {
-                protocol  = local.help_protocol_mapping[source_port_literal.protocol]
-                port      = try(source_port_literal.port, null)
+                protocol = local.help_protocol_mapping[source_port_literal.protocol]
+                port     = try(source_port_literal.port, null)
               }]
               source_port_objects = [for source_port_object in try(rule.source_port_objects, []) : {
                 id = try(
@@ -1008,8 +1008,8 @@ locals {
                 )
               }]
               source_port_literals = [for source_port_literal in try(rule.source_port_literals, []) : {
-                protocol  = local.help_protocol_mapping[source_port_literal.protocol]
-                port      = try(source_port_literal.port, null)
+                protocol = local.help_protocol_mapping[source_port_literal.protocol]
+                port     = try(source_port_literal.port, null)
               }]
               source_port_objects = [for source_port_object in try(rule.source_port_objects, []) : {
                 id = try(
