@@ -1,4 +1,12 @@
-## 0.1.1 (Unreleased)
+## Unreleased
+
+- Set of minor fixes 
+
+## 0.1.2
+
+- Add support for Remote Access VPN
+
+## 0.1.1
 
 - (BREAKING CHANGE): Moved configuration of standby IP for High Availability Pairs
 - Add `interface_group` support (no interface assignment)
