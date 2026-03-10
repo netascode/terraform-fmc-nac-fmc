@@ -14,9 +14,11 @@ locals {
   )
 
   help_protocol_mapping = {
+    "ICMP" = "1",
+    "IGMP" = "2",
     "TCP"  = "6",
     "UDP"  = "17",
-    "ICMP" = "1",
+    "RDP"  = "27",
     "GRE"  = "47",
     "ESP"  = "50",
     "AH"   = "51",

@@ -214,9 +214,6 @@ locals {
               source_port_literals = [for source_port_literal in try(rule.source_port_literals, []) : {
                 protocol  = local.help_protocol_mapping[source_port_literal.protocol]
                 port      = try(source_port_literal.port, null)
-                icmp_type = try(source_port_literal.icmp_type, null)
-                icmp_code = try(source_port_literal.icmp_code, null)
-                type      = source_port_literal.protocol == "ICMP" ? "ICMPv4PortLiteral" : "PortLiteral"
               }]
               source_port_objects = [for source_port_object in try(rule.source_port_objects, []) : {
                 id = try(
@@ -281,11 +278,7 @@ locals {
               }]
 
               applications = [for application in try(rule.applications, []) : {
-                id = values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => data.fmc_applications.applications[domain_path].items[application].id
-                  if contains(keys(try(data.fmc_applications.applications[domain_path].items, {})), application)
-                })[0],
+                id = data.fmc_applications.applications["Global"].items[application].id,
               }]
 
               application_filter_objects = [for application_filter_object in try(rule.application_filter_objects, []) : {
@@ -1017,9 +1010,6 @@ locals {
               source_port_literals = [for source_port_literal in try(rule.source_port_literals, []) : {
                 protocol  = local.help_protocol_mapping[source_port_literal.protocol]
                 port      = try(source_port_literal.port, null)
-                icmp_type = try(source_port_literal.icmp_type, null)
-                icmp_code = try(source_port_literal.icmp_code, null)
-                type      = source_port_literal.protocol == "ICMP" ? "ICMPv4PortLiteral" : "PortLiteral"
               }]
               source_port_objects = [for source_port_object in try(rule.source_port_objects, []) : {
                 id = try(

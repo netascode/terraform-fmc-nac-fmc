@@ -2405,9 +2405,6 @@ locals {
             source_port_literals = [for source_port_literal in try(entry.source_port_literals, []) : {
               protocol  = local.help_protocol_mapping[source_port_literal.protocol]
               port      = try(source_port_literal.port, null)
-              icmp_type = try(source_port_literal.icmp_type, null)
-              icmp_code = try(source_port_literal.icmp_code, null)
-              type      = source_port_literal.protocol == "ICMP" ? "ICMPv4PortLiteral" : "PortLiteral"
             }]
             source_sgt_objects = [for source_sgt_object in try(entry.source_sgt_objects, []) : {
               id = try(
