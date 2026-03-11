@@ -98,8 +98,7 @@ locals {
                     for domain_path in local.related_domains[domain.name] :
                     domain_path => local.map_network_group_objects["${domain_path}:${destination_network_object}"].id
                     if contains(keys(local.map_network_group_objects), "${domain_path}:${destination_network_object}")
-                  })[0],
-                  tobool("ERROR: destination_network_object '${destination_network_object}' not found in domain '${domain.name}'. Related domains: ${jsonencode(local.related_domains[domain.name])}")
+                  })[0]
                 )
                 type = try(
                   values({

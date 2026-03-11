@@ -95,9 +95,23 @@ locals {
 locals {
   map_network_group_objects = merge(
 
-    # Network Groups - bulk mode outputs
+    # Network Groups - level 0 (depth-0 domains)
     merge([
       for domain, network_groups in fmc_network_groups.network_groups : {
+        for network_group_name, network_group_values in network_groups.items : "${domain}:${network_group_name}" => { id = network_group_values.id, type = network_group_values.type }
+      }
+    ]...),
+
+    # Network Groups - level 1 (depth-1 domains)
+    merge([
+      for domain, network_groups in fmc_network_groups.network_groups_l1 : {
+        for network_group_name, network_group_values in network_groups.items : "${domain}:${network_group_name}" => { id = network_group_values.id, type = network_group_values.type }
+      }
+    ]...),
+
+    # Network Groups - level 2 (depth-2 domains)
+    merge([
+      for domain, network_groups in fmc_network_groups.network_groups_l2 : {
         for network_group_name, network_group_values in network_groups.items : "${domain}:${network_group_name}" => { id = network_group_values.id, type = network_group_values.type }
       }
     ]...),

@@ -13,6 +13,11 @@ locals {
     }
   )
 
+  # Depth of each domain: "Global" = 0, "Global/Sub" = 1, "Global/Sub/SubSub" = 2
+  domain_depth = {
+    for domain in local.domains : domain.name => length(split("/", domain.name)) - 1
+  }
+
   help_protocol_mapping = {
     "ALL"  = "-9999",
     "ICMP" = "1",

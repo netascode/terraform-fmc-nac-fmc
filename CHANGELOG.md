@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Add support for cross-domain reference for network groups. NOTE: This will re-create all the network groups created in FMC sub-domains
 - Set of minor fixes 
 
 ## 0.1.2

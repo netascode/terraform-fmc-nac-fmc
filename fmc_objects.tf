@@ -265,8 +265,12 @@ locals {
     } if length(try(domain.objects.network_groups, [])) > 0
   }
 
-  # Helper list of all network object names and network group data source names
-  help_network_objects = flatten([
+  ##########################################################
+  # Level 0 — depth-0 domains (e.g. "Global")
+  ##########################################################
+
+  # Helper list: network objects + data source network groups (no prior-level network groups for level 0)
+  help_network_objects_l0 = flatten([
     flatten([for item in keys(local.map_network_objects) : item]),
     flatten([for domain in keys(local.data_network_groups) : [for k in keys(local.data_network_groups[domain].items) : "${domain}:${k}"]])
   ])
@@ -295,17 +299,141 @@ locals {
           name = object_item
           } if anytrue([
             for domain_path in local.related_domains[domain.name] :
-            contains(local.help_network_objects, "${domain_path}:${object_item}")
+            contains(local.help_network_objects_l0, "${domain_path}:${object_item}")
           ])
         ]
         network_groups = [for object_item in try(network_group.objects, []) : object_item if !anytrue([
           for domain_path in local.related_domains[domain.name] :
-          contains(local.help_network_objects, "${domain_path}:${object_item}")
+          contains(local.help_network_objects_l0, "${domain_path}:${object_item}")
         ])]
         description = try(network_group.description, local.defaults.fmc.domains.objects.network_groups.description, null)
         overridable = try(network_group.overridable, local.defaults.fmc.domains.objects.network_groups.overridable, null)
       } if !contains(try(keys(local.data_network_groups[domain.name].items), []), network_group.name)
     } if length(try(domain.objects.network_groups, [])) > 0
+      && try(local.domain_depth[domain.name], 0) == 0
+  }
+
+  ##########################################################
+  # Level 1 — depth-1 domains (e.g. "Global/Sub")
+  ##########################################################
+
+  # Network groups created at level 0, keyed as "domain:name" => { id, type }
+  prior_ng_objects_l1 = merge([
+    for domain, network_groups in fmc_network_groups.network_groups : {
+      for network_group_name, network_group_values in network_groups.items : "${domain}:${network_group_name}" => { id = network_group_values.id, type = network_group_values.type }
+    }
+  ]...)
+
+  # Helper list: base objects + level-0 network group outputs
+  help_network_objects_l1 = concat(
+    local.help_network_objects_l0,
+    keys(local.prior_ng_objects_l1)
+  )
+
+  resource_network_groups_l1 = {
+    for domain in local.domains : domain.name => {
+      for network_group in try(domain.objects.network_groups, {}) : network_group.name => {
+        name   = network_group.name
+        domain = domain.name
+        literals = [for literal in try(network_group.literals, []) : {
+          value = literal
+        }]
+        objects = [for object_item in try(network_group.objects, []) : {
+          id = try(
+            values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_network_objects["${domain_path}:${object_item}"].id
+              if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")
+            })[0],
+            values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => data.fmc_network_groups.network_groups[domain_path].items[object_item].id
+              if contains(keys(try(data.fmc_network_groups.network_groups[domain_path].items, {})), object_item)
+            })[0],
+            values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.prior_ng_objects_l1["${domain_path}:${object_item}"].id
+              if contains(keys(local.prior_ng_objects_l1), "${domain_path}:${object_item}")
+            })[0],
+          )
+          name = object_item
+          } if anytrue([
+            for domain_path in local.related_domains[domain.name] :
+            contains(local.help_network_objects_l1, "${domain_path}:${object_item}")
+          ])
+        ]
+        network_groups = [for object_item in try(network_group.objects, []) : object_item if !anytrue([
+          for domain_path in local.related_domains[domain.name] :
+          contains(local.help_network_objects_l1, "${domain_path}:${object_item}")
+        ])]
+        description = try(network_group.description, local.defaults.fmc.domains.objects.network_groups.description, null)
+        overridable = try(network_group.overridable, local.defaults.fmc.domains.objects.network_groups.overridable, null)
+      } if !contains(try(keys(local.data_network_groups[domain.name].items), []), network_group.name)
+    } if length(try(domain.objects.network_groups, [])) > 0
+      && try(local.domain_depth[domain.name], 0) == 1
+  }
+
+  ##########################################################
+  # Level 2 — depth-2 domains (e.g. "Global/Sub/SubSub")
+  ##########################################################
+
+  # Network groups created at level 0 + level 1, keyed as "domain:name" => { id, type }
+  prior_ng_objects_l2 = merge(
+    local.prior_ng_objects_l1,
+    merge([
+      for domain, network_groups in fmc_network_groups.network_groups_l1 : {
+        for network_group_name, network_group_values in network_groups.items : "${domain}:${network_group_name}" => { id = network_group_values.id, type = network_group_values.type }
+      }
+    ]...)
+  )
+
+  # Helper list: base objects + level-0 + level-1 network group outputs
+  help_network_objects_l2 = concat(
+    local.help_network_objects_l0,
+    keys(local.prior_ng_objects_l2)
+  )
+
+  resource_network_groups_l2 = {
+    for domain in local.domains : domain.name => {
+      for network_group in try(domain.objects.network_groups, {}) : network_group.name => {
+        name   = network_group.name
+        domain = domain.name
+        literals = [for literal in try(network_group.literals, []) : {
+          value = literal
+        }]
+        objects = [for object_item in try(network_group.objects, []) : {
+          id = try(
+            values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_network_objects["${domain_path}:${object_item}"].id
+              if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")
+            })[0],
+            values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => data.fmc_network_groups.network_groups[domain_path].items[object_item].id
+              if contains(keys(try(data.fmc_network_groups.network_groups[domain_path].items, {})), object_item)
+            })[0],
+            values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.prior_ng_objects_l2["${domain_path}:${object_item}"].id
+              if contains(keys(local.prior_ng_objects_l2), "${domain_path}:${object_item}")
+            })[0],
+          )
+          name = object_item
+          } if anytrue([
+            for domain_path in local.related_domains[domain.name] :
+            contains(local.help_network_objects_l2, "${domain_path}:${object_item}")
+          ])
+        ]
+        network_groups = [for object_item in try(network_group.objects, []) : object_item if !anytrue([
+          for domain_path in local.related_domains[domain.name] :
+          contains(local.help_network_objects_l2, "${domain_path}:${object_item}")
+        ])]
+        description = try(network_group.description, local.defaults.fmc.domains.objects.network_groups.description, null)
+        overridable = try(network_group.overridable, local.defaults.fmc.domains.objects.network_groups.overridable, null)
+      } if !contains(try(keys(local.data_network_groups[domain.name].items), []), network_group.name)
+    } if length(try(domain.objects.network_groups, [])) > 0
+      && try(local.domain_depth[domain.name], 0) == 2
   }
 }
 
@@ -316,8 +444,25 @@ data "fmc_network_groups" "network_groups" {
   domain = each.key
 }
 
+# Level 0 — depth-0 domains (keep existing resource name for backward compatibility)
 resource "fmc_network_groups" "network_groups" {
   for_each = local.resource_network_groups
+
+  domain = each.key
+  items  = { for network_group in each.value : network_group.name => network_group }
+}
+
+# Level 1 — depth-1 domains
+resource "fmc_network_groups" "network_groups_l1" {
+  for_each = local.resource_network_groups_l1
+
+  domain = each.key
+  items  = { for network_group in each.value : network_group.name => network_group }
+}
+
+# Level 2 — depth-2 domains
+resource "fmc_network_groups" "network_groups_l2" {
+  for_each = local.resource_network_groups_l2
 
   domain = each.key
   items  = { for network_group in each.value : network_group.name => network_group }
