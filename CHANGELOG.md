@@ -1,6 +1,7 @@
 ## Unreleased
 
-- Add support for cross-domain reference for network groups. NOTE: This will re-create all the network groups created in FMC sub-domains
+- (BREAKING CHANGE): Add support for cross-domain reference for network groups. This will re-create all the network groups created in FMC sub-domains.
+- Add support for geolocation in Access Control Policy Rules
 - Set of minor fixes 
 
 ## 0.1.2
