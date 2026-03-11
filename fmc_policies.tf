@@ -87,32 +87,53 @@ locals {
                 value = destination_network_literal
                 type  = strcontains(destination_network_literal, "/") ? "Network" : "Host"
               }]
-              destination_network_objects = [for destination_network_object in try(rule.destination_network_objects, []) : {
-                id = try(
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_objects["${domain_path}:${destination_network_object}"].id
-                    if contains(keys(local.map_network_objects), "${domain_path}:${destination_network_object}")
-                  })[0],
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_group_objects["${domain_path}:${destination_network_object}"].id
-                    if contains(keys(local.map_network_group_objects), "${domain_path}:${destination_network_object}")
-                  })[0]
-                )
-                type = try(
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_objects["${domain_path}:${destination_network_object}"].type
-                    if contains(keys(local.map_network_objects), "${domain_path}:${destination_network_object}")
-                  })[0],
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_group_objects["${domain_path}:${destination_network_object}"].type
-                    if contains(keys(local.map_network_group_objects), "${domain_path}:${destination_network_object}")
-                  })[0],
-                )
-              }]
+              destination_network_objects = concat(
+                [for destination_network_object in try(rule.destination_network_objects, []) : {
+                  id = try(
+                    values({
+                      for domain_path in local.related_domains[domain.name] :
+                      domain_path => local.map_network_objects["${domain_path}:${destination_network_object}"].id
+                      if contains(keys(local.map_network_objects), "${domain_path}:${destination_network_object}")
+                    })[0],
+                    values({
+                      for domain_path in local.related_domains[domain.name] :
+                      domain_path => local.map_network_group_objects["${domain_path}:${destination_network_object}"].id
+                      if contains(keys(local.map_network_group_objects), "${domain_path}:${destination_network_object}")
+                    })[0]
+                  )
+                  type = try(
+                    values({
+                      for domain_path in local.related_domains[domain.name] :
+                      domain_path => local.map_network_objects["${domain_path}:${destination_network_object}"].type
+                      if contains(keys(local.map_network_objects), "${domain_path}:${destination_network_object}")
+                    })[0],
+                    values({
+                      for domain_path in local.related_domains[domain.name] :
+                      domain_path => local.map_network_group_objects["${domain_path}:${destination_network_object}"].type
+                      if contains(keys(local.map_network_group_objects), "${domain_path}:${destination_network_object}")
+                    })[0],
+                  )
+                }],
+                [for destination_geolocation in try(rule.destination_geolocations, []) : {
+                  id = try(
+                    data.fmc_countries.countries["Global"].items[destination_geolocation].id,
+                    data.fmc_continents.continents["Global"].items[destination_geolocation].id,
+                    values({
+                      for domain_path in local.related_domains[domain.name] :
+                      domain_path => local.map_geolocation_sources["${domain_path}:${destination_geolocation}"].id
+                      if contains(keys(local.map_geolocation_sources), "${domain_path}:${destination_geolocation}")
+                    })[0],
+                  )
+                  type = try(
+                    data.fmc_countries.countries["Global"].items[destination_geolocation].type,
+                    data.fmc_continents.continents["Global"].items[destination_geolocation].type,
+                    values({
+                      for domain_path in local.related_domains[domain.name] :
+                      domain_path => local.map_geolocation_sources["${domain_path}:${destination_geolocation}"].type
+                      if contains(keys(local.map_geolocation_sources), "${domain_path}:${destination_geolocation}")
+                    })[0],
+                  )
+              }])
               destination_port_literals = [for destination_port_literal in try(rule.destination_port_literals, []) : {
                 protocol  = local.help_protocol_mapping[destination_port_literal.protocol]
                 port      = try(destination_port_literal.port, null)
@@ -184,32 +205,53 @@ locals {
                 value = source_network_literal
                 type  = strcontains(source_network_literal, "/") ? "Network" : "Host"
               }]
-              source_network_objects = [for source_network_object in try(rule.source_network_objects, []) : {
-                id = try(
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_objects["${domain_path}:${source_network_object}"].id
-                    if contains(keys(local.map_network_objects), "${domain_path}:${source_network_object}")
-                  })[0],
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_group_objects["${domain_path}:${source_network_object}"].id
-                    if contains(keys(local.map_network_group_objects), "${domain_path}:${source_network_object}")
-                  })[0],
-                )
-                type = try(
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_objects["${domain_path}:${source_network_object}"].type
-                    if contains(keys(local.map_network_objects), "${domain_path}:${source_network_object}")
-                  })[0],
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_group_objects["${domain_path}:${source_network_object}"].type
-                    if contains(keys(local.map_network_group_objects), "${domain_path}:${source_network_object}")
-                  })[0],
-                )
-              }]
+              source_network_objects = concat(
+                [for source_network_object in try(rule.source_network_objects, []) : {
+                  id = try(
+                    values({
+                      for domain_path in local.related_domains[domain.name] :
+                      domain_path => local.map_network_objects["${domain_path}:${source_network_object}"].id
+                      if contains(keys(local.map_network_objects), "${domain_path}:${source_network_object}")
+                    })[0],
+                    values({
+                      for domain_path in local.related_domains[domain.name] :
+                      domain_path => local.map_network_group_objects["${domain_path}:${source_network_object}"].id
+                      if contains(keys(local.map_network_group_objects), "${domain_path}:${source_network_object}")
+                    })[0],
+                  )
+                  type = try(
+                    values({
+                      for domain_path in local.related_domains[domain.name] :
+                      domain_path => local.map_network_objects["${domain_path}:${source_network_object}"].type
+                      if contains(keys(local.map_network_objects), "${domain_path}:${source_network_object}")
+                    })[0],
+                    values({
+                      for domain_path in local.related_domains[domain.name] :
+                      domain_path => local.map_network_group_objects["${domain_path}:${source_network_object}"].type
+                      if contains(keys(local.map_network_group_objects), "${domain_path}:${source_network_object}")
+                    })[0],
+                  )
+                }],
+                [for source_geolocation in try(rule.source_geolocations, []) : {
+                  id = try(
+                    data.fmc_countries.countries["Global"].items[source_geolocation].id,
+                    data.fmc_continents.continents["Global"].items[source_geolocation].id,
+                    values({
+                      for domain_path in local.related_domains[domain.name] :
+                      domain_path => local.map_geolocation_sources["${domain_path}:${source_geolocation}"].id
+                      if contains(keys(local.map_geolocation_sources), "${domain_path}:${source_geolocation}")
+                    })[0],
+                  )
+                  type = try(
+                    data.fmc_countries.countries["Global"].items[source_geolocation].type,
+                    data.fmc_continents.continents["Global"].items[source_geolocation].type,
+                    values({
+                      for domain_path in local.related_domains[domain.name] :
+                      domain_path => local.map_geolocation_sources["${domain_path}:${source_geolocation}"].type
+                      if contains(keys(local.map_geolocation_sources), "${domain_path}:${source_geolocation}")
+                    })[0],
+                  )
+              }])
               source_port_literals = [for source_port_literal in try(rule.source_port_literals, []) : {
                 protocol = local.help_protocol_mapping[source_port_literal.protocol]
                 port     = try(source_port_literal.port, null)

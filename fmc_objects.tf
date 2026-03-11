@@ -310,7 +310,7 @@ locals {
         overridable = try(network_group.overridable, local.defaults.fmc.domains.objects.network_groups.overridable, null)
       } if !contains(try(keys(local.data_network_groups[domain.name].items), []), network_group.name)
     } if length(try(domain.objects.network_groups, [])) > 0
-      && try(local.domain_depth[domain.name], 0) == 0
+    && try(local.domain_depth[domain.name], 0) == 0
   }
 
   ##########################################################
@@ -370,7 +370,7 @@ locals {
         overridable = try(network_group.overridable, local.defaults.fmc.domains.objects.network_groups.overridable, null)
       } if !contains(try(keys(local.data_network_groups[domain.name].items), []), network_group.name)
     } if length(try(domain.objects.network_groups, [])) > 0
-      && try(local.domain_depth[domain.name], 0) == 1
+    && try(local.domain_depth[domain.name], 0) == 1
   }
 
   ##########################################################
@@ -433,7 +433,7 @@ locals {
         overridable = try(network_group.overridable, local.defaults.fmc.domains.objects.network_groups.overridable, null)
       } if !contains(try(keys(local.data_network_groups[domain.name].items), []), network_group.name)
     } if length(try(domain.objects.network_groups, [])) > 0
-      && try(local.domain_depth[domain.name], 0) == 2
+    && try(local.domain_depth[domain.name], 0) == 2
   }
 }
 
