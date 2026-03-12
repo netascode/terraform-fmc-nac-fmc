@@ -2,6 +2,7 @@
 
 - (BREAKING CHANGE): Add support for cross-domain reference for network groups. This will re-create all the network groups created in FMC sub-domains.
 - Add support for geolocation in Access Control Policy Rules
+- Add support for PAT Options in FTD NAT rules
 - Set of minor fixes 
 
 ## 0.1.2

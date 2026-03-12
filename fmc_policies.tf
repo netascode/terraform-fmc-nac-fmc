@@ -519,6 +519,19 @@ locals {
             ) : null
             translated_network_is_destination_interface = try(auto_rule.translated_network_is_destination_interface, null)
             translated_port                             = try(auto_rule.translated_port, null)
+            pat_block_allocation                        = try(auto_rule.pat_block_allocation, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.pat_block_allocation, null)
+            pat_extended_table                          = try(auto_rule.pat_extended_table, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.pat_extended_table, null)
+            pat_flat_port_range                         = try(auto_rule.pat_flat_port_range, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.pat_flat_port_range, null)
+            pat_include_reserved_ports                  = try(auto_rule.pat_include_reserved_ports, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.pat_include_reserved_ports, null)
+            pat_round_robin_allocation                  = try(auto_rule.pat_round_robin_allocation, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.pat_round_robin_allocation, null)
+            pat_use_interface_address                   = try(auto_rule.pat_use_interface_address, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.pat_use_interface_address, null)
+            pat_address_pool_id = try(auto_rule.pat_address_pool, null) != null ? try(
+              values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_network_objects["${domain_path}:${auto_rule.pat_address_pool}"].id
+                if contains(keys(local.map_network_objects), "${domain_path}:${auto_rule.pat_address_pool}")
+              })[0],
+            ) : null
           }]
 
           manual_nat_rules = [for manual_rule in try(ftd_nat_policy.manual_nat_rules, []) : {
@@ -631,7 +644,20 @@ locals {
                 if contains(keys(local.map_port_groups), "${domain_path}:${manual_rule.translated_source_port}")
               })[0],
             ) : null
-            unidirectional = try(manual_rule.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_nat_rules.unidirectional, null)
+            unidirectional             = try(manual_rule.unidirectional, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_nat_rules.unidirectional, null)
+            pat_block_allocation       = try(manual_rule.pat_block_allocation, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_rule.pat_block_allocation, null)
+            pat_extended_table         = try(manual_rule.pat_extended_table, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_rule.pat_extended_table, null)
+            pat_flat_port_range        = try(manual_rule.pat_flat_port_range, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_rule.pat_flat_port_range, null)
+            pat_include_reserved_ports = try(manual_rule.pat_include_reserved_ports, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_rule.pat_include_reserved_ports, null)
+            pat_round_robin_allocation = try(manual_rule.pat_round_robin_allocation, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_rule.pat_round_robin_allocation, null)
+            pat_use_interface_address  = try(manual_rule.pat_use_interface_address, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_rule.pat_use_interface_address, null)
+            pat_address_pool_id = try(manual_rule.pat_address_pool, null) != null ? try(
+              values({
+                for domain_path in local.related_domains[domain.name] :
+                domain_path => local.map_network_objects["${domain_path}:${manual_rule.pat_address_pool}"].id
+                if contains(keys(local.map_network_objects), "${domain_path}:${manual_rule.pat_address_pool}")
+              })[0],
+            ) : null
           }]
         } if !contains(try(keys(local.data_ftd_nat_policy), []), ftd_nat_policy.name)
       ]
