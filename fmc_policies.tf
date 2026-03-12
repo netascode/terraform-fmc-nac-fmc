@@ -525,11 +525,11 @@ locals {
             pat_include_reserved_ports                  = try(auto_rule.pat_include_reserved_ports, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.pat_include_reserved_ports, null)
             pat_round_robin_allocation                  = try(auto_rule.pat_round_robin_allocation, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.pat_round_robin_allocation, null)
             pat_use_interface_address                   = try(auto_rule.pat_use_interface_address, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.pat_use_interface_address, null)
-            pat_address_pool_id = try(auto_rule.pat_address_pool, null) != null ? try(
+            pat_address_object_id = try(auto_rule.pat_address, null) != null ? try(
               values({
                 for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_network_objects["${domain_path}:${auto_rule.pat_address_pool}"].id
-                if contains(keys(local.map_network_objects), "${domain_path}:${auto_rule.pat_address_pool}")
+                domain_path => local.map_network_objects["${domain_path}:${auto_rule.pat_address}"].id
+                if contains(keys(local.map_network_objects), "${domain_path}:${auto_rule.pat_address}")
               })[0],
             ) : null
           }]
@@ -651,11 +651,11 @@ locals {
             pat_include_reserved_ports = try(manual_rule.pat_include_reserved_ports, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_rule.pat_include_reserved_ports, null)
             pat_round_robin_allocation = try(manual_rule.pat_round_robin_allocation, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_rule.pat_round_robin_allocation, null)
             pat_use_interface_address  = try(manual_rule.pat_use_interface_address, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_rule.pat_use_interface_address, null)
-            pat_address_pool_id = try(manual_rule.pat_address_pool, null) != null ? try(
+            pat_address_object_id = try(manual_rule.pat_address, null) != null ? try(
               values({
                 for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_network_objects["${domain_path}:${manual_rule.pat_address_pool}"].id
-                if contains(keys(local.map_network_objects), "${domain_path}:${manual_rule.pat_address_pool}")
+                domain_path => local.map_network_objects["${domain_path}:${manual_rule.pat_address}"].id
+                if contains(keys(local.map_network_objects), "${domain_path}:${manual_rule.pat_address}")
               })[0],
             ) : null
           }]
