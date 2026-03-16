@@ -1691,8 +1691,8 @@ locals {
         entries = [for entry in ipv4_prefix_list.entries : {
           action            = entry.action
           prefix            = entry.prefix
-          min_prefix_length = entry.min_prefix_length
-          max_prefix_length = entry.max_prefix_length
+          min_prefix_length = try(entry.min_prefix_length, null)
+          max_prefix_length = try(entry.max_prefix_length, null)
         }]
       } if !contains(try(keys(local.data_ipv4_prefix_lists[domain.name].items), []), ipv4_prefix_list.name)
     ] if length(try(domain.objects.ipv4_prefix_lists, [])) > 0
@@ -1755,8 +1755,8 @@ locals {
         entries = [for entry in ipv6_prefix_list.entries : {
           action            = entry.action
           prefix            = entry.prefix
-          min_prefix_length = entry.min_prefix_length
-          max_prefix_length = entry.max_prefix_length
+          min_prefix_length = try(entry.min_prefix_length, null)
+          max_prefix_length = try(entry.max_prefix_length, null)
         }]
       } if !contains(try(keys(local.data_ipv6_prefix_lists[domain.name].items), []), ipv6_prefix_list.name)
     ] if length(try(domain.objects.ipv6_prefix_lists, [])) > 0
