@@ -272,7 +272,8 @@ locals {
   # Helper list: network objects + data source network groups (no prior-level network groups for level 0)
   help_network_objects_l0 = flatten([
     flatten([for item in keys(local.map_network_objects) : item]),
-    flatten([for domain in keys(local.data_network_groups) : [for k in keys(local.data_network_groups[domain].items) : "${domain}:${k}"]])
+    flatten([for domain in keys(local.data_network_groups) : [for k in keys(local.data_network_groups[domain].items) : "${domain}:${k}"]]),
+    flatten([for item in keys(local.map_network_groups_external) : item])
   ])
 
   resource_network_groups = {
@@ -294,6 +295,11 @@ locals {
               for domain_path in local.related_domains[domain.name] :
               domain_path => data.fmc_network_groups.network_groups[domain_path].items[object_item].id
               if contains(keys(try(data.fmc_network_groups.network_groups[domain_path].items, {})), object_item)
+            })[0],
+            values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_network_groups_external["${domain_path}:${object_item}"].id
+              if contains(keys(local.map_network_groups_external), "${domain_path}:${object_item}")
             })[0],
           )
           name = object_item
@@ -354,6 +360,11 @@ locals {
               for domain_path in local.related_domains[domain.name] :
               domain_path => local.prior_ng_objects_l1["${domain_path}:${object_item}"].id
               if contains(keys(local.prior_ng_objects_l1), "${domain_path}:${object_item}")
+            })[0],
+            values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_network_groups_external["${domain_path}:${object_item}"].id
+              if contains(keys(local.map_network_groups_external), "${domain_path}:${object_item}")
             })[0],
           )
           name = object_item
@@ -417,6 +428,11 @@ locals {
               for domain_path in local.related_domains[domain.name] :
               domain_path => local.prior_ng_objects_l2["${domain_path}:${object_item}"].id
               if contains(keys(local.prior_ng_objects_l2), "${domain_path}:${object_item}")
+            })[0],
+            values({
+              for domain_path in local.related_domains[domain.name] :
+              domain_path => local.map_network_groups_external["${domain_path}:${object_item}"].id
+              if contains(keys(local.map_network_groups_external), "${domain_path}:${object_item}")
             })[0],
           )
           name = object_item

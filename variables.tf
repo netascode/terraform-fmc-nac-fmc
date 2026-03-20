@@ -37,3 +37,9 @@ variable "manage_deployment" {
   type        = bool
   default     = true
 }
+
+variable "external_objects" {
+  description = "Objects that come from other instances of nac-fmc module."
+  type        = list(map(any))
+  default     = []
+}

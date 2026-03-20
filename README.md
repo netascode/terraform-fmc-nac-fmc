@@ -76,6 +76,7 @@ module "fmc" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_external_objects"></a> [external\_objects](#input\_external\_objects) | Objects that come from other instances of nac-fmc module. | `list(map(any))` | `[]` | no |
 | <a name="input_manage_deployment"></a> [manage\_deployment](#input\_manage\_deployment) | Enables support for FTD deployments | `bool` | `true` | no |
 | <a name="input_model"></a> [model](#input\_model) | As an alternative to YAML files, a native Terraform data structure can be provided as well. | <pre>object({<br/>    fmc = optional(object({<br/>      name              = optional(string)<br/>      system            = optional(map(any))<br/>      domains           = optional(list(any), [])<br/>      nac_configuration = optional(map(any))<br/>      version           = optional(string)<br/>    }), {})<br/>    defaults = optional(map(any), {})<br/>    existing = optional(map(any), {})<br/>  })</pre> | `{}` | no |
 | <a name="input_write_default_values_file"></a> [write\_default\_values\_file](#input\_write\_default\_values\_file) | Write all default values to a YAML file. Value is a path pointing to the file to be created. | `string` | `""` | no |
@@ -87,6 +88,7 @@ module "fmc" {
 |------|-------------|
 | <a name="output_default_values"></a> [default\_values](#output\_default\_values) | All default values. |
 | <a name="output_model"></a> [model](#output\_model) | Full model. |
+| <a name="output_objects"></a> [objects](#output\_objects) | All objects. |
 ## Resources
 
 | Name | Type |

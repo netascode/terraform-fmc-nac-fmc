@@ -25,16 +25,19 @@ locals {
         for host_name, host_values in hosts.items : "${domain}:${host_name}" => { id = host_values.id, type = host_values.type }
       }
     ]...),
+
+    # External objects
+    merge([
+      for src in var.external_objects : src.hosts
+    ]...),
   )
 }
 
 ######
-### map_network_objects
+### map_networks
 ######
 locals {
-  map_network_objects = merge(
-
-    local.map_hosts,
+  map_networks = merge(
 
     # Networks - bulk mode outputs
     local.networks_bulk ? merge([
@@ -53,6 +56,19 @@ locals {
       }
     ]...),
 
+    # External objects
+    merge([
+      for src in var.external_objects : src.networks
+    ]...),
+  )
+}
+
+######
+### map_ranges
+######
+locals {
+  map_ranges = merge(
+
     # Ranges - bulk mode outputs
     local.ranges_bulk ? merge([
       for domain, ranges in fmc_ranges.ranges : {
@@ -70,6 +86,20 @@ locals {
       }
     ]...),
 
+    # External objects
+    merge([
+      for src in var.external_objects : src.ranges
+    ]...),
+
+  )
+}
+
+######
+### map_fqdns
+######
+locals {
+  map_fqdns = merge(
+
     # FQDNs - bulk mode outputs
     local.fqdns_bulk ? merge([
       for domain, fqdns in fmc_fqdns.fqdns : {
@@ -86,6 +116,24 @@ locals {
         for fqdn_name, fqdn_values in fqdns.items : "${domain}:${fqdn_name}" => { id = fqdn_values.id, type = fqdn_values.type }
       }
     ]...),
+
+    # External objects
+    merge([
+      for src in var.external_objects : src.fqdns
+    ]...),
+
+  )
+}
+
+######
+### map_network_objects
+######
+locals {
+  map_network_objects = merge(
+    local.map_hosts,
+    local.map_networks,
+    local.map_ranges,
+    local.map_fqdns,
   )
 }
 
@@ -124,6 +172,17 @@ locals {
     ]...),
   )
 }
+
+######
+### map_network_groups_external
+######
+locals {
+  map_network_groups_external = merge([
+    for src in var.external_objects : src.network_groups
+  ]...)
+}
+
+### TODO: Merge two maps for external and internal network groups and use this one everywhere else
 
 ######
 ### map_services => Port, ICMPv4, ICMPv6
