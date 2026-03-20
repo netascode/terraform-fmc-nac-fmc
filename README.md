@@ -69,8 +69,8 @@ module "fmc" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.8.0 |
-| <a name="requirement_fmc"></a> [fmc](#requirement\_fmc) | >= 2.0.0 |
-| <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.3.0 |
+| <a name="requirement_fmc"></a> [fmc](#requirement\_fmc) | >= 2.1.0 |
+| <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.3.0, < 3.0.0 |
 | <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 1.0.2, < 2.0.0 |
 ## Inputs
 
@@ -188,6 +188,8 @@ module "fmc" {
 | [fmc_network.network](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network) | resource |
 | [fmc_network_analysis_policy.network_analysis_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_analysis_policy) | resource |
 | [fmc_network_groups.network_groups](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_groups) | resource |
+| [fmc_network_groups.network_groups_l1](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_groups) | resource |
+| [fmc_network_groups.network_groups_l2](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_groups) | resource |
 | [fmc_networks.networks](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/networks) | resource |
 | [fmc_policy_assignment.access_control_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_assignment) | resource |
 | [fmc_policy_assignment.ftd_nat_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_assignment) | resource |
