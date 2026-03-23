@@ -7,7 +7,7 @@
 ### map_hosts
 ######
 locals {
-  map_hosts = merge(
+  map_hosts_internal = merge(
 
     # Hosts - bulk mode outputs
     local.hosts_bulk ? merge([
@@ -25,19 +25,26 @@ locals {
         for host_name, host_values in hosts.items : "${domain}:${host_name}" => { id = host_values.id, type = host_values.type }
       }
     ]...),
+  )
 
-    # External objects
-    merge([
-      for src in var.external_objects : src.hosts
-    ]...),
+  # External objects
+  map_hosts_external = merge([
+    for src in var.external_objects : src.hosts
+  ]...)
+
+  # Internal + External for reference in other objects (e.g. access rules)
+  map_hosts = merge(
+    local.map_hosts_internal,
+    local.map_hosts_external,
   )
 }
+
 
 ######
 ### map_networks
 ######
 locals {
-  map_networks = merge(
+  map_networks_internal = merge(
 
     # Networks - bulk mode outputs
     local.networks_bulk ? merge([
@@ -55,11 +62,17 @@ locals {
         for network_name, network_values in networks.items : "${domain}:${network_name}" => { id = network_values.id, type = network_values.type }
       }
     ]...),
+  )
 
-    # External objects
-    merge([
-      for src in var.external_objects : src.networks
-    ]...),
+  # External objects
+  map_networks_external = merge([
+    for src in var.external_objects : src.networks
+  ]...)
+
+  # Internal + External for reference in other objects (e.g. access rules)
+  map_networks = merge(
+    local.map_networks_internal,
+    local.map_networks_external,
   )
 }
 
@@ -67,7 +80,7 @@ locals {
 ### map_ranges
 ######
 locals {
-  map_ranges = merge(
+  map_ranges_internal = merge(
 
     # Ranges - bulk mode outputs
     local.ranges_bulk ? merge([
@@ -85,12 +98,17 @@ locals {
         for range_name, range_values in ranges.items : "${domain}:${range_name}" => { id = range_values.id, type = range_values.type }
       }
     ]...),
+  )
 
-    # External objects
-    merge([
-      for src in var.external_objects : src.ranges
-    ]...),
+  # External objects
+  map_ranges_external = merge([
+    for src in var.external_objects : src.ranges
+  ]...)
 
+  # Internal + External for reference in other objects (e.g. access rules)
+  map_ranges = merge(
+    local.map_ranges_internal,
+    local.map_ranges_external,
   )
 }
 
@@ -98,7 +116,7 @@ locals {
 ### map_fqdns
 ######
 locals {
-  map_fqdns = merge(
+  map_fqdns_internal = merge(
 
     # FQDNs - bulk mode outputs
     local.fqdns_bulk ? merge([
@@ -116,12 +134,17 @@ locals {
         for fqdn_name, fqdn_values in fqdns.items : "${domain}:${fqdn_name}" => { id = fqdn_values.id, type = fqdn_values.type }
       }
     ]...),
+  )
 
-    # External objects
-    merge([
-      for src in var.external_objects : src.fqdns
-    ]...),
+  # External objects
+  map_fqdns_external = merge([
+    for src in var.external_objects : src.fqdns
+  ]...)
 
+  # Internal + External for reference in other objects (e.g. access rules)
+  map_fqdns = merge(
+    local.map_fqdns_internal,
+    local.map_fqdns_external,
   )
 }
 
@@ -138,7 +161,7 @@ locals {
 }
 
 ######
-### map_network_group_objects
+### map_network_groups
 ######
 locals {
   map_network_group_objects = merge(
@@ -171,18 +194,14 @@ locals {
       }
     ]...),
   )
-}
 
-######
-### map_network_groups_external
-######
-locals {
   map_network_groups_external = merge([
     for src in var.external_objects : src.network_groups
   ]...)
-}
 
-### TODO: Merge two maps for external and internal network groups and use this one everywhere else
+  ### TODO: Merge two maps for external and internal network groups and use this one everywhere else
+
+}
 
 ######
 ### map_services => Port, ICMPv4, ICMPv6
