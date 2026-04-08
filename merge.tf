@@ -29,3 +29,19 @@ resource "local_sensitive_file" "defaults" {
   content  = local.defaults_string
   filename = var.write_default_values_file
 }
+
+resource "local_sensitive_file" "objects" {
+  count    = var.write_objects_file != "" ? 1 : 0
+  filename = var.write_objects_file
+  content = yamlencode({
+    "data" : {
+      "fmc" : {
+        "hosts" : local.map_hosts_internal,
+        "networks" : local.map_networks_internal,
+        "ranges" : local.map_ranges_internal,
+        "fqdns" : local.map_fqdns_internal,
+        "network_groups" : local.map_network_group_objects ## TODO: Rename to map_network_groups / Unify naming
+      }
+    }
+  })
+}

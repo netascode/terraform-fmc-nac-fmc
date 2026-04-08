@@ -28,9 +28,9 @@ locals {
   )
 
   # External objects
-  map_hosts_external = merge([
-    for src in var.external_objects : src.hosts
-  ]...)
+  map_hosts_external = {
+    for key, value in try(local.data.hosts, {}) : key => value
+  }
 
   # Internal + External for reference in other objects (e.g. access rules)
   map_hosts = merge(
@@ -65,9 +65,9 @@ locals {
   )
 
   # External objects
-  map_networks_external = merge([
-    for src in var.external_objects : src.networks
-  ]...)
+  map_networks_external = {
+    for key, value in try(local.data.networks, {}) : key => value
+  }
 
   # Internal + External for reference in other objects (e.g. access rules)
   map_networks = merge(
@@ -101,9 +101,9 @@ locals {
   )
 
   # External objects
-  map_ranges_external = merge([
-    for src in var.external_objects : src.ranges
-  ]...)
+  map_ranges_external = {
+    for key, value in try(local.data.ranges, {}) : key => value
+  }
 
   # Internal + External for reference in other objects (e.g. access rules)
   map_ranges = merge(
@@ -137,9 +137,9 @@ locals {
   )
 
   # External objects
-  map_fqdns_external = merge([
-    for src in var.external_objects : src.fqdns
-  ]...)
+  map_fqdns_external = {
+    for key, value in try(local.data.fqdns, {}) : key => value
+  }
 
   # Internal + External for reference in other objects (e.g. access rules)
   map_fqdns = merge(
@@ -195,9 +195,9 @@ locals {
     ]...),
   )
 
-  map_network_groups_external = merge([
-    for src in var.external_objects : src.network_groups
-  ]...)
+  map_network_groups_external = {
+    for key, value in try(local.data.network_groups, {}) : key => value
+  }
 
   ### TODO: Merge two maps for external and internal network groups and use this one everywhere else
 

@@ -22,6 +22,7 @@ variable "model" {
     }), {})
     defaults = optional(map(any), {})
     existing = optional(map(any), {})
+    data     = optional(map(any), {})
   })
   default = {}
 }
@@ -32,14 +33,14 @@ variable "write_default_values_file" {
   default     = ""
 }
 
+variable "write_objects_file" {
+  description = "Write objects created by this module to a YAML file. Value is a path pointing to the file to be created."
+  type        = string
+  default     = ""
+}
+
 variable "manage_deployment" {
   description = "Enables support for FTD deployments"
   type        = bool
   default     = true
-}
-
-variable "external_objects" {
-  description = "Objects that come from other instances of nac-fmc module."
-  type        = list(map(any))
-  default     = []
 }
