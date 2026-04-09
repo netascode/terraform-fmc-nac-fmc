@@ -37,13 +37,13 @@ resource "local_sensitive_file" "objects" {
   filename = var.write_objects_file
   content = yamlencode({
     "data" : {
-      "fmc" : {
-        "hosts" : local.map_hosts_internal,
-        "networks" : local.map_networks_internal,
-        "ranges" : local.map_ranges_internal,
-        "fqdns" : local.map_fqdns_internal,
-        "network_groups" : local.map_network_group_objects ## TODO: Rename to map_network_groups / Unify naming
-      }
+      "fmc" : merge(
+        length(local.map_hosts_internal) > 0 ? { "hosts" : local.map_hosts_internal } : {},
+        length(local.map_networks_internal) > 0 ? { "networks" : local.map_networks_internal } : {},
+        length(local.map_ranges_internal) > 0 ? { "ranges" : local.map_ranges_internal } : {},
+        length(local.map_fqdns_internal) > 0 ? { "fqdns" : local.map_fqdns_internal } : {},
+        length(local.map_network_group_objects) > 0 ? { "network_groups" : local.map_network_group_objects } : {}, ## TODO: Rename to map_network_groups / Unify naming
+      )
     }
   })
 }
