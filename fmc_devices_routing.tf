@@ -159,8 +159,8 @@ locals {
                   })[0],
                   values({
                     for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_group_objects["${domain_path}:${destination_network}"].id
-                    if contains(keys(local.map_network_group_objects), "${domain_path}:${destination_network}")
+                    domain_path => local.map_network_groups["${domain_path}:${destination_network}"].id
+                    if contains(keys(local.map_network_groups), "${domain_path}:${destination_network}")
                   })[0],
                 )
               }]
@@ -224,8 +224,8 @@ locals {
                   })[0],
                   values({
                     for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_group_objects["${domain_path}:${destination_network}"].id
-                    if contains(keys(local.map_network_group_objects), "${domain_path}:${destination_network}")
+                    domain_path => local.map_network_groups["${domain_path}:${destination_network}"].id
+                    if contains(keys(local.map_network_groups), "${domain_path}:${destination_network}")
                   })[0],
                 )
               }]
@@ -510,8 +510,8 @@ locals {
                 })[0],
                 values({
                   for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_group_objects["${domain_path}:${ipv4_network.network}"].id
-                  if contains(keys(local.map_network_group_objects), "${domain_path}:${ipv4_network.network}")
+                  domain_path => local.map_network_groups["${domain_path}:${ipv4_network.network}"].id
+                  if contains(keys(local.map_network_groups), "${domain_path}:${ipv4_network.network}")
                 })[0],
               )
               route_map_id = try(ipv4_network.route_map, null) != null ? values({

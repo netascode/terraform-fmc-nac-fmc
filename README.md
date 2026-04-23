@@ -67,7 +67,7 @@ module "fmc" {
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.8.0 |
 | <a name="requirement_fmc"></a> [fmc](#requirement\_fmc) | >= 2.1.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.3.0, < 3.0.0 |
@@ -75,7 +75,7 @@ module "fmc" {
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_manage_deployment"></a> [manage\_deployment](#input\_manage\_deployment) | Enables support for FTD deployments | `bool` | `true` | no |
 | <a name="input_model"></a> [model](#input\_model) | As an alternative to YAML files, a native Terraform data structure can be provided as well. | <pre>object({<br/>    fmc = optional(object({<br/>      name              = optional(string)<br/>      system            = optional(map(any))<br/>      domains           = optional(list(any), [])<br/>      nac_configuration = optional(map(any))<br/>      version           = optional(string)<br/>    }), {})<br/>    defaults = optional(map(any), {})<br/>    existing = optional(map(any), {})<br/>    data     = optional(map(any), {})<br/>  })</pre> | `{}` | no |
 | <a name="input_write_default_values_file"></a> [write\_default\_values\_file](#input\_write\_default\_values\_file) | Write all default values to a YAML file. Value is a path pointing to the file to be created. | `string` | `""` | no |
@@ -85,13 +85,13 @@ module "fmc" {
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_default_values"></a> [default\_values](#output\_default\_values) | All default values. |
 | <a name="output_model"></a> [model](#output\_model) | Full model. |
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [fmc_access_control_policy.access_control_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/access_control_policy) | resource |
 | [fmc_application_filter.application_filter](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/application_filter) | resource |
 | [fmc_application_filters.application_filters](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/application_filters) | resource |

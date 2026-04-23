@@ -97,8 +97,8 @@ locals {
                     })[0],
                     values({
                       for domain_path in local.related_domains[domain.name] :
-                      domain_path => local.map_network_group_objects["${domain_path}:${destination_network_object}"].id
-                      if contains(keys(local.map_network_group_objects), "${domain_path}:${destination_network_object}")
+                      domain_path => local.map_network_groups["${domain_path}:${destination_network_object}"].id
+                      if contains(keys(local.map_network_groups), "${domain_path}:${destination_network_object}")
                     })[0]
                   )
                   type = try(
@@ -109,8 +109,8 @@ locals {
                     })[0],
                     values({
                       for domain_path in local.related_domains[domain.name] :
-                      domain_path => local.map_network_group_objects["${domain_path}:${destination_network_object}"].type
-                      if contains(keys(local.map_network_group_objects), "${domain_path}:${destination_network_object}")
+                      domain_path => local.map_network_groups["${domain_path}:${destination_network_object}"].type
+                      if contains(keys(local.map_network_groups), "${domain_path}:${destination_network_object}")
                     })[0],
                   )
                 }],
@@ -215,8 +215,8 @@ locals {
                     })[0],
                     values({
                       for domain_path in local.related_domains[domain.name] :
-                      domain_path => local.map_network_group_objects["${domain_path}:${source_network_object}"].id
-                      if contains(keys(local.map_network_group_objects), "${domain_path}:${source_network_object}")
+                      domain_path => local.map_network_groups["${domain_path}:${source_network_object}"].id
+                      if contains(keys(local.map_network_groups), "${domain_path}:${source_network_object}")
                     })[0],
                   )
                   type = try(
@@ -227,8 +227,8 @@ locals {
                     })[0],
                     values({
                       for domain_path in local.related_domains[domain.name] :
-                      domain_path => local.map_network_group_objects["${domain_path}:${source_network_object}"].type
-                      if contains(keys(local.map_network_group_objects), "${domain_path}:${source_network_object}")
+                      domain_path => local.map_network_groups["${domain_path}:${source_network_object}"].type
+                      if contains(keys(local.map_network_groups), "${domain_path}:${source_network_object}")
                     })[0],
                   )
                 }],
@@ -513,8 +513,8 @@ locals {
               })[0],
               values({
                 for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_network_group_objects["${domain_path}:${auto_rule.translated_network}"].id
-                if contains(keys(local.map_network_group_objects), "${domain_path}:${auto_rule.translated_network}")
+                domain_path => local.map_network_groups["${domain_path}:${auto_rule.translated_network}"].id
+                if contains(keys(local.map_network_groups), "${domain_path}:${auto_rule.translated_network}")
               })[0],
             ) : null
             translated_network_is_destination_interface = try(auto_rule.translated_network_is_destination_interface, null)
@@ -559,8 +559,8 @@ locals {
               })[0],
               values({
                 for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_network_group_objects["${domain_path}:${manual_rule.original_destination}"].id
-                if contains(keys(local.map_network_group_objects), "${domain_path}:${manual_rule.original_destination}")
+                domain_path => local.map_network_groups["${domain_path}:${manual_rule.original_destination}"].id
+                if contains(keys(local.map_network_groups), "${domain_path}:${manual_rule.original_destination}")
               })[0],
             ) : null
             original_destination_port_id = try(local.map_services[manual_rule.original_destination_port].id, local.map_port_groups[manual_rule.original_destination_port].id, null)
@@ -572,8 +572,8 @@ locals {
               })[0],
               values({
                 for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_network_group_objects["${domain_path}:${manual_rule.original_source}"].id
-                if contains(keys(local.map_network_group_objects), "${domain_path}:${manual_rule.original_source}")
+                domain_path => local.map_network_groups["${domain_path}:${manual_rule.original_source}"].id
+                if contains(keys(local.map_network_groups), "${domain_path}:${manual_rule.original_source}")
               })[0],
             ) : null
             original_source_port_id = try(manual_rule.translated_source_port, "") != "" ? try(
@@ -604,8 +604,8 @@ locals {
               })[0],
               values({
                 for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_network_group_objects["${domain_path}:${manual_rule.translated_destination}"].id
-                if contains(keys(local.map_network_group_objects), "${domain_path}:${manual_rule.translated_destination}")
+                domain_path => local.map_network_groups["${domain_path}:${manual_rule.translated_destination}"].id
+                if contains(keys(local.map_network_groups), "${domain_path}:${manual_rule.translated_destination}")
               })[0],
             ) : null
             translated_destination_port_id = try(manual_rule.translated_destination_port, "") != "" ? try(
@@ -628,8 +628,8 @@ locals {
               })[0],
               values({
                 for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_network_group_objects["${domain_path}:${manual_rule.translated_source}"].id
-                if contains(keys(local.map_network_group_objects), "${domain_path}:${manual_rule.translated_source}")
+                domain_path => local.map_network_groups["${domain_path}:${manual_rule.translated_source}"].id
+                if contains(keys(local.map_network_groups), "${domain_path}:${manual_rule.translated_source}")
               })[0],
             ) : null
             translated_source_port_id = try(manual_rule.translated_source_port, "") != "" ? try(
@@ -968,8 +968,8 @@ locals {
                   })[0],
                   values({
                     for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_group_objects["${domain_path}:${destination_network_object}"].id
-                    if contains(keys(local.map_network_group_objects), "${domain_path}:${destination_network_object}")
+                    domain_path => local.map_network_groups["${domain_path}:${destination_network_object}"].id
+                    if contains(keys(local.map_network_groups), "${domain_path}:${destination_network_object}")
                   })[0],
                 )
                 type = try(
@@ -980,8 +980,8 @@ locals {
                   })[0],
                   values({
                     for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_group_objects["${domain_path}:${destination_network_object}"].type
-                    if contains(keys(local.map_network_group_objects), "${domain_path}:${destination_network_object}")
+                    domain_path => local.map_network_groups["${domain_path}:${destination_network_object}"].type
+                    if contains(keys(local.map_network_groups), "${domain_path}:${destination_network_object}")
                   })[0],
                 )
               }]
@@ -1057,8 +1057,8 @@ locals {
                   })[0],
                   values({
                     for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_group_objects["${domain_path}:${source_network_object}"].id
-                    if contains(keys(local.map_network_group_objects), "${domain_path}:${source_network_object}")
+                    domain_path => local.map_network_groups["${domain_path}:${source_network_object}"].id
+                    if contains(keys(local.map_network_groups), "${domain_path}:${source_network_object}")
                   })[0],
                 )
                 type = try(
@@ -1069,8 +1069,8 @@ locals {
                   })[0],
                   values({
                     for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_group_objects["${domain_path}:${source_network_object}"].type
-                    if contains(keys(local.map_network_group_objects), "${domain_path}:${source_network_object}")
+                    domain_path => local.map_network_groups["${domain_path}:${source_network_object}"].type
+                    if contains(keys(local.map_network_groups), "${domain_path}:${source_network_object}")
                   })[0],
                 )
               }]
@@ -1240,141 +1240,4 @@ resource "fmc_health_policy" "health_policy" {
   is_default_policy               = each.value.is_default_policy
   metric_collection_interval      = each.value.metric_collection_interval
   health_modules                  = each.value.health_modules
-}
-
-##########################################################
-###    Create maps for combined set of _data and _resources network objects
-##########################################################
-
-######
-### map_access_control_policies
-######
-locals {
-  map_access_control_policies = merge(
-
-    # Access Policy - individual mode outputs
-    { for key, resource in fmc_access_control_policy.access_control_policy : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type, domain = resource.domain, name = resource.name } },
-
-    # Access Policy - data source
-    { for key, data in data.fmc_access_control_policy.access_control_policy : "${data.domain}:${data.name}" => { id = data.id, type = data.type, domain = data.domain, name = data.name } },
-  )
-}
-
-######
-### map_ftd_nat_policies
-######
-locals {
-  map_ftd_nat_policies = merge(
-
-    # FTD NAT Policy - individual mode outputs
-    { for key, resource in fmc_ftd_nat_policy.ftd_nat_policy : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type, domain = resource.domain, name = resource.name } },
-
-    # FTD NAT Policy - data source
-    { for key, data in data.fmc_ftd_nat_policy.ftd_nat_policy : "${data.domain}:${data.name}" => { id = data.id, type = data.type, domain = data.domain, name = data.name } },
-  )
-}
-
-######
-### map_intrusion_policies
-######
-locals {
-  map_intrusion_policies = merge(
-
-    # Intrusion Policy - individual mode outputs
-    { for key, resource in fmc_intrusion_policy.intrusion_policy : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
-
-    # Intrusion Policy L2 - individual mode outputs
-    { for key, resource in fmc_intrusion_policy.intrusion_policy_l2 : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
-
-    # Intrusion Policy - data source
-    { for key, data in data.fmc_intrusion_policy.intrusion_policy : "${data.domain}:${data.name}" => { id = data.id, type = data.type } },
-  )
-}
-
-######
-### map_file_policies
-######
-locals {
-  map_file_policies = merge(
-
-    # File Policy - individual mode outputs
-    { for key, resource in fmc_file_policy.file_policy : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
-
-    # File Policy - data source
-    { for key, data in data.fmc_file_policy.file_policy : "${data.domain}:${data.name}" => { id = data.id, type = data.type } },
-  )
-}
-
-######
-### map_network_analysis_policies
-######
-
-locals {
-  map_network_analysis_policies = merge(
-
-    # Network Analysis Policy - individual mode outputs
-    { for key, resource in fmc_network_analysis_policy.network_analysis_policy : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
-
-    # Network Analysis Policy - data source
-    { for key, data in data.fmc_network_analysis_policy.network_analysis_policy : "${data.domain}:${data.name}" => { id = data.id, type = data.type } },
-  )
-}
-
-######
-### map_prefilter_policies
-######
-locals {
-  map_prefilter_policies = merge(
-
-    # Prefilter Policy - individual mode outputs
-    { for key, resource in fmc_prefilter_policy.prefilter_policy : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
-
-    # Prefilter Policy - data source
-    { for key, data in data.fmc_prefilter_policy.prefilter_policy : "${data.domain}:${data.name}" => { id = data.id, type = data.type } },
-  )
-}
-
-######
-### map_health_policies
-######
-locals {
-  map_health_policies = merge(
-
-    # Health Policy - individual mode outputs
-    { for key, resource in fmc_health_policy.health_policy : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type, domain = resource.domain, name = resource.name } },
-
-    # Health Policy - data source
-    { for key, data in data.fmc_health_policy.health_policy : "${data.domain}:${data.name}" => { id = data.id, type = data.type, domain = data.domain, name = data.name } },
-  )
-}
-
-######
-### map_snmp_alerts
-######
-locals {
-  map_snmp_alerts = merge(
-
-    # SNMP Alerts - data sources
-    merge([
-      for domain, snmp_alerts in data.fmc_snmp_alerts.snmp_alerts : {
-        for snmp_name, snmp_values in snmp_alerts.items : "${domain}:${snmp_name}" => { id = snmp_values.id, type = snmp_values.type }
-      }
-    ]...),
-  )
-}
-
-######
-### map_snmp_alerts
-######
-locals {
-  map_syslog_alerts = merge(
-
-    # Syslog Alerts - data sources
-    merge([
-      for domain, syslog_alerts in data.fmc_syslog_alerts.syslog_alerts : {
-        for syslog_name, syslog_values in syslog_alerts.items : "${domain}:${syslog_name}" => { id = syslog_values.id, type = syslog_values.type }
-      }
-    ]...),
-  )
-
 }

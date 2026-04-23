@@ -2433,8 +2433,8 @@ locals {
                 })[0],
                 values({
                   for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_group_objects["${domain_path}:${object_item}"].id
-                  if contains(keys(local.map_network_group_objects), "${domain_path}:${object_item}")
+                  domain_path => local.map_network_groups["${domain_path}:${object_item}"].id
+                  if contains(keys(local.map_network_groups), "${domain_path}:${object_item}")
                 })[0],
               )
               type = try(
@@ -2445,8 +2445,8 @@ locals {
                 })[0],
                 values({
                   for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_group_objects["${domain_path}:${object_item}"].type
-                  if contains(keys(local.map_network_group_objects), "${domain_path}:${object_item}")
+                  domain_path => local.map_network_groups["${domain_path}:${object_item}"].type
+                  if contains(keys(local.map_network_groups), "${domain_path}:${object_item}")
                 })[0],
               )
             }]
@@ -2514,8 +2514,8 @@ locals {
                 })[0],
                 values({
                   for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_group_objects["${domain_path}:${destination_network_object}"].id
-                  if contains(keys(local.map_network_group_objects), "${domain_path}:${destination_network_object}")
+                  domain_path => local.map_network_groups["${domain_path}:${destination_network_object}"].id
+                  if contains(keys(local.map_network_groups), "${domain_path}:${destination_network_object}")
                 })[0],
               )
             }]
@@ -2549,8 +2549,8 @@ locals {
                 })[0],
                 values({
                   for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_group_objects["${domain_path}:${source_network_object}"].id
-                  if contains(keys(local.map_network_group_objects), "${domain_path}:${source_network_object}")
+                  domain_path => local.map_network_groups["${domain_path}:${source_network_object}"].id
+                  if contains(keys(local.map_network_groups), "${domain_path}:${source_network_object}")
                 })[0],
               )
             }]

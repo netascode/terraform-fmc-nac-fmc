@@ -29,7 +29,7 @@ locals {
 
   # External objects
   map_hosts_external = {
-    for key, value in try(local.data.hosts, {}) : key => value
+    for key, value in try(local.data.objects.hosts, {}) : key => value
   }
 
   # Internal + External for reference in other objects (e.g. access rules)
@@ -66,7 +66,7 @@ locals {
 
   # External objects
   map_networks_external = {
-    for key, value in try(local.data.networks, {}) : key => value
+    for key, value in try(local.data.objects.networks, {}) : key => value
   }
 
   # Internal + External for reference in other objects (e.g. access rules)
@@ -102,7 +102,7 @@ locals {
 
   # External objects
   map_ranges_external = {
-    for key, value in try(local.data.ranges, {}) : key => value
+    for key, value in try(local.data.objects.ranges, {}) : key => value
   }
 
   # Internal + External for reference in other objects (e.g. access rules)
@@ -138,7 +138,7 @@ locals {
 
   # External objects
   map_fqdns_external = {
-    for key, value in try(local.data.fqdns, {}) : key => value
+    for key, value in try(local.data.objects.fqdns, {}) : key => value
   }
 
   # Internal + External for reference in other objects (e.g. access rules)
@@ -164,7 +164,7 @@ locals {
 ### map_network_groups
 ######
 locals {
-  map_network_group_objects = merge(
+  map_network_groups_internal = merge(
 
     # Network Groups - level 0 (depth-0 domains)
     merge([
@@ -196,18 +196,20 @@ locals {
   )
 
   map_network_groups_external = {
-    for key, value in try(local.data.network_groups, {}) : key => value
+    for key, value in try(local.data.objects.network_groups, {}) : key => value
   }
 
-  ### TODO: Merge two maps for external and internal network groups and use this one everywhere else
-
+  map_network_groups = merge(
+    local.map_network_groups_internal,
+    local.map_network_groups_external,
+  )
 }
 
 ######
 ### map_services => Port, ICMPv4, ICMPv6
 ######
 locals {
-  map_services = merge(
+  map_services_internal = merge(
 
     # Ports - bulk mode outputs
     local.ports_bulk ? merge([
@@ -260,13 +262,23 @@ locals {
       }
     ]...),
   )
+
+  map_services_external = {
+    for key, value in try(local.data.objects.services, {}) : key => value
+  }
+
+  map_services = merge(
+    local.map_services_internal,
+    local.map_services_external,
+  )
+
 }
 
 ######
 ### map_port_groups
 ######
 locals {
-  map_port_groups = merge(
+  map_port_groups_internal = merge(
 
     # Port Groups - bulk mode outputs
     merge([
@@ -285,13 +297,23 @@ locals {
       }
     ]...),
   )
+
+  map_port_groups_external = {
+    for key, value in try(local.data.objects.port_groups, {}) : key => value
+  }
+
+  map_port_groups = merge(
+    local.map_port_groups_internal,
+    local.map_port_groups_external,
+  )
+
 }
 
 ######
 ### map_dynamic_objects
 ######
 locals {
-  map_dynamic_objects = merge(
+  map_dynamic_objects_internal = merge(
 
     # Dynamic Objects - bulk mode outputs
     merge([
@@ -307,13 +329,22 @@ locals {
       }
     ]...),
   )
+
+  map_dynamic_objects_external = {
+    for key, value in try(local.data.objects.dynamic_objects, {}) : key => value
+  }
+
+  map_dynamic_objects = merge(
+    local.map_dynamic_objects_internal,
+    local.map_dynamic_objects_external,
+  )
 }
 
 ######
 ### map_urls
 ######
 locals {
-  map_urls = merge(
+  map_urls_internal = merge(
 
     # URLs - bulk mode outputs
     local.urls_bulk ? merge([
@@ -332,13 +363,22 @@ locals {
       }
     ]...),
   )
+
+  map_urls_external = {
+    for key, value in try(local.data.objects.urls, {}) : key => value
+  }
+
+  map_urls = merge(
+    local.map_urls_internal,
+    local.map_urls_external,
+  )
 }
 
 ######
 ### map_url_groups
 ######
 locals {
-  map_url_groups = merge(
+  map_url_groups_internal = merge(
 
     # URL Groups - bulk mode outputs
     local.url_groups_bulk ? merge([
@@ -357,13 +397,22 @@ locals {
       }
     ]...),
   )
+
+  map_url_groups_external = {
+    for key, value in try(local.data.objects.url_groups, {}) : key => value
+  }
+
+  map_url_groups = merge(
+    local.map_url_groups_internal,
+    local.map_url_groups_external,
+  )
 }
 
 ######
 ### map_vlan_tags
 ######
 locals {
-  map_vlan_tags = merge(
+  map_vlan_tags_internal = merge(
 
     # VLAN Tags - bulk mode outputs
     local.vlan_tags_bulk ? merge([
@@ -382,13 +431,22 @@ locals {
       }
     ]...),
   )
+
+  map_vlan_tags_external = {
+    for key, value in try(local.data.objects.vlan_tags, {}) : key => value
+  }
+
+  map_vlan_tags = merge(
+    local.map_vlan_tags_internal,
+    local.map_vlan_tags_external,
+  )
 }
 
 ######
 ### map_vlan_tag_groups
 ######
 locals {
-  map_vlan_tag_groups = merge(
+  map_vlan_tag_groups_internal = merge(
     #
     # VLAN Tag Groups - bulk mode outputs
     local.vlan_tag_groups_bulk ? merge([
@@ -407,13 +465,23 @@ locals {
       }
     ]...),
   )
+
+  map_vlan_tag_groups_external = {
+    for key, value in try(local.data.objects.vlan_tag_groups, {}) : key => value
+  }
+
+  map_vlan_tag_groups = merge(
+    local.map_vlan_tag_groups_internal,
+    local.map_vlan_tag_groups_external,
+  )
+
 }
 
 ######
 ### map_sgts - SGT (data source + resource) + ISE SGT (data source)
 ######
 locals {
-  map_sgts = merge(
+  map_sgts_internal = merge(
 
     # SGT - bulk mode outputs
     local.sgts_bulk ? merge([
@@ -439,13 +507,22 @@ locals {
       }
     ]...),
   )
+
+  map_sgts_external = {
+    for key, value in try(local.data.objects.sgts, {}) : key => value
+  }
+
+  map_sgts = merge(
+    local.map_sgts_internal,
+    local.map_sgts_external,
+  )
 }
 
 ######
 ### map_tunnel_zones
 ######
 locals {
-  map_tunnel_zones = merge(
+  map_tunnel_zones_internal = merge(
 
     # Tunnel Zones - bulk mode outputs
     local.tunnel_zones_bulk ? merge([
@@ -464,13 +541,22 @@ locals {
       }
     ]...),
   )
+
+  map_tunnel_zones_external = {
+    for key, value in try(local.data.objects.tunnel_zones, {}) : key => value
+  }
+
+  map_tunnel_zones = merge(
+    local.map_tunnel_zones_internal,
+    local.map_tunnel_zones_external,
+  )
 }
 
 ######
 ### map_security_zones
 ######
 locals {
-  map_security_zones = merge(
+  map_security_zones_internal = merge(
 
     # Security Zones - bulk mode outputs
     local.security_zones_bulk ? merge([
@@ -489,13 +575,22 @@ locals {
       }
     ]...),
   )
+
+  map_security_zones_external = {
+    for key, value in try(local.data.objects.security_zones, {}) : key => value
+  }
+
+  map_security_zones = merge(
+    local.map_security_zones_internal,
+    local.map_security_zones_external,
+  )
 }
 
 ######
 ### map_interface_groups
 ######
 locals {
-  map_interface_groups = merge(
+  map_interface_groups_internal = merge(
 
     # Interface Groups - bulk mode outputs
     local.interface_groups_bulk ? merge([
@@ -514,6 +609,15 @@ locals {
       }
     ]...)
   )
+
+  map_interface_groups_external = {
+    for key, value in try(local.data.objects.interface_groups, {}) : key => value
+  }
+
+  map_interface_groups = merge(
+    local.map_interface_groups_internal,
+    local.map_interface_groups_external,
+  )
 }
 
 ######
@@ -530,7 +634,7 @@ locals {
 ### map_application_filters
 ######
 locals {
-  map_application_filters = merge(
+  map_application_filters_internal = merge(
 
     # Application Filters - bulk mode outputs
     local.application_filters_bulk ? merge([
@@ -549,13 +653,23 @@ locals {
       }
     ]...),
   )
+
+  map_application_filters_external = {
+    for key, value in try(local.data.objects.application_filters, {}) : key => value
+  }
+
+  map_application_filters = merge(
+    local.map_application_filters_internal,
+    local.map_application_filters_external,
+  )
+
 }
 
 ######
 ### map_time_ranges
 ######
 locals {
-  map_time_ranges = merge(
+  map_time_ranges_internal = merge(
 
     # Time ranges - bulk mode outputs
     local.time_ranges_bulk ? merge([
@@ -574,13 +688,22 @@ locals {
       }
     ]...),
   )
+
+  map_time_ranges_external = {
+    for key, value in try(local.data.objects.time_ranges, {}) : key => value
+  }
+
+  map_time_ranges = merge(
+    local.map_time_ranges_internal,
+    local.map_time_ranges_external,
+  )
 }
 
 ######
 ### map_ipv4_address_pools
 ######
 locals {
-  map_ipv4_address_pools = merge(
+  map_ipv4_address_pools_internal = merge(
 
     # IPv4 Address Pools - bulk mode outputs
     local.ipv4_address_pools_bulk ? merge([
@@ -599,13 +722,22 @@ locals {
       }
     ]...)
   )
+
+  map_ipv4_address_pools_external = {
+    for key, value in try(local.data.objects.ipv4_address_pools, {}) : key => value
+  }
+
+  map_ipv4_address_pools = merge(
+    local.map_ipv4_address_pools_internal,
+    local.map_ipv4_address_pools_external,
+  )
 }
 
 ######
 ### map_ipv6_address_pools
 ######
 locals {
-  map_ipv6_address_pools = merge(
+  map_ipv6_address_pools_internal = merge(
 
     # IPv6 Address Pools - bulk mode outputs
     local.ipv6_address_pools_bulk ? merge([
@@ -624,13 +756,22 @@ locals {
       }
     ]...)
   )
+
+  map_ipv6_address_pools_external = {
+    for key, value in try(local.data.objects.ipv6_address_pools, {}) : key => value
+  }
+
+  map_ipv6_address_pools = merge(
+    local.map_ipv6_address_pools_internal,
+    local.map_ipv6_address_pools_external,
+  )
 }
 
 ######
 ### map_resource_profiles
 ######
 locals {
-  map_resource_profiles = merge(
+  map_resource_profiles_internal = merge(
 
     # Resource Profiles - bulk mode outputs
     local.resource_profiles_bulk ? merge([
@@ -649,13 +790,22 @@ locals {
       }
     ]...),
   )
+
+  map_resource_profiles_external = {
+    for key, value in try(local.data.objects.resource_profiles, {}) : key => value
+  }
+
+  map_resource_profiles = merge(
+    local.map_resource_profiles_internal,
+    local.map_resource_profiles_external,
+  )
 }
 
 ######
 ### map_as_paths
 ######
 locals {
-  map_as_paths = merge(
+  map_as_paths_internal = merge(
 
     # As Paths - bulk mode outputs
     local.as_paths_bulk ? merge([
@@ -674,13 +824,22 @@ locals {
       }
     ]...),
   )
+
+  map_as_paths_external = {
+    for key, value in try(local.data.objects.as_paths, {}) : key => value
+  }
+
+  map_as_paths = merge(
+    local.map_as_paths_internal,
+    local.map_as_paths_external,
+  )
 }
 
 ######
 ### map_standard_access_lists
 ######
 locals {
-  map_standard_access_lists = merge(
+  map_standard_access_lists_internal = merge(
 
     # Standard Access Lists - individual mode outputs
     { for key, resource in fmc_standard_access_list.standard_access_list : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
@@ -692,13 +851,22 @@ locals {
       }
     ]...)
   )
+
+  map_standard_access_lists_external = {
+    for key, value in try(local.data.objects.standard_access_lists, {}) : key => value
+  }
+
+  map_standard_access_lists = merge(
+    local.map_standard_access_lists_internal,
+    local.map_standard_access_lists_external,
+  )
 }
 
 ######
 ### map_extended_access_lists
 ######
 locals {
-  map_extended_access_lists = merge(
+  map_extended_access_lists_internal = merge(
 
     # Extended Access Lists - individual mode outputs
     { for key, resource in fmc_extended_access_list.extended_access_list : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
@@ -709,6 +877,15 @@ locals {
         for extended_acl_name, extended_acl_values in extended_acls.items : "${domain}:${extended_acl_name}" => { id = extended_acl_values.id, type = extended_acl_values.type }
       }
     ]...)
+  )
+
+  map_extended_access_lists_external = {
+    for key, value in try(local.data.objects.extended_access_lists, {}) : key => value
+  }
+
+  map_extended_access_lists = merge(
+    local.map_extended_access_lists_internal,
+    local.map_extended_access_lists_external,
   )
 }
 
@@ -726,7 +903,7 @@ locals {
 ### map_bfd_templates
 ######
 locals {
-  map_bfd_templates = merge(
+  map_bfd_templates_internal = merge(
 
     # BFD Templates - bulk mode outputs
     local.bfd_templates_bulk ? merge([
@@ -745,16 +922,34 @@ locals {
       }
     ]...),
   )
+
+  map_bfd_templates_external = {
+    for key, value in try(local.data.objects.bfd_templates, {}) : key => value
+  }
+
+  map_bfd_templates = merge(
+    local.map_bfd_templates_internal,
+    local.map_bfd_templates_external,
+  )
 }
 
 ######
 ### map_variable_sets
 ######
 locals {
-  map_variable_sets = merge(
+  map_variable_sets_internal = merge(
 
     # Variable Sets - data sources
     { for key, resource in data.fmc_variable_set.variable_set : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+  )
+
+  map_variable_sets_external = {
+    for key, value in try(local.data.objects.variable_sets, {}) : key => value
+  }
+
+  map_variable_sets = merge(
+    local.map_variable_sets_internal,
+    local.map_variable_sets_external,
   )
 }
 
@@ -762,7 +957,7 @@ locals {
 ### map_ipv4_prefix_lists
 ######
 locals {
-  map_ipv4_prefix_lists = merge(
+  map_ipv4_prefix_lists_internal = merge(
 
     # IPv4 Prefix Lists - bulk mode outputs
     local.ipv4_prefix_lists_bulk ? merge([
@@ -781,13 +976,22 @@ locals {
       }
     ]...)
   )
+
+  map_ipv4_prefix_lists_external = {
+    for key, value in try(local.data.objects.ipv4_prefix_lists, {}) : key => value
+  }
+
+  map_ipv4_prefix_lists = merge(
+    local.map_ipv4_prefix_lists_internal,
+    local.map_ipv4_prefix_lists_external,
+  )
 }
 
 ######
 ### map_ipv6_prefix_lists
 ######
 locals {
-  map_ipv6_prefix_lists = merge(
+  map_ipv6_prefix_lists_internal = merge(
 
     # IPv6 Prefix Lists - bulk mode outputs
     local.ipv6_prefix_lists_bulk ? merge([
@@ -806,13 +1010,22 @@ locals {
       }
     ]...)
   )
+
+  map_ipv6_prefix_lists_external = {
+    for key, value in try(local.data.objects.ipv6_prefix_lists, {}) : key => value
+  }
+
+  map_ipv6_prefix_lists = merge(
+    local.map_ipv6_prefix_lists_internal,
+    local.map_ipv6_prefix_lists_external,
+  )
 }
 
 ######
 ### map_community_lists
 ######
 locals {
-  map_community_lists = merge(
+  map_community_lists_internal = merge(
 
     # Standard Community Lists - bulk mode outputs
     local.standard_community_lists_bulk ? merge([
@@ -848,13 +1061,22 @@ locals {
       }
     ]...)
   )
+
+  map_community_lists_external = {
+    for key, value in try(local.data.objects.community_lists, {}) : key => value
+  }
+
+  map_community_lists = merge(
+    local.map_community_lists_internal,
+    local.map_community_lists_external,
+  )
 }
 
 ######
 ### map_extended_community_lists
 ######
 locals {
-  map_extended_community_lists = merge(
+  map_extended_community_lists_internal = merge(
 
     # Extended Community Lists - bulk mode outputs
     local.extended_community_lists_bulk ? merge([
@@ -873,13 +1095,22 @@ locals {
       }
     ]...),
   )
+
+  map_extended_community_lists_external = {
+    for key, value in try(local.data.objects.extended_community_lists, {}) : key => value
+  }
+
+  map_extended_community_lists = merge(
+    local.map_extended_community_lists_internal,
+    local.map_extended_community_lists_external,
+  )
 }
 
 ######
 ### map_policy_lists
 ######
 locals {
-  map_policy_lists = merge(
+  map_policy_lists_internal = merge(
 
     # Policy lists - bulk mode outputs
     local.policy_lists_bulk ? merge([
@@ -898,13 +1129,22 @@ locals {
       }
     ]...),
   )
+
+  map_policy_lists_external = {
+    for key, value in try(local.data.objects.policy_lists, {}) : key => value
+  }
+
+  map_policy_lists = merge(
+    local.map_policy_lists_internal,
+    local.map_policy_lists_external,
+  )
 }
 
 ######
 ### map_route_maps
 ######
 locals {
-  map_route_maps = merge(
+  map_route_maps_internal = merge(
 
     # Route Maps - individual mode outputs
     { for key, resource in fmc_route_map.route_map : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
@@ -912,13 +1152,22 @@ locals {
     # Route Maps - data sources
     { for key, data_source in data.fmc_route_map.route_map : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
   )
+
+  map_route_maps_external = {
+    for key, value in try(local.data.objects.route_maps, {}) : key => value
+  }
+
+  map_route_maps = merge(
+    local.map_route_maps_internal,
+    local.map_route_maps_external,
+  )
 }
 
 ######
 ### map_geolocation_sources
 ######
 locals {
-  map_geolocation_sources = merge(
+  map_geolocation_sources_internal = merge(
 
     # Countries - data sources
     merge([
@@ -951,13 +1200,23 @@ locals {
       }
     ]...),
   )
+
+  map_geolocation_sources_external = {
+    for key, value in try(local.data.objects.geolocation_sources, {}) : key => value
+  }
+
+  map_geolocation_sources = merge(
+    local.map_geolocation_sources_internal,
+    local.map_geolocation_sources_external,
+  )
+
 }
 
 ######
 ### map_ikev1_policies
 ######
 locals {
-  map_ikev1_policies = merge(
+  map_ikev1_policies_internal = merge(
 
     # IKEv1 Policies - bulk mode outputs
     merge([
@@ -976,13 +1235,22 @@ locals {
       }
     ]...),
   )
+
+  map_ikev1_policies_external = {
+    for key, value in try(local.data.objects.ikev1_policies, {}) : key => value
+  }
+
+  map_ikev1_policies = merge(
+    local.map_ikev1_policies_internal,
+    local.map_ikev1_policies_external,
+  )
 }
 
 ######
 ### map_ikev2_policies
 ######
 locals {
-  map_ikev2_policies = merge(
+  map_ikev2_policies_internal = merge(
 
     # IKEv2 Policies - bulk mode outputs
     merge([
@@ -1001,13 +1269,22 @@ locals {
       }
     ]...),
   )
+
+  map_ikev2_policies_external = {
+    for key, value in try(local.data.objects.ikev2_policies, {}) : key => value
+  }
+
+  map_ikev2_policies = merge(
+    local.map_ikev2_policies_internal,
+    local.map_ikev2_policies_external,
+  )
 }
 
 ######
 ### map_ikev1_ipsec_proposals
 ######
 locals {
-  map_ikev1_ipsec_proposals = merge(
+  map_ikev1_ipsec_proposals_internal = merge(
 
     # IKEv1 IPsec Proposals - bulk mode outputs
     merge([
@@ -1026,13 +1303,22 @@ locals {
       }
     ]...),
   )
+
+  map_ikev1_ipsec_proposals_external = {
+    for key, value in try(local.data.objects.ikev1_ipsec_proposals, {}) : key => value
+  }
+
+  map_ikev1_ipsec_proposals = merge(
+    local.map_ikev1_ipsec_proposals_internal,
+    local.map_ikev1_ipsec_proposals_external,
+  )
 }
 
 ######
 ### map_ikev2_ipsec_proposals
 ######
 locals {
-  map_ikev2_ipsec_proposals = merge(
+  map_ikev2_ipsec_proposals_internal = merge(
 
     # IKEv2 IPsec Proposals - bulk mode outputs
     merge([
@@ -1051,13 +1337,22 @@ locals {
       }
     ]...),
   )
+
+  map_ikev2_ipsec_proposals_external = {
+    for key, value in try(local.data.objects.ikev2_ipsec_proposals, {}) : key => value
+  }
+
+  map_ikev2_ipsec_proposals = merge(
+    local.map_ikev2_ipsec_proposals_internal,
+    local.map_ikev2_ipsec_proposals_external,
+  )
 }
 
 ######
 ### map_certiticate_enrollments
 ######
 locals {
-  map_certificate_enrollments = merge(
+  map_certificate_enrollments_internal = merge(
 
     # Certificate Enrollments - individual mode outputs
     { for key, resource in fmc_certificate_enrollment.certificate_enrollment : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type, name = resource.name } },
@@ -1068,13 +1363,22 @@ locals {
     # Certificate Enrollments - data sources
     { for key, data_source in data.fmc_certificate_enrollment.certificate_enrollment : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type, name = data_source.name } },
   )
+
+  map_certificate_enrollments_external = {
+    for key, value in try(local.data.objects.certificate_enrollments, {}) : key => value
+  }
+
+  map_certificate_enrollments = merge(
+    local.map_certificate_enrollments_internal,
+    local.map_certificate_enrollments_external,
+  )
 }
 
 ######
 ### map_trusted_certificate_authorities
 ######
 locals {
-  map_trusted_certificate_authorities = merge(
+  map_trusted_certificate_authorities_internal = merge(
 
     # Trusted Certificate Authorities - individual mode outputs
     { for key, resource in fmc_trusted_certificate_authority.trusted_certificate_authority : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
@@ -1082,13 +1386,22 @@ locals {
     # Trusted Certificate Authorities - data sources
     { for key, data_source in data.fmc_trusted_certificate_authority.trusted_certificate_authority : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
   )
+
+  map_trusted_certificate_authorities_external = {
+    for key, value in try(local.data.objects.trusted_certificate_authorities, {}) : key => value
+  }
+
+  map_trusted_certificate_authorities = merge(
+    local.map_trusted_certificate_authorities_internal,
+    local.map_trusted_certificate_authorities_external,
+  )
 }
 
 ######
 ### map_secure_client_profiles
 ######
 locals {
-  map_secure_client_profiles = merge(
+  map_secure_client_profiles_internal = merge(
 
     # Secure Client Profiles - individual mode outputs
     { for key, resource in fmc_secure_client_profile.secure_client_profile : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type, file_type = resource.file_type } },
@@ -1096,13 +1409,22 @@ locals {
     # Secure Client Profiles - data sources
     { for key, data_source in data.fmc_secure_client_profile.secure_client_profile : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type, file_type = data_source.file_type } },
   )
+
+  map_secure_client_profiles_external = {
+    for key, value in try(local.data.objects.secure_client_profiles, {}) : key => value
+  }
+
+  map_secure_client_profiles = merge(
+    local.map_secure_client_profiles_internal,
+    local.map_secure_client_profiles_external,
+  )
 }
 
 ######
 ### map_secure_client_custom_attributes
 ######
 locals {
-  map_secure_client_custom_attributes = merge(
+  map_secure_client_custom_attributes_internal = merge(
 
     # Secure Client Custom Attributes - individual mode outputs
     { for key, resource in fmc_secure_client_custom_attribute.secure_client_custom_attribute : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
@@ -1110,13 +1432,22 @@ locals {
     # Secure Client Custom Attributes - data sources
     { for key, data_source in data.fmc_secure_client_custom_attribute.secure_client_custom_attribute : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
   )
+
+  map_secure_client_custom_attributes_external = {
+    for key, value in try(local.data.objects.secure_client_custom_attributes, {}) : key => value
+  }
+
+  map_secure_client_custom_attributes = merge(
+    local.map_secure_client_custom_attributes_internal,
+    local.map_secure_client_custom_attributes_external,
+  )
 }
 
 ######
 ### map_secure_client_images
 ######
 locals {
-  map_secure_client_images = merge(
+  map_secure_client_images_internal = merge(
 
     # Secure Client Images - individual mode outputs
     { for key, resource in fmc_secure_client_image.secure_client_image : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
@@ -1124,13 +1455,22 @@ locals {
     # Secure Client Images - data sources
     { for key, data_source in data.fmc_secure_client_image.secure_client_image : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
   )
+
+  map_secure_client_images_external = {
+    for key, value in try(local.data.objects.secure_client_images, {}) : key => value
+  }
+
+  map_secure_client_images = merge(
+    local.map_secure_client_images_internal,
+    local.map_secure_client_images_external,
+  )
 }
 
 ######
 ### map_secure_client_customizations
 ######
 locals {
-  map_secure_client_customizations = merge(
+  map_secure_client_customizations_internal = merge(
 
     # Secure Client Customizations - individual mode outputs
     { for key, resource in fmc_secure_client_customization.secure_client_customization : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
@@ -1138,13 +1478,22 @@ locals {
     # Secure Client Customizations - data sources
     { for key, data_source in data.fmc_secure_client_customization.secure_client_customization : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
   )
+
+  map_secure_client_customizations_external = {
+    for key, value in try(local.data.objects.secure_client_customizations, {}) : key => value
+  }
+
+  map_secure_client_customizations = merge(
+    local.map_secure_client_customizations_internal,
+    local.map_secure_client_customizations_external,
+  )
 }
 
 ######
 ### map_service_accesses
 ######
 locals {
-  map_service_accesses = merge(
+  map_service_accesses_internal = merge(
 
     # Service Access - individual mode outputs
     { for key, resource in fmc_service_access.service_access : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
@@ -1156,13 +1505,23 @@ locals {
       }
     ]...)
   )
+
+  map_service_accesses_external = {
+    for key, value in try(local.data.objects.service_accesses, {}) : key => value
+  }
+
+  map_service_accesses = merge(
+    local.map_service_accesses_internal,
+    local.map_service_accesses_external,
+  )
+
 }
 
 ######
 ### map_group_policies
 ######
 locals {
-  map_group_policies = merge(
+  map_group_policies_internal = merge(
 
     # Group Policies - individual mode outputs
     { for key, resource in fmc_group_policy.group_policy : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
@@ -1170,13 +1529,22 @@ locals {
     # Group Policies - data sources
     { for key, data_source in data.fmc_group_policy.group_policy : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
   )
+
+  map_group_policies_external = {
+    for key, value in try(local.data.objects.group_policies, {}) : key => value
+  }
+
+  map_group_policies = merge(
+    local.map_group_policies_internal,
+    local.map_group_policies_external,
+  )
 }
 
 ######
 ### map_radius_server_groups
 ######
 locals {
-  map_radius_server_groups = merge(
+  map_radius_server_groups_internal = merge(
 
     # Radius Server Groups - individual mode outputs
     { for key, resource in fmc_radius_server_group.radius_server_group : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
@@ -1184,13 +1552,23 @@ locals {
     # Radius Server Groups - data sources
     { for key, data_source in data.fmc_radius_server_group.radius_server_group : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
   )
+
+  map_radius_server_groups_external = {
+    for key, value in try(local.data.objects.radius_server_groups, {}) : key => value
+  }
+
+  map_radius_server_groups = merge(
+    local.map_radius_server_groups_internal,
+    local.map_radius_server_groups_external,
+  )
+
 }
 
 ######
 ### map_single_sign_on_servers
 ######
 locals {
-  map_single_sign_on_servers = merge(
+  map_single_sign_on_servers_internal = merge(
 
     # Single Sign On Servers - individual mode outputs
     { for key, resource in fmc_single_sign_on_server.single_sign_on_server : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
@@ -1198,13 +1576,22 @@ locals {
     # Single Sign On Servers - data sources
     { for key, data_source in data.fmc_single_sign_on_server.single_sign_on_server : "${data_source.domain}:${data_source.name}" => { id = data_source.id, type = data_source.type } },
   )
+
+  map_single_sign_on_servers_external = {
+    for key, value in try(local.data.objects.single_sign_on_servers, {}) : key => value
+  }
+
+  map_single_sign_on_servers = merge(
+    local.map_single_sign_on_servers_internal,
+    local.map_single_sign_on_servers_external,
+  )
 }
 
 ######
 ### map_certificate_maps
 ######
 locals {
-  map_certificate_maps = merge(
+  map_certificate_maps_internal = merge(
 
     # Certificate Maps - bulk mode outputs
     local.certificate_maps_bulk ? merge([
@@ -1222,6 +1609,15 @@ locals {
         for certificate_map_name, certificate_map_values in certificate_maps.items : "${domain}:${certificate_map_name}" => { id = certificate_map_values.id, type = certificate_map_values.type }
       }
     ]...),
+  )
+
+  map_certificate_maps_external = {
+    for key, value in try(local.data.objects.certificate_maps, {}) : key => value
+  }
+
+  map_certificate_maps = merge(
+    local.map_certificate_maps_internal,
+    local.map_certificate_maps_external,
   )
 }
 
