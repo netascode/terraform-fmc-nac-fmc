@@ -29,7 +29,7 @@ locals {
               domain_path => local.map_access_control_policies["${domain_path}:${device.access_control_policy}"].id
               if contains(keys(local.map_access_control_policies), "${domain_path}:${device.access_control_policy}")
           })[0]) : null
-          # device_group_id  = try(local.map_device_groups[device.device_group].id, null)
+          # device_group_id = ...
           health_policy_id = try(device.health_policy, "") != "" ? try(
             values({
               for domain_path in local.related_domains[domain.name] :
@@ -478,7 +478,7 @@ locals {
               ipv6_dhcp                         = try(physical_interface.ipv6_dhcp, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv6_dhcp, null)
               ipv6_dhcp_client_pd_hint_prefixes = try(physical_interface.ipv6_dhcp_client_pd_hint_prefixes, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv6_dhcp_client_pd_hint_prefixes, null)
               ipv6_dhcp_client_pd_prefix_name   = try(physical_interface.ipv6_dhcp_client_pd_prefix_name, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv6_dhcp_client_pd_prefix_name, null)
-              # ipv6_dhcp_pool_id                  = try(local.map_ipv6_dhcp_pools[physical_interface.ipv6_dhcp_pool].id, null)
+              # ipv6_dhcp_pool_id                  = ...
               ipv6                        = try(physical_interface.ipv6, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv6, null)
               ipv6_auto_config            = try(physical_interface.ipv6_auto_config, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv6_auto_config, null)
               ipv6_dad                    = try(physical_interface.ipv6_dad, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv6_dad, null)
@@ -690,7 +690,7 @@ locals {
               ipv6_dhcp                         = try(etherchannel_interface.ipv6_dhcp, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_dhcp, null)
               ipv6_dhcp_client_pd_hint_prefixes = try(etherchannel_interface.ipv6_dhcp_client_pd_hint_prefixes, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_dhcp_client_pd_hint_prefixes, null)
               ipv6_dhcp_client_pd_prefix_name   = try(etherchannel_interface.ipv6_dhcp_client_pd_prefix_name, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_dhcp_client_pd_prefix_name, null)
-              # ipv6_dhcp_pool_id                  = try(local.map_ipv6_dhcp_pools[etherchannel_interface.ipv6_dhcp_pool].id, null)
+              # ipv6_dhcp_pool_id                  = ...
               ipv6                        = try(etherchannel_interface.ipv6, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6, null)
               ipv6_auto_config            = try(etherchannel_interface.ipv6_auto_config, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_auto_config, null)
               ipv6_dad                    = try(etherchannel_interface.ipv6_dad, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.ipv6_dad, null)
@@ -910,7 +910,7 @@ locals {
               ipv6_dhcp                         = try(sub_interface.ipv6_dhcp, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_dhcp, null)
               ipv6_dhcp_client_pd_hint_prefixes = try(sub_interface.ipv6_dhcp_client_pd_hint_prefixes, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_dhcp_client_pd_hint_prefixes, null)
               ipv6_dhcp_client_pd_prefix_name   = try(sub_interface.ipv6_dhcp_client_pd_prefix_name, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_dhcp_client_pd_prefix_name, null)
-              # ipv6_dhcp_pool_id                  = try(local.map_ipv6_dhcp_pools[sub_interface.ipv6_dhcp_pool].id, null)
+              # ipv6_dhcp_pool_id                  = ...
               ipv6                        = try(sub_interface.ipv6, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6, null)
               ipv6_auto_config            = try(sub_interface.ipv6_auto_config, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_auto_config, null)
               ipv6_dad                    = try(sub_interface.ipv6_dad, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv6_dad, null)
@@ -1249,7 +1249,7 @@ locals {
           name             = device.name
           host             = device.host
           registration_key = device.registration_key
-          # device_group_id  = try(local.map_device_groups[device.device_group].id, null)
+          # device_group_id = ...
           nat_id = try(device.nat_id, null)
         } if !contains(try(keys(local.data_chassis), []), "${domain.name}:${device.name}")
       ]
@@ -1340,7 +1340,7 @@ resource "fmc_chassis_physical_interface" "chassis_physical_interface" {
 }
 
 ##########################################################
-###    DEVICE ETHERCHANNEL INTERFACE
+###    CHASSIS ETHERCHANNEL INTERFACE
 ##########################################################
 locals {
   data_chassis_etherchannel_interface = {

@@ -330,10 +330,7 @@ locals {
                 })[0],
               }]
 
-              # url_categories = [for url_category in try(rule.url_categories, []) : {
-              #   id         = try(local.map_url_categories[url_category.category].id)
-              #   reputation = try(url_category.reputation, null)
-              # }]
+              # url_categories = ...
 
               url_objects = [for url_object in try(rule.url_objects, []) : {
                 id = try(

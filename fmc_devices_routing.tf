@@ -581,9 +581,7 @@ resource "fmc_device_bgp" "device_bgp" {
   ipv4_synchronization              = each.value.ipv4_synchronization
 
   depends_on = [
-
     # fmc_device_ha_pair.module,
-
     # fmc_device_cluster.module,
     fmc_device_bgp_general_settings.device_bgp_general_settings,
   ]

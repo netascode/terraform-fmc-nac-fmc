@@ -1,8 +1,3 @@
-##########################################################
-###    MAP combines data sources and resources for individual and bulk modes
-###    of one or more types
-##########################################################
-
 ######
 ### map_hosts
 ######
@@ -38,7 +33,6 @@ locals {
     local.map_hosts_external,
   )
 }
-
 
 ######
 ### map_networks
@@ -1619,12 +1613,4 @@ locals {
     local.map_certificate_maps_internal,
     local.map_certificate_maps_external,
   )
-}
-
-######
-### FAKE - TODO
-######
-locals {
-  map_url_categories  = {}
-  map_ipv6_dhcp_pools = {}
 }

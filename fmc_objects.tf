@@ -3727,8 +3727,8 @@ locals {
           ]
           ad_realm_id = try(radius_server_group.ad_realm, null) != null ? values({
             for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_realm_ad_ldap["${domain_path}:${radius_server_group.ad_realm}"].id
-            if contains(keys(local.map_realm_ad_ldap), "${domain_path}:${radius_server_group.ad_realm}")
+            domain_path => local.map_ad_ldap_realms["${domain_path}:${radius_server_group.ad_realm}"].id
+            if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${radius_server_group.ad_realm}")
           })[0] : null
           authorize_only                       = try(radius_server_group.authorize_only, local.defaults.fmc.domains.objects.radius_server_groups.authorize_only, null)
           description                          = try(radius_server_group.description, local.defaults.fmc.domains.objects.radius_server_groups.description, null)

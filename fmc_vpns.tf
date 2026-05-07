@@ -380,8 +380,8 @@ locals {
           protocol_ipsec_ikev2 = try(vpn_ra.protocol_ipsec_ikev2, local.defaults.vpns.remote_access.protocol_ipsec_ikev2, null)
           local_realm_id = try(vpn_ra.local_realm, null) != null ? values({
             for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_realm_local["${domain_path}:${vpn_ra.local_realm}"].id
-            if contains(keys(local.map_realm_local), "${domain_path}:${vpn_ra.local_realm}")
+            domain_path => local.map_local_realms["${domain_path}:${vpn_ra.local_realm}"].id
+            if contains(keys(local.map_local_realms), "${domain_path}:${vpn_ra.local_realm}")
           })[0] : null
           access_interfaces = [for access_interface in try(vpn_ra.access_interfaces, []) : {
             id = values({
@@ -634,8 +634,8 @@ locals {
               })[0],
               values({
                 for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_realm_ad_ldap["${domain_path}:${connection_profile.primary_authentication.server}"].id
-                if contains(keys(local.map_realm_ad_ldap), "${domain_path}:${connection_profile.primary_authentication.server}")
+                domain_path => local.map_ad_ldap_realms["${domain_path}:${connection_profile.primary_authentication.server}"].id
+                if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.primary_authentication.server}")
               })[0],
               values({
                 for domain_path in local.related_domains[domain.name] :
@@ -650,8 +650,8 @@ locals {
               })[0],
               values({
                 for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_realm_ad_ldap["${domain_path}:${connection_profile.primary_authentication.server}"].type
-                if contains(keys(local.map_realm_ad_ldap), "${domain_path}:${connection_profile.primary_authentication.server}")
+                domain_path => local.map_ad_ldap_realms["${domain_path}:${connection_profile.primary_authentication.server}"].type
+                if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.primary_authentication.server}")
               })[0],
               values({
                 for domain_path in local.related_domains[domain.name] :
@@ -674,8 +674,8 @@ locals {
               })[0],
               values({
                 for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_realm_ad_ldap["${domain_path}:${connection_profile.secondary_authentication.server}"].id
-                if contains(keys(local.map_realm_ad_ldap), "${domain_path}:${connection_profile.secondary_authentication.server}")
+                domain_path => local.map_ad_ldap_realms["${domain_path}:${connection_profile.secondary_authentication.server}"].id
+                if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.secondary_authentication.server}")
             })[0]) : null
             secondary_authentication_server_type = try(connection_profile.secondary_authentication.server, null) != null && try(connection_profile.secondary_authentication.server, null) != "LOCAL" ? try(
               values({
@@ -685,8 +685,8 @@ locals {
               })[0],
               values({
                 for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_realm_ad_ldap["${domain_path}:${connection_profile.secondary_authentication.server}"].type
-                if contains(keys(local.map_realm_ad_ldap), "${domain_path}:${connection_profile.secondary_authentication.server}")
+                domain_path => local.map_ad_ldap_realms["${domain_path}:${connection_profile.secondary_authentication.server}"].type
+                if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.secondary_authentication.server}")
             })[0]) : null
             secondary_authentication_fallback_to_local                                   = try(connection_profile.secondary_authentication.fallback_to_local, null)
             secondary_authentication_prompt_for_username                                 = try(connection_profile.secondary_authentication.prompt_for_username, null)
@@ -702,8 +702,8 @@ locals {
               })[0],
               values({
                 for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_realm_ad_ldap["${domain_path}:${connection_profile.authorization_server}"].id
-                if contains(keys(local.map_realm_ad_ldap), "${domain_path}:${connection_profile.authorization_server}")
+                domain_path => local.map_ad_ldap_realms["${domain_path}:${connection_profile.authorization_server}"].id
+                if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.authorization_server}")
             })[0]) : null
             authorization_server_type = try(connection_profile.authorization_server, null) != null ? try(
               values({
@@ -713,8 +713,8 @@ locals {
               })[0],
               values({
                 for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_realm_ad_ldap["${domain_path}:${connection_profile.authorization_server}"].type
-                if contains(keys(local.map_realm_ad_ldap), "${domain_path}:${connection_profile.authorization_server}")
+                domain_path => local.map_ad_ldap_realms["${domain_path}:${connection_profile.authorization_server}"].type
+                if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.authorization_server}")
             })[0]) : null
             allow_connection_only_if_user_exists_in_authorization_database = try(connection_profile.allow_connection_only_if_user_exists_in_authorization_database, null)
             accounting_server_id = try(connection_profile.accounting_server, null) != null ? values({
@@ -810,8 +810,8 @@ locals {
           realms = [for realm in try(vpn_ra.ldap_attribute_maps, []) : {
             realm_ad_ldap_id = values({
               for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_realm_ad_ldap["${domain_path}:${realm.ad_ldap_realm}"].id
-              if contains(keys(local.map_realm_ad_ldap), "${domain_path}:${realm.ad_ldap_realm}")
+              domain_path => local.map_ad_ldap_realms["${domain_path}:${realm.ad_ldap_realm}"].id
+              if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${realm.ad_ldap_realm}")
             })[0]
             attribute_maps = [for attribute_map in try(realm.attribute_maps, []) : {
               ldap_attribute_name  = attribute_map.ldap_attribute_name

@@ -1,12 +1,8 @@
-##########################################################
-###    Create maps for combined set of _data and _resources devices  
-##########################################################
-
 ######
 ### map_devices
 ######
 locals {
-  map_devices = merge(
+  map_devices_internal = merge(
     # Devices - individual mode outputs
     { for key, resource in fmc_device.device : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
 
@@ -15,6 +11,17 @@ locals {
 
     # Chassis logical device - individual mode outputs
     { for key, resource in fmc_chassis_logical_device.chassis_logical_device : "${resource.domain}:${resource.name}" => { id = resource.device_id, type = resource.type } },
+  )
+
+  # External objects
+  map_devices_external = {
+    for key, value in try(local.data.devices.devices, {}) : key => value
+  }
+
+  # Internal + External for reference in other objects
+  map_devices = merge(
+    local.map_devices_internal,
+    local.map_devices_external,
   )
 }
 
@@ -399,12 +406,4 @@ locals {
       ]) : "${item.domain}:${item.device_name}:${item.name}" => item
     },
   )
-}
-
-
-######
-### FAKE - TODO
-######
-locals {
-  map_device_groups = {}
 }

@@ -98,7 +98,17 @@ resource "local_sensitive_file" "objects" {
           length(local.map_health_policies_internal) > 0 ? { "health_policies" : local.map_health_policies_internal } : {},
           length(local.map_snmp_alerts_internal) > 0 ? { "snmp_alerts" : local.map_snmp_alerts_internal } : {},
           length(local.map_syslog_alerts_internal) > 0 ? { "syslog_alerts" : local.map_syslog_alerts_internal } : {},
-        )
+        ),
+        "devices" : merge(
+          length(local.map_devices_internal) > 0 ? { "devices" : local.map_devices_internal } : {}
+        ),
+        "integrations" : merge(
+          length(local.map_ad_ldap_realms_internal) > 0 ? { "ad_ldap_realms" : local.map_ad_ldap_realms_internal } : {},
+          length(local.map_local_realms_internal) > 0 ? { "local_realms" : local.map_local_realms_internal } : {},
+        ),
+        "vpns" : merge(
+          length(local.map_vpn_ra_internal) > 0 ? { "remote_access" : local.map_vpn_ra_internal } : {},
+        ),
       }
     }
   })

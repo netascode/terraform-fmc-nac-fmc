@@ -56,8 +56,6 @@ resource "fmc_policy_assignment" "access_control_policy" {
   targets                 = each.value.targets
 
   depends_on = [
-    # fmc_device.module,
-    # data.fmc_device.module,
     fmc_device_ha_pair.device_ha_pair,
     fmc_device_cluster.device_cluster,
   ]
@@ -96,8 +94,6 @@ resource "fmc_policy_assignment" "health_policy" {
   targets                 = each.value.targets
 
   depends_on = [
-    # fmc_device.module,
-    # data.fmc_device.module,
     fmc_device_ha_pair.device_ha_pair,
     fmc_device_cluster.device_cluster,
   ]
@@ -190,6 +186,44 @@ resource "fmc_policy_assignment" "ftd_platform_settings" {
     fmc_ftd_platform_settings_syslog_settings_syslog_id.ftd_platform_settings_syslog_settings_syslog_id,
     fmc_ftd_platform_settings_syslog_servers.ftd_platform_settings_syslog_servers,
     fmc_ftd_platform_settings_time_synchronization.ftd_platform_settings_time_synchronization
+  ]
+}
+
+locals {
+  resource_policy_assignments_vpn_ra = {
+    for item in flatten([
+      for vpn_ra_key, vpn_ra_value in local.map_vpn_ra : {
+        policy_domain           = vpn_ra_value.domain
+        policy_id               = vpn_ra_value.id
+        policy_name             = vpn_ra_value.name
+        policy_type             = vpn_ra_value.type
+        after_destroy_policy_id = null
+
+        targets = flatten([
+          for domain in local.domains : [
+            for device in try(domain.devices.devices, []) : {
+              id   = local.map_devices["${domain.name}:${device.name}"].id
+              type = local.map_devices["${domain.name}:${device.name}"].type
+              name = device.name
+            } if try(device.remote_access_vpn, null) == vpn_ra_value.name
+          ]
+        ])
+      }
+    ]) : "${item.policy_domain}:${item.policy_name}" => item if length(item.targets) > 0
+  }
+}
+
+resource "fmc_policy_assignment" "vpn_ra" {
+  for_each = local.resource_policy_assignments_vpn_ra
+
+  policy_id               = each.value.policy_id
+  policy_type             = each.value.policy_type
+  after_destroy_policy_id = each.value.after_destroy_policy_id
+  targets                 = each.value.targets
+
+  depends_on = [
+    fmc_device_ha_pair.device_ha_pair,
+    fmc_device_cluster.device_cluster,
   ]
 }
 
