@@ -149,7 +149,7 @@ locals {
               domain                 = domain.name
               name                   = ipv4_static_route.name
               interface_logical_name = ipv4_static_route.interface_logical_name
-              interface_id           = local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${ipv4_static_route.interface_logical_name}"].id
+              interface_id           = lower(ipv4_static_route.interface_logical_name) == "null0" ? null : local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${ipv4_static_route.interface_logical_name}"].id
               destination_networks = [for destination_network in ipv4_static_route.selected_networks : {
                 id = try(
                   values({
@@ -214,7 +214,7 @@ locals {
               domain                 = domain.name
               name                   = ipv6_static_route.name
               interface_logical_name = ipv6_static_route.interface_logical_name
-              interface_id           = local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${ipv6_static_route.interface_logical_name}"].id
+              interface_id           = lower(ipv6_static_route.interface_logical_name) == "null0" ? null : local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${ipv6_static_route.interface_logical_name}"].id
               destination_networks = [for destination_network in ipv6_static_route.selected_networks : {
                 id = try(
                   values({
