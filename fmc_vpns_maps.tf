@@ -5,12 +5,12 @@ locals {
   map_vpn_ra_internal = merge(
 
     # VPN RA - individual mode outputs
-    { for key, resource in fmc_vpn_ra.vpn_ra : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
+    { for key, resource in fmc_vpn_ra.vpn_ra : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type, domain = resource.domain, name = resource.name } },
 
     # VPN RA - data sources
     merge([
       for domain, vpns in data.fmc_vpn_ra.vpn_ra : {
-        for vpn_name, vpn_values in vpns.items : "${domain}:${vpn_name}" => { id = vpn_values.id, type = vpn_values.type }
+        for vpn_name, vpn_values in vpns.items : "${domain}:${vpn_name}" => { id = vpn_values.id, type = vpn_values.type, domain = domain, name = vpn_name }
       }
     ]...),
   )

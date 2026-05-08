@@ -1,24 +1,13 @@
 ##########################################################
 ###    SMART LICENSE
 ##########################################################
-locals {
-  resource_smart_license = {
-    license = {
-      registration_type   = try(local.fmc.system.smart_license.registration_type, null)
-      token               = try(local.fmc.system.smart_license.token, null)
-      force               = try(local.fmc.system.smart_license.force, null)
-      retain_registration = try(local.fmc.system.smart_license.retain, null)
-    }
-  }
-}
-
 resource "fmc_smart_license" "smart_license" {
-  for_each = try(local.resource_smart_license.license.registration_type, null) != null ? local.resource_smart_license : {}
+  for_each = try(local.fmc.system.smart_license.registration_type, null) != null ? { license = {} } : {}
 
-  registration_type   = each.value.registration_type
-  token               = each.value.token
-  retain_registration = each.value.retain_registration
-  force               = each.value.force
+  registration_type   = local.fmc.system.smart_license.registration_type
+  token               = try(local.fmc.system.smart_license.token, null)
+  retain_registration = try(local.fmc.system.smart_license.retain, null)
+  force               = try(local.fmc.system.smart_license.force, null)
 }
 
 ##########################################################
@@ -230,28 +219,19 @@ resource "fmc_policy_assignment" "vpn_ra" {
 ##########################################################
 ###    DEPLOY
 ##########################################################
-locals {
-  resource_deploy = {
-    for item in flatten([
-      for domain in local.domains : {
-        domain          = domain.name
-        ignore_warning  = try(local.fmc.system.deployment.ignore_warning, local.defaults.fmc.domains.devices.devices.deploy_ignore_warning, null)
-        deployment_note = try(local.fmc.system.deployment.deployment_note, local.defaults.fmc.domains.devices.devices.deploy_deployment_note, null)
-        device_id_list = flatten([
-          for device in try(domain.devices.devices, []) : [local.map_devices["${domain.name}:${device.name}"].id] if try(device.deploy, false)
-        ])
-      }
-    ]) : item.domain => item if length(item.device_id_list) > 0
-  }
-}
-
 resource "fmc_device_deploy" "device_deploy" {
-  for_each = var.manage_deployment ? local.resource_deploy : {}
+  for_each = {
+    for k, v in {
+      for domain in local.domains : domain.name => [
+        for device in try(domain.devices.devices, []) : local.map_devices["${domain.name}:${device.name}"].id if try(device.deploy, false)
+      ]
+    } : k => { device_id_list = v } if var.manage_deployment && length(v) > 0
+  }
 
-  domain          = each.value.domain
+  domain          = each.key
   device_id_list  = each.value.device_id_list
-  ignore_warning  = each.value.ignore_warning
-  deployment_note = each.value.deployment_note
+  ignore_warning  = try(local.fmc.system.deployment.ignore_warning, local.defaults.fmc.domains.devices.devices.deploy_ignore_warning, null)
+  deployment_note = try(local.fmc.system.deployment.deployment_note, local.defaults.fmc.domains.devices.devices.deploy_deployment_note, null)
 
   depends_on = [
     fmc_device_physical_interface.device_physical_interface,
@@ -263,32 +243,24 @@ resource "fmc_device_deploy" "device_deploy" {
     fmc_policy_assignment.access_control_policy,
     fmc_policy_assignment.ftd_nat_policy,
     fmc_policy_assignment.ftd_platform_settings,
+    fmc_policy_assignment.vpn_ra,
     fmc_device_deploy.chassis_deploy,
   ]
 }
 
-locals {
-  resource_deploy_chassis = {
-    for item in flatten([
-      for domain in local.domains : {
-        domain          = domain.name
-        ignore_warning  = try(local.fmc.system.deployment.ignore_warning, local.defaults.fmc.domains.devices.devices.deploy_ignore_warning, null)
-        deployment_note = try(local.fmc.system.deployment.deployment_note, local.defaults.fmc.domains.devices.devices.deploy_deployment_note, null)
-        device_id_list = flatten([
-          for chassis in try(domain.devices.chassis, []) : [local.map_chassis["${domain.name}:${chassis.name}"].id] if try(chassis.deploy, false)
-        ])
-      }
-    ]) : item.domain => item if length(item.device_id_list) > 0
-  }
-}
-
 resource "fmc_device_deploy" "chassis_deploy" {
-  for_each = var.manage_deployment ? local.resource_deploy_chassis : {}
+  for_each = {
+    for k, v in {
+      for domain in local.domains : domain.name => [
+        for chassis in try(domain.devices.chassis, []) : local.map_chassis["${domain.name}:${chassis.name}"].id if try(chassis.deploy, false)
+      ]
+    } : k => { device_id_list = v } if var.manage_deployment && length(v) > 0
+  }
 
-  domain          = each.value.domain
+  domain          = each.key
   device_id_list  = each.value.device_id_list
-  ignore_warning  = each.value.ignore_warning
-  deployment_note = each.value.deployment_note
+  ignore_warning  = try(local.fmc.system.deployment.ignore_warning, local.defaults.fmc.domains.devices.devices.deploy_ignore_warning, null)
+  deployment_note = try(local.fmc.system.deployment.deployment_note, local.defaults.fmc.domains.devices.devices.deploy_deployment_note, null)
 
   depends_on = [
     fmc_chassis_physical_interface.chassis_physical_interface,

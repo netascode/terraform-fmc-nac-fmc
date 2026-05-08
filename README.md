@@ -69,9 +69,9 @@ module "fmc" {
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.8.0 |
-| <a name="requirement_fmc"></a> [fmc](#requirement\_fmc) | >= 2.1.0 |
+| <a name="requirement_fmc"></a> [fmc](#requirement\_fmc) | >= 2.1.0, < 3.0.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.3.0, < 3.0.0 |
-| <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 1.0.2, < 2.0.0 |
+| <a name="requirement_utils"></a> [utils](#requirement\_utils) | 2.0.0-beta2 |
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -196,6 +196,7 @@ module "fmc" {
 | [fmc_policy_assignment.ftd_nat_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_assignment) | resource |
 | [fmc_policy_assignment.ftd_platform_settings](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_assignment) | resource |
 | [fmc_policy_assignment.health_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_assignment) | resource |
+| [fmc_policy_assignment.vpn_ra](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_assignment) | resource |
 | [fmc_policy_list.policy_list](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_list) | resource |
 | [fmc_policy_lists.policy_lists](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_lists) | resource |
 | [fmc_port.port](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/port) | resource |

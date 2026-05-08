@@ -48,7 +48,9 @@ locals {
           performance_tier         = try(device.performance_tier, local.defaults.fmc.domains.devices.devices.performance_tier, null)
           prohibit_packet_transfer = try(device.prohibit_packet_transfer, local.defaults.fmc.domains.devices.devices.prohibit_packet_transfer, null)
           snort_engine             = try(device.snort_engine, local.defaults.fmc.domains.devices.devices.snort_engine, null)
-        } if(!contains(try(keys(local.data_device), []), "${domain.name}:${device.name}") && !contains(try(keys(local.resource_chassis_logical_device), []), "${domain.name}:${device.name}"))
+          } if(!contains(try(keys(local.data_device), []), "${domain.name}:${device.name}") &&
+        !contains(try(keys(local.resource_chassis_logical_device), []), "${domain.name}:${device.name}")) &&
+        !contains(try(keys(local.map_devices_external), []), "${domain.name}:${device.name}")
       ]
     ]) : "${item.domain}:${item.name}" => item
   }

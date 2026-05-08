@@ -100,7 +100,11 @@ resource "local_sensitive_file" "objects" {
           length(local.map_syslog_alerts_internal) > 0 ? { "syslog_alerts" : local.map_syslog_alerts_internal } : {},
         ),
         "devices" : merge(
-          length(local.map_devices_internal) > 0 ? { "devices" : local.map_devices_internal } : {}
+          length(local.map_devices_internal) > 0 ? { "devices" : local.map_devices_internal } : {},
+          length(local.map_interfaces_by_names_internal) > 0 ? { "interfaces_by_names" : local.map_interfaces_by_names_internal } : {},
+          length(local.map_interfaces_by_logical_names_internal) > 0 ? { "interfaces_by_logical_names" : local.map_interfaces_by_logical_names_internal } : {},
+          length(local.map_ftd_platform_settings_internal) > 0 ? { "ftd_platform_settings" : local.map_ftd_platform_settings_internal } : {},
+          length(local.map_loopback_interfaces_internal) > 0 ? { "loopback_interfaces" : local.map_loopback_interfaces_internal } : {},
         ),
         "integrations" : merge(
           length(local.map_ad_ldap_realms_internal) > 0 ? { "ad_ldap_realms" : local.map_ad_ldap_realms_internal } : {},
