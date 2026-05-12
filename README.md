@@ -69,7 +69,7 @@ module "fmc" {
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.8.0 |
-| <a name="requirement_fmc"></a> [fmc](#requirement\_fmc) | >= 2.1.0, < 3.0.0 |
+| <a name="requirement_fmc"></a> [fmc](#requirement\_fmc) | >= 2.3.0, < 3.0.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.3.0, < 3.0.0 |
 | <a name="requirement_utils"></a> [utils](#requirement\_utils) | 2.0.0-beta2 |
 ## Inputs
@@ -190,11 +190,12 @@ module "fmc" {
 | [fmc_ipv6_prefix_lists.ipv6_prefix_lists](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/ipv6_prefix_lists) | resource |
 | [fmc_network.network](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network) | resource |
 | [fmc_network_analysis_policy.network_analysis_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_analysis_policy) | resource |
+| [fmc_network_group_overrides.network_group_overrides](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_group_overrides) | resource |
 | [fmc_network_groups.network_groups](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_groups) | resource |
 | [fmc_network_groups.network_groups_l1](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_groups) | resource |
 | [fmc_network_groups.network_groups_l2](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_groups) | resource |
+| [fmc_network_overrides.network_overrides](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_overrides) | resource |
 | [fmc_networks.networks](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/networks) | resource |
-| [fmc_networks_overrides.network_overrides](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/networks_overrides) | resource |
 | [fmc_policy_assignment.access_control_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_assignment) | resource |
 | [fmc_policy_assignment.ftd_nat_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_assignment) | resource |
 | [fmc_policy_assignment.ftd_platform_settings](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_assignment) | resource |
@@ -209,8 +210,8 @@ module "fmc" {
 | [fmc_prefilter_policy.prefilter_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/prefilter_policy) | resource |
 | [fmc_radius_server_group.radius_server_group](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/radius_server_group) | resource |
 | [fmc_range.range](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/range) | resource |
+| [fmc_range_overrides.range_overrides](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/range_overrides) | resource |
 | [fmc_ranges.ranges](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/ranges) | resource |
-| [fmc_ranges_overrides.range_overrides](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/ranges_overrides) | resource |
 | [fmc_realm_ad_ldap.realm_ad_ldap](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/realm_ad_ldap) | resource |
 | [fmc_realm_local.realm_local](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/realm_local) | resource |
 | [fmc_resource_profile.resource_profile](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/resource_profile) | resource |

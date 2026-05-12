@@ -91,6 +91,7 @@ locals {
 resource "fmc_host_overrides" "host_overrides" {
   for_each = local.resource_hosts_overrides
 
+  domain      = each.value.domain
   parent_id   = each.value.parent_id
   parent_name = each.value.parent_name
   overrides   = each.value.overrides
@@ -162,7 +163,7 @@ resource "fmc_network" "network" {
 ###    NETWORKS OVERRIDES
 ##########################################################
 locals {
-  resource_networks_overrides = {
+  resource_network_overrides = {
     for item in flatten([
       for domain in local.domains : [
         for network in try(domain.objects.networks, []) : {
@@ -181,9 +182,10 @@ locals {
   }
 }
 
-resource "fmc_networks_overrides" "network_overrides" {
-  for_each = local.resource_networks_overrides
+resource "fmc_network_overrides" "network_overrides" {
+  for_each = local.resource_network_overrides
 
+  domain      = each.value.domain
   parent_id   = each.value.parent_id
   parent_name = each.value.parent_name
   overrides   = each.value.overrides
@@ -255,7 +257,7 @@ resource "fmc_range" "range" {
 ###    RANGES OVERRIDES
 ##########################################################
 locals {
-  resource_ranges_overrides = {
+  resource_range_overrides = {
     for item in flatten([
       for domain in local.domains : [
         for range in try(domain.objects.ranges, []) : {
@@ -274,9 +276,10 @@ locals {
   }
 }
 
-resource "fmc_ranges_overrides" "range_overrides" {
-  for_each = local.resource_ranges_overrides
+resource "fmc_range_overrides" "range_overrides" {
+  for_each = local.resource_range_overrides
 
+  domain      = each.value.domain
   parent_id   = each.value.parent_id
   parent_name = each.value.parent_name
   overrides   = each.value.overrides
@@ -372,6 +375,7 @@ locals {
 resource "fmc_fqdn_overrides" "fqdn_overrides" {
   for_each = local.resource_fqdn_overrides
 
+  domain      = each.value.domain
   parent_id   = each.value.parent_id
   parent_name = each.value.parent_name
   overrides   = each.value.overrides
@@ -437,7 +441,7 @@ locals {
           contains(local.help_network_objects_l0, "${domain_path}:${object_item}")
         ])]
         description = try(network_group.description, local.defaults.fmc.domains.objects.network_groups.description, null)
-        overridable = try(network_group.overridable, local.defaults.fmc.domains.objects.network_groups.overridable, null)
+        overridable = length(try(network_group.overrides, [])) > 0 ? true : try(network_group.overridable, local.defaults.fmc.domains.objects.network_groups.overridable, null)
       } if !contains(try(keys(local.data_network_groups[domain.name].items), []), network_group.name)
     } if length(try(domain.objects.network_groups, [])) > 0
     && try(local.domain_depth[domain.name], 0) == 0
@@ -502,7 +506,7 @@ locals {
           contains(local.help_network_objects_l1, "${domain_path}:${object_item}")
         ])]
         description = try(network_group.description, local.defaults.fmc.domains.objects.network_groups.description, null)
-        overridable = try(network_group.overridable, local.defaults.fmc.domains.objects.network_groups.overridable, null)
+        overridable = length(try(network_group.overrides, [])) > 0 ? true : try(network_group.overridable, local.defaults.fmc.domains.objects.network_groups.overridable, null)
       } if !contains(try(keys(local.data_network_groups[domain.name].items), []), network_group.name)
     } if length(try(domain.objects.network_groups, [])) > 0
     && try(local.domain_depth[domain.name], 0) == 1
@@ -570,7 +574,7 @@ locals {
           contains(local.help_network_objects_l2, "${domain_path}:${object_item}")
         ])]
         description = try(network_group.description, local.defaults.fmc.domains.objects.network_groups.description, null)
-        overridable = try(network_group.overridable, local.defaults.fmc.domains.objects.network_groups.overridable, null)
+        overridable = length(try(network_group.overrides, [])) > 0 ? true : try(network_group.overridable, local.defaults.fmc.domains.objects.network_groups.overridable, null)
       } if !contains(try(keys(local.data_network_groups[domain.name].items), []), network_group.name)
     } if length(try(domain.objects.network_groups, [])) > 0
     && try(local.domain_depth[domain.name], 0) == 2
@@ -606,6 +610,55 @@ resource "fmc_network_groups" "network_groups_l2" {
 
   domain = each.key
   items  = { for network_group in each.value : network_group.name => network_group }
+}
+
+##########################################################
+###    NETWORK GROUP OVERRIDES
+##########################################################
+locals {
+  resource_network_group_overrides = {
+    for item in flatten([
+      for domain in local.domains : [
+        for network_group in try(domain.objects.network_groups, []) : {
+          domain      = domain.name
+          parent_name = network_group.name
+          parent_id   = local.map_network_groups["${domain.name}:${network_group.name}"].id
+          overrides = [for override in try(network_group.overrides, []) : {
+            literals = [for literal in try(override.literals, []) : {
+              value = literal
+            }]
+            objects = [for object_item in try(override.objects, []) : {
+              id = try(
+                values({
+                  for domain_path in local.related_domains[domain.name] :
+                  domain_path => local.map_network_objects["${domain_path}:${object_item}"].id
+                  if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")
+                })[0],
+                values({
+                  for domain_path in local.related_domains[domain.name] :
+                  domain_path => local.map_network_groups["${domain_path}:${object_item}"].id
+                  if contains(keys(local.map_network_groups), "${domain_path}:${object_item}")
+                })[0],
+              )
+              name = object_item
+            }]
+            description = try(override.description, null)
+            target_type = override.target_type
+            target_id   = override.target_type == "Device" ? local.map_devices["${domain.name}:${override.target}"].id : data.fmc_domains.domains.items[override.target].id
+          }]
+        } if length(try(network_group.overrides, [])) > 0
+      ]
+    ]) : "${item.domain}:${item.parent_name}" => item
+  }
+}
+
+resource "fmc_network_group_overrides" "network_group_overrides" {
+  for_each = local.resource_network_group_overrides
+
+  domain      = each.value.domain
+  parent_id   = each.value.parent_id
+  parent_name = each.value.parent_name
+  overrides   = each.value.overrides
 }
 
 ##########################################################
