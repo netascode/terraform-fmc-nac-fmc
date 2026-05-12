@@ -20,7 +20,7 @@ locals {
         name        = host.name
         ip          = lower(host.ip)
         description = try(host.description, local.defaults.fmc.domains.objects.hosts.description, null)
-        overridable = try(host.overridable, local.defaults.fmc.domains.objects.hosts.overridable, null)
+        overridable = length(try(host.overrides, [])) > 0 ? true : try(host.overridable, local.defaults.fmc.domains.objects.hosts.overridable, null)
       } if !contains(try(keys(local.data_hosts[domain.name].items), []), host.name)
     ] if length(try(domain.objects.hosts, [])) > 0
   }
@@ -66,6 +66,37 @@ resource "fmc_host" "host" {
 }
 
 ##########################################################
+###    HOSTS OVERRIDES
+##########################################################
+locals {
+  resource_hosts_overrides = {
+    for item in flatten([
+      for domain in local.domains : [
+        for host in try(domain.objects.hosts, []) : {
+          domain      = domain.name
+          parent_name = host.name
+          parent_id   = local.map_hosts["${domain.name}:${host.name}"].id
+          overrides = [for override in try(host.overrides, []) : {
+            ip          = lower(override.ip)
+            description = try(override.description, null)
+            target_type = override.target_type
+            target_id   = override.target_type == "Device" ? local.map_devices["${domain.name}:${override.target}"].id : data.fmc_domains.domains.items[override.target].id
+          }]
+        } if length(try(host.overrides, [])) > 0
+      ]
+    ]) : "${item.domain}:${item.parent_name}" => item
+  }
+}
+
+resource "fmc_host_overrides" "host_overrides" {
+  for_each = local.resource_hosts_overrides
+
+  parent_id   = each.value.parent_id
+  parent_name = each.value.parent_name
+  overrides   = each.value.overrides
+}
+
+##########################################################
 ###    NETWORKS
 ##########################################################
 locals {
@@ -86,7 +117,7 @@ locals {
         name        = network.name
         prefix      = lower(network.prefix)
         description = try(network.description, local.defaults.fmc.domains.objects.networks.description, null)
-        overridable = try(network.overridable, local.defaults.fmc.domains.objects.networks.overridable, null)
+        overridable = length(try(network.overrides, [])) > 0 ? true : try(network.overridable, local.defaults.fmc.domains.objects.networks.overridable, null)
       } if !contains(try(keys(local.data_networks[domain.name].items), []), network.name)
     ] if length(try(domain.objects.networks, [])) > 0
   }
@@ -128,6 +159,37 @@ resource "fmc_network" "network" {
 }
 
 ##########################################################
+###    NETWORKS OVERRIDES
+##########################################################
+locals {
+  resource_networks_overrides = {
+    for item in flatten([
+      for domain in local.domains : [
+        for network in try(domain.objects.networks, []) : {
+          domain      = domain.name
+          parent_name = network.name
+          parent_id   = local.map_networks["${domain.name}:${network.name}"].id
+          overrides = [for override in try(network.overrides, []) : {
+            prefix      = lower(override.prefix)
+            description = try(override.description, null)
+            target_type = override.target_type
+            target_id   = override.target_type == "Device" ? local.map_devices["${domain.name}:${override.target}"].id : data.fmc_domains.domains.items[override.target].id
+          }]
+        } if length(try(network.overrides, [])) > 0
+      ]
+    ]) : "${item.domain}:${item.parent_name}" => item
+  }
+}
+
+resource "fmc_networks_overrides" "network_overrides" {
+  for_each = local.resource_networks_overrides
+
+  parent_id   = each.value.parent_id
+  parent_name = each.value.parent_name
+  overrides   = each.value.overrides
+}
+
+##########################################################
 ###    RANGES
 ##########################################################
 locals {
@@ -148,7 +210,7 @@ locals {
         name        = range.name
         ip_range    = range.ip_range
         description = try(range.description, local.defaults.fmc.domains.objects.ranges.description, null)
-        overridable = try(range.overridable, local.defaults.fmc.domains.objects.ranges.overridable, null)
+        overridable = length(try(range.overrides, [])) > 0 ? true : try(range.overridable, local.defaults.fmc.domains.objects.ranges.overridable, null)
       } if !contains(try(keys(local.data_ranges[domain.name].items), []), range.name)
     ] if length(try(domain.objects.ranges, [])) > 0
   }
@@ -190,6 +252,37 @@ resource "fmc_range" "range" {
 }
 
 ##########################################################
+###    RANGES OVERRIDES
+##########################################################
+locals {
+  resource_ranges_overrides = {
+    for item in flatten([
+      for domain in local.domains : [
+        for range in try(domain.objects.ranges, []) : {
+          domain      = domain.name
+          parent_name = range.name
+          parent_id   = local.map_ranges["${domain.name}:${range.name}"].id
+          overrides = [for override in try(range.overrides, []) : {
+            ip_range    = override.ip_range
+            description = try(override.description, null)
+            target_type = override.target_type
+            target_id   = override.target_type == "Device" ? local.map_devices["${domain.name}:${override.target}"].id : data.fmc_domains.domains.items[override.target].id
+          }]
+        } if length(try(range.overrides, [])) > 0
+      ]
+    ]) : "${item.domain}:${item.parent_name}" => item
+  }
+}
+
+resource "fmc_ranges_overrides" "range_overrides" {
+  for_each = local.resource_ranges_overrides
+
+  parent_id   = each.value.parent_id
+  parent_name = each.value.parent_name
+  overrides   = each.value.overrides
+}
+
+##########################################################
 ###    FQDNS
 ##########################################################
 locals {
@@ -211,7 +304,7 @@ locals {
         fqdn           = fqdn.fqdn
         description    = try(fqdn.description, local.defaults.fmc.domains.objects.fqdns.description, null)
         dns_resolution = try(fqdn.dns_resolution, local.defaults.fmc.domains.objects.fqdns.dns_resolution, null)
-        overridable    = try(fqdn.overridable, local.defaults.fmc.domains.objects.fqdns.overridable, null)
+        overridable    = length(try(fqdn.overrides, [])) > 0 ? true : try(fqdn.overridable, local.defaults.fmc.domains.objects.fqdns.overridable, null)
       } if !contains(try(keys(local.data_fqdns[domain.name].items), []), fqdn.name)
     ] if length(try(domain.objects.fqdns, [])) > 0
   }
@@ -251,6 +344,37 @@ resource "fmc_fqdn" "fqdn" {
   description    = each.value.item.description
   dns_resolution = each.value.item.dns_resolution
   overridable    = each.value.item.overridable
+}
+
+##########################################################
+###    FQDN OVERRIDES
+##########################################################
+locals {
+  resource_fqdn_overrides = {
+    for item in flatten([
+      for domain in local.domains : [
+        for fqdn in try(domain.objects.fqdns, []) : {
+          domain      = domain.name
+          parent_name = fqdn.name
+          parent_id   = local.map_fqdns["${domain.name}:${fqdn.name}"].id
+          overrides = [for override in try(fqdn.overrides, []) : {
+            fqdn        = override.fqdn
+            description = try(override.description, null)
+            target_type = override.target_type
+            target_id   = override.target_type == "Device" ? local.map_devices["${domain.name}:${override.target}"].id : data.fmc_domains.domains.items[override.target].id
+          }]
+        } if length(try(fqdn.overrides, [])) > 0
+      ]
+    ]) : "${item.domain}:${item.parent_name}" => item
+  }
+}
+
+resource "fmc_fqdn_overrides" "fqdn_overrides" {
+  for_each = local.resource_fqdn_overrides
+
+  parent_id   = each.value.parent_id
+  parent_name = each.value.parent_name
+  overrides   = each.value.overrides
 }
 
 ##########################################################
