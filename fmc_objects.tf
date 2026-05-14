@@ -413,23 +413,18 @@ locals {
           value = literal
         }]
         objects = [for object_item in try(network_group.objects, []) : {
-          id = try(
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_network_objects["${domain_path}:${object_item}"].id
-              if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")
-            })[0],
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => data.fmc_network_groups.network_groups[domain_path].items[object_item].id
-              if contains(keys(try(data.fmc_network_groups.network_groups[domain_path].items, {})), object_item)
-            })[0],
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_network_groups_external["${domain_path}:${object_item}"].id
-              if contains(keys(local.map_network_groups_external), "${domain_path}:${object_item}")
-            })[0],
-          )
+          id = concat(
+            [for domain_path in local.related_domains[domain.name] :
+              local.map_network_objects["${domain_path}:${object_item}"].id
+            if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")],
+            [for domain_path in local.related_domains[domain.name] :
+              data.fmc_network_groups.network_groups[domain_path].items[object_item].id
+            if contains(keys(try(data.fmc_network_groups.network_groups[domain_path].items, {})), object_item)],
+            [for domain_path in local.related_domains[domain.name] :
+              local.map_network_groups_external["${domain_path}:${object_item}"].id
+            if contains(keys(local.map_network_groups_external), "${domain_path}:${object_item}")],
+            [null],
+          )[0]
           name = object_item
           } if anytrue([
             for domain_path in local.related_domains[domain.name] :
@@ -473,28 +468,21 @@ locals {
           value = literal
         }]
         objects = [for object_item in try(network_group.objects, []) : {
-          id = try(
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_network_objects["${domain_path}:${object_item}"].id
-              if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")
-            })[0],
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => data.fmc_network_groups.network_groups[domain_path].items[object_item].id
-              if contains(keys(try(data.fmc_network_groups.network_groups[domain_path].items, {})), object_item)
-            })[0],
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.prior_ng_objects_l1["${domain_path}:${object_item}"].id
-              if contains(keys(local.prior_ng_objects_l1), "${domain_path}:${object_item}")
-            })[0],
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_network_groups_external["${domain_path}:${object_item}"].id
-              if contains(keys(local.map_network_groups_external), "${domain_path}:${object_item}")
-            })[0],
-          )
+          id = concat(
+            [for domain_path in local.related_domains[domain.name] :
+              local.map_network_objects["${domain_path}:${object_item}"].id
+            if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")],
+            [for domain_path in local.related_domains[domain.name] :
+              data.fmc_network_groups.network_groups[domain_path].items[object_item].id
+            if contains(keys(try(data.fmc_network_groups.network_groups[domain_path].items, {})), object_item)],
+            [for domain_path in local.related_domains[domain.name] :
+              local.prior_ng_objects_l1["${domain_path}:${object_item}"].id
+            if contains(keys(local.prior_ng_objects_l1), "${domain_path}:${object_item}")],
+            [for domain_path in local.related_domains[domain.name] :
+              local.map_network_groups_external["${domain_path}:${object_item}"].id
+            if contains(keys(local.map_network_groups_external), "${domain_path}:${object_item}")],
+            [null],
+          )[0]
           name = object_item
           } if anytrue([
             for domain_path in local.related_domains[domain.name] :
@@ -541,28 +529,21 @@ locals {
           value = literal
         }]
         objects = [for object_item in try(network_group.objects, []) : {
-          id = try(
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_network_objects["${domain_path}:${object_item}"].id
-              if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")
-            })[0],
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => data.fmc_network_groups.network_groups[domain_path].items[object_item].id
-              if contains(keys(try(data.fmc_network_groups.network_groups[domain_path].items, {})), object_item)
-            })[0],
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.prior_ng_objects_l2["${domain_path}:${object_item}"].id
-              if contains(keys(local.prior_ng_objects_l2), "${domain_path}:${object_item}")
-            })[0],
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_network_groups_external["${domain_path}:${object_item}"].id
-              if contains(keys(local.map_network_groups_external), "${domain_path}:${object_item}")
-            })[0],
-          )
+          id = concat(
+            [for domain_path in local.related_domains[domain.name] :
+              local.map_network_objects["${domain_path}:${object_item}"].id
+            if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")],
+            [for domain_path in local.related_domains[domain.name] :
+              data.fmc_network_groups.network_groups[domain_path].items[object_item].id
+            if contains(keys(try(data.fmc_network_groups.network_groups[domain_path].items, {})), object_item)],
+            [for domain_path in local.related_domains[domain.name] :
+              local.prior_ng_objects_l2["${domain_path}:${object_item}"].id
+            if contains(keys(local.prior_ng_objects_l2), "${domain_path}:${object_item}")],
+            [for domain_path in local.related_domains[domain.name] :
+              local.map_network_groups_external["${domain_path}:${object_item}"].id
+            if contains(keys(local.map_network_groups_external), "${domain_path}:${object_item}")],
+            [null],
+          )[0]
           name = object_item
           } if anytrue([
             for domain_path in local.related_domains[domain.name] :
@@ -628,18 +609,15 @@ locals {
               value = literal
             }]
             objects = [for object_item in try(override.objects, []) : {
-              id = try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${object_item}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")
-                })[0],
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_groups["${domain_path}:${object_item}"].id
-                  if contains(keys(local.map_network_groups), "${domain_path}:${object_item}")
-                })[0],
-              )
+              id = concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_network_objects["${domain_path}:${object_item}"].id
+                if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")],
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_network_groups["${domain_path}:${object_item}"].id
+                if contains(keys(local.map_network_groups), "${domain_path}:${object_item}")],
+                [null],
+              )[0]
               name = object_item
             }]
             description = try(override.description, null)
@@ -2602,30 +2580,24 @@ locals {
               value = literal
             }]
             objects = [for object_item in try(entry.objects, []) : {
-              id = try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${object_item}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")
-                })[0],
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_groups["${domain_path}:${object_item}"].id
-                  if contains(keys(local.map_network_groups), "${domain_path}:${object_item}")
-                })[0],
-              )
-              type = try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${object_item}"].type
-                  if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")
-                })[0],
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_groups["${domain_path}:${object_item}"].type
-                  if contains(keys(local.map_network_groups), "${domain_path}:${object_item}")
-                })[0],
-              )
+              id = concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_network_objects["${domain_path}:${object_item}"].id
+                if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")],
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_network_groups["${domain_path}:${object_item}"].id
+                if contains(keys(local.map_network_groups), "${domain_path}:${object_item}")],
+                [null],
+              )[0]
+              type = concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_network_objects["${domain_path}:${object_item}"].type
+                if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")],
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_network_groups["${domain_path}:${object_item}"].type
+                if contains(keys(local.map_network_groups), "${domain_path}:${object_item}")],
+                [null],
+              )[0]
             }]
           }]
           description = try(standard_access_list.description, local.defaults.fmc.domains.objects.standard_access_lists.description, null)
@@ -2683,27 +2655,23 @@ locals {
               type  = strcontains(destination_network_literal, "/") ? "Network" : "Host"
             }]
             destination_network_objects = [for destination_network_object in try(entry.destination_network_objects, []) : {
-              id = try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${destination_network_object}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${destination_network_object}")
-                })[0],
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_groups["${domain_path}:${destination_network_object}"].id
-                  if contains(keys(local.map_network_groups), "${domain_path}:${destination_network_object}")
-                })[0],
-              )
+              id = concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_network_objects["${domain_path}:${destination_network_object}"].id
+                if contains(keys(local.map_network_objects), "${domain_path}:${destination_network_object}")],
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_network_groups["${domain_path}:${destination_network_object}"].id
+                if contains(keys(local.map_network_groups), "${domain_path}:${destination_network_object}")],
+                [null],
+              )[0]
             }]
             destination_port_objects = [for destination_port_object in try(entry.destination_port_objects, []) : {
-              id = try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_services["${domain_path}:${destination_port_object}"].id
-                  if contains(keys(local.map_services), "${domain_path}:${destination_port_object}")
-                })[0],
-              )
+              id = concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_services["${domain_path}:${destination_port_object}"].id
+                if contains(keys(local.map_services), "${domain_path}:${destination_port_object}")],
+                [null],
+              )[0]
             }]
             destination_port_literals = [for destination_port_literal in try(entry.destination_port_literals, []) : {
               protocol  = local.help_protocol_mapping[destination_port_literal.protocol]
@@ -2718,40 +2686,35 @@ locals {
               type  = strcontains(source_network_literal, "/") ? "Network" : "Host"
             }]
             source_network_objects = [for source_network_object in try(entry.source_network_objects, []) : {
-              id = try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${source_network_object}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${source_network_object}")
-                })[0],
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_groups["${domain_path}:${source_network_object}"].id
-                  if contains(keys(local.map_network_groups), "${domain_path}:${source_network_object}")
-                })[0],
-              )
+              id = concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_network_objects["${domain_path}:${source_network_object}"].id
+                if contains(keys(local.map_network_objects), "${domain_path}:${source_network_object}")],
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_network_groups["${domain_path}:${source_network_object}"].id
+                if contains(keys(local.map_network_groups), "${domain_path}:${source_network_object}")],
+                [null],
+              )[0]
             }]
             source_port_objects = [for source_port_object in try(entry.source_port_objects, []) : {
-              id = try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_services["${domain_path}:${source_port_object}"].id
-                  if contains(keys(local.map_services), "${domain_path}:${source_port_object}")
-                })[0],
-              )
+              id = concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_services["${domain_path}:${source_port_object}"].id
+                if contains(keys(local.map_services), "${domain_path}:${source_port_object}")],
+                [null],
+              )[0]
             }]
             source_port_literals = [for source_port_literal in try(entry.source_port_literals, []) : {
               protocol = local.help_protocol_mapping[source_port_literal.protocol]
               port     = try(source_port_literal.port, null)
             }]
             source_sgt_objects = [for source_sgt_object in try(entry.source_sgt_objects, []) : {
-              id = try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_sgts["${domain_path}:${source_sgt_object}"].id
-                  if contains(keys(local.map_sgts), "${domain_path}:${source_sgt_object}")
-                })[0],
-              )
+              id = concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_sgts["${domain_path}:${source_sgt_object}"].id
+                if contains(keys(local.map_sgts), "${domain_path}:${source_sgt_object}")],
+                [null],
+              )[0]
             }]
           }]
         } if !contains(try(keys(local.data_extended_access_list), {}), "${domain.name}:${extended_access_list.name}")
@@ -3643,18 +3606,15 @@ locals {
             if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${certificate_enrollment.acme.source_interface}")
           })[0] : null
           acme_source_interface_name = try(certificate_enrollment.acme.source_interface, null)
-          acme_ca_only_certificate_id = try(certificate_enrollment.acme.ca_only_certificate, null) != null ? try(
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => fmc_certificate_enrollment.certificate_enrollment["${domain_path}:${certificate_enrollment.acme.ca_only_certificate}"].id
-              if contains(keys(fmc_certificate_enrollment.certificate_enrollment), "${domain_path}:${certificate_enrollment.acme.ca_only_certificate}")
-            })[0],
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => data.fmc_certificate_enrollment.certificate_enrollment["${domain_path}:${certificate_enrollment.acme.ca_only_certificate}"].id
-              if contains(keys(data.fmc_certificate_enrollment.certificate_enrollment), "${domain_path}:${certificate_enrollment.acme.ca_only_certificate}")
-            })[0],
-          ) : null
+          acme_ca_only_certificate_id = try(certificate_enrollment.acme.ca_only_certificate, null) != null ? concat(
+            [for domain_path in local.related_domains[domain.name] :
+              fmc_certificate_enrollment.certificate_enrollment["${domain_path}:${certificate_enrollment.acme.ca_only_certificate}"].id
+            if contains(keys(fmc_certificate_enrollment.certificate_enrollment), "${domain_path}:${certificate_enrollment.acme.ca_only_certificate}")],
+            [for domain_path in local.related_domains[domain.name] :
+              data.fmc_certificate_enrollment.certificate_enrollment["${domain_path}:${certificate_enrollment.acme.ca_only_certificate}"].id
+            if contains(keys(data.fmc_certificate_enrollment.certificate_enrollment), "${domain_path}:${certificate_enrollment.acme.ca_only_certificate}")],
+            [null],
+          )[0] : null
           acme_auto_enrollment                  = try(certificate_enrollment.acme.auto_enrollment, null)
           acme_auto_enrollment_lifetime         = try(certificate_enrollment.acme.auto_enrollment_lifetime, null)
           acme_auto_enrollment_key_regeneration = try(certificate_enrollment.acme.auto_enrollment_key_regeneration, null)

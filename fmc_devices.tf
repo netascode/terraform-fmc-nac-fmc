@@ -23,25 +23,25 @@ locals {
           licenses         = device.licenses
           registration_key = device.registration_key
 
-          access_control_policy_id = try(device.access_control_policy, "") != "" ? try(
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_access_control_policies["${domain_path}:${device.access_control_policy}"].id
-              if contains(keys(local.map_access_control_policies), "${domain_path}:${device.access_control_policy}")
-          })[0]) : null
+          access_control_policy_id = try(device.access_control_policy, "") != "" ? concat(
+            [for domain_path in local.related_domains[domain.name] :
+              local.map_access_control_policies["${domain_path}:${device.access_control_policy}"].id
+            if contains(keys(local.map_access_control_policies), "${domain_path}:${device.access_control_policy}")],
+            [null],
+          )[0] : null
           # device_group_id = ...
-          health_policy_id = try(device.health_policy, "") != "" ? try(
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_health_policies["${domain_path}:${device.health_policy}"].id
-              if contains(keys(local.map_health_policies), "${domain_path}:${device.health_policy}")
-          })[0]) : null
-          nat_policy_id = try(device.nat_policy, "") != "" ? try(
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_ftd_nat_policies["${domain_path}:${device.nat_policy}"].id
-              if contains(keys(local.map_ftd_nat_policies), "${domain_path}:${device.nat_policy}")
-          })[0]) : null
+          health_policy_id = try(device.health_policy, "") != "" ? concat(
+            [for domain_path in local.related_domains[domain.name] :
+              local.map_health_policies["${domain_path}:${device.health_policy}"].id
+            if contains(keys(local.map_health_policies), "${domain_path}:${device.health_policy}")],
+            [null],
+          )[0] : null
+          nat_policy_id = try(device.nat_policy, "") != "" ? concat(
+            [for domain_path in local.related_domains[domain.name] :
+              local.map_ftd_nat_policies["${domain_path}:${device.nat_policy}"].id
+            if contains(keys(local.map_ftd_nat_policies), "${domain_path}:${device.nat_policy}")],
+            [null],
+          )[0] : null
 
           nat_id                   = try(device.nat_id, null)
           object_group_search      = try(device.object_group_search, local.defaults.fmc.domains.devices.devices.object_group_search, null)
@@ -447,12 +447,12 @@ locals {
               ip_based_monitoring          = try(physical_interface.ip_based_monitoring, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ip_based_monitoring, null)
               ip_based_monitoring_next_hop = try(physical_interface.ip_based_monitoring_next_hop, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ip_based_monitoring_next_hop, null)
               ip_based_monitoring_type     = try(physical_interface.ip_based_monitoring_type, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ip_based_monitoring_type, null)
-              ipv4_address_pool_id = try(physical_interface.ipv4_address_pool, "") != "" ? try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_ipv4_address_pools["${domain_path}:${physical_interface.ipv4_address_pool}"].id
-                  if contains(keys(local.map_ipv4_address_pools), "${domain_path}:${physical_interface.ipv4_address_pool}")
-              })[0]) : null
+              ipv4_address_pool_id = try(physical_interface.ipv4_address_pool, "") != "" ? concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_ipv4_address_pools["${domain_path}:${physical_interface.ipv4_address_pool}"].id
+                if contains(keys(local.map_ipv4_address_pools), "${domain_path}:${physical_interface.ipv4_address_pool}")],
+                [null],
+              )[0] : null
               ipv4_dhcp_obtain_default_route        = try(physical_interface.ipv4_dhcp_obtain_default_route, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv4_dhcp_obtain_default_route, null)
               ipv4_dhcp_default_route_metric        = try(physical_interface.ipv4_dhcp_default_route_metric, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv4_dhcp_default_route_metric, null)
               ipv4_pppoe_authentication             = try(physical_interface.ipv4_pppoe_authentication, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv4_pppoe_authentication, null)
@@ -464,12 +464,12 @@ locals {
               ipv4_pppoe_vpdn_group_name            = try(physical_interface.ipv4_pppoe_vpdn_group_name, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv4_pppoe_vpdn_group_name, null)
               ipv4_static_address                   = try(physical_interface.ipv4_static_address, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv4_static_address, null)
               ipv4_static_netmask                   = try(physical_interface.ipv4_static_netmask, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv4_static_netmask, null)
-              ipv6_address_pool_id = try(physical_interface.ipv6_address_pool, "") != "" ? try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_ipv6_address_pools["${domain_path}:${physical_interface.ipv6_address_pool}"].id
-                  if contains(keys(local.map_ipv6_address_pools), "${domain_path}:${physical_interface.ipv6_address_pool}")
-              })[0]) : null
+              ipv6_address_pool_id = try(physical_interface.ipv6_address_pool, "") != "" ? concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_ipv6_address_pools["${domain_path}:${physical_interface.ipv6_address_pool}"].id
+                if contains(keys(local.map_ipv6_address_pools), "${domain_path}:${physical_interface.ipv6_address_pool}")],
+                [null],
+              )[0] : null
               ipv6_addresses = [for ipv6_address in try(physical_interface.ipv6_addresses, []) : {
                 address     = ipv6_address.address
                 enforce_eui = try(ipv6_address.enforce_eui, null)
@@ -502,20 +502,18 @@ locals {
               logical_name        = try(physical_interface.logical_name, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.logical_name, null)
               management_access   = try(physical_interface.management_access, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.management_access, null)
               management_access_network_objects = [for management_access_network_object in try(physical_interface.management_access_network_objects, []) : {
-                id = try(
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_objects["${domain_path}:${management_access_network_object}"].id
-                    if contains(keys(local.map_network_objects), "${domain_path}:${management_access_network_object}")
-                  })[0],
-                )
-                type = try(
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_objects["${domain_path}:${management_access_network_object}"].type
-                    if contains(keys(local.map_network_objects), "${domain_path}:${management_access_network_object}")
-                  })[0],
-                )
+                id = concat(
+                  [for domain_path in local.related_domains[domain.name] :
+                    local.map_network_objects["${domain_path}:${management_access_network_object}"].id
+                  if contains(keys(local.map_network_objects), "${domain_path}:${management_access_network_object}")],
+                  [null],
+                )[0]
+                type = concat(
+                  [for domain_path in local.related_domains[domain.name] :
+                    local.map_network_objects["${domain_path}:${management_access_network_object}"].type
+                  if contains(keys(local.map_network_objects), "${domain_path}:${management_access_network_object}")],
+                  [null],
+                )[0]
               }]
               management_only                           = try(physical_interface.management_only, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.management_only, null)
               mtu                                       = try(physical_interface.mtu, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.mtu, null)
@@ -524,12 +522,12 @@ locals {
               override_default_fragment_setting_size    = try(physical_interface.override_default_fragment_setting_size, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.override_default_fragment_setting_size, null)
               override_default_fragment_setting_timeout = try(physical_interface.override_default_fragment_setting_timeout, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.override_default_fragment_setting_timeout, null)
               priority                                  = try(physical_interface.priority, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.priority, null)
-              security_zone_id = try(physical_interface.security_zone, "") != "" ? try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_security_zones["${domain_path}:${physical_interface.security_zone}"].id
-                  if contains(keys(local.map_security_zones), "${domain_path}:${physical_interface.security_zone}")
-              })[0]) : null
+              security_zone_id = try(physical_interface.security_zone, "") != "" ? concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_security_zones["${domain_path}:${physical_interface.security_zone}"].id
+                if contains(keys(local.map_security_zones), "${domain_path}:${physical_interface.security_zone}")],
+                [null],
+              )[0] : null
               speed               = try(physical_interface.speed, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.speed, null)
               standby_mac_address = try(physical_interface.standby_mac_address, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.standby_mac_address, null)
             } if !contains(try(keys(local.data_device_physical_interface), []), "${domain.name}:${device.name}:${physical_interface.name}")
@@ -714,20 +712,18 @@ locals {
               logical_name        = try(etherchannel_interface.logical_name, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.logical_name, null)
               management_access   = try(etherchannel_interface.management_access, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.management_access, null)
               management_access_network_objects = [for management_access_network_object in try(etherchannel_interface.management_access_network_objects, []) : {
-                id = try(
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_objects["${domain_path}:${management_access_network_object}"].id
-                    if contains(keys(local.map_network_objects), "${domain_path}:${management_access_network_object}")
-                  })[0],
-                )
-                type = try(
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_objects["${domain_path}:${management_access_network_object}"].type
-                    if contains(keys(local.map_network_objects), "${domain_path}:${management_access_network_object}")
-                  })[0],
-                )
+                id = concat(
+                  [for domain_path in local.related_domains[domain.name] :
+                    local.map_network_objects["${domain_path}:${management_access_network_object}"].id
+                  if contains(keys(local.map_network_objects), "${domain_path}:${management_access_network_object}")],
+                  [null],
+                )[0]
+                type = concat(
+                  [for domain_path in local.related_domains[domain.name] :
+                    local.map_network_objects["${domain_path}:${management_access_network_object}"].type
+                  if contains(keys(local.map_network_objects), "${domain_path}:${management_access_network_object}")],
+                  [null],
+                )[0]
               }]
               management_only                           = try(etherchannel_interface.management_only, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.management_only, null)
               mtu                                       = try(etherchannel_interface.mtu, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.mtu, null)
@@ -736,12 +732,12 @@ locals {
               override_default_fragment_setting_size    = try(etherchannel_interface.override_default_fragment_setting_size, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.override_default_fragment_setting_size, null)
               override_default_fragment_setting_timeout = try(etherchannel_interface.override_default_fragment_setting_timeout, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.override_default_fragment_setting_timeout, null)
               priority                                  = try(etherchannel_interface.priority, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.priority, null)
-              security_zone_id = try(etherchannel_interface.security_zone, "") != "" ? try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_security_zones["${domain_path}:${etherchannel_interface.security_zone}"].id
-                  if contains(keys(local.map_security_zones), "${domain_path}:${etherchannel_interface.security_zone}")
-              })[0]) : null
+              security_zone_id = try(etherchannel_interface.security_zone, "") != "" ? concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_security_zones["${domain_path}:${etherchannel_interface.security_zone}"].id
+                if contains(keys(local.map_security_zones), "${domain_path}:${etherchannel_interface.security_zone}")],
+                [null],
+              )[0] : null
               selected_interfaces = [for selected_interface in try(etherchannel_interface.selected_interfaces, []) : {
                 name = selected_interface
                 id   = try(fmc_device_physical_interface.device_physical_interface["${domain.name}:${device.name}:${selected_interface}"].id, data.fmc_device_physical_interface.device_physical_interface["${domain.name}:${device.name}:${selected_interface}"].id)
@@ -885,12 +881,12 @@ locals {
               ip_based_monitoring          = try(sub_interface.ip_based_monitoring, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ip_based_monitoring, null)
               ip_based_monitoring_next_hop = try(sub_interface.ip_based_monitoring_next_hop, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ip_based_monitoring_next_hop, null)
               ip_based_monitoring_type     = try(sub_interface.ip_based_monitoring_type, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ip_based_monitoring_type, null)
-              ipv4_address_pool_id = try(sub_interface.ipv4_address_pool, "") != "" ? try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_ipv4_address_pools["${domain_path}:${sub_interface.ipv4_address_pool}"].id
-                  if contains(keys(local.map_ipv4_address_pools), "${domain_path}:${sub_interface.ipv4_address_pool}")
-              })[0]) : null
+              ipv4_address_pool_id = try(sub_interface.ipv4_address_pool, "") != "" ? concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_ipv4_address_pools["${domain_path}:${sub_interface.ipv4_address_pool}"].id
+                if contains(keys(local.map_ipv4_address_pools), "${domain_path}:${sub_interface.ipv4_address_pool}")],
+                [null],
+              )[0] : null
               ipv4_dhcp_obtain_default_route        = try(sub_interface.ipv4_dhcp_obtain_default_route, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv4_dhcp_obtain_default_route, null)
               ipv4_dhcp_default_route_metric        = try(sub_interface.ipv4_dhcp_default_route_metric, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv4_dhcp_default_route_metric, null)
               ipv4_pppoe_authentication             = try(sub_interface.ipv4_pppoe_authentication, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv4_pppoe_authentication, null)
@@ -937,12 +933,12 @@ locals {
               override_default_fragment_setting_size    = try(sub_interface.override_default_fragment_setting_size, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.override_default_fragment_setting_size, null)
               override_default_fragment_setting_timeout = try(sub_interface.override_default_fragment_setting_timeout, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.override_default_fragment_setting_timeout, null)
               priority                                  = try(sub_interface.priority, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.priority, null)
-              security_zone_id = try(sub_interface.security_zone, "") != "" ? try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_security_zones["${domain_path}:${sub_interface.security_zone}"].id
-                  if contains(keys(local.map_security_zones), "${domain_path}:${sub_interface.security_zone}")
-              })[0]) : null
+              security_zone_id = try(sub_interface.security_zone, "") != "" ? concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_security_zones["${domain_path}:${sub_interface.security_zone}"].id
+                if contains(keys(local.map_security_zones), "${domain_path}:${sub_interface.security_zone}")],
+                [null],
+              )[0] : null
               standby_mac_address = try(sub_interface.standby_mac_address, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.standby_mac_address, null)
             } if !contains(try(keys(local.data_device_subinterface), []), "${domain.name}:${device.name}:${sub_interface.name}")
           ]
@@ -1134,32 +1130,26 @@ locals {
               tunnel_id                    = vti_interface.id
               tunnel_mode                  = vti_interface.tunnel_mode
               tunnel_source_interface_name = vti_interface.tunnel_source_interface
-              tunnel_source_interface_id = try(vti_interface.tunnel_source_interface, null) != null ? try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_interfaces_by_names["${domain_path}:${device.name}:${vti_interface.tunnel_source_interface}"].id
-                  if contains(keys(local.map_interfaces_by_names), "${domain_path}:${device.name}:${vti_interface.tunnel_source_interface}")
-                })[0],
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_loopback_interfaces["${domain_path}:${device.name}:${vti_interface.tunnel_source_interface}"].id
-                  if contains(keys(local.map_loopback_interfaces), "${domain_path}:${device.name}:${vti_interface.tunnel_source_interface}")
-                })[0],
-              ) : null
+              tunnel_source_interface_id = try(vti_interface.tunnel_source_interface, null) != null ? concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_interfaces_by_names["${domain_path}:${device.name}:${vti_interface.tunnel_source_interface}"].id
+                if contains(keys(local.map_interfaces_by_names), "${domain_path}:${device.name}:${vti_interface.tunnel_source_interface}")],
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_loopback_interfaces["${domain_path}:${device.name}:${vti_interface.tunnel_source_interface}"].id
+                if contains(keys(local.map_loopback_interfaces), "${domain_path}:${device.name}:${vti_interface.tunnel_source_interface}")],
+                [null],
+              )[0] : null
               tunnel_type              = vti_interface.tunnel_type
               borrow_ip_interface_name = try(vti_interface.borrow_ip_interface, null)
-              borrow_ip_interface_id = try(vti_interface.borrow_ip_interface, null) != null ? try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_interfaces_by_names["${domain_path}:${device.name}:${vti_interface.borrow_ip_interface}"].id
-                  if contains(keys(local.map_interfaces_by_names), "${domain_path}:${device.name}:${vti_interface.borrow_ip_interface}")
-                })[0],
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_loopback_interfaces["${domain_path}:${device.name}:${vti_interface.borrow_ip_interface}"].id
-                  if contains(keys(local.map_loopback_interfaces), "${domain_path}:${device.name}:${vti_interface.borrow_ip_interface}")
-                })[0],
-              ) : null
+              borrow_ip_interface_id = try(vti_interface.borrow_ip_interface, null) != null ? concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_interfaces_by_names["${domain_path}:${device.name}:${vti_interface.borrow_ip_interface}"].id
+                if contains(keys(local.map_interfaces_by_names), "${domain_path}:${device.name}:${vti_interface.borrow_ip_interface}")],
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_loopback_interfaces["${domain_path}:${device.name}:${vti_interface.borrow_ip_interface}"].id
+                if contains(keys(local.map_loopback_interfaces), "${domain_path}:${device.name}:${vti_interface.borrow_ip_interface}")],
+                [null],
+              )[0] : null
               description                       = try(vti_interface.description, local.defaults.fmc.domains.devices.devices.vrfs.virtual_tunnel_interfaces.description, null)
               enabled                           = try(vti_interface.enabled, local.defaults.fmc.domains.devices.devices.vrfs.virtual_tunnel_interfaces.enabled, null)
               http_based_application_monitoring = try(vti_interface.http_based_application_monitoring, local.defaults.fmc.domains.devices.devices.vrfs.virtual_tunnel_interfaces.http_based_application_monitoring, null)
@@ -1171,12 +1161,12 @@ locals {
               ipv6_address                      = try(vti_interface.ipv6_address, null)
               ipv6_prefix                       = try(vti_interface.ipv6_prefix, null)
               priority                          = try(vti_interface.priority, local.defaults.fmc.domains.devices.devices.vrfs.virtual_tunnel_interfaces.priority, null)
-              security_zone_id = try(vti_interface.security_zone, null) != null ? try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_security_zones["${domain_path}:${vti_interface.security_zone}"].id
-                  if contains(keys(local.map_security_zones), "${domain_path}:${vti_interface.security_zone}")
-              })[0]) : null
+              security_zone_id = try(vti_interface.security_zone, null) != null ? concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_security_zones["${domain_path}:${vti_interface.security_zone}"].id
+                if contains(keys(local.map_security_zones), "${domain_path}:${vti_interface.security_zone}")],
+                [null],
+              )[0] : null
               tunnel_source_interface_ipv6_address = try(vti_interface.tunnel_source_interface_ipv6_address, null)
               } if(
               (
@@ -1500,27 +1490,27 @@ locals {
             admin_state           = try(logical_device.admin_state, local.defaults.fmc.domains.devices.chassis.logical_devices.admin_state, null)
             permit_expert_mode    = try(logical_device.permit_expert_mode, local.defaults.fmc.domains.devices.chassis.logical_devices.permit_expert_mode, null) == true ? "yes" : try(logical_device.permit_expert_mode, local.defaults.fmc.domains.devices.chassis.logical_devices.permit_expert_mode, null) == false ? "no" : null
             resource_profile_name = logical_device.resource_profile
-            resource_profile_id = try(
-              values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_resource_profiles["${domain_path}:${logical_device.resource_profile}"].id
-                if contains(keys(local.map_resource_profiles), "${domain_path}:${logical_device.resource_profile}")
-            })[0])
+            resource_profile_id = concat(
+              [for domain_path in local.related_domains[domain.name] :
+                local.map_resource_profiles["${domain_path}:${logical_device.resource_profile}"].id
+              if contains(keys(local.map_resource_profiles), "${domain_path}:${logical_device.resource_profile}")],
+              [null],
+            )[0]
             assigned_interfaces = [for assigned_interface in try(logical_device.assigned_interfaces, []) : {
               id = local.map_chassis_interfaces["${domain.name}:${chassis.name}:${assigned_interface}"].id
             }]
-            access_control_policy_id = try(
-              values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_access_control_policies["${domain_path}:${logical_device.access_control_policy}"].id
-                if contains(keys(local.map_access_control_policies), "${domain_path}:${logical_device.access_control_policy}")
-            })[0])
-            platform_settings_id = try(logical_device.platform_settings, "") != "" ? try(
-              values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_ftd_platform_settings["${domain_path}:${logical_device.platform_settings}"].id
-                if contains(keys(local.map_ftd_platform_settings), "${domain_path}:${logical_device.platform_settings}")
-            })[0]) : null
+            access_control_policy_id = concat(
+              [for domain_path in local.related_domains[domain.name] :
+                local.map_access_control_policies["${domain_path}:${logical_device.access_control_policy}"].id
+              if contains(keys(local.map_access_control_policies), "${domain_path}:${logical_device.access_control_policy}")],
+              [null],
+            )[0]
+            platform_settings_id = try(logical_device.platform_settings, "") != "" ? concat(
+              [for domain_path in local.related_domains[domain.name] :
+                local.map_ftd_platform_settings["${domain_path}:${logical_device.platform_settings}"].id
+              if contains(keys(local.map_ftd_platform_settings), "${domain_path}:${logical_device.platform_settings}")],
+              [null],
+            )[0] : null
             licenses = try(logical_device.licenses, null)
           }
         ]

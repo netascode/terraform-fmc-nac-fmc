@@ -626,38 +626,30 @@ locals {
             authentication_method                   = connection_profile.authentication_method
             multiple_certificate_authentication     = try(connection_profile.multiple_certificate_authentication, null)
             primary_authentication_server_use_local = try(connection_profile.primary_authentication.server, null) == "LOCAL" ? true : null
-            primary_authentication_server_id = try(connection_profile.primary_authentication.server, null) != null && try(connection_profile.primary_authentication.server, null) != "LOCAL" ? try(
-              values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_radius_server_groups["${domain_path}:${connection_profile.primary_authentication.server}"].id
-                if contains(keys(local.map_radius_server_groups), "${domain_path}:${connection_profile.primary_authentication.server}")
-              })[0],
-              values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_ad_ldap_realms["${domain_path}:${connection_profile.primary_authentication.server}"].id
-                if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.primary_authentication.server}")
-              })[0],
-              values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_single_sign_on_servers["${domain_path}:${connection_profile.primary_authentication.server}"].id
-                if contains(keys(local.map_single_sign_on_servers), "${domain_path}:${connection_profile.primary_authentication.server}")
-            })[0]) : null
-            primary_authentication_server_type = try(connection_profile.primary_authentication.server, null) != null && try(connection_profile.primary_authentication.server, null) != "LOCAL" ? try(
-              values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_radius_server_groups["${domain_path}:${connection_profile.primary_authentication.server}"].type
-                if contains(keys(local.map_radius_server_groups), "${domain_path}:${connection_profile.primary_authentication.server}")
-              })[0],
-              values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_ad_ldap_realms["${domain_path}:${connection_profile.primary_authentication.server}"].type
-                if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.primary_authentication.server}")
-              })[0],
-              values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_single_sign_on_servers["${domain_path}:${connection_profile.primary_authentication.server}"].type
-                if contains(keys(local.map_single_sign_on_servers), "${domain_path}:${connection_profile.primary_authentication.server}")
-            })[0]) : null
+            primary_authentication_server_id = try(connection_profile.primary_authentication.server, null) != null && try(connection_profile.primary_authentication.server, null) != "LOCAL" ? concat(
+              [for domain_path in local.related_domains[domain.name] :
+                local.map_radius_server_groups["${domain_path}:${connection_profile.primary_authentication.server}"].id
+              if contains(keys(local.map_radius_server_groups), "${domain_path}:${connection_profile.primary_authentication.server}")],
+              [for domain_path in local.related_domains[domain.name] :
+                local.map_ad_ldap_realms["${domain_path}:${connection_profile.primary_authentication.server}"].id
+              if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.primary_authentication.server}")],
+              [for domain_path in local.related_domains[domain.name] :
+                local.map_single_sign_on_servers["${domain_path}:${connection_profile.primary_authentication.server}"].id
+              if contains(keys(local.map_single_sign_on_servers), "${domain_path}:${connection_profile.primary_authentication.server}")],
+              [null],
+            )[0] : null
+            primary_authentication_server_type = try(connection_profile.primary_authentication.server, null) != null && try(connection_profile.primary_authentication.server, null) != "LOCAL" ? concat(
+              [for domain_path in local.related_domains[domain.name] :
+                local.map_radius_server_groups["${domain_path}:${connection_profile.primary_authentication.server}"].type
+              if contains(keys(local.map_radius_server_groups), "${domain_path}:${connection_profile.primary_authentication.server}")],
+              [for domain_path in local.related_domains[domain.name] :
+                local.map_ad_ldap_realms["${domain_path}:${connection_profile.primary_authentication.server}"].type
+              if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.primary_authentication.server}")],
+              [for domain_path in local.related_domains[domain.name] :
+                local.map_single_sign_on_servers["${domain_path}:${connection_profile.primary_authentication.server}"].type
+              if contains(keys(local.map_single_sign_on_servers), "${domain_path}:${connection_profile.primary_authentication.server}")],
+              [null],
+            )[0] : null
             primary_authentication_fallback_to_local                                     = try(connection_profile.primary_authentication.fallback_to_local, null)
             primary_authentication_prefill_username_from_certificate                     = try(connection_profile.primary_authentication.prefill_username_from_certificate_map_primary_field, connection_profile.primary_authentication.prefill_username_from_certificate_map_secondary_field, connection_profile.primary_authentication.prefill_username_from_certificate_map_entire_dn, null) != null ? true : null
             primary_authentication_prefill_username_from_certificate_map_primary_field   = try(connection_profile.primary_authentication.prefill_username_from_certificate_map_primary_field, null)
@@ -666,56 +658,48 @@ locals {
             primary_authentication_hide_username_in_login_window                         = try(connection_profile.primary_authentication.hide_username_in_login_window, null)
             secondary_authentication                                                     = try(connection_profile.secondary_authentication, null) != null ? true : null
             secondary_authentication_server_use_local                                    = try(connection_profile.secondary_authentication.server, null) == "LOCAL" ? true : null
-            secondary_authentication_server_id = try(connection_profile.secondary_authentication.server, null) != null && try(connection_profile.secondary_authentication.server, null) != "LOCAL" ? try(
-              values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_radius_server_groups["${domain_path}:${connection_profile.secondary_authentication.server}"].id
-                if contains(keys(local.map_radius_server_groups), "${domain_path}:${connection_profile.secondary_authentication.server}")
-              })[0],
-              values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_ad_ldap_realms["${domain_path}:${connection_profile.secondary_authentication.server}"].id
-                if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.secondary_authentication.server}")
-            })[0]) : null
-            secondary_authentication_server_type = try(connection_profile.secondary_authentication.server, null) != null && try(connection_profile.secondary_authentication.server, null) != "LOCAL" ? try(
-              values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_radius_server_groups["${domain_path}:${connection_profile.secondary_authentication.server}"].type
-                if contains(keys(local.map_radius_server_groups), "${domain_path}:${connection_profile.secondary_authentication.server}")
-              })[0],
-              values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_ad_ldap_realms["${domain_path}:${connection_profile.secondary_authentication.server}"].type
-                if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.secondary_authentication.server}")
-            })[0]) : null
+            secondary_authentication_server_id = try(connection_profile.secondary_authentication.server, null) != null && try(connection_profile.secondary_authentication.server, null) != "LOCAL" ? concat(
+              [for domain_path in local.related_domains[domain.name] :
+                local.map_radius_server_groups["${domain_path}:${connection_profile.secondary_authentication.server}"].id
+              if contains(keys(local.map_radius_server_groups), "${domain_path}:${connection_profile.secondary_authentication.server}")],
+              [for domain_path in local.related_domains[domain.name] :
+                local.map_ad_ldap_realms["${domain_path}:${connection_profile.secondary_authentication.server}"].id
+              if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.secondary_authentication.server}")],
+              [null],
+            )[0] : null
+            secondary_authentication_server_type = try(connection_profile.secondary_authentication.server, null) != null && try(connection_profile.secondary_authentication.server, null) != "LOCAL" ? concat(
+              [for domain_path in local.related_domains[domain.name] :
+                local.map_radius_server_groups["${domain_path}:${connection_profile.secondary_authentication.server}"].type
+              if contains(keys(local.map_radius_server_groups), "${domain_path}:${connection_profile.secondary_authentication.server}")],
+              [for domain_path in local.related_domains[domain.name] :
+                local.map_ad_ldap_realms["${domain_path}:${connection_profile.secondary_authentication.server}"].type
+              if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.secondary_authentication.server}")],
+              [null],
+            )[0] : null
             secondary_authentication_fallback_to_local                                   = try(connection_profile.secondary_authentication.fallback_to_local, null)
             secondary_authentication_prompt_for_username                                 = try(connection_profile.secondary_authentication.prompt_for_username, null)
             secondary_authentication_use_primary_authentication_username                 = try(connection_profile.secondary_authentication.use_primary_authentication_username, null)
             secondary_authentication_use_secondary_authentication_username_for_reporting = try(connection_profile.secondary_authentication.use_secondary_authentication_username_for_reporting, null)
             saml_and_certificate_username_must_match                                     = try(connection_profile.saml_and_certificate_username_must_match, null)
             saml_use_external_browser                                                    = try(connection_profile.saml_use_external_browser, null)
-            authorization_server_id = try(connection_profile.authorization_server, null) != null ? try(
-              values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_radius_server_groups["${domain_path}:${connection_profile.authorization_server}"].id
-                if contains(keys(local.map_radius_server_groups), "${domain_path}:${connection_profile.authorization_server}")
-              })[0],
-              values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_ad_ldap_realms["${domain_path}:${connection_profile.authorization_server}"].id
-                if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.authorization_server}")
-            })[0]) : null
-            authorization_server_type = try(connection_profile.authorization_server, null) != null ? try(
-              values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_radius_server_groups["${domain_path}:${connection_profile.authorization_server}"].type
-                if contains(keys(local.map_radius_server_groups), "${domain_path}:${connection_profile.authorization_server}")
-              })[0],
-              values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_ad_ldap_realms["${domain_path}:${connection_profile.authorization_server}"].type
-                if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.authorization_server}")
-            })[0]) : null
+            authorization_server_id = try(connection_profile.authorization_server, null) != null ? concat(
+              [for domain_path in local.related_domains[domain.name] :
+                local.map_radius_server_groups["${domain_path}:${connection_profile.authorization_server}"].id
+              if contains(keys(local.map_radius_server_groups), "${domain_path}:${connection_profile.authorization_server}")],
+              [for domain_path in local.related_domains[domain.name] :
+                local.map_ad_ldap_realms["${domain_path}:${connection_profile.authorization_server}"].id
+              if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.authorization_server}")],
+              [null],
+            )[0] : null
+            authorization_server_type = try(connection_profile.authorization_server, null) != null ? concat(
+              [for domain_path in local.related_domains[domain.name] :
+                local.map_radius_server_groups["${domain_path}:${connection_profile.authorization_server}"].type
+              if contains(keys(local.map_radius_server_groups), "${domain_path}:${connection_profile.authorization_server}")],
+              [for domain_path in local.related_domains[domain.name] :
+                local.map_ad_ldap_realms["${domain_path}:${connection_profile.authorization_server}"].type
+              if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.authorization_server}")],
+              [null],
+            )[0] : null
             allow_connection_only_if_user_exists_in_authorization_database = try(connection_profile.allow_connection_only_if_user_exists_in_authorization_database, null)
             accounting_server_id = try(connection_profile.accounting_server, null) != null ? values({
               for domain_path in local.related_domains[domain.name] :

@@ -95,20 +95,18 @@ locals {
               interface_id           = bfd.hop_type == "SINGLE_HOP" ? local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${bfd.interface_logical_name}"].id : null
               slow_timer             = try(bfd.slow_timer, null)
 
-              destination_host_object_id = bfd.hop_type == "MULTI_HOP" ? try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${bfd.destination_host_object}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${bfd.destination_host_object}")
-                })[0],
-              ) : null
-              source_host_object_id = bfd.hop_type == "MULTI_HOP" ? try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${bfd.source_host_object}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${bfd.source_host_object}")
-                })[0],
-              ) : null
+              destination_host_object_id = bfd.hop_type == "MULTI_HOP" ? concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_network_objects["${domain_path}:${bfd.destination_host_object}"].id
+                if contains(keys(local.map_network_objects), "${domain_path}:${bfd.destination_host_object}")],
+                [null],
+              )[0] : null
+              source_host_object_id = bfd.hop_type == "MULTI_HOP" ? concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_network_objects["${domain_path}:${bfd.source_host_object}"].id
+                if contains(keys(local.map_network_objects), "${domain_path}:${bfd.source_host_object}")],
+                [null],
+              )[0] : null
               internal_id = bfd.hop_type == "SINGLE_HOP" ? bfd.interface_logical_name : "${bfd.source_host_object}:${bfd.destination_host_object}"
             }
           ] if vrf.name == "Global"
@@ -151,29 +149,25 @@ locals {
               interface_logical_name = ipv4_static_route.interface_logical_name
               interface_id           = lower(ipv4_static_route.interface_logical_name) == "null0" ? null : local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${ipv4_static_route.interface_logical_name}"].id
               destination_networks = [for destination_network in ipv4_static_route.selected_networks : {
-                id = try(
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_objects["${domain_path}:${destination_network}"].id
-                    if contains(keys(local.map_network_objects), "${domain_path}:${destination_network}")
-                  })[0],
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_groups["${domain_path}:${destination_network}"].id
-                    if contains(keys(local.map_network_groups), "${domain_path}:${destination_network}")
-                  })[0],
-                )
+                id = concat(
+                  [for domain_path in local.related_domains[domain.name] :
+                    local.map_network_objects["${domain_path}:${destination_network}"].id
+                  if contains(keys(local.map_network_objects), "${domain_path}:${destination_network}")],
+                  [for domain_path in local.related_domains[domain.name] :
+                    local.map_network_groups["${domain_path}:${destination_network}"].id
+                  if contains(keys(local.map_network_groups), "${domain_path}:${destination_network}")],
+                  [null],
+                )[0]
               }]
               metric               = try(ipv4_static_route.metric, local.defaults.fmc.domains.devices.devices.vrfs.ipv4_static_routes.metric, null)
               is_tunneled          = try(ipv4_static_route.is_tunneled, local.defaults.fmc.domains.devices.devices.vrfs.ipv4_static_routes.is_tunneled, null)
               gateway_host_literal = try(ipv4_static_route.gateway.literal, null)
-              gateway_host_object_id = try(ipv4_static_route.gateway.object, "") != "" ? try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${ipv4_static_route.gateway.object}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${ipv4_static_route.gateway.object}")
-                })[0],
-              ) : null
+              gateway_host_object_id = try(ipv4_static_route.gateway.object, "") != "" ? concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_network_objects["${domain_path}:${ipv4_static_route.gateway.object}"].id
+                if contains(keys(local.map_network_objects), "${domain_path}:${ipv4_static_route.gateway.object}")],
+                [null],
+              )[0] : null
             }
           ]
         ]
@@ -216,29 +210,25 @@ locals {
               interface_logical_name = ipv6_static_route.interface_logical_name
               interface_id           = lower(ipv6_static_route.interface_logical_name) == "null0" ? null : local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${ipv6_static_route.interface_logical_name}"].id
               destination_networks = [for destination_network in ipv6_static_route.selected_networks : {
-                id = try(
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_objects["${domain_path}:${destination_network}"].id
-                    if contains(keys(local.map_network_objects), "${domain_path}:${destination_network}")
-                  })[0],
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_groups["${domain_path}:${destination_network}"].id
-                    if contains(keys(local.map_network_groups), "${domain_path}:${destination_network}")
-                  })[0],
-                )
+                id = concat(
+                  [for domain_path in local.related_domains[domain.name] :
+                    local.map_network_objects["${domain_path}:${destination_network}"].id
+                  if contains(keys(local.map_network_objects), "${domain_path}:${destination_network}")],
+                  [for domain_path in local.related_domains[domain.name] :
+                    local.map_network_groups["${domain_path}:${destination_network}"].id
+                  if contains(keys(local.map_network_groups), "${domain_path}:${destination_network}")],
+                  [null],
+                )[0]
               }]
               metric               = try(ipv6_static_route.metric, local.defaults.fmc.domains.devices.devices.vrfs.ipv6_static_routes.metric, null)
               is_tunneled          = try(ipv6_static_route.is_tunneled, local.defaults.fmc.domains.devices.devices.vrfs.ipv6_static_routes.is_tunneled, null)
               gateway_host_literal = try(ipv6_static_route.gateway.literal, null)
-              gateway_host_object_id = try(ipv6_static_route.gateway.object, "") != "" ? try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${ipv6_static_route.gateway.object}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${ipv6_static_route.gateway.object}")
-                })[0],
-              ) : null
+              gateway_host_object_id = try(ipv6_static_route.gateway.object, "") != "" ? concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_network_objects["${domain_path}:${ipv6_static_route.gateway.object}"].id
+                if contains(keys(local.map_network_objects), "${domain_path}:${ipv6_static_route.gateway.object}")],
+                [null],
+              )[0] : null
             }
           ]
         ]
@@ -502,18 +492,15 @@ locals {
               update_source_interface_id    = try(local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${ipv4_neighbor.update_source_interface}"].id, null)
             }]
             ipv4_networks = [for ipv4_network in try(vrf.bgp.ipv4_networks, {}) : {
-              network_id = try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${ipv4_network.network}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${ipv4_network.network}")
-                })[0],
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_groups["${domain_path}:${ipv4_network.network}"].id
-                  if contains(keys(local.map_network_groups), "${domain_path}:${ipv4_network.network}")
-                })[0],
-              )
+              network_id = concat(
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_network_objects["${domain_path}:${ipv4_network.network}"].id
+                if contains(keys(local.map_network_objects), "${domain_path}:${ipv4_network.network}")],
+                [for domain_path in local.related_domains[domain.name] :
+                  local.map_network_groups["${domain_path}:${ipv4_network.network}"].id
+                if contains(keys(local.map_network_groups), "${domain_path}:${ipv4_network.network}")],
+                [null],
+              )[0]
               route_map_id = try(ipv4_network.route_map, null) != null ? values({
                 for domain_path in local.related_domains[domain.name] :
                 domain_path => local.map_route_maps["${domain_path}:${ipv4_network.route_map}"].id
