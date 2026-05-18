@@ -23,7 +23,7 @@ locals {
           route_based      = vpn_s2s.route_based
           ikev1            = try(vpn_s2s.ikev1, local.defaults.vpns.site_to_site.ikev1, null)
           ikev2            = try(vpn_s2s.ikev2, local.defaults.vpns.site_to_site.ikev2, null)
-        } if !contains(try(keys(local.data_vpn_s2s), {}), "${domain.name}:${vpn_s2s.name}")
+        } if try(local.data_vpn_s2s["${domain.name}:${vpn_s2s.name}"], null) == null
       ]
     ]) : "${item.domain}:${item.name}" => item
   }
@@ -71,13 +71,7 @@ locals {
             backup_local_identity_type         = try(endpoint.backup_local_identity_type, null)
             backup_local_identity_string       = try(endpoint.backup_local_identity_string, null)
             connection_type                    = try(endpoint.connection_type, local.defaults.fmc.domains.vpns.site_to_site.endpoints.connection_type, null)
-            device_id = endpoint.extranet_device == false ? (
-              values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_devices["${domain_path}:${endpoint.name}"].id
-                if contains(keys(local.map_devices), "${domain_path}:${endpoint.name}")
-              })[0]
-            ) : null
+            device_id = endpoint.extranet_device == false ? local.resolved_devices[domain.name][endpoint.name].id : null
             extranet_dynamic_ip = try(endpoint.extranet_dynamic_ip, null)
             extranet_ip_address = try(join(",", endpoint.extranet_ip_addresses), null)
             interface_id = try(endpoint.interface_logical_name, null) != null ? values({
@@ -90,37 +84,17 @@ locals {
             local_identity_type         = try(endpoint.local_identity_type, null)
             local_identity_string       = try(endpoint.local_identity_string, null)
             nat_exemption               = try(endpoint.nat_exemption, null)
-            nat_exemption_inside_interface_id = try(endpoint.nat_exemption_inside_interface, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${endpoint.nat_exemption_inside_interface}"].id
-              if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${endpoint.nat_exemption_inside_interface}")
-            })[0] : null
+            nat_exemption_inside_interface_id = try(endpoint.nat_exemption_inside_interface, null) != null ? local.resolved_security_zones_and_interface_groups[domain.name][endpoint.nat_exemption_inside_interface].id : null
             nat_traversal = try(endpoint.nat_traversal, local.defaults.fmc.domains.vpns.site_to_site.endpoints.nat_traversal, null)
-            override_remote_vpn_filter_access_list_id = try(endpoint.override_remote_vpn_filter_access_list, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_extended_access_lists["${domain_path}:${endpoint.override_remote_vpn_filter_access_list}"].id
-              if contains(keys(local.map_extended_access_lists), "${domain_path}:${endpoint.override_remote_vpn_filter_access_list}")
-            })[0] : null
+            override_remote_vpn_filter_access_list_id = try(endpoint.override_remote_vpn_filter_access_list, null) != null ? local.resolved_extended_access_lists[domain.name][endpoint.override_remote_vpn_filter_access_list].id : null
             protected_networks = [for protected_network in try(endpoint.protected_networks, []) : {
-              id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_network_objects["${domain_path}:${protected_network}"].id
-                if contains(keys(local.map_network_objects), "${domain_path}:${protected_network}")
-              })[0]
+              id = local.resolved_network_objects[domain.name][protected_network].id
             }]
-            protected_networks_access_list_id = try(endpoint.protected_networks_access_list, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_extended_access_lists["${domain_path}:${endpoint.protected_networks_access_list}"].id
-              if contains(keys(local.map_extended_access_lists), "${domain_path}:${endpoint.protected_networks_access_list}")
-            })[0] : null
+            protected_networks_access_list_id = try(endpoint.protected_networks_access_list, null) != null ? local.resolved_extended_access_lists[domain.name][endpoint.protected_networks_access_list].id : null
             reverse_route_injection                  = try(endpoint.reverse_route_injection, local.defaults.fmc.domains.vpns.site_to_site.endpoints.reverse_route_injection, null)
             send_virtual_tunnel_interface_ip_to_peer = try(endpoint.send_virtual_tunnel_interface_ip_to_peer, null)
             send_tunnel_interface_ip_to_peer         = try(endpoint.send_tunnel_interface_ip_to_peer, null)
-            vpn_filter_access_list_id = try(endpoint.vpn_filter_access_list, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_extended_access_lists["${domain_path}:${endpoint.vpn_filter_access_list}"].id
-              if contains(keys(local.map_extended_access_lists), "${domain_path}:${endpoint.vpn_filter_access_list}")
-            })[0] : null
+            vpn_filter_access_list_id = try(endpoint.vpn_filter_access_list, null) != null ? local.resolved_extended_access_lists[domain.name][endpoint.vpn_filter_access_list].id : null
           } }
         } if contains(keys(vpn_s2s), "endpoints")
       ]
@@ -153,39 +127,19 @@ locals {
           vpn_s2s_id                            = try(fmc_vpn_s2s.vpn_s2s["${domain.name}:${vpn_s2s.name}"].id, data.fmc_vpn_s2s.vpn_s2s["${domain.name}:${vpn_s2s.name}"].id)
           ikev1_authentication_type             = try(vpn_s2s.ike_settings.ikev1_authentication_type, null)
           ikev1_automatic_pre_shared_key_length = try(vpn_s2s.ike_settings.ikev1_automatic_pre_shared_key_length, null)
-          ikev1_certificate_id = try(vpn_s2s.ike_settings.ikev1_certificate, null) != null ? (
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_certificate_enrollments["${domain_path}:${vpn_s2s.ike_settings.ikev1_certificate}"].id
-              if contains(keys(local.map_certificate_enrollments), "${domain_path}:${vpn_s2s.ike_settings.ikev1_certificate}")
-            })[0]
-          ) : null
+          ikev1_certificate_id = try(vpn_s2s.ike_settings.ikev1_certificate, null) != null ? local.resolved_certificate_enrollments[domain.name][vpn_s2s.ike_settings.ikev1_certificate].id : null
           ikev1_manual_pre_shared_key = try(vpn_s2s.ike_settings.ikev1_manual_pre_shared_key, null)
           ikev1_policies = [for ikev1_policy in try(vpn_s2s.ike_settings.ikev1_policies, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_ikev1_policies["${domain_path}:${ikev1_policy}"].id
-              if contains(keys(local.map_ikev1_policies), "${domain_path}:${ikev1_policy}")
-            })[0]
+            id   = local.resolved_ikev1_policies[domain.name][ikev1_policy].id
             name = ikev1_policy
           }]
           ikev2_authentication_type             = try(vpn_s2s.ike_settings.ikev2_authentication_type, null)
           ikev2_automatic_pre_shared_key_length = try(vpn_s2s.ike_settings.ikev2_automatic_pre_shared_key_length, null)
-          ikev2_certificate_id = try(vpn_s2s.ike_settings.ikev2_certificate, null) != null ? (
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_certificate_enrollments["${domain_path}:${vpn_s2s.ike_settings.ikev2_certificate}"].id
-              if contains(keys(local.map_certificate_enrollments), "${domain_path}:${vpn_s2s.ike_settings.ikev2_certificate}")
-            })[0]
-          ) : null
+          ikev2_certificate_id = try(vpn_s2s.ike_settings.ikev2_certificate, null) != null ? local.resolved_certificate_enrollments[domain.name][vpn_s2s.ike_settings.ikev2_certificate].id : null
           ikev2_enforce_hex_based_pre_shared_key = try(vpn_s2s.ike_settings.ikev2_enforce_hex_based_pre_shared_key, local.defaults.fmc.domains.vpns.site_to_site.ike_settings.ikev2_enforce_hex_based_pre_shared_key, null)
           ikev2_manual_pre_shared_key            = try(vpn_s2s.ike_settings.ikev2_manual_pre_shared_key, null)
           ikev2_policies = [for ikev2_policy in try(vpn_s2s.ike_settings.ikev2_policies, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_ikev2_policies["${domain_path}:${ikev2_policy}"].id
-              if contains(keys(local.map_ikev2_policies), "${domain_path}:${ikev2_policy}")
-            })[0]
+            id   = local.resolved_ikev2_policies[domain.name][ikev2_policy].id
             name = ikev2_policy
           }]
         } if contains(keys(vpn_s2s), "ike_settings")
@@ -226,19 +180,11 @@ locals {
           crypto_map_type        = try(vpn_s2s.ipsec_settings.crypto_map_type, null)
           do_not_fragment_policy = try(vpn_s2s.ipsec_settings.do_not_fragment_policy, local.defaults.fmc.domains.vpns.site_to_site.ipsec_settings.do_not_fragment_policy, null)
           ikev1_ipsec_proposals = [for ikev1_ipsec_proposal in try(vpn_s2s.ipsec_settings.ikev1_ipsec_proposals, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_ikev1_ipsec_proposals["${domain_path}:${ikev1_ipsec_proposal}"].id
-              if contains(keys(local.map_ikev1_ipsec_proposals), "${domain_path}:${ikev1_ipsec_proposal}")
-            })[0]
+            id   = local.resolved_ikev1_ipsec_proposals[domain.name][ikev1_ipsec_proposal].id
             name = ikev1_ipsec_proposal
           }]
           ikev2_ipsec_proposals = [for ikev2_ipsec_proposal in try(vpn_s2s.ipsec_settings.ikev2_ipsec_proposals, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_ikev2_ipsec_proposals["${domain_path}:${ikev2_ipsec_proposal}"].id
-              if contains(keys(local.map_ikev2_ipsec_proposals), "${domain_path}:${ikev2_ipsec_proposal}")
-            })[0]
+            id   = local.resolved_ikev2_ipsec_proposals[domain.name][ikev2_ipsec_proposal].id
             name = ikev2_ipsec_proposal
           }]
           ikev2_mode                                = try(vpn_s2s.ipsec_settings.ikev2_mode, local.defaults.fmc.domains.vpns.site_to_site.ipsec_settings.ikev2_mode, null)
@@ -378,68 +324,32 @@ locals {
           description          = try(vpn_ra.description, null)
           protocol_ssl         = try(vpn_ra.protocol_ssl, local.defaults.vpns.remote_access.protocol_ssl, null)
           protocol_ipsec_ikev2 = try(vpn_ra.protocol_ipsec_ikev2, local.defaults.vpns.remote_access.protocol_ipsec_ikev2, null)
-          local_realm_id = try(vpn_ra.local_realm, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_local_realms["${domain_path}:${vpn_ra.local_realm}"].id
-            if contains(keys(local.map_local_realms), "${domain_path}:${vpn_ra.local_realm}")
-          })[0] : null
+          local_realm_id = try(vpn_ra.local_realm, null) != null ? local.resolved_local_realms[domain.name][vpn_ra.local_realm].id : null
           access_interfaces = [for access_interface in try(vpn_ra.access_interfaces, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${access_interface.name}"].id
-              if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${access_interface.name}")
-            })[0]
+            id                   = local.resolved_security_zones_and_interface_groups[domain.name][access_interface.name].id
             protocol_ssl         = try(access_interface.protocol_ssl, null)
             protocol_ipsec_ikev2 = try(access_interface.protocol_ipsec_ikev2, null)
             protocol_ssl_dtls    = try(access_interface.protocol_ssl_dtls, null)
-            interface_specific_certificate_id = try(access_interface.interface_specific_certificate, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_certificate_enrollments["${domain_path}:${access_interface.interface_specific_certificate}"].id
-              if contains(keys(local.map_certificate_enrollments), "${domain_path}:${access_interface.interface_specific_certificate}")
-            })[0] : null
+            interface_specific_certificate_id = try(access_interface.interface_specific_certificate, null) != null ? local.resolved_certificate_enrollments[domain.name][access_interface.interface_specific_certificate].id : null
           }]
           allow_users_to_select_connection_profile = try(vpn_ra.allow_users_to_select_connection_profile, local.defaults.fmc.domains.vpns.remote_access.allow_users_to_select_connection_profile, null)
           web_access_port                          = try(vpn_ra.web_access_port, local.defaults.fmc.domains.vpns.remote_access.web_access_port, null)
           dtls_port                                = try(vpn_ra.dtls_port, local.defaults.fmc.domains.vpns.remote_access.dtls_port, null)
-          ssl_global_identity_certificate_id = try(vpn_ra.ssl_global_identity_certificate, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_certificate_enrollments["${domain_path}:${vpn_ra.ssl_global_identity_certificate}"].id
-            if contains(keys(local.map_certificate_enrollments), "${domain_path}:${vpn_ra.ssl_global_identity_certificate}")
-          })[0] : null
-          ipsec_ikev2_identity_certificate_id = try(vpn_ra.ipsec_ikev2_identity_certificate, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_certificate_enrollments["${domain_path}:${vpn_ra.ipsec_ikev2_identity_certificate}"].id
-            if contains(keys(local.map_certificate_enrollments), "${domain_path}:${vpn_ra.ipsec_ikev2_identity_certificate}")
-          })[0] : null
-          service_access_object_id = try(vpn_ra.service_access, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_service_accesses["${domain_path}:${vpn_ra.service_access}"].id
-            if contains(keys(local.map_service_accesses), "${domain_path}:${vpn_ra.service_access}")
-          })[0] : null
+          ssl_global_identity_certificate_id = try(vpn_ra.ssl_global_identity_certificate, null) != null ? local.resolved_certificate_enrollments[domain.name][vpn_ra.ssl_global_identity_certificate].id : null
+          ipsec_ikev2_identity_certificate_id = try(vpn_ra.ipsec_ikev2_identity_certificate, null) != null ? local.resolved_certificate_enrollments[domain.name][vpn_ra.ipsec_ikev2_identity_certificate].id : null
+          service_access_object_id = try(vpn_ra.service_access, null) != null ? local.resolved_service_accesses[domain.name][vpn_ra.service_access].id : null
           bypass_access_control_policy_for_decrypted_traffic = try(vpn_ra.bypass_access_control_policy_for_decrypted_traffic, local.defaults.fmc.domains.vpns.remote_access.bypass_access_control_policy_for_decrypted_traffic, null)
           secure_client_images = [for secure_client_image in try(vpn_ra.secure_client_images, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_secure_client_images["${domain_path}:${secure_client_image.name}"].id
-              if contains(keys(local.map_secure_client_images), "${domain_path}:${secure_client_image.name}")
-            })[0]
+            id               = local.resolved_secure_client_images[domain.name][secure_client_image.name].id
             operating_system = secure_client_image.operating_system
           }]
           group_policies = [for group_policy in try(vpn_ra.group_policies, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_group_policies["${domain_path}:${group_policy}"].id
-              if contains(keys(local.map_group_policies), "${domain_path}:${group_policy}")
-            })[0]
+            id = local.resolved_group_policies[domain.name][group_policy].id
           }]
           ikev2_policies = [for ikev2_policy in try(vpn_ra.ipsec_ikev2_policies, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_ikev2_policies["${domain_path}:${ikev2_policy}"].id
-              if contains(keys(local.map_ikev2_policies), "${domain_path}:${ikev2_policy}")
-            })[0]
+            id = local.resolved_ikev2_policies[domain.name][ikev2_policy].id
           }]
-        } if !contains(try(keys(local.data_vpn_ra), {}), "${domain.name}:${vpn_ra.name}")
+        } if try(local.data_vpn_ra["${domain.name}:${vpn_ra.name}"], null) == null
       ]
     ]) : "${item.domain}:${item.name}" => item
   }
@@ -491,46 +401,22 @@ locals {
           vpn_ra_name = vpn_ra.name
           vpn_ra_id   = try(fmc_vpn_ra.vpn_ra["${domain.name}:${vpn_ra.name}"].id, data.fmc_vpn_ra.vpn_ra["${domain.name}:${vpn_ra.name}"].id)
           gui_and_text_messages = [for gui_and_text_message in try(vpn_ra.secure_client_customizations.gui_and_text_messages, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_secure_client_customizations["${domain_path}:${gui_and_text_message}"].id
-              if contains(keys(local.map_secure_client_customizations), "${domain_path}:${gui_and_text_message}")
-            })[0]
+            id = local.resolved_secure_client_customizations[domain.name][gui_and_text_message].id
           }]
           icons_and_images = [for icon_and_image in try(vpn_ra.secure_client_customizations.icons_and_images, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_secure_client_customizations["${domain_path}:${icon_and_image}"].id
-              if contains(keys(local.map_secure_client_customizations), "${domain_path}:${icon_and_image}")
-            })[0]
+            id = local.resolved_secure_client_customizations[domain.name][icon_and_image].id
           }]
           scripts = [for script in try(vpn_ra.secure_client_customizations.scripts, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_secure_client_customizations["${domain_path}:${script}"].id
-              if contains(keys(local.map_secure_client_customizations), "${domain_path}:${script}")
-            })[0]
+            id = local.resolved_secure_client_customizations[domain.name][script].id
           }]
           binaries = [for binary in try(vpn_ra.secure_client_customizations.binaries, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_secure_client_customizations["${domain_path}:${binary}"].id
-              if contains(keys(local.map_secure_client_customizations), "${domain_path}:${binary}")
-            })[0]
+            id = local.resolved_secure_client_customizations[domain.name][binary].id
           }]
           custom_installer_transforms = [for custom_installer_transform in try(vpn_ra.secure_client_customizations.custom_installer_transforms, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_secure_client_customizations["${domain_path}:${custom_installer_transform}"].id
-              if contains(keys(local.map_secure_client_customizations), "${domain_path}:${custom_installer_transform}")
-            })[0]
+            id = local.resolved_secure_client_customizations[domain.name][custom_installer_transform].id
           }]
           localized_installer_transforms = [for localized_installer_transform in try(vpn_ra.secure_client_customizations.localized_installer_transforms, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_secure_client_customizations["${domain_path}:${localized_installer_transform}"].id
-              if contains(keys(local.map_secure_client_customizations), "${domain_path}:${localized_installer_transform}")
-            })[0]
+            id = local.resolved_secure_client_customizations[domain.name][localized_installer_transform].id
           }]
         } if contains(keys(vpn_ra), "secure_client_customizations")
       ]
@@ -597,59 +483,29 @@ locals {
           vpn_ra_name = vpn_ra.name
           vpn_ra_id   = try(fmc_vpn_ra.vpn_ra["${domain.name}:${vpn_ra.name}"].id, data.fmc_vpn_ra.vpn_ra["${domain.name}:${vpn_ra.name}"].id)
           items = { for connection_profile in vpn_ra.connection_profiles : (connection_profile.name) => {
-            group_policy_id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_group_policies["${domain_path}:${connection_profile.group_policy}"].id
-              if contains(keys(local.map_group_policies), "${domain_path}:${connection_profile.group_policy}")
-            })[0]
+            group_policy_id = local.resolved_group_policies[domain.name][connection_profile.group_policy].id
             ipv4_address_pools = [for ipv4_address_pool in try(connection_profile.ipv4_address_pools, []) : {
-              id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_ipv4_address_pools["${domain_path}:${ipv4_address_pool}"].id
-                if contains(keys(local.map_ipv4_address_pools), "${domain_path}:${ipv4_address_pool}")
-              })[0]
+              id = local.resolved_ipv4_address_pools[domain.name][ipv4_address_pool].id
             }]
             ipv6_address_pools = [for ipv6_address_pool in try(connection_profile.ipv6_address_pools, []) : {
-              id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_ipv6_address_pools["${domain_path}:${ipv6_address_pool}"].id
-                if contains(keys(local.map_ipv6_address_pools), "${domain_path}:${ipv6_address_pool}")
-              })[0]
+              id = local.resolved_ipv6_address_pools[domain.name][ipv6_address_pool].id
             }]
             dhcp_servers = [for dhcp_server in try(connection_profile.dhcp_servers, []) : {
-              id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_hosts["${domain_path}:${dhcp_server}"].id
-                if contains(keys(local.map_hosts), "${domain_path}:${dhcp_server}")
-              })[0]
+              id = local.resolved_hosts[domain.name][dhcp_server].id
             }]
             authentication_method                   = connection_profile.authentication_method
             multiple_certificate_authentication     = try(connection_profile.multiple_certificate_authentication, null)
             primary_authentication_server_use_local = try(connection_profile.primary_authentication.server, null) == "LOCAL" ? true : null
-            primary_authentication_server_id = try(connection_profile.primary_authentication.server, null) != null && try(connection_profile.primary_authentication.server, null) != "LOCAL" ? concat(
-              [for domain_path in local.related_domains[domain.name] :
-                local.map_radius_server_groups["${domain_path}:${connection_profile.primary_authentication.server}"].id
-              if contains(keys(local.map_radius_server_groups), "${domain_path}:${connection_profile.primary_authentication.server}")],
-              [for domain_path in local.related_domains[domain.name] :
-                local.map_ad_ldap_realms["${domain_path}:${connection_profile.primary_authentication.server}"].id
-              if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.primary_authentication.server}")],
-              [for domain_path in local.related_domains[domain.name] :
-                local.map_single_sign_on_servers["${domain_path}:${connection_profile.primary_authentication.server}"].id
-              if contains(keys(local.map_single_sign_on_servers), "${domain_path}:${connection_profile.primary_authentication.server}")],
-              [null],
-            )[0] : null
-            primary_authentication_server_type = try(connection_profile.primary_authentication.server, null) != null && try(connection_profile.primary_authentication.server, null) != "LOCAL" ? concat(
-              [for domain_path in local.related_domains[domain.name] :
-                local.map_radius_server_groups["${domain_path}:${connection_profile.primary_authentication.server}"].type
-              if contains(keys(local.map_radius_server_groups), "${domain_path}:${connection_profile.primary_authentication.server}")],
-              [for domain_path in local.related_domains[domain.name] :
-                local.map_ad_ldap_realms["${domain_path}:${connection_profile.primary_authentication.server}"].type
-              if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.primary_authentication.server}")],
-              [for domain_path in local.related_domains[domain.name] :
-                local.map_single_sign_on_servers["${domain_path}:${connection_profile.primary_authentication.server}"].type
-              if contains(keys(local.map_single_sign_on_servers), "${domain_path}:${connection_profile.primary_authentication.server}")],
-              [null],
-            )[0] : null
+            primary_authentication_server_id = try(connection_profile.primary_authentication.server, null) != null && try(connection_profile.primary_authentication.server, null) != "LOCAL" ? merge(
+              local.resolved_radius_server_groups[domain.name],
+              local.resolved_ad_ldap_realms[domain.name],
+              local.resolved_single_sign_on_servers[domain.name],
+            )[connection_profile.primary_authentication.server].id : null
+            primary_authentication_server_type = try(connection_profile.primary_authentication.server, null) != null && try(connection_profile.primary_authentication.server, null) != "LOCAL" ? merge(
+              local.resolved_radius_server_groups[domain.name],
+              local.resolved_ad_ldap_realms[domain.name],
+              local.resolved_single_sign_on_servers[domain.name],
+            )[connection_profile.primary_authentication.server].type : null
             primary_authentication_fallback_to_local                                     = try(connection_profile.primary_authentication.fallback_to_local, null)
             primary_authentication_prefill_username_from_certificate                     = try(connection_profile.primary_authentication.prefill_username_from_certificate_map_primary_field, connection_profile.primary_authentication.prefill_username_from_certificate_map_secondary_field, connection_profile.primary_authentication.prefill_username_from_certificate_map_entire_dn, null) != null ? true : null
             primary_authentication_prefill_username_from_certificate_map_primary_field   = try(connection_profile.primary_authentication.prefill_username_from_certificate_map_primary_field, null)
@@ -658,59 +514,31 @@ locals {
             primary_authentication_hide_username_in_login_window                         = try(connection_profile.primary_authentication.hide_username_in_login_window, null)
             secondary_authentication                                                     = try(connection_profile.secondary_authentication, null) != null ? true : null
             secondary_authentication_server_use_local                                    = try(connection_profile.secondary_authentication.server, null) == "LOCAL" ? true : null
-            secondary_authentication_server_id = try(connection_profile.secondary_authentication.server, null) != null && try(connection_profile.secondary_authentication.server, null) != "LOCAL" ? concat(
-              [for domain_path in local.related_domains[domain.name] :
-                local.map_radius_server_groups["${domain_path}:${connection_profile.secondary_authentication.server}"].id
-              if contains(keys(local.map_radius_server_groups), "${domain_path}:${connection_profile.secondary_authentication.server}")],
-              [for domain_path in local.related_domains[domain.name] :
-                local.map_ad_ldap_realms["${domain_path}:${connection_profile.secondary_authentication.server}"].id
-              if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.secondary_authentication.server}")],
-              [null],
-            )[0] : null
-            secondary_authentication_server_type = try(connection_profile.secondary_authentication.server, null) != null && try(connection_profile.secondary_authentication.server, null) != "LOCAL" ? concat(
-              [for domain_path in local.related_domains[domain.name] :
-                local.map_radius_server_groups["${domain_path}:${connection_profile.secondary_authentication.server}"].type
-              if contains(keys(local.map_radius_server_groups), "${domain_path}:${connection_profile.secondary_authentication.server}")],
-              [for domain_path in local.related_domains[domain.name] :
-                local.map_ad_ldap_realms["${domain_path}:${connection_profile.secondary_authentication.server}"].type
-              if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.secondary_authentication.server}")],
-              [null],
-            )[0] : null
+            secondary_authentication_server_id = try(connection_profile.secondary_authentication.server, null) != null && try(connection_profile.secondary_authentication.server, null) != "LOCAL" ? merge(
+              local.resolved_radius_server_groups[domain.name],
+              local.resolved_ad_ldap_realms[domain.name],
+            )[connection_profile.secondary_authentication.server].id : null
+            secondary_authentication_server_type = try(connection_profile.secondary_authentication.server, null) != null && try(connection_profile.secondary_authentication.server, null) != "LOCAL" ? merge(
+              local.resolved_radius_server_groups[domain.name],
+              local.resolved_ad_ldap_realms[domain.name],
+            )[connection_profile.secondary_authentication.server].type : null
             secondary_authentication_fallback_to_local                                   = try(connection_profile.secondary_authentication.fallback_to_local, null)
             secondary_authentication_prompt_for_username                                 = try(connection_profile.secondary_authentication.prompt_for_username, null)
             secondary_authentication_use_primary_authentication_username                 = try(connection_profile.secondary_authentication.use_primary_authentication_username, null)
             secondary_authentication_use_secondary_authentication_username_for_reporting = try(connection_profile.secondary_authentication.use_secondary_authentication_username_for_reporting, null)
             saml_and_certificate_username_must_match                                     = try(connection_profile.saml_and_certificate_username_must_match, null)
             saml_use_external_browser                                                    = try(connection_profile.saml_use_external_browser, null)
-            authorization_server_id = try(connection_profile.authorization_server, null) != null ? concat(
-              [for domain_path in local.related_domains[domain.name] :
-                local.map_radius_server_groups["${domain_path}:${connection_profile.authorization_server}"].id
-              if contains(keys(local.map_radius_server_groups), "${domain_path}:${connection_profile.authorization_server}")],
-              [for domain_path in local.related_domains[domain.name] :
-                local.map_ad_ldap_realms["${domain_path}:${connection_profile.authorization_server}"].id
-              if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.authorization_server}")],
-              [null],
-            )[0] : null
-            authorization_server_type = try(connection_profile.authorization_server, null) != null ? concat(
-              [for domain_path in local.related_domains[domain.name] :
-                local.map_radius_server_groups["${domain_path}:${connection_profile.authorization_server}"].type
-              if contains(keys(local.map_radius_server_groups), "${domain_path}:${connection_profile.authorization_server}")],
-              [for domain_path in local.related_domains[domain.name] :
-                local.map_ad_ldap_realms["${domain_path}:${connection_profile.authorization_server}"].type
-              if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${connection_profile.authorization_server}")],
-              [null],
-            )[0] : null
+            authorization_server_id = try(connection_profile.authorization_server, null) != null ? merge(
+              local.resolved_radius_server_groups[domain.name],
+              local.resolved_ad_ldap_realms[domain.name],
+            )[connection_profile.authorization_server].id : null
+            authorization_server_type = try(connection_profile.authorization_server, null) != null ? merge(
+              local.resolved_radius_server_groups[domain.name],
+              local.resolved_ad_ldap_realms[domain.name],
+            )[connection_profile.authorization_server].type : null
             allow_connection_only_if_user_exists_in_authorization_database = try(connection_profile.allow_connection_only_if_user_exists_in_authorization_database, null)
-            accounting_server_id = try(connection_profile.accounting_server, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_radius_server_groups["${domain_path}:${connection_profile.accounting_server}"].id
-              if contains(keys(local.map_radius_server_groups), "${domain_path}:${connection_profile.accounting_server}")
-            })[0] : null
-            accounting_server_type = try(connection_profile.accounting_server, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_radius_server_groups["${domain_path}:${connection_profile.accounting_server}"].type
-              if contains(keys(local.map_radius_server_groups), "${domain_path}:${connection_profile.accounting_server}")
-            })[0] : null
+            accounting_server_id = try(connection_profile.accounting_server, null) != null ? local.resolved_radius_server_groups[domain.name][connection_profile.accounting_server].id : null
+            accounting_server_type = try(connection_profile.accounting_server, null) != null ? local.resolved_radius_server_groups[domain.name][connection_profile.accounting_server].type : null
             strip_realm_from_username                                    = try(connection_profile.strip_realm_from_username, null)
             strip_group_from_username                                    = try(connection_profile.strip_group_from_username, null)
             password_management                                          = try(connection_profile.password_management_notify_user_on_password_expiry_day, connection_profile.password_management_advance_password_expiration_notification, null) != null ? true : null
@@ -721,12 +549,8 @@ locals {
               enabled = alias_name.enabled
             }]
             alias_urls = [for alias_url in try(connection_profile.alias_urls, []) : {
-              url_object_id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_urls["${domain_path}:${alias_url.url_object}"].id
-                if contains(keys(local.map_urls), "${domain_path}:${alias_url.url_object}")
-              })[0]
-              enabled = alias_url.enabled
+              url_object_id = local.resolved_urls[domain.name][alias_url.url_object].id
+              enabled       = alias_url.enabled
             }]
           } }
         } if contains(keys(vpn_ra), "connection_profiles")
@@ -757,11 +581,7 @@ locals {
           use_alias_url                                  = try(vpn_ra.certificate_map.use_alias_url, null)
           use_certificate_to_connection_profile_mappings = try(vpn_ra.certificate_map.certificate_to_connection_profile_mappings, null) != null ? true : null
           certificate_to_connection_profile_mappings = [for mapping in try(vpn_ra.certificate_map.certificate_to_connection_profile_mappings, []) : {
-            certificate_map_id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_certificate_maps["${domain_path}:${mapping.certificate_map}"].id
-              if contains(keys(local.map_certificate_maps), "${domain_path}:${mapping.certificate_map}")
-            })[0]
+            certificate_map_id    = local.resolved_certificate_maps[domain.name][mapping.certificate_map].id
             connection_profile_id = fmc_vpn_ra_connection_profiles.vpn_ra_connection_profiles["${domain.name}:${vpn_ra.name}"].items[mapping.connection_profile].id
           }]
         } if contains(keys(vpn_ra), "certificate_map")
@@ -792,11 +612,7 @@ locals {
           vpn_ra_name = vpn_ra.name
           vpn_ra_id   = try(fmc_vpn_ra.vpn_ra["${domain.name}:${vpn_ra.name}"].id, data.fmc_vpn_ra.vpn_ra["${domain.name}:${vpn_ra.name}"].id)
           realms = [for realm in try(vpn_ra.ldap_attribute_maps, []) : {
-            realm_ad_ldap_id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_ad_ldap_realms["${domain_path}:${realm.ad_ldap_realm}"].id
-              if contains(keys(local.map_ad_ldap_realms), "${domain_path}:${realm.ad_ldap_realm}")
-            })[0]
+            realm_ad_ldap_id = local.resolved_ad_ldap_realms[domain.name][realm.ad_ldap_realm].id
             attribute_maps = [for attribute_map in try(realm.attribute_maps, []) : {
               ldap_attribute_name  = attribute_map.ldap_attribute_name
               cisco_attribute_name = attribute_map.cisco_attribute_name
@@ -834,11 +650,7 @@ locals {
           enabled            = true
           ipv4_group_address = vpn_ra.load_balancing.ipv4_group_address
           ipv6_group_address = try(vpn_ra.load_balancing.ipv6_group_address, null)
-          interface_id = values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${vpn_ra.load_balancing.interface}"].id
-            if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${vpn_ra.load_balancing.interface}")
-          })[0]
+          interface_id                            = local.resolved_security_zones_and_interface_groups[domain.name][vpn_ra.load_balancing.interface].id
           port                                    = try(vpn_ra.load_balancing.port, local.defaults.fmc.domains.vpns.remote_access.load_balancing.port, null)
           ipsec                                   = try(vpn_ra.load_balancing.ipsec_encryption_key, null) != null ? true : false
           ipsec_encryption_key                    = try(vpn_ra.load_balancing.ipsec_encryption_key, null)
@@ -879,17 +691,9 @@ locals {
             vpn_ra_name = vpn_ra.name
             vpn_ra_id   = try(fmc_vpn_ra.vpn_ra["${domain.name}:${vpn_ra.name}"].id, data.fmc_vpn_ra.vpn_ra["${domain.name}:${vpn_ra.name}"].id)
             interface   = ipsec_crypto_map.interface
-            interface_id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${ipsec_crypto_map.interface}"].id
-              if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${ipsec_crypto_map.interface}")
-            })[0]
+            interface_id = local.resolved_security_zones_and_interface_groups[domain.name][ipsec_crypto_map.interface].id
             ikev2_ipsec_proposals = [for proposal in try(ipsec_crypto_map.ikev2_ipsec_proposals, []) : {
-              id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_ikev2_ipsec_proposals["${domain_path}:${proposal}"].id
-                if contains(keys(local.map_ikev2_ipsec_proposals), "${domain_path}:${proposal}")
-              })[0]
+              id = local.resolved_ikev2_ipsec_proposals[domain.name][proposal].id
             }]
             reverse_route_injection               = try(ipsec_crypto_map.reverse_route_injection, local.defaults.fmc.domains.vpns.remote_access.ipsec_crypto_maps.reverse_route_injection, null)
             client_services                       = try(ipsec_crypto_map.client_services_port, local.defaults.fmc.domains.vpns.remote_access.ipsec_crypto_maps.client_services_port, null) != null ? true : null

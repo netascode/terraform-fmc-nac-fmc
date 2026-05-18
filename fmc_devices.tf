@@ -23,34 +23,19 @@ locals {
           licenses         = device.licenses
           registration_key = device.registration_key
 
-          access_control_policy_id = try(device.access_control_policy, "") != "" ? concat(
-            [for domain_path in local.related_domains[domain.name] :
-              local.map_access_control_policies["${domain_path}:${device.access_control_policy}"].id
-            if contains(keys(local.map_access_control_policies), "${domain_path}:${device.access_control_policy}")],
-            [null],
-          )[0] : null
+          access_control_policy_id = try(device.access_control_policy, "") != "" ? local.resolved_access_control_policies[domain.name][device.access_control_policy].id : null
           # device_group_id = ...
-          health_policy_id = try(device.health_policy, "") != "" ? concat(
-            [for domain_path in local.related_domains[domain.name] :
-              local.map_health_policies["${domain_path}:${device.health_policy}"].id
-            if contains(keys(local.map_health_policies), "${domain_path}:${device.health_policy}")],
-            [null],
-          )[0] : null
-          nat_policy_id = try(device.nat_policy, "") != "" ? concat(
-            [for domain_path in local.related_domains[domain.name] :
-              local.map_ftd_nat_policies["${domain_path}:${device.nat_policy}"].id
-            if contains(keys(local.map_ftd_nat_policies), "${domain_path}:${device.nat_policy}")],
-            [null],
-          )[0] : null
+          health_policy_id         = try(device.health_policy, "") != "" ? local.resolved_health_policies[domain.name][device.health_policy].id : null
+          nat_policy_id            = try(device.nat_policy, "") != "" ? local.resolved_ftd_nat_policies[domain.name][device.nat_policy].id : null
 
           nat_id                   = try(device.nat_id, null)
           object_group_search      = try(device.object_group_search, local.defaults.fmc.domains.devices.devices.object_group_search, null)
           performance_tier         = try(device.performance_tier, local.defaults.fmc.domains.devices.devices.performance_tier, null)
           prohibit_packet_transfer = try(device.prohibit_packet_transfer, local.defaults.fmc.domains.devices.devices.prohibit_packet_transfer, null)
           snort_engine             = try(device.snort_engine, local.defaults.fmc.domains.devices.devices.snort_engine, null)
-          } if(!contains(try(keys(local.data_device), []), "${domain.name}:${device.name}") &&
-        !contains(try(keys(local.resource_chassis_logical_device), []), "${domain.name}:${device.name}")) &&
-        !contains(try(keys(local.map_devices_external), []), "${domain.name}:${device.name}")
+          } if try(local.data_device["${domain.name}:${device.name}"], null) == null &&
+          try(local.resource_chassis_logical_device["${domain.name}:${device.name}"], null) == null &&
+          try(local.map_devices_external["${domain.name}:${device.name}"], null) == null
       ]
     ]) : "${item.domain}:${item.name}" => item
   }
@@ -138,7 +123,7 @@ locals {
           peer_hold_time_unit              = try(ha_pair.peer_hold_time_unit, null)
           peer_poll_time                   = try(ha_pair.peer_poll_time, null)
           peer_poll_time_unit              = try(ha_pair.peer_poll_time_unit, null)
-        } if !contains(try(keys(local.data_device_ha_pair), []), "${domain.name}:${ha_pair.name}")
+        } if try(local.data_device_ha_pair["${domain.name}:${ha_pair.name}"], null) == null
       ]
     ]) : "${item.domain}:${item.name}" => item
   }
@@ -365,7 +350,7 @@ locals {
             device_id        = local.map_devices["${domain.name}:${data_node.device}"].id
             priority         = data_node.priority
           }]
-        } if !contains(try(keys(local.data_device_cluster), []), "${domain.name}:${cluster.name}")
+        } if try(local.data_device_cluster["${domain.name}:${cluster.name}"], null) == null
       ]
     ]) : "${item.domain}:${item.name}" => item
   }
@@ -447,12 +432,7 @@ locals {
               ip_based_monitoring          = try(physical_interface.ip_based_monitoring, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ip_based_monitoring, null)
               ip_based_monitoring_next_hop = try(physical_interface.ip_based_monitoring_next_hop, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ip_based_monitoring_next_hop, null)
               ip_based_monitoring_type     = try(physical_interface.ip_based_monitoring_type, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ip_based_monitoring_type, null)
-              ipv4_address_pool_id = try(physical_interface.ipv4_address_pool, "") != "" ? concat(
-                [for domain_path in local.related_domains[domain.name] :
-                  local.map_ipv4_address_pools["${domain_path}:${physical_interface.ipv4_address_pool}"].id
-                if contains(keys(local.map_ipv4_address_pools), "${domain_path}:${physical_interface.ipv4_address_pool}")],
-                [null],
-              )[0] : null
+              ipv4_address_pool_id                  = try(physical_interface.ipv4_address_pool, "") != "" ? local.resolved_ipv4_address_pools[domain.name][physical_interface.ipv4_address_pool].id : null
               ipv4_dhcp_obtain_default_route        = try(physical_interface.ipv4_dhcp_obtain_default_route, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv4_dhcp_obtain_default_route, null)
               ipv4_dhcp_default_route_metric        = try(physical_interface.ipv4_dhcp_default_route_metric, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv4_dhcp_default_route_metric, null)
               ipv4_pppoe_authentication             = try(physical_interface.ipv4_pppoe_authentication, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv4_pppoe_authentication, null)
@@ -464,12 +444,7 @@ locals {
               ipv4_pppoe_vpdn_group_name            = try(physical_interface.ipv4_pppoe_vpdn_group_name, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv4_pppoe_vpdn_group_name, null)
               ipv4_static_address                   = try(physical_interface.ipv4_static_address, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv4_static_address, null)
               ipv4_static_netmask                   = try(physical_interface.ipv4_static_netmask, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.ipv4_static_netmask, null)
-              ipv6_address_pool_id = try(physical_interface.ipv6_address_pool, "") != "" ? concat(
-                [for domain_path in local.related_domains[domain.name] :
-                  local.map_ipv6_address_pools["${domain_path}:${physical_interface.ipv6_address_pool}"].id
-                if contains(keys(local.map_ipv6_address_pools), "${domain_path}:${physical_interface.ipv6_address_pool}")],
-                [null],
-              )[0] : null
+              ipv6_address_pool_id = try(physical_interface.ipv6_address_pool, "") != "" ? local.resolved_ipv6_address_pools[domain.name][physical_interface.ipv6_address_pool].id : null
               ipv6_addresses = [for ipv6_address in try(physical_interface.ipv6_addresses, []) : {
                 address     = ipv6_address.address
                 enforce_eui = try(ipv6_address.enforce_eui, null)
@@ -502,18 +477,8 @@ locals {
               logical_name        = try(physical_interface.logical_name, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.logical_name, null)
               management_access   = try(physical_interface.management_access, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.management_access, null)
               management_access_network_objects = [for management_access_network_object in try(physical_interface.management_access_network_objects, []) : {
-                id = concat(
-                  [for domain_path in local.related_domains[domain.name] :
-                    local.map_network_objects["${domain_path}:${management_access_network_object}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${management_access_network_object}")],
-                  [null],
-                )[0]
-                type = concat(
-                  [for domain_path in local.related_domains[domain.name] :
-                    local.map_network_objects["${domain_path}:${management_access_network_object}"].type
-                  if contains(keys(local.map_network_objects), "${domain_path}:${management_access_network_object}")],
-                  [null],
-                )[0]
+                id   = local.resolved_network_objects[domain.name][management_access_network_object].id
+                type = local.resolved_network_objects[domain.name][management_access_network_object].type
               }]
               management_only                           = try(physical_interface.management_only, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.management_only, null)
               mtu                                       = try(physical_interface.mtu, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.mtu, null)
@@ -522,15 +487,10 @@ locals {
               override_default_fragment_setting_size    = try(physical_interface.override_default_fragment_setting_size, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.override_default_fragment_setting_size, null)
               override_default_fragment_setting_timeout = try(physical_interface.override_default_fragment_setting_timeout, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.override_default_fragment_setting_timeout, null)
               priority                                  = try(physical_interface.priority, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.priority, null)
-              security_zone_id = try(physical_interface.security_zone, "") != "" ? concat(
-                [for domain_path in local.related_domains[domain.name] :
-                  local.map_security_zones["${domain_path}:${physical_interface.security_zone}"].id
-                if contains(keys(local.map_security_zones), "${domain_path}:${physical_interface.security_zone}")],
-                [null],
-              )[0] : null
+              security_zone_id = try(physical_interface.security_zone, "") != "" ? local.resolved_security_zones[domain.name][physical_interface.security_zone].id : null
               speed               = try(physical_interface.speed, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.speed, null)
               standby_mac_address = try(physical_interface.standby_mac_address, local.defaults.fmc.domains.devices.devices.vrfs.physical_interfaces.standby_mac_address, null)
-            } if !contains(try(keys(local.data_device_physical_interface), []), "${domain.name}:${device.name}:${physical_interface.name}")
+            } if try(local.data_device_physical_interface["${domain.name}:${device.name}:${physical_interface.name}"], null) == null
           ]
         ]
       ]
@@ -712,18 +672,8 @@ locals {
               logical_name        = try(etherchannel_interface.logical_name, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.logical_name, null)
               management_access   = try(etherchannel_interface.management_access, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.management_access, null)
               management_access_network_objects = [for management_access_network_object in try(etherchannel_interface.management_access_network_objects, []) : {
-                id = concat(
-                  [for domain_path in local.related_domains[domain.name] :
-                    local.map_network_objects["${domain_path}:${management_access_network_object}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${management_access_network_object}")],
-                  [null],
-                )[0]
-                type = concat(
-                  [for domain_path in local.related_domains[domain.name] :
-                    local.map_network_objects["${domain_path}:${management_access_network_object}"].type
-                  if contains(keys(local.map_network_objects), "${domain_path}:${management_access_network_object}")],
-                  [null],
-                )[0]
+                id   = local.resolved_network_objects[domain.name][management_access_network_object].id
+                type = local.resolved_network_objects[domain.name][management_access_network_object].type
               }]
               management_only                           = try(etherchannel_interface.management_only, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.management_only, null)
               mtu                                       = try(etherchannel_interface.mtu, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.mtu, null)
@@ -732,12 +682,7 @@ locals {
               override_default_fragment_setting_size    = try(etherchannel_interface.override_default_fragment_setting_size, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.override_default_fragment_setting_size, null)
               override_default_fragment_setting_timeout = try(etherchannel_interface.override_default_fragment_setting_timeout, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.override_default_fragment_setting_timeout, null)
               priority                                  = try(etherchannel_interface.priority, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.priority, null)
-              security_zone_id = try(etherchannel_interface.security_zone, "") != "" ? concat(
-                [for domain_path in local.related_domains[domain.name] :
-                  local.map_security_zones["${domain_path}:${etherchannel_interface.security_zone}"].id
-                if contains(keys(local.map_security_zones), "${domain_path}:${etherchannel_interface.security_zone}")],
-                [null],
-              )[0] : null
+              security_zone_id = try(etherchannel_interface.security_zone, "") != "" ? local.resolved_security_zones[domain.name][etherchannel_interface.security_zone].id : null
               selected_interfaces = [for selected_interface in try(etherchannel_interface.selected_interfaces, []) : {
                 name = selected_interface
                 id   = try(fmc_device_physical_interface.device_physical_interface["${domain.name}:${device.name}:${selected_interface}"].id, data.fmc_device_physical_interface.device_physical_interface["${domain.name}:${device.name}:${selected_interface}"].id)
@@ -745,7 +690,7 @@ locals {
               }]
               speed               = try(etherchannel_interface.speed, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.speed, null)
               standby_mac_address = try(etherchannel_interface.standby_mac_address, local.defaults.fmc.domains.devices.devices.vrfs.etherchannel_interfaces.standby_mac_address, null)
-            } if !contains(try(keys(local.data_device_etherchannel_interface), []), "${domain.name}:${device.name}:${etherchannel_interface.name}")
+            } if try(local.data_device_etherchannel_interface["${domain.name}:${device.name}:${etherchannel_interface.name}"], null) == null
           ]
         ]
       ]
@@ -881,12 +826,7 @@ locals {
               ip_based_monitoring          = try(sub_interface.ip_based_monitoring, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ip_based_monitoring, null)
               ip_based_monitoring_next_hop = try(sub_interface.ip_based_monitoring_next_hop, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ip_based_monitoring_next_hop, null)
               ip_based_monitoring_type     = try(sub_interface.ip_based_monitoring_type, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ip_based_monitoring_type, null)
-              ipv4_address_pool_id = try(sub_interface.ipv4_address_pool, "") != "" ? concat(
-                [for domain_path in local.related_domains[domain.name] :
-                  local.map_ipv4_address_pools["${domain_path}:${sub_interface.ipv4_address_pool}"].id
-                if contains(keys(local.map_ipv4_address_pools), "${domain_path}:${sub_interface.ipv4_address_pool}")],
-                [null],
-              )[0] : null
+              ipv4_address_pool_id = try(sub_interface.ipv4_address_pool, "") != "" ? local.resolved_ipv4_address_pools[domain.name][sub_interface.ipv4_address_pool].id : null
               ipv4_dhcp_obtain_default_route        = try(sub_interface.ipv4_dhcp_obtain_default_route, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv4_dhcp_obtain_default_route, null)
               ipv4_dhcp_default_route_metric        = try(sub_interface.ipv4_dhcp_default_route_metric, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv4_dhcp_default_route_metric, null)
               ipv4_pppoe_authentication             = try(sub_interface.ipv4_pppoe_authentication, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.ipv4_pppoe_authentication, null)
@@ -933,14 +873,9 @@ locals {
               override_default_fragment_setting_size    = try(sub_interface.override_default_fragment_setting_size, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.override_default_fragment_setting_size, null)
               override_default_fragment_setting_timeout = try(sub_interface.override_default_fragment_setting_timeout, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.override_default_fragment_setting_timeout, null)
               priority                                  = try(sub_interface.priority, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.priority, null)
-              security_zone_id = try(sub_interface.security_zone, "") != "" ? concat(
-                [for domain_path in local.related_domains[domain.name] :
-                  local.map_security_zones["${domain_path}:${sub_interface.security_zone}"].id
-                if contains(keys(local.map_security_zones), "${domain_path}:${sub_interface.security_zone}")],
-                [null],
-              )[0] : null
+              security_zone_id = try(sub_interface.security_zone, "") != "" ? local.resolved_security_zones[domain.name][sub_interface.security_zone].id : null
               standby_mac_address = try(sub_interface.standby_mac_address, local.defaults.fmc.domains.devices.devices.vrfs.sub_interfaces.standby_mac_address, null)
-            } if !contains(try(keys(local.data_device_subinterface), []), "${domain.name}:${device.name}:${sub_interface.name}")
+            } if try(local.data_device_subinterface["${domain.name}:${device.name}:${sub_interface.name}"], null) == null
           ]
         ]
       ]
@@ -1064,7 +999,7 @@ locals {
                 address = ipv6_address.address
                 prefix  = ipv6_address.prefix
               }]
-            } if(!contains(try(keys(local.data_device_loopback_interface), []), "${domain.name}:${device.name}:Loopback${loopback_interface.id}") && vrf.name == "Global")
+            } if(try(local.data_device_loopback_interface["${domain.name}:${device.name}:Loopback${loopback_interface.id}"], null) == null && vrf.name == "Global")
           ]
         ]
       ]
@@ -1161,17 +1096,12 @@ locals {
               ipv6_address                      = try(vti_interface.ipv6_address, null)
               ipv6_prefix                       = try(vti_interface.ipv6_prefix, null)
               priority                          = try(vti_interface.priority, local.defaults.fmc.domains.devices.devices.vrfs.virtual_tunnel_interfaces.priority, null)
-              security_zone_id = try(vti_interface.security_zone, null) != null ? concat(
-                [for domain_path in local.related_domains[domain.name] :
-                  local.map_security_zones["${domain_path}:${vti_interface.security_zone}"].id
-                if contains(keys(local.map_security_zones), "${domain_path}:${vti_interface.security_zone}")],
-                [null],
-              )[0] : null
+              security_zone_id = try(vti_interface.security_zone, null) != null ? local.resolved_security_zones[domain.name][vti_interface.security_zone].id : null
               tunnel_source_interface_ipv6_address = try(vti_interface.tunnel_source_interface_ipv6_address, null)
               } if(
               (
-                (!contains(try(keys(local.data_device_virtual_tunnel_interface), []), "${domain.name}:${device.name}:Tunnel${vti_interface.id}") && vti_interface.tunnel_type == "STATIC") ||
-                (!contains(try(keys(local.data_device_virtual_tunnel_interface), []), "${domain.name}:${device.name}:Virtual-Template${vti_interface.id}") && vti_interface.tunnel_type == "DYNAMIC")
+                (try(local.data_device_virtual_tunnel_interface["${domain.name}:${device.name}:Tunnel${vti_interface.id}"], null) == null && vti_interface.tunnel_type == "STATIC") ||
+                (try(local.data_device_virtual_tunnel_interface["${domain.name}:${device.name}:Virtual-Template${vti_interface.id}"], null) == null && vti_interface.tunnel_type == "DYNAMIC")
               )
             && vrf.name == "Global")
           ]
@@ -1243,7 +1173,7 @@ locals {
           registration_key = device.registration_key
           # device_group_id = ...
           nat_id = try(device.nat_id, null)
-        } if !contains(try(keys(local.data_chassis), []), "${domain.name}:${device.name}")
+        } if try(local.data_chassis["${domain.name}:${device.name}"], null) == null
       ]
     ]) : "${item.domain}:${item.name}" => item
   }
@@ -1302,7 +1232,7 @@ locals {
             auto_negotiation = try(physical_interface.auto_negotiation, local.defaults.fmc.domains.devices.chassis.physical_interfaces.auto_negotiation, null)
             duplex           = try(physical_interface.duplex, local.defaults.fmc.domains.devices.chassis.physical_interfaces.duplex, null)
             fec_mode         = try(physical_interface.fec_mode, local.defaults.fmc.domains.devices.chassis.physical_interfaces.fec_mode, null)
-          } if !contains(try(keys(local.data_chassis_physical_interface), []), "${domain.name}:${chassis.name}:${physical_interface.name}")
+          } if try(local.data_chassis_physical_interface["${domain.name}:${chassis.name}:${physical_interface.name}"], null) == null
         ]
       ]
     ]) : "${item.domain}:${item.chassis_name}:${item.name}" => item
@@ -1372,7 +1302,7 @@ locals {
               name = selected_interface
               id   = try(fmc_chassis_physical_interface.chassis_physical_interface["${domain.name}:${chassis.name}:${selected_interface}"].id, data.fmc_chassis_physical_interface.chassis_physical_interface["${domain.name}:${chassis.name}:${selected_interface}"].id)
             }]
-          } if !contains(try(keys(local.data_chassis_etherchannel_interface), []), "${domain.name}:${chassis.name}:${etherchannel_interface.name}")
+          } if try(local.data_chassis_etherchannel_interface["${domain.name}:${chassis.name}:${etherchannel_interface.name}"], null) == null
         ]
       ]
     ]) : "${item.domain}:${item.chassis_name}:${item.name}" => item
@@ -1435,7 +1365,7 @@ locals {
             interface_id     = local.map_chassis_physical_and_ether_channel_interfaces["${domain.name}:${chassis.name}:${split(".", sub_interface.name)[length(split(".", sub_interface.name)) - 2]}"].id
             vlan_id          = sub_interface.vlan
             port_type        = sub_interface.port_type
-          } if !contains(try(keys(local.data_chassis_subinterface), []), "${domain.name}:${chassis.name}:${sub_interface.name}")
+          } if try(local.data_chassis_subinterface["${domain.name}:${chassis.name}:${sub_interface.name}"], null) == null
         ]
       ]
     ]) : "${item.domain}:${item.chassis_name}:${item.name}" => item
@@ -1490,27 +1420,12 @@ locals {
             admin_state           = try(logical_device.admin_state, local.defaults.fmc.domains.devices.chassis.logical_devices.admin_state, null)
             permit_expert_mode    = try(logical_device.permit_expert_mode, local.defaults.fmc.domains.devices.chassis.logical_devices.permit_expert_mode, null) == true ? "yes" : try(logical_device.permit_expert_mode, local.defaults.fmc.domains.devices.chassis.logical_devices.permit_expert_mode, null) == false ? "no" : null
             resource_profile_name = logical_device.resource_profile
-            resource_profile_id = concat(
-              [for domain_path in local.related_domains[domain.name] :
-                local.map_resource_profiles["${domain_path}:${logical_device.resource_profile}"].id
-              if contains(keys(local.map_resource_profiles), "${domain_path}:${logical_device.resource_profile}")],
-              [null],
-            )[0]
+            resource_profile_id = local.resolved_resource_profiles[domain.name][logical_device.resource_profile].id
             assigned_interfaces = [for assigned_interface in try(logical_device.assigned_interfaces, []) : {
               id = local.map_chassis_interfaces["${domain.name}:${chassis.name}:${assigned_interface}"].id
             }]
-            access_control_policy_id = concat(
-              [for domain_path in local.related_domains[domain.name] :
-                local.map_access_control_policies["${domain_path}:${logical_device.access_control_policy}"].id
-              if contains(keys(local.map_access_control_policies), "${domain_path}:${logical_device.access_control_policy}")],
-              [null],
-            )[0]
-            platform_settings_id = try(logical_device.platform_settings, "") != "" ? concat(
-              [for domain_path in local.related_domains[domain.name] :
-                local.map_ftd_platform_settings["${domain_path}:${logical_device.platform_settings}"].id
-              if contains(keys(local.map_ftd_platform_settings), "${domain_path}:${logical_device.platform_settings}")],
-              [null],
-            )[0] : null
+            access_control_policy_id = local.resolved_access_control_policies[domain.name][logical_device.access_control_policy].id
+            platform_settings_id = try(logical_device.platform_settings, "") != "" ? local.resolved_ftd_platform_settings[domain.name][logical_device.platform_settings].id : null
             licenses = try(logical_device.licenses, null)
           }
         ]
@@ -1569,7 +1484,7 @@ locals {
           domain      = domain.name
           name        = ftd_platform_setting.name
           description = try(ftd_platform_setting.description, local.defaults.fmc.domains.devices.ftd_platform_settings.description, null)
-        } if !contains(try(keys(local.data_ftd_platform_settings), []), "${domain.name}:${ftd_platform_setting.name}")
+        } if try(local.data_ftd_platform_settings["${domain.name}:${ftd_platform_setting.name}"], null) == null
       ]
     ]) : "${item.domain}:${item.name}" => item
   }
@@ -1633,23 +1548,11 @@ locals {
           server_enabled = try(ftd_platform_setting.http_access.server_enabled, local.defaults.fmc.domains.devices.ftd_platform_settings.http_access.server_enabled, null)
           server_port    = try(ftd_platform_setting.http_access.server_port, local.defaults.fmc.domains.devices.ftd_platform_settings.http_access.server_port, null)
           configurations = [for configuration in try(ftd_platform_setting.http_access.configurations, []) : {
-            source_network_object_id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_network_objects["${domain_path}:${configuration.source_network_object}"].id
-              if contains(keys(local.map_network_objects), "${domain_path}:${configuration.source_network_object}")
-            })[0]
+            source_network_object_id = local.resolved_network_objects[domain.name][configuration.source_network_object].id
             interface_literals = try(configuration.interface_literals, null)
             interface_objects = [for interface_object in try(configuration.interface_objects, []) : {
-              id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_security_zones["${domain_path}:${interface_object}"].id
-                if contains(keys(local.map_security_zones), "${domain_path}:${interface_object}")
-              })[0]
-              type = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_security_zones["${domain_path}:${interface_object}"].type
-                if contains(keys(local.map_security_zones), "${domain_path}:${interface_object}")
-              })[0]
+              id   = local.resolved_security_zones[domain.name][interface_object].id
+              type = local.resolved_security_zones[domain.name][interface_object].type
               name = interface_object
             }]
           }]
@@ -1684,29 +1587,13 @@ locals {
           rate_limit = try(ftd_platform_setting.icmp_access.rate_limit, local.defaults.fmc.domains.devices.ftd_platform_settings.icmp_access.rate_limit, null)
           burst_size = try(ftd_platform_setting.icmp_access.burst_size, local.defaults.fmc.domains.devices.ftd_platform_settings.icmp_access.burst_size, null)
           configurations = [for configuration in try(ftd_platform_setting.icmp_access.configurations, []) : {
-            action = configuration.action
-            icmp_service_object_id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_services["${domain_path}:${configuration.icmp_service_object}"].id
-              if contains(keys(local.map_services), "${domain_path}:${configuration.icmp_service_object}")
-            })[0]
-            source_network_object_id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_network_objects["${domain_path}:${configuration.source_network_object}"].id
-              if contains(keys(local.map_network_objects), "${domain_path}:${configuration.source_network_object}")
-            })[0]
+            action                   = configuration.action
+            icmp_service_object_id   = local.resolved_services[domain.name][configuration.icmp_service_object].id
+            source_network_object_id = local.resolved_network_objects[domain.name][configuration.source_network_object].id
             interface_literals = try(configuration.interface_literals, null)
             interface_objects = [for interface_object in try(configuration.interface_objects, []) : {
-              id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_security_zones["${domain_path}:${interface_object}"].id
-                if contains(keys(local.map_security_zones), "${domain_path}:${interface_object}")
-              })[0]
-              type = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_security_zones["${domain_path}:${interface_object}"].type
-                if contains(keys(local.map_security_zones), "${domain_path}:${interface_object}")
-              })[0]
+              id   = local.resolved_security_zones[domain.name][interface_object].id
+              type = local.resolved_security_zones[domain.name][interface_object].type
               name = interface_object
             }]
           }]
@@ -1741,23 +1628,11 @@ locals {
             ftd_platform_settings_id = local.map_ftd_platform_settings["${domain.name}:${ftd_platform_setting.name}"].id
             source_network_object    = ssh_access.source_network_object
 
-            source_network_object_id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_network_objects["${domain_path}:${ssh_access.source_network_object}"].id
-              if contains(keys(local.map_network_objects), "${domain_path}:${ssh_access.source_network_object}")
-            })[0],
+            source_network_object_id = local.resolved_network_objects[domain.name][ssh_access.source_network_object].id,
             interface_literals = try(ssh_access.interface_literals, null)
             interface_objects = [for interface_object in try(ssh_access.interface_objects, []) : {
-              id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_security_zones["${domain_path}:${interface_object}"].id
-                if contains(keys(local.map_security_zones), "${domain_path}:${interface_object}")
-              })[0]
-              type = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_security_zones["${domain_path}:${interface_object}"].type
-                if contains(keys(local.map_security_zones), "${domain_path}:${interface_object}")
-              })[0]
+              id   = local.resolved_security_zones[domain.name][interface_object].id
+              type = local.resolved_security_zones[domain.name][interface_object].type
               name = interface_object
             }]
           }
@@ -1796,11 +1671,7 @@ locals {
           system_administrator = try(ftd_platform_setting.snmp.system_administrator, null)
           location             = try(ftd_platform_setting.snmp.location, null)
           management_hosts = [for management_host in try(ftd_platform_setting.snmp.management_hosts, []) : {
-            network_object_id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_network_objects["${domain_path}:${management_host.network_object}"].id
-              if contains(keys(local.map_network_objects), "${domain_path}:${management_host.network_object}")
-            })[0]
+            network_object_id        = local.resolved_network_objects[domain.name][management_host.network_object].id
             snmp_version             = management_host.snmp_version
             username                 = management_host.snmp_version == "SNMPv3" ? try(management_host.username, null) : null
             read_community           = management_host.snmp_version != "SNMPv3" ? try(management_host.read_community, null) : null
@@ -1810,16 +1681,8 @@ locals {
             use_management_interface = try(management_host.use_management_interface, null)
             interface_literals       = try(management_host.interface_literals, null)
             interface_objects = [for interface_object in try(management_host.interface_objects, []) : {
-              id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_security_zones["${domain_path}:${interface_object}"].id
-                if contains(keys(local.map_security_zones), "${domain_path}:${interface_object}")
-              })[0]
-              type = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_security_zones["${domain_path}:${interface_object}"].type
-                if contains(keys(local.map_security_zones), "${domain_path}:${interface_object}")
-              })[0]
+              id   = local.resolved_security_zones[domain.name][interface_object].id
+              type = local.resolved_security_zones[domain.name][interface_object].type
               name = interface_object
             }]
           }]
@@ -1909,11 +1772,7 @@ locals {
           internal_buffer_memory_size              = try(ftd_platform_setting.syslog.logging_setup.internal_buffer_memory_size, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.internal_buffer_memory_size, null)
           fmc_logging_mode                         = try(ftd_platform_setting.syslog.logging_setup.fmc_logging_mode, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.fmc_logging_mode, null)
           fmc_logging_level                        = try(ftd_platform_setting.syslog.logging_setup.fmc_logging_mode, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.fmc_logging_mode, null) != "OFF" ? try(ftd_platform_setting.syslog.logging_setup.fmc_logging_level, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.logging_setup.fmc_logging_level, null) : null
-          ftp_server_host_id = try(ftd_platform_setting.syslog.logging_setup.ftp_server_host, "") != "" ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_network_objects["${domain_path}:${ftd_platform_setting.syslog.logging_setup.ftp_server_host}"].id
-            if contains(keys(local.map_network_objects), "${domain_path}:${ftd_platform_setting.syslog.logging_setup.ftp_server_host}")
-          })[0] : null
+          ftp_server_host_id = try(ftd_platform_setting.syslog.logging_setup.ftp_server_host, "") != "" ? local.resolved_network_objects[domain.name][ftd_platform_setting.syslog.logging_setup.ftp_server_host].id : null
           ftp_server_username      = try(ftd_platform_setting.syslog.logging_setup.ftp_server_username, null)
           ftp_server_path          = try(ftd_platform_setting.syslog.logging_setup.ftp_server_path, null)
           ftp_server_password      = try(ftd_platform_setting.syslog.logging_setup.ftp_server_password, null)
@@ -2109,11 +1968,7 @@ locals {
           timestamp_format       = try(ftd_platform_setting.syslog.settings.timestamp_format, null)
           device_id_source       = try(ftd_platform_setting.syslog.settings.device_id_source, null)
           device_id_user_defined = try(ftd_platform_setting.syslog.settings.device_id_source, null) == "USERDEFINEDID" ? ftd_platform_setting.syslog.settings.device_id_user_defined : null
-          device_id_interface_id = try(ftd_platform_setting.syslog.settings.device_id_source, null) == "INTERFACE" ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_security_zones["${domain_path}:${ftd_platform_setting.syslog.settings.device_id_interface}"].id
-            if contains(keys(local.map_security_zones), "${domain_path}:${ftd_platform_setting.syslog.settings.device_id_interface}")
-          })[0] : null
+          device_id_interface_id = try(ftd_platform_setting.syslog.settings.device_id_source, null) == "INTERFACE" ? local.resolved_security_zones[domain.name][ftd_platform_setting.syslog.settings.device_id_interface].id : null
           all_syslog_messages_enabled       = try(ftd_platform_setting.syslog.settings.all_syslog_messages_enabled, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.settings.all_syslog_messages_enabled, null)
           all_syslog_messages_logging_level = try(ftd_platform_setting.syslog.settings.all_syslog_messages_enabled, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.settings.all_syslog_messages_enabled, null) == true ? ftd_platform_setting.syslog.settings.all_syslog_messages_logging_level : null
         } if try(ftd_platform_setting.syslog.settings, null) != null
@@ -2187,11 +2042,7 @@ locals {
           allow_user_traffic_when_tcp_syslog_server_is_down = try(ftd_platform_setting.syslog.servers.allow_user_traffic_when_tcp_syslog_server_is_down, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.servers.allow_user_traffic_when_tcp_syslog_server_is_down, null)
           message_queue_size                                = try(ftd_platform_setting.syslog.servers.message_queue_size, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.servers.message_queue_size, null)
           servers = [for server in try(ftd_platform_setting.syslog.servers.servers, []) : {
-            network_object_id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_network_objects["${domain_path}:${server.network_object}"].id
-              if contains(keys(local.map_network_objects), "${domain_path}:${server.network_object}")
-            })[0]
+            network_object_id        = local.resolved_network_objects[domain.name][server.network_object].id
             protocol                 = try(server.protocol, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.servers.servers.protocol, null)
             port                     = try(server.port, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.servers.servers.port, null)
             emblem_format            = try(server.protocol, local.defaults.fmc.domains.devices.ftd_platform_settings.syslog.servers.servers.protocol, null) == "UDP" ? try(server.emblem_format, null) : null
@@ -2199,16 +2050,8 @@ locals {
             use_management_interface = try(server.use_management_interface, null)
             interface_literals       = try(server.interface_literals, null)
             interface_objects = [for interface_object in try(server.interface_objects, []) : {
-              id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_security_zones["${domain_path}:${interface_object}"].id
-                if contains(keys(local.map_security_zones), "${domain_path}:${interface_object}")
-              })[0]
-              type = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_security_zones["${domain_path}:${interface_object}"].type
-                if contains(keys(local.map_security_zones), "${domain_path}:${interface_object}")
-              })[0]
+              id   = local.resolved_security_zones[domain.name][interface_object].id
+              type = local.resolved_security_zones[domain.name][interface_object].type
               name = interface_object
             }]
           }]
