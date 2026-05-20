@@ -2092,24 +2092,25 @@ locals {
           id = local.resolved_security_zones_and_interface_groups[domain.name][interface].id
         }]
         interface_names = length(try(policy_list.interface_literals, [])) > 0 ? policy_list.interface_literals : null
-        address_standard_access_lists = [for address_standard_access_list in try(policy_list.address_standard_access_lists, []) : {
+        ## Those don't follow standard pattern, as if when the list is empty, null is expected instead of empty array (not to cause colision between standard_access_list and ipv4_prefix_list which are exclusive)
+        address_standard_access_lists = length(try(policy_list.address_standard_access_lists, [])) > 0 ? [for address_standard_access_list in policy_list.address_standard_access_lists : {
           id = local.resolved_standard_access_lists[domain.name][address_standard_access_list].id
-        }]
-        address_ipv4_prefix_lists = [for address_ipv4_prefix_list in try(policy_list.address_ipv4_prefix_lists, []) : {
+        }] : null
+        address_ipv4_prefix_lists = length(try(policy_list.address_ipv4_prefix_lists, [])) > 0 ? [for address_ipv4_prefix_list in policy_list.address_ipv4_prefix_lists : {
           id = local.resolved_ipv4_prefix_lists[domain.name][address_ipv4_prefix_list].id
-        }]
-        next_hop_standard_access_lists = [for next_hop_standard_access_list in try(policy_list.next_hop_standard_access_lists, []) : {
+        }] : null
+        next_hop_standard_access_lists = length(try(policy_list.next_hop_standard_access_lists, [])) > 0 ? [for next_hop_standard_access_list in policy_list.next_hop_standard_access_lists : {
           id = local.resolved_standard_access_lists[domain.name][next_hop_standard_access_list].id
-        }]
-        next_hop_ipv4_prefix_lists = [for next_hop_ipv4_prefix_list in try(policy_list.next_hop_ipv4_prefix_lists, []) : {
+        }] : null
+        next_hop_ipv4_prefix_lists = length(try(policy_list.next_hop_ipv4_prefix_lists, [])) > 0 ? [for next_hop_ipv4_prefix_list in policy_list.next_hop_ipv4_prefix_lists : {
           id = local.resolved_ipv4_prefix_lists[domain.name][next_hop_ipv4_prefix_list].id
-        }]
-        route_source_standard_access_lists = [for route_source_standard_access_list in try(policy_list.route_source_standard_access_lists, []) : {
+        }] : null
+        route_source_standard_access_lists = length(try(policy_list.route_source_standard_access_lists, [])) > 0 ? [for route_source_standard_access_list in policy_list.route_source_standard_access_lists : {
           id = local.resolved_standard_access_lists[domain.name][route_source_standard_access_list].id
-        }]
-        route_source_ipv4_prefix_lists = [for route_source_ipv4_prefix_list in try(policy_list.route_source_ipv4_prefix_lists, []) : {
+        }] : null
+        route_source_ipv4_prefix_lists = length(try(policy_list.route_source_ipv4_prefix_lists, [])) > 0 ? [for route_source_ipv4_prefix_list in policy_list.route_source_ipv4_prefix_lists : {
           id = local.resolved_ipv4_prefix_lists[domain.name][route_source_ipv4_prefix_list].id
-        }]
+        }] : null
         as_paths = [for as_path in try(policy_list.as_paths, []) : {
           id = local.resolved_as_paths[domain.name][as_path].id
         }]

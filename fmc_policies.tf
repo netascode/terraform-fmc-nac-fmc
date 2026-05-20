@@ -427,11 +427,11 @@ locals {
             direction_of_transfer = file_rule.direction_of_transfer
             file_categories = [for file_category in try(file_rule.file_categories, []) : {
               name = file_category
-              id = data.fmc_file_categories.file_categories["Global"].items[file_category].id
+              id   = data.fmc_file_categories.file_categories["Global"].items[file_category].id
             }]
             file_types = [for file_type in try(file_rule.file_types, []) : {
               name = file_type
-              id = data.fmc_file_types.file_types["Global"].items[file_type].id
+              id   = data.fmc_file_types.file_types["Global"].items[file_type].id
             }]
             store_files = try(file_rule.store_files, local.defaults.fmc.domains.policies.file_policies.store_files, null)
           }]

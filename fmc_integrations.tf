@@ -25,11 +25,11 @@ locals {
           directory_username = realm_ad_ldap.directory_username
           directory_password = realm_ad_ldap.directory_password
           directory_servers = [for server in realm_ad_ldap.directory_servers : {
-            hostname            = server.hostname
-            port                = server.port
-            encryption_protocol = server.encryption_protocol
-            ca_certificate_id  = try(server.ca_certificate, null) != null ? local.resolved_trusted_certificate_authorities[domain.name][server.ca_certificate].id : null
-            interface_group_id = try(server.interface_group, null) != null ? local.resolved_interface_groups[domain.name][server.interface_group].id : null
+            hostname                        = server.hostname
+            port                            = server.port
+            encryption_protocol             = server.encryption_protocol
+            ca_certificate_id               = try(server.ca_certificate, null) != null ? local.resolved_trusted_certificate_authorities[domain.name][server.ca_certificate].id : null
+            interface_group_id              = try(server.interface_group, null) != null ? local.resolved_interface_groups[domain.name][server.interface_group].id : null
             use_routing_to_select_interface = try(server.use_routing_to_select_interface, local.defaults.fmc.domains.integrations.ad_ldap_realms.directory_servers.use_routing_to_select_interface, null)
           }]
           ad_join_username                        = try(realm_ad_ldap.ad_join_username, null)

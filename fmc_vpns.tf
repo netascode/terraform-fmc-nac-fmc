@@ -71,30 +71,30 @@ locals {
             backup_local_identity_type         = try(endpoint.backup_local_identity_type, null)
             backup_local_identity_string       = try(endpoint.backup_local_identity_string, null)
             connection_type                    = try(endpoint.connection_type, local.defaults.fmc.domains.vpns.site_to_site.endpoints.connection_type, null)
-            device_id = endpoint.extranet_device == false ? local.resolved_devices[domain.name][endpoint.name].id : null
-            extranet_dynamic_ip = try(endpoint.extranet_dynamic_ip, null)
-            extranet_ip_address = try(join(",", endpoint.extranet_ip_addresses), null)
+            device_id                          = endpoint.extranet_device == false ? local.resolved_devices[domain.name][endpoint.name].id : null
+            extranet_dynamic_ip                = try(endpoint.extranet_dynamic_ip, null)
+            extranet_ip_address                = try(join(",", endpoint.extranet_ip_addresses), null)
             interface_id = try(endpoint.interface_logical_name, null) != null ? values({
               for domain_path in local.related_domains[domain.name] :
               domain_path => local.map_interfaces_by_logical_names["${domain_path}:${endpoint.name}:${endpoint.interface_logical_name}"].id
               if contains(keys(local.map_interfaces_by_logical_names), "${domain_path}:${endpoint.name}:${endpoint.interface_logical_name}")
             })[0] : null
-            interface_ipv6_address      = try(endpoint.interface_ipv6_address, null)
-            interface_public_ip_address = try(endpoint.interface_public_ip_address, null)
-            local_identity_type         = try(endpoint.local_identity_type, null)
-            local_identity_string       = try(endpoint.local_identity_string, null)
-            nat_exemption               = try(endpoint.nat_exemption, null)
-            nat_exemption_inside_interface_id = try(endpoint.nat_exemption_inside_interface, null) != null ? local.resolved_security_zones_and_interface_groups[domain.name][endpoint.nat_exemption_inside_interface].id : null
-            nat_traversal = try(endpoint.nat_traversal, local.defaults.fmc.domains.vpns.site_to_site.endpoints.nat_traversal, null)
+            interface_ipv6_address                    = try(endpoint.interface_ipv6_address, null)
+            interface_public_ip_address               = try(endpoint.interface_public_ip_address, null)
+            local_identity_type                       = try(endpoint.local_identity_type, null)
+            local_identity_string                     = try(endpoint.local_identity_string, null)
+            nat_exemption                             = try(endpoint.nat_exemption, null)
+            nat_exemption_inside_interface_id         = try(endpoint.nat_exemption_inside_interface, null) != null ? local.resolved_security_zones_and_interface_groups[domain.name][endpoint.nat_exemption_inside_interface].id : null
+            nat_traversal                             = try(endpoint.nat_traversal, local.defaults.fmc.domains.vpns.site_to_site.endpoints.nat_traversal, null)
             override_remote_vpn_filter_access_list_id = try(endpoint.override_remote_vpn_filter_access_list, null) != null ? local.resolved_extended_access_lists[domain.name][endpoint.override_remote_vpn_filter_access_list].id : null
             protected_networks = [for protected_network in try(endpoint.protected_networks, []) : {
               id = local.resolved_network_objects[domain.name][protected_network].id
             }]
-            protected_networks_access_list_id = try(endpoint.protected_networks_access_list, null) != null ? local.resolved_extended_access_lists[domain.name][endpoint.protected_networks_access_list].id : null
+            protected_networks_access_list_id        = try(endpoint.protected_networks_access_list, null) != null ? local.resolved_extended_access_lists[domain.name][endpoint.protected_networks_access_list].id : null
             reverse_route_injection                  = try(endpoint.reverse_route_injection, local.defaults.fmc.domains.vpns.site_to_site.endpoints.reverse_route_injection, null)
             send_virtual_tunnel_interface_ip_to_peer = try(endpoint.send_virtual_tunnel_interface_ip_to_peer, null)
             send_tunnel_interface_ip_to_peer         = try(endpoint.send_tunnel_interface_ip_to_peer, null)
-            vpn_filter_access_list_id = try(endpoint.vpn_filter_access_list, null) != null ? local.resolved_extended_access_lists[domain.name][endpoint.vpn_filter_access_list].id : null
+            vpn_filter_access_list_id                = try(endpoint.vpn_filter_access_list, null) != null ? local.resolved_extended_access_lists[domain.name][endpoint.vpn_filter_access_list].id : null
           } }
         } if contains(keys(vpn_s2s), "endpoints")
       ]
@@ -127,15 +127,15 @@ locals {
           vpn_s2s_id                            = try(fmc_vpn_s2s.vpn_s2s["${domain.name}:${vpn_s2s.name}"].id, data.fmc_vpn_s2s.vpn_s2s["${domain.name}:${vpn_s2s.name}"].id)
           ikev1_authentication_type             = try(vpn_s2s.ike_settings.ikev1_authentication_type, null)
           ikev1_automatic_pre_shared_key_length = try(vpn_s2s.ike_settings.ikev1_automatic_pre_shared_key_length, null)
-          ikev1_certificate_id = try(vpn_s2s.ike_settings.ikev1_certificate, null) != null ? local.resolved_certificate_enrollments[domain.name][vpn_s2s.ike_settings.ikev1_certificate].id : null
-          ikev1_manual_pre_shared_key = try(vpn_s2s.ike_settings.ikev1_manual_pre_shared_key, null)
+          ikev1_certificate_id                  = try(vpn_s2s.ike_settings.ikev1_certificate, null) != null ? local.resolved_certificate_enrollments[domain.name][vpn_s2s.ike_settings.ikev1_certificate].id : null
+          ikev1_manual_pre_shared_key           = try(vpn_s2s.ike_settings.ikev1_manual_pre_shared_key, null)
           ikev1_policies = [for ikev1_policy in try(vpn_s2s.ike_settings.ikev1_policies, []) : {
             id   = local.resolved_ikev1_policies[domain.name][ikev1_policy].id
             name = ikev1_policy
           }]
-          ikev2_authentication_type             = try(vpn_s2s.ike_settings.ikev2_authentication_type, null)
-          ikev2_automatic_pre_shared_key_length = try(vpn_s2s.ike_settings.ikev2_automatic_pre_shared_key_length, null)
-          ikev2_certificate_id = try(vpn_s2s.ike_settings.ikev2_certificate, null) != null ? local.resolved_certificate_enrollments[domain.name][vpn_s2s.ike_settings.ikev2_certificate].id : null
+          ikev2_authentication_type              = try(vpn_s2s.ike_settings.ikev2_authentication_type, null)
+          ikev2_automatic_pre_shared_key_length  = try(vpn_s2s.ike_settings.ikev2_automatic_pre_shared_key_length, null)
+          ikev2_certificate_id                   = try(vpn_s2s.ike_settings.ikev2_certificate, null) != null ? local.resolved_certificate_enrollments[domain.name][vpn_s2s.ike_settings.ikev2_certificate].id : null
           ikev2_enforce_hex_based_pre_shared_key = try(vpn_s2s.ike_settings.ikev2_enforce_hex_based_pre_shared_key, local.defaults.fmc.domains.vpns.site_to_site.ike_settings.ikev2_enforce_hex_based_pre_shared_key, null)
           ikev2_manual_pre_shared_key            = try(vpn_s2s.ike_settings.ikev2_manual_pre_shared_key, null)
           ikev2_policies = [for ikev2_policy in try(vpn_s2s.ike_settings.ikev2_policies, []) : {
@@ -324,20 +324,20 @@ locals {
           description          = try(vpn_ra.description, null)
           protocol_ssl         = try(vpn_ra.protocol_ssl, local.defaults.vpns.remote_access.protocol_ssl, null)
           protocol_ipsec_ikev2 = try(vpn_ra.protocol_ipsec_ikev2, local.defaults.vpns.remote_access.protocol_ipsec_ikev2, null)
-          local_realm_id = try(vpn_ra.local_realm, null) != null ? local.resolved_local_realms[domain.name][vpn_ra.local_realm].id : null
+          local_realm_id       = try(vpn_ra.local_realm, null) != null ? local.resolved_local_realms[domain.name][vpn_ra.local_realm].id : null
           access_interfaces = [for access_interface in try(vpn_ra.access_interfaces, []) : {
-            id                   = local.resolved_security_zones_and_interface_groups[domain.name][access_interface.name].id
-            protocol_ssl         = try(access_interface.protocol_ssl, null)
-            protocol_ipsec_ikev2 = try(access_interface.protocol_ipsec_ikev2, null)
-            protocol_ssl_dtls    = try(access_interface.protocol_ssl_dtls, null)
+            id                                = local.resolved_security_zones_and_interface_groups[domain.name][access_interface.name].id
+            protocol_ssl                      = try(access_interface.protocol_ssl, null)
+            protocol_ipsec_ikev2              = try(access_interface.protocol_ipsec_ikev2, null)
+            protocol_ssl_dtls                 = try(access_interface.protocol_ssl_dtls, null)
             interface_specific_certificate_id = try(access_interface.interface_specific_certificate, null) != null ? local.resolved_certificate_enrollments[domain.name][access_interface.interface_specific_certificate].id : null
           }]
-          allow_users_to_select_connection_profile = try(vpn_ra.allow_users_to_select_connection_profile, local.defaults.fmc.domains.vpns.remote_access.allow_users_to_select_connection_profile, null)
-          web_access_port                          = try(vpn_ra.web_access_port, local.defaults.fmc.domains.vpns.remote_access.web_access_port, null)
-          dtls_port                                = try(vpn_ra.dtls_port, local.defaults.fmc.domains.vpns.remote_access.dtls_port, null)
-          ssl_global_identity_certificate_id = try(vpn_ra.ssl_global_identity_certificate, null) != null ? local.resolved_certificate_enrollments[domain.name][vpn_ra.ssl_global_identity_certificate].id : null
-          ipsec_ikev2_identity_certificate_id = try(vpn_ra.ipsec_ikev2_identity_certificate, null) != null ? local.resolved_certificate_enrollments[domain.name][vpn_ra.ipsec_ikev2_identity_certificate].id : null
-          service_access_object_id = try(vpn_ra.service_access, null) != null ? local.resolved_service_accesses[domain.name][vpn_ra.service_access].id : null
+          allow_users_to_select_connection_profile           = try(vpn_ra.allow_users_to_select_connection_profile, local.defaults.fmc.domains.vpns.remote_access.allow_users_to_select_connection_profile, null)
+          web_access_port                                    = try(vpn_ra.web_access_port, local.defaults.fmc.domains.vpns.remote_access.web_access_port, null)
+          dtls_port                                          = try(vpn_ra.dtls_port, local.defaults.fmc.domains.vpns.remote_access.dtls_port, null)
+          ssl_global_identity_certificate_id                 = try(vpn_ra.ssl_global_identity_certificate, null) != null ? local.resolved_certificate_enrollments[domain.name][vpn_ra.ssl_global_identity_certificate].id : null
+          ipsec_ikev2_identity_certificate_id                = try(vpn_ra.ipsec_ikev2_identity_certificate, null) != null ? local.resolved_certificate_enrollments[domain.name][vpn_ra.ipsec_ikev2_identity_certificate].id : null
+          service_access_object_id                           = try(vpn_ra.service_access, null) != null ? local.resolved_service_accesses[domain.name][vpn_ra.service_access].id : null
           bypass_access_control_policy_for_decrypted_traffic = try(vpn_ra.bypass_access_control_policy_for_decrypted_traffic, local.defaults.fmc.domains.vpns.remote_access.bypass_access_control_policy_for_decrypted_traffic, null)
           secure_client_images = [for secure_client_image in try(vpn_ra.secure_client_images, []) : {
             id               = local.resolved_secure_client_images[domain.name][secure_client_image.name].id
@@ -537,13 +537,13 @@ locals {
               local.resolved_ad_ldap_realms[domain.name],
             )[connection_profile.authorization_server].type : null
             allow_connection_only_if_user_exists_in_authorization_database = try(connection_profile.allow_connection_only_if_user_exists_in_authorization_database, null)
-            accounting_server_id = try(connection_profile.accounting_server, null) != null ? local.resolved_radius_server_groups[domain.name][connection_profile.accounting_server].id : null
-            accounting_server_type = try(connection_profile.accounting_server, null) != null ? local.resolved_radius_server_groups[domain.name][connection_profile.accounting_server].type : null
-            strip_realm_from_username                                    = try(connection_profile.strip_realm_from_username, null)
-            strip_group_from_username                                    = try(connection_profile.strip_group_from_username, null)
-            password_management                                          = try(connection_profile.password_management_notify_user_on_password_expiry_day, connection_profile.password_management_advance_password_expiration_notification, null) != null ? true : null
-            password_management_notify_user_on_password_expiry_day       = try(connection_profile.password_management_notify_user_on_password_expiry_day, null)
-            password_management_advance_password_expiration_notification = try(connection_profile.password_management_advance_password_expiration_notification, null)
+            accounting_server_id                                           = try(connection_profile.accounting_server, null) != null ? local.resolved_radius_server_groups[domain.name][connection_profile.accounting_server].id : null
+            accounting_server_type                                         = try(connection_profile.accounting_server, null) != null ? local.resolved_radius_server_groups[domain.name][connection_profile.accounting_server].type : null
+            strip_realm_from_username                                      = try(connection_profile.strip_realm_from_username, null)
+            strip_group_from_username                                      = try(connection_profile.strip_group_from_username, null)
+            password_management                                            = try(connection_profile.password_management_notify_user_on_password_expiry_day, connection_profile.password_management_advance_password_expiration_notification, null) != null ? true : null
+            password_management_notify_user_on_password_expiry_day         = try(connection_profile.password_management_notify_user_on_password_expiry_day, null)
+            password_management_advance_password_expiration_notification   = try(connection_profile.password_management_advance_password_expiration_notification, null)
             alias_names = [for alias_name in try(connection_profile.alias_names, []) : {
               name    = alias_name.name
               enabled = alias_name.enabled
@@ -644,12 +644,12 @@ locals {
     for item in flatten([
       for domain in local.domains : [
         for vpn_ra in try(domain.vpns.remote_access, {}) : {
-          domain             = domain.name
-          vpn_ra_name        = vpn_ra.name
-          vpn_ra_id          = try(fmc_vpn_ra.vpn_ra["${domain.name}:${vpn_ra.name}"].id, data.fmc_vpn_ra.vpn_ra["${domain.name}:${vpn_ra.name}"].id)
-          enabled            = true
-          ipv4_group_address = vpn_ra.load_balancing.ipv4_group_address
-          ipv6_group_address = try(vpn_ra.load_balancing.ipv6_group_address, null)
+          domain                                  = domain.name
+          vpn_ra_name                             = vpn_ra.name
+          vpn_ra_id                               = try(fmc_vpn_ra.vpn_ra["${domain.name}:${vpn_ra.name}"].id, data.fmc_vpn_ra.vpn_ra["${domain.name}:${vpn_ra.name}"].id)
+          enabled                                 = true
+          ipv4_group_address                      = vpn_ra.load_balancing.ipv4_group_address
+          ipv6_group_address                      = try(vpn_ra.load_balancing.ipv6_group_address, null)
           interface_id                            = local.resolved_security_zones_and_interface_groups[domain.name][vpn_ra.load_balancing.interface].id
           port                                    = try(vpn_ra.load_balancing.port, local.defaults.fmc.domains.vpns.remote_access.load_balancing.port, null)
           ipsec                                   = try(vpn_ra.load_balancing.ipsec_encryption_key, null) != null ? true : false
@@ -687,10 +687,10 @@ locals {
       for domain in local.domains : [
         for vpn_ra in try(domain.vpns.remote_access, {}) : [
           for ipsec_crypto_map in try(vpn_ra.ipsec_crypto_maps, []) : {
-            domain      = domain.name
-            vpn_ra_name = vpn_ra.name
-            vpn_ra_id   = try(fmc_vpn_ra.vpn_ra["${domain.name}:${vpn_ra.name}"].id, data.fmc_vpn_ra.vpn_ra["${domain.name}:${vpn_ra.name}"].id)
-            interface   = ipsec_crypto_map.interface
+            domain       = domain.name
+            vpn_ra_name  = vpn_ra.name
+            vpn_ra_id    = try(fmc_vpn_ra.vpn_ra["${domain.name}:${vpn_ra.name}"].id, data.fmc_vpn_ra.vpn_ra["${domain.name}:${vpn_ra.name}"].id)
+            interface    = ipsec_crypto_map.interface
             interface_id = local.resolved_security_zones_and_interface_groups[domain.name][ipsec_crypto_map.interface].id
             ikev2_ipsec_proposals = [for proposal in try(ipsec_crypto_map.ikev2_ipsec_proposals, []) : {
               id = local.resolved_ikev2_ipsec_proposals[domain.name][proposal].id
