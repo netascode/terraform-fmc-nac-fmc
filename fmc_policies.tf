@@ -253,7 +253,7 @@ locals {
             pat_include_reserved_ports                  = try(auto_rule.pat_include_reserved_ports, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.pat_include_reserved_ports, null)
             pat_round_robin_allocation                  = try(auto_rule.pat_round_robin_allocation, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.pat_round_robin_allocation, null)
             pat_use_interface_address                   = try(auto_rule.pat_use_interface_address, local.defaults.fmc.domains.policies.ftd_nat_policies.auto_nat_rules.pat_use_interface_address, null)
-            pat_address_object_id                       = try(auto_rule.pat_address, null) != null ? local.resolved_network_objects[domain.name][auto_rule.pat_address].id : null
+            pat_address_object_id                       = try(auto_rule.pat_address, null) != null ? local.resolved_network_objects_and_groups[domain.name][auto_rule.pat_address].id : null
           }]
 
           manual_nat_rules = [for manual_rule in try(ftd_nat_policy.manual_nat_rules, []) : {
@@ -286,7 +286,7 @@ locals {
             pat_include_reserved_ports        = try(manual_rule.pat_include_reserved_ports, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_rule.pat_include_reserved_ports, null)
             pat_round_robin_allocation        = try(manual_rule.pat_round_robin_allocation, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_rule.pat_round_robin_allocation, null)
             pat_use_interface_address         = try(manual_rule.pat_use_interface_address, local.defaults.fmc.domains.policies.ftd_nat_policies.manual_rule.pat_use_interface_address, null)
-            pat_address_object_id             = try(manual_rule.pat_address, null) != null ? local.resolved_network_objects[domain.name][manual_rule.pat_address].id : null
+            pat_address_object_id             = try(manual_rule.pat_address, null) != null ? local.resolved_network_objects_and_groups[domain.name][manual_rule.pat_address].id : null
           }]
         } if !contains(try(keys(local.data_ftd_nat_policy), []), ftd_nat_policy.name)
       ]
