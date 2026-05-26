@@ -928,26 +928,6 @@ locals {
 }
 
 ######
-### map_variable_sets
-######
-locals {
-  map_variable_sets_internal = merge(
-
-    # Variable Sets - data sources
-    { for key, resource in data.fmc_variable_set.variable_set : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
-  )
-
-  map_variable_sets_external = {
-    for key, value in try(local.data.objects.variable_sets, {}) : key => value
-  }
-
-  map_variable_sets = merge(
-    local.map_variable_sets_internal,
-    local.map_variable_sets_external,
-  )
-}
-
-######
 ### map_ipv4_prefix_lists
 ######
 locals {

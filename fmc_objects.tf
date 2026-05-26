@@ -1402,48 +1402,24 @@ locals {
         domain = domain.name
         name   = application_filter.name
         applications = [for application in try(application_filter.applications, []) : {
-          id = values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => data.fmc_applications.applications[domain_path].items[application].id
-            if try(data.fmc_applications.applications[domain_path].items[application].id, "") != ""
-          })[0]
+          id   = local.map_applications["Global:${application}"].id
           name = application
         }]
         filters = [for filter in try(application_filter.filters, []) : {
           business_relevances = [for business_relevance in try(filter.business_relevances, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => data.fmc_application_business_relevances.application_business_relevances[domain_path].items[business_relevance].id
-              if try(data.fmc_application_business_relevances.application_business_relevances[domain_path].items[business_relevance].id, "") != ""
-            })[0]
+            id = local.map_application_business_relevances["Global:${business_relevance}"].id
           }]
           categories = [for category in try(filter.categories, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => data.fmc_application_categories.application_categories[domain_path].items[category].id
-              if try(data.fmc_application_categories.application_categories[domain_path].items[category].id, "") != ""
-            })[0]
+            id = local.map_application_categories["Global:${category}"].id
           }]
           risks = [for risks in try(filter.risks, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => data.fmc_application_risks.application_risks[domain_path].items[risks].id
-              if try(data.fmc_application_risks.application_risks[domain_path].items[risks].id, "") != ""
-            })[0]
+            id = local.map_application_risks["Global:${risks}"].id
           }]
           types = [for type in try(filter.types, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => data.fmc_application_types.application_types[domain_path].items[type].id
-              if try(data.fmc_application_types.application_types[domain_path].items[type].id, "") != ""
-            })[0]
+            id = local.map_application_types["Global:${type}"].id
           }]
           tags = [for tag in try(filter.tags, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => data.fmc_application_tags.application_tags[domain_path].items[tag].id
-              if try(data.fmc_application_tags.application_tags[domain_path].items[tag].id, "") != ""
-            })[0]
+            id = local.map_application_tags["Global:${tag}"].id
           }]
           } if length(try(application_filter.filters, [])) > 0
         ]
@@ -2608,10 +2584,10 @@ locals {
         domain = domain.name
         name   = geolocation.name
         continents = [for continent in try(geolocation.continents, []) : {
-          id = data.fmc_continents.continents["Global"].items[continent].id
+          id = local.map_continents["Global:${continent}"].id
         }]
         countries = [for country in try(geolocation.countries, []) : {
-          id = data.fmc_countries.countries["Global"].items[country].id
+          id = local.map_countries["Global:${country}"].id
         }]
       } if !contains(try(keys(local.data_geolocations[domain.name].items), []), geolocation.name)
     ] if length(try(domain.objects.geolocations, [])) > 0
