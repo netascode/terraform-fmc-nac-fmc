@@ -69,16 +69,17 @@ module "fmc" {
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.8.0 |
-| <a name="requirement_fmc"></a> [fmc](#requirement\_fmc) | >= 2.1.0 |
+| <a name="requirement_fmc"></a> [fmc](#requirement\_fmc) | >= 2.3.0, < 3.0.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.3.0, < 3.0.0 |
-| <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 1.0.2, < 2.0.0 |
+| <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 2.0.0, < 3.0.0 |
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_manage_deployment"></a> [manage\_deployment](#input\_manage\_deployment) | Enables support for FTD deployments | `bool` | `true` | no |
-| <a name="input_model"></a> [model](#input\_model) | As an alternative to YAML files, a native Terraform data structure can be provided as well. | <pre>object({<br/>    fmc = optional(object({<br/>      name              = optional(string)<br/>      system            = optional(map(any))<br/>      domains           = optional(list(any), [])<br/>      nac_configuration = optional(map(any))<br/>      version           = optional(string)<br/>    }), {})<br/>    defaults = optional(map(any), {})<br/>    existing = optional(map(any), {})<br/>  })</pre> | `{}` | no |
+| <a name="input_model"></a> [model](#input\_model) | As an alternative to YAML files, a native Terraform data structure can be provided as well. | <pre>object({<br/>    fmc = optional(object({<br/>      name              = optional(string)<br/>      system            = optional(map(any))<br/>      domains           = optional(list(any), [])<br/>      nac_configuration = optional(map(any))<br/>      version           = optional(string)<br/>    }), {})<br/>    defaults = optional(map(any), {})<br/>    existing = optional(map(any), {})<br/>    data     = optional(map(any), {})<br/>  })</pre> | `{}` | no |
 | <a name="input_write_default_values_file"></a> [write\_default\_values\_file](#input\_write\_default\_values\_file) | Write all default values to a YAML file. Value is a path pointing to the file to be created. | `string` | `""` | no |
+| <a name="input_write_objects_file"></a> [write\_objects\_file](#input\_write\_objects\_file) | Write objects created by this module to a YAML file. Value is a path pointing to the file to be created. | `string` | `""` | no |
 | <a name="input_yaml_directories"></a> [yaml\_directories](#input\_yaml\_directories) | List of paths to YAML directories. | `list(string)` | `[]` | no |
 | <a name="input_yaml_files"></a> [yaml\_files](#input\_yaml\_files) | List of paths to YAML files. | `list(string)` | `[]` | no |
 ## Outputs
@@ -136,6 +137,7 @@ module "fmc" {
 | [fmc_external_certificate.external_certificate](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/external_certificate) | resource |
 | [fmc_file_policy.file_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/file_policy) | resource |
 | [fmc_fqdn.fqdn](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/fqdn) | resource |
+| [fmc_fqdn_overrides.fqdn_overrides](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/fqdn_overrides) | resource |
 | [fmc_fqdns.fqdns](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/fqdns) | resource |
 | [fmc_ftd_nat_policy.ftd_nat_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/ftd_nat_policy) | resource |
 | [fmc_ftd_platform_settings.ftd_platform_settings](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/ftd_platform_settings) | resource |
@@ -158,6 +160,7 @@ module "fmc" {
 | [fmc_group_policy.group_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/group_policy) | resource |
 | [fmc_health_policy.health_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/health_policy) | resource |
 | [fmc_host.host](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/host) | resource |
+| [fmc_host_overrides.host_overrides](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/host_overrides) | resource |
 | [fmc_hosts.hosts](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/hosts) | resource |
 | [fmc_icmpv4.icmpv4](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/icmpv4) | resource |
 | [fmc_icmpv4s.icmpv4s](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/icmpv4s) | resource |
@@ -187,14 +190,17 @@ module "fmc" {
 | [fmc_ipv6_prefix_lists.ipv6_prefix_lists](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/ipv6_prefix_lists) | resource |
 | [fmc_network.network](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network) | resource |
 | [fmc_network_analysis_policy.network_analysis_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_analysis_policy) | resource |
+| [fmc_network_group_overrides.network_group_overrides](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_group_overrides) | resource |
 | [fmc_network_groups.network_groups](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_groups) | resource |
 | [fmc_network_groups.network_groups_l1](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_groups) | resource |
 | [fmc_network_groups.network_groups_l2](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_groups) | resource |
+| [fmc_network_overrides.network_overrides](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_overrides) | resource |
 | [fmc_networks.networks](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/networks) | resource |
 | [fmc_policy_assignment.access_control_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_assignment) | resource |
 | [fmc_policy_assignment.ftd_nat_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_assignment) | resource |
 | [fmc_policy_assignment.ftd_platform_settings](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_assignment) | resource |
 | [fmc_policy_assignment.health_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_assignment) | resource |
+| [fmc_policy_assignment.vpn_ra](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_assignment) | resource |
 | [fmc_policy_list.policy_list](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_list) | resource |
 | [fmc_policy_lists.policy_lists](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/policy_lists) | resource |
 | [fmc_port.port](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/port) | resource |
@@ -204,6 +210,7 @@ module "fmc" {
 | [fmc_prefilter_policy.prefilter_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/prefilter_policy) | resource |
 | [fmc_radius_server_group.radius_server_group](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/radius_server_group) | resource |
 | [fmc_range.range](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/range) | resource |
+| [fmc_range_overrides.range_overrides](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/range_overrides) | resource |
 | [fmc_ranges.ranges](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/ranges) | resource |
 | [fmc_realm_ad_ldap.realm_ad_ldap](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/realm_ad_ldap) | resource |
 | [fmc_realm_local.realm_local](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/realm_local) | resource |
@@ -254,6 +261,7 @@ module "fmc" {
 | [fmc_vpn_s2s_ike_settings.vpn_s2s_ike_settings](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/vpn_s2s_ike_settings) | resource |
 | [fmc_vpn_s2s_ipsec_settings.vpn_s2s_ipsec_settings](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/vpn_s2s_ipsec_settings) | resource |
 | [local_sensitive_file.defaults](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
+| [local_sensitive_file.objects](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
 | [terraform_data.validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [fmc_access_control_policy.access_control_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/access_control_policy) | data source |
 | [fmc_application_business_relevances.application_business_relevances](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/application_business_relevances) | data source |
@@ -284,6 +292,7 @@ module "fmc" {
 | [fmc_device_virtual_tunnel_interface.device_virtual_tunnel_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/device_virtual_tunnel_interface) | data source |
 | [fmc_device_vrf.device_vrf](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/device_vrf) | data source |
 | [fmc_dns_server_groups.dns_server_groups](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/dns_server_groups) | data source |
+| [fmc_domains.domains](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/domains) | data source |
 | [fmc_dynamic_objects.dynamic_objects](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/dynamic_objects) | data source |
 | [fmc_endpoint_device_types.endpoint_device_types](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/endpoint_device_types) | data source |
 | [fmc_expanded_community_lists.expanded_community_lists](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/expanded_community_lists) | data source |

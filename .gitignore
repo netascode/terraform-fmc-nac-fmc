@@ -7,7 +7,6 @@
 terraform.tfstate
 terraform.tfstate.backup
 tflint.hcl
-generated_*.tf
 
 # Env files
 .envrc
@@ -18,3 +17,6 @@ generated_*.tf
 data/
 schema/
 log.txt
+
+# Claude
+.claude/

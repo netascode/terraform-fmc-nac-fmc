@@ -1,12 +1,8 @@
-##########################################################
-###    Create maps for combined set of _data and _resources devices  
-##########################################################
-
 ######
 ### map_devices
 ######
 locals {
-  map_devices = merge(
+  map_devices_internal = merge(
     # Devices - individual mode outputs
     { for key, resource in fmc_device.device : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } },
 
@@ -15,6 +11,17 @@ locals {
 
     # Chassis logical device - individual mode outputs
     { for key, resource in fmc_chassis_logical_device.chassis_logical_device : "${resource.domain}:${resource.name}" => { id = resource.device_id, type = resource.type } },
+  )
+
+  # External objects
+  map_devices_external = {
+    for key, value in try(local.data.devices.devices, {}) : key => value
+  }
+
+  # Internal + External for reference in other objects
+  map_devices = merge(
+    local.map_devices_internal,
+    local.map_devices_external,
   )
 }
 
@@ -52,7 +59,7 @@ locals {
 ### map_interface_by_names
 ######
 locals {
-  map_interfaces_by_names = merge(
+  map_interfaces_by_names_internal = merge(
     {
       for item in flatten([
         for physical_interface_key, physical_interface_value in local.resource_device_physical_interface : {
@@ -126,13 +133,23 @@ locals {
       ]) : "${item.domain}:${item.device_name}:${item.name}" => item
     },
   )
+
+  map_interfaces_by_names_external = {
+    for key, value in try(local.data.devices.interfaces_by_names, {}) : key => value
+  }
+
+  map_interfaces_by_names = merge(
+    local.map_interfaces_by_names_internal,
+    local.map_interfaces_by_names_external,
+  )
+
 }
 
 ######
 ### map_interfaces_by_logical_names
 ######
 locals {
-  map_interfaces_by_logical_names = merge({
+  map_interfaces_by_logical_names_internal = merge({
     for item in flatten([
       for physical_interface_key, physical_interface_value in local.resource_device_physical_interface : {
         name         = physical_interface_value.name
@@ -243,6 +260,15 @@ locals {
       ]) : "${item.domain}:${item.device_name}:${item.logical_name}" => item if item.logical_name != null
     },
   )
+
+  map_interfaces_by_logical_names_external = {
+    for key, value in try(local.data.devices.interfaces_by_logical_names, {}) : key => value
+  }
+
+  map_interfaces_by_logical_names = merge(
+    local.map_interfaces_by_logical_names_internal,
+    local.map_interfaces_by_logical_names_external,
+  )
 }
 
 ######
@@ -339,7 +365,7 @@ locals {
 ### map_ftd_platform_settings
 ######
 locals {
-  map_ftd_platform_settings = merge(
+  map_ftd_platform_settings_internal = merge(
     {
       for item in flatten([
         for ftd_platform_setting_key, ftd_platform_setting_value in local.resource_ftd_platform_settings : {
@@ -361,6 +387,15 @@ locals {
       ]) : "${item.domain}:${item.name}" => item
     },
   )
+
+  map_ftd_platform_settings_external = {
+    for key, value in try(local.data.devices.ftd_platform_settings, {}) : key => value
+  }
+
+  map_ftd_platform_settings = merge(
+    local.map_ftd_platform_settings_internal,
+    local.map_ftd_platform_settings_external,
+  )
 }
 
 ######
@@ -377,7 +412,7 @@ locals {
 ### map_loopback_interfaces
 ######
 locals {
-  map_loopback_interfaces = merge(
+  map_loopback_interfaces_internal = merge(
     {
       for item in flatten([
         for loopback_interface_key, loopback_interface_value in local.resource_device_loopback_interface : {
@@ -399,12 +434,13 @@ locals {
       ]) : "${item.domain}:${item.device_name}:${item.name}" => item
     },
   )
-}
 
+  map_loopback_interfaces_external = {
+    for key, value in try(local.data.devices.loopback_interfaces, {}) : key => value
+  }
 
-######
-### FAKE - TODO
-######
-locals {
-  map_device_groups = {}
+  map_loopback_interfaces = merge(
+    local.map_loopback_interfaces_internal,
+    local.map_loopback_interfaces_external,
+  )
 }

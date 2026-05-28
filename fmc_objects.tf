@@ -20,7 +20,7 @@ locals {
         name        = host.name
         ip          = lower(host.ip)
         description = try(host.description, local.defaults.fmc.domains.objects.hosts.description, null)
-        overridable = try(host.overridable, local.defaults.fmc.domains.objects.hosts.overridable, null)
+        overridable = length(try(host.overrides, [])) > 0 ? true : try(host.overridable, local.defaults.fmc.domains.objects.hosts.overridable, null)
       } if !contains(try(keys(local.data_hosts[domain.name].items), []), host.name)
     ] if length(try(domain.objects.hosts, [])) > 0
   }
@@ -66,6 +66,38 @@ resource "fmc_host" "host" {
 }
 
 ##########################################################
+###    HOSTS OVERRIDES
+##########################################################
+locals {
+  resource_hosts_overrides = {
+    for item in flatten([
+      for domain in local.domains : [
+        for host in try(domain.objects.hosts, []) : {
+          domain      = domain.name
+          parent_name = host.name
+          parent_id   = local.map_hosts["${domain.name}:${host.name}"].id
+          overrides = [for override in try(host.overrides, []) : {
+            ip          = lower(override.ip)
+            description = try(override.description, null)
+            target_type = override.target_type
+            target_id   = override.target_type == "Device" ? local.map_devices["${domain.name}:${override.target}"].id : data.fmc_domains.domains.items[override.target].id
+          }]
+        } if length(try(host.overrides, [])) > 0
+      ]
+    ]) : "${item.domain}:${item.parent_name}" => item
+  }
+}
+
+resource "fmc_host_overrides" "host_overrides" {
+  for_each = local.resource_hosts_overrides
+
+  domain      = each.value.domain
+  parent_id   = each.value.parent_id
+  parent_name = each.value.parent_name
+  overrides   = each.value.overrides
+}
+
+##########################################################
 ###    NETWORKS
 ##########################################################
 locals {
@@ -86,7 +118,7 @@ locals {
         name        = network.name
         prefix      = lower(network.prefix)
         description = try(network.description, local.defaults.fmc.domains.objects.networks.description, null)
-        overridable = try(network.overridable, local.defaults.fmc.domains.objects.networks.overridable, null)
+        overridable = length(try(network.overrides, [])) > 0 ? true : try(network.overridable, local.defaults.fmc.domains.objects.networks.overridable, null)
       } if !contains(try(keys(local.data_networks[domain.name].items), []), network.name)
     ] if length(try(domain.objects.networks, [])) > 0
   }
@@ -128,6 +160,38 @@ resource "fmc_network" "network" {
 }
 
 ##########################################################
+###    NETWORKS OVERRIDES
+##########################################################
+locals {
+  resource_network_overrides = {
+    for item in flatten([
+      for domain in local.domains : [
+        for network in try(domain.objects.networks, []) : {
+          domain      = domain.name
+          parent_name = network.name
+          parent_id   = local.map_networks["${domain.name}:${network.name}"].id
+          overrides = [for override in try(network.overrides, []) : {
+            prefix      = lower(override.prefix)
+            description = try(override.description, null)
+            target_type = override.target_type
+            target_id   = override.target_type == "Device" ? local.map_devices["${domain.name}:${override.target}"].id : data.fmc_domains.domains.items[override.target].id
+          }]
+        } if length(try(network.overrides, [])) > 0
+      ]
+    ]) : "${item.domain}:${item.parent_name}" => item
+  }
+}
+
+resource "fmc_network_overrides" "network_overrides" {
+  for_each = local.resource_network_overrides
+
+  domain      = each.value.domain
+  parent_id   = each.value.parent_id
+  parent_name = each.value.parent_name
+  overrides   = each.value.overrides
+}
+
+##########################################################
 ###    RANGES
 ##########################################################
 locals {
@@ -148,7 +212,7 @@ locals {
         name        = range.name
         ip_range    = range.ip_range
         description = try(range.description, local.defaults.fmc.domains.objects.ranges.description, null)
-        overridable = try(range.overridable, local.defaults.fmc.domains.objects.ranges.overridable, null)
+        overridable = length(try(range.overrides, [])) > 0 ? true : try(range.overridable, local.defaults.fmc.domains.objects.ranges.overridable, null)
       } if !contains(try(keys(local.data_ranges[domain.name].items), []), range.name)
     ] if length(try(domain.objects.ranges, [])) > 0
   }
@@ -190,6 +254,38 @@ resource "fmc_range" "range" {
 }
 
 ##########################################################
+###    RANGES OVERRIDES
+##########################################################
+locals {
+  resource_range_overrides = {
+    for item in flatten([
+      for domain in local.domains : [
+        for range in try(domain.objects.ranges, []) : {
+          domain      = domain.name
+          parent_name = range.name
+          parent_id   = local.map_ranges["${domain.name}:${range.name}"].id
+          overrides = [for override in try(range.overrides, []) : {
+            ip_range    = override.ip_range
+            description = try(override.description, null)
+            target_type = override.target_type
+            target_id   = override.target_type == "Device" ? local.map_devices["${domain.name}:${override.target}"].id : data.fmc_domains.domains.items[override.target].id
+          }]
+        } if length(try(range.overrides, [])) > 0
+      ]
+    ]) : "${item.domain}:${item.parent_name}" => item
+  }
+}
+
+resource "fmc_range_overrides" "range_overrides" {
+  for_each = local.resource_range_overrides
+
+  domain      = each.value.domain
+  parent_id   = each.value.parent_id
+  parent_name = each.value.parent_name
+  overrides   = each.value.overrides
+}
+
+##########################################################
 ###    FQDNS
 ##########################################################
 locals {
@@ -211,7 +307,7 @@ locals {
         fqdn           = fqdn.fqdn
         description    = try(fqdn.description, local.defaults.fmc.domains.objects.fqdns.description, null)
         dns_resolution = try(fqdn.dns_resolution, local.defaults.fmc.domains.objects.fqdns.dns_resolution, null)
-        overridable    = try(fqdn.overridable, local.defaults.fmc.domains.objects.fqdns.overridable, null)
+        overridable    = length(try(fqdn.overrides, [])) > 0 ? true : try(fqdn.overridable, local.defaults.fmc.domains.objects.fqdns.overridable, null)
       } if !contains(try(keys(local.data_fqdns[domain.name].items), []), fqdn.name)
     ] if length(try(domain.objects.fqdns, [])) > 0
   }
@@ -254,6 +350,38 @@ resource "fmc_fqdn" "fqdn" {
 }
 
 ##########################################################
+###    FQDN OVERRIDES
+##########################################################
+locals {
+  resource_fqdn_overrides = {
+    for item in flatten([
+      for domain in local.domains : [
+        for fqdn in try(domain.objects.fqdns, []) : {
+          domain      = domain.name
+          parent_name = fqdn.name
+          parent_id   = local.map_fqdns["${domain.name}:${fqdn.name}"].id
+          overrides = [for override in try(fqdn.overrides, []) : {
+            fqdn        = override.fqdn
+            description = try(override.description, null)
+            target_type = override.target_type
+            target_id   = override.target_type == "Device" ? local.map_devices["${domain.name}:${override.target}"].id : data.fmc_domains.domains.items[override.target].id
+          }]
+        } if length(try(fqdn.overrides, [])) > 0
+      ]
+    ]) : "${item.domain}:${item.parent_name}" => item
+  }
+}
+
+resource "fmc_fqdn_overrides" "fqdn_overrides" {
+  for_each = local.resource_fqdn_overrides
+
+  domain      = each.value.domain
+  parent_id   = each.value.parent_id
+  parent_name = each.value.parent_name
+  overrides   = each.value.overrides
+}
+
+##########################################################
 ###    NETWORK GROUPS
 ##########################################################
 locals {
@@ -269,12 +397,6 @@ locals {
   # Level 0 — depth-0 domains (e.g. "Global")
   ##########################################################
 
-  # Helper list: network objects + data source network groups (no prior-level network groups for level 0)
-  help_network_objects_l0 = flatten([
-    flatten([for item in keys(local.map_network_objects) : item]),
-    flatten([for domain in keys(local.data_network_groups) : [for k in keys(local.data_network_groups[domain].items) : "${domain}:${k}"]])
-  ])
-
   resource_network_groups = {
     for domain in local.domains : domain.name => {
       for network_group in try(domain.objects.network_groups, {}) : network_group.name => {
@@ -284,31 +406,17 @@ locals {
           value = literal
         }]
         objects = [for object_item in try(network_group.objects, []) : {
-          id = try(
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_network_objects["${domain_path}:${object_item}"].id
-              if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")
-            })[0],
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => data.fmc_network_groups.network_groups[domain_path].items[object_item].id
-              if contains(keys(try(data.fmc_network_groups.network_groups[domain_path].items, {})), object_item)
-            })[0],
-          )
+          id   = local.resolved_ng_members_l0[domain.name][object_item].id
           name = object_item
-          } if anytrue([
-            for domain_path in local.related_domains[domain.name] :
-            contains(local.help_network_objects_l0, "${domain_path}:${object_item}")
-          ])
+          } if lookup(local.resolved_ng_members_l0[domain.name], object_item, null) != null
         ]
-        network_groups = [for object_item in try(network_group.objects, []) : object_item if !anytrue([
-          for domain_path in local.related_domains[domain.name] :
-          contains(local.help_network_objects_l0, "${domain_path}:${object_item}")
-        ])]
+        network_groups = [for object_item in try(network_group.objects, []) :
+          object_item
+          if lookup(local.resolved_ng_members_l0[domain.name], object_item, null) == null
+        ]
         description = try(network_group.description, local.defaults.fmc.domains.objects.network_groups.description, null)
-        overridable = try(network_group.overridable, local.defaults.fmc.domains.objects.network_groups.overridable, null)
-      } if !contains(try(keys(local.data_network_groups[domain.name].items), []), network_group.name)
+        overridable = length(try(network_group.overrides, [])) > 0 ? true : try(network_group.overridable, local.defaults.fmc.domains.objects.network_groups.overridable, null)
+      } if try(local.data_network_groups[domain.name].items[network_group.name], null) == null
     } if length(try(domain.objects.network_groups, [])) > 0
     && try(local.domain_depth[domain.name], 0) == 0
   }
@@ -324,12 +432,6 @@ locals {
     }
   ]...)
 
-  # Helper list: base objects + level-0 network group outputs
-  help_network_objects_l1 = concat(
-    local.help_network_objects_l0,
-    keys(local.prior_ng_objects_l1)
-  )
-
   resource_network_groups_l1 = {
     for domain in local.domains : domain.name => {
       for network_group in try(domain.objects.network_groups, {}) : network_group.name => {
@@ -339,36 +441,17 @@ locals {
           value = literal
         }]
         objects = [for object_item in try(network_group.objects, []) : {
-          id = try(
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_network_objects["${domain_path}:${object_item}"].id
-              if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")
-            })[0],
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => data.fmc_network_groups.network_groups[domain_path].items[object_item].id
-              if contains(keys(try(data.fmc_network_groups.network_groups[domain_path].items, {})), object_item)
-            })[0],
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.prior_ng_objects_l1["${domain_path}:${object_item}"].id
-              if contains(keys(local.prior_ng_objects_l1), "${domain_path}:${object_item}")
-            })[0],
-          )
+          id   = local.resolved_ng_members_l1[domain.name][object_item].id
           name = object_item
-          } if anytrue([
-            for domain_path in local.related_domains[domain.name] :
-            contains(local.help_network_objects_l1, "${domain_path}:${object_item}")
-          ])
+          } if lookup(local.resolved_ng_members_l1[domain.name], object_item, null) != null
         ]
-        network_groups = [for object_item in try(network_group.objects, []) : object_item if !anytrue([
-          for domain_path in local.related_domains[domain.name] :
-          contains(local.help_network_objects_l1, "${domain_path}:${object_item}")
-        ])]
+        network_groups = [for object_item in try(network_group.objects, []) :
+          object_item
+          if lookup(local.resolved_ng_members_l1[domain.name], object_item, null) == null
+        ]
         description = try(network_group.description, local.defaults.fmc.domains.objects.network_groups.description, null)
-        overridable = try(network_group.overridable, local.defaults.fmc.domains.objects.network_groups.overridable, null)
-      } if !contains(try(keys(local.data_network_groups[domain.name].items), []), network_group.name)
+        overridable = length(try(network_group.overrides, [])) > 0 ? true : try(network_group.overridable, local.defaults.fmc.domains.objects.network_groups.overridable, null)
+      } if try(local.data_network_groups[domain.name].items[network_group.name], null) == null
     } if length(try(domain.objects.network_groups, [])) > 0
     && try(local.domain_depth[domain.name], 0) == 1
   }
@@ -387,12 +470,6 @@ locals {
     ]...)
   )
 
-  # Helper list: base objects + level-0 + level-1 network group outputs
-  help_network_objects_l2 = concat(
-    local.help_network_objects_l0,
-    keys(local.prior_ng_objects_l2)
-  )
-
   resource_network_groups_l2 = {
     for domain in local.domains : domain.name => {
       for network_group in try(domain.objects.network_groups, {}) : network_group.name => {
@@ -402,36 +479,17 @@ locals {
           value = literal
         }]
         objects = [for object_item in try(network_group.objects, []) : {
-          id = try(
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_network_objects["${domain_path}:${object_item}"].id
-              if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")
-            })[0],
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => data.fmc_network_groups.network_groups[domain_path].items[object_item].id
-              if contains(keys(try(data.fmc_network_groups.network_groups[domain_path].items, {})), object_item)
-            })[0],
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.prior_ng_objects_l2["${domain_path}:${object_item}"].id
-              if contains(keys(local.prior_ng_objects_l2), "${domain_path}:${object_item}")
-            })[0],
-          )
+          id   = local.resolved_ng_members_l2[domain.name][object_item].id
           name = object_item
-          } if anytrue([
-            for domain_path in local.related_domains[domain.name] :
-            contains(local.help_network_objects_l2, "${domain_path}:${object_item}")
-          ])
+          } if lookup(local.resolved_ng_members_l2[domain.name], object_item, null) != null
         ]
-        network_groups = [for object_item in try(network_group.objects, []) : object_item if !anytrue([
-          for domain_path in local.related_domains[domain.name] :
-          contains(local.help_network_objects_l2, "${domain_path}:${object_item}")
-        ])]
+        network_groups = [for object_item in try(network_group.objects, []) :
+          object_item
+          if lookup(local.resolved_ng_members_l2[domain.name], object_item, null) == null
+        ]
         description = try(network_group.description, local.defaults.fmc.domains.objects.network_groups.description, null)
-        overridable = try(network_group.overridable, local.defaults.fmc.domains.objects.network_groups.overridable, null)
-      } if !contains(try(keys(local.data_network_groups[domain.name].items), []), network_group.name)
+        overridable = length(try(network_group.overrides, [])) > 0 ? true : try(network_group.overridable, local.defaults.fmc.domains.objects.network_groups.overridable, null)
+      } if try(local.data_network_groups[domain.name].items[network_group.name], null) == null
     } if length(try(domain.objects.network_groups, [])) > 0
     && try(local.domain_depth[domain.name], 0) == 2
   }
@@ -466,6 +524,44 @@ resource "fmc_network_groups" "network_groups_l2" {
 
   domain = each.key
   items  = { for network_group in each.value : network_group.name => network_group }
+}
+
+##########################################################
+###    NETWORK GROUP OVERRIDES
+##########################################################
+locals {
+  resource_network_group_overrides = {
+    for item in flatten([
+      for domain in local.domains : [
+        for network_group in try(domain.objects.network_groups, []) : {
+          domain      = domain.name
+          parent_name = network_group.name
+          parent_id   = local.map_network_groups["${domain.name}:${network_group.name}"].id
+          overrides = [for override in try(network_group.overrides, []) : {
+            literals = [for literal in try(override.literals, []) : {
+              value = literal
+            }]
+            objects = [for object_item in try(override.objects, []) : {
+              id   = local.resolved_network_objects_and_groups[domain.name][object_item].id
+              name = object_item
+            }]
+            description = try(override.description, null)
+            target_type = override.target_type
+            target_id   = override.target_type == "Device" ? local.map_devices["${domain.name}:${override.target}"].id : data.fmc_domains.domains.items[override.target].id
+          }]
+        } if length(try(network_group.overrides, [])) > 0
+      ]
+    ]) : "${item.domain}:${item.parent_name}" => item
+  }
+}
+
+resource "fmc_network_group_overrides" "network_group_overrides" {
+  for_each = local.resource_network_group_overrides
+
+  domain      = each.value.domain
+  parent_id   = each.value.parent_id
+  parent_name = each.value.parent_name
+  overrides   = each.value.overrides
 }
 
 ##########################################################
@@ -683,16 +779,8 @@ locals {
         domain = domain.name
         name   = port_group.name
         objects = [for object_item in try(port_group.objects, []) : {
-          id = values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_services["${domain_path}:${object_item}"].id
-            if contains(keys(local.map_services), "${domain_path}:${object_item}")
-          })[0]
-          type = values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_services["${domain_path}:${object_item}"].type
-            if contains(keys(local.map_services), "${domain_path}:${object_item}")
-          })[0]
+          id   = local.resolved_services[domain.name][object_item].id
+          type = local.resolved_services[domain.name][object_item].type
         }]
         description = try(port_group.description, local.defaults.fmc.domains.objects.port_groups.description, null)
         overridable = try(port_group.overridable, local.defaults.fmc.domains.objects.port_groups.overridable, null)
@@ -858,11 +946,7 @@ locals {
         domain = domain.name
         name   = url_group.name
         urls = [for url in try(url_group.urls, []) : {
-          id = values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_urls["${domain_path}:${url}"].id
-            if contains(keys(local.map_urls), "${domain_path}:${url}")
-          })[0]
+          id = local.resolved_urls[domain.name][url].id
         }]
         literals = [for literal_item in try(url_group.literals, []) : {
           url = literal_item
@@ -995,11 +1079,7 @@ locals {
         domain = domain.name
         name   = vlan_tag_group.name
         vlan_tags = [for vlan_tag in try(vlan_tag_group.vlan_tags, []) : {
-          id = values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_vlan_tags["${domain_path}:${vlan_tag}"].id
-            if contains(keys(local.map_vlan_tags), "${domain_path}:${vlan_tag}")
-          })[0]
+          id = local.resolved_vlan_tags[domain.name][vlan_tag].id
         }]
         literals = [for literal_item in try(vlan_tag_group.literals, {}) : {
           start_tag = literal_item.start_tag
@@ -1322,48 +1402,24 @@ locals {
         domain = domain.name
         name   = application_filter.name
         applications = [for application in try(application_filter.applications, []) : {
-          id = values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => data.fmc_applications.applications[domain_path].items[application].id
-            if try(data.fmc_applications.applications[domain_path].items[application].id, "") != ""
-          })[0]
+          id   = local.map_applications["Global:${application}"].id
           name = application
         }]
         filters = [for filter in try(application_filter.filters, []) : {
           business_relevances = [for business_relevance in try(filter.business_relevances, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => data.fmc_application_business_relevances.application_business_relevances[domain_path].items[business_relevance].id
-              if try(data.fmc_application_business_relevances.application_business_relevances[domain_path].items[business_relevance].id, "") != ""
-            })[0]
+            id = local.map_application_business_relevances["Global:${business_relevance}"].id
           }]
           categories = [for category in try(filter.categories, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => data.fmc_application_categories.application_categories[domain_path].items[category].id
-              if try(data.fmc_application_categories.application_categories[domain_path].items[category].id, "") != ""
-            })[0]
+            id = local.map_application_categories["Global:${category}"].id
           }]
           risks = [for risks in try(filter.risks, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => data.fmc_application_risks.application_risks[domain_path].items[risks].id
-              if try(data.fmc_application_risks.application_risks[domain_path].items[risks].id, "") != ""
-            })[0]
+            id = local.map_application_risks["Global:${risks}"].id
           }]
           types = [for type in try(filter.types, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => data.fmc_application_types.application_types[domain_path].items[type].id
-              if try(data.fmc_application_types.application_types[domain_path].items[type].id, "") != ""
-            })[0]
+            id = local.map_application_types["Global:${type}"].id
           }]
           tags = [for tag in try(filter.tags, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => data.fmc_application_tags.application_tags[domain_path].items[tag].id
-              if try(data.fmc_application_tags.application_tags[domain_path].items[tag].id, "") != ""
-            })[0]
+            id = local.map_application_tags["Global:${tag}"].id
           }]
           } if length(try(application_filter.filters, [])) > 0
         ]
@@ -2009,87 +2065,46 @@ locals {
         name   = policy_list.name
         action = policy_list.action
         interfaces = [for interface in try(policy_list.interfaces, []) : {
-          id = values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${interface}"].id
-            if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${interface}")
-          })[0]
+          id = local.resolved_security_zones_and_interface_groups[domain.name][interface].id
         }]
         interface_names = length(try(policy_list.interface_literals, [])) > 0 ? policy_list.interface_literals : null
+        ## Those don't follow standard pattern, as if when the list is empty, null is expected instead of empty array (not to cause colision between standard_access_list and ipv4_prefix_list which are exclusive)
         address_standard_access_lists = length(try(policy_list.address_standard_access_lists, [])) > 0 ? [for address_standard_access_list in policy_list.address_standard_access_lists : {
-          id = values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_standard_access_lists["${domain_path}:${address_standard_access_list}"].id
-            if contains(keys(local.map_standard_access_lists), "${domain_path}:${address_standard_access_list}")
-          })[0]
+          id = local.resolved_standard_access_lists[domain.name][address_standard_access_list].id
         }] : null
         address_ipv4_prefix_lists = length(try(policy_list.address_ipv4_prefix_lists, [])) > 0 ? [for address_ipv4_prefix_list in policy_list.address_ipv4_prefix_lists : {
-          id = values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_ipv4_prefix_lists["${domain_path}:${address_ipv4_prefix_list}"].id
-            if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${address_ipv4_prefix_list}")
-          })[0]
+          id = local.resolved_ipv4_prefix_lists[domain.name][address_ipv4_prefix_list].id
         }] : null
         next_hop_standard_access_lists = length(try(policy_list.next_hop_standard_access_lists, [])) > 0 ? [for next_hop_standard_access_list in policy_list.next_hop_standard_access_lists : {
-          id = values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_standard_access_lists["${domain_path}:${next_hop_standard_access_list}"].id
-            if contains(keys(local.map_standard_access_lists), "${domain_path}:${next_hop_standard_access_list}")
-          })[0]
+          id = local.resolved_standard_access_lists[domain.name][next_hop_standard_access_list].id
         }] : null
         next_hop_ipv4_prefix_lists = length(try(policy_list.next_hop_ipv4_prefix_lists, [])) > 0 ? [for next_hop_ipv4_prefix_list in policy_list.next_hop_ipv4_prefix_lists : {
-          id = values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_ipv4_prefix_lists["${domain_path}:${next_hop_ipv4_prefix_list}"].id
-            if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${next_hop_ipv4_prefix_list}")
-          })[0]
+          id = local.resolved_ipv4_prefix_lists[domain.name][next_hop_ipv4_prefix_list].id
         }] : null
         route_source_standard_access_lists = length(try(policy_list.route_source_standard_access_lists, [])) > 0 ? [for route_source_standard_access_list in policy_list.route_source_standard_access_lists : {
-          id = values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_standard_access_lists["${domain_path}:${route_source_standard_access_list}"].id
-            if contains(keys(local.map_standard_access_lists), "${domain_path}:${route_source_standard_access_list}")
-          })[0]
+          id = local.resolved_standard_access_lists[domain.name][route_source_standard_access_list].id
         }] : null
         route_source_ipv4_prefix_lists = length(try(policy_list.route_source_ipv4_prefix_lists, [])) > 0 ? [for route_source_ipv4_prefix_list in policy_list.route_source_ipv4_prefix_lists : {
-          id = values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_ipv4_prefix_lists["${domain_path}:${route_source_ipv4_prefix_list}"].id
-            if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${route_source_ipv4_prefix_list}")
-          })[0]
+          id = local.resolved_ipv4_prefix_lists[domain.name][route_source_ipv4_prefix_list].id
         }] : null
         as_paths = [for as_path in try(policy_list.as_paths, []) : {
-          id = values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_as_paths["${domain_path}:${as_path}"].id
-            if contains(keys(local.map_as_paths), "${domain_path}:${as_path}")
-          })[0]
+          id = local.resolved_as_paths[domain.name][as_path].id
         }]
-        community_lists = [for item in [
-          for community_list in try(policy_list.community_lists, []) : {
-            id = one([
-              for domain_path in local.related_domains[domain.name] :
-              local.map_community_lists["${domain_path}:${community_list}"].id
-              if contains(keys(local.map_community_lists), "${domain_path}:${community_list}")
-            ])
-          }
-        ] : item if item.id != null]
-        extended_community_lists = [for item in [
-          for extended_community_list in try(policy_list.community_lists, []) : {
-            id = one([
-              for domain_path in local.related_domains[domain.name] :
-              local.map_extended_community_lists["${domain_path}:${extended_community_list}"].id
-              if contains(keys(local.map_extended_community_lists), "${domain_path}:${extended_community_list}")
-            ])
-          }
-        ] : item if item.id != null]
+        community_lists = [
+          for community_list in try(policy_list.community_lists, []) :
+          { id = local.resolved_community_lists[domain.name][community_list].id }
+          if lookup(local.resolved_community_lists[domain.name], community_list, null) != null
+        ]
+        extended_community_lists = [
+          for extended_community_list in try(policy_list.community_lists, []) :
+          { id = local.resolved_extended_community_lists[domain.name][extended_community_list].id }
+          if lookup(local.resolved_extended_community_lists[domain.name], extended_community_list, null) != null
+        ]
         _validate_community_lists = [
           for community_list in try(policy_list.community_lists, []) :
-          anytrue([
-            for domain_path in local.related_domains[domain.name] :
-            contains(keys(local.map_community_lists), "${domain_path}:${community_list}") ||
-            contains(keys(local.map_extended_community_lists), "${domain_path}:${community_list}")
-          ]) ? true : tobool("ERROR: Community list '${community_list}' in policy list '${policy_list.name}' (domain: ${domain.name}) not found in map_community_lists or map_extended_community_lists")
+          (lookup(local.resolved_community_lists[domain.name], community_list, null) != null ||
+            lookup(local.resolved_extended_community_lists[domain.name], community_list, null) != null
+          ) ? true : tobool("ERROR: Community list '${community_list}' in policy list '${policy_list.name}' (domain: ${domain.name}) not found in map_community_lists or map_extended_community_lists")
         ]
         match_community_exactly = try(policy_list.match_community_exactly, local.defaults.fmc.domains.objects.policy_lists.match_community_exactly, null)
         metric                  = try(policy_list.metric, local.defaults.fmc.domains.objects.policy_lists.metric, null)
@@ -2171,155 +2186,55 @@ locals {
           entries = [for entry in route_map.entries : {
             action = entry.action
             match_security_zones = [for security_zone in try(entry.match.security_zones, []) : {
-              id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_security_zones["${domain_path}:${security_zone}"].id
-                if contains(keys(local.map_security_zones), "${domain_path}:${security_zone}")
-              })[0]
+              id = local.resolved_security_zones[domain.name][security_zone].id
             }]
             match_interface_names = try(entry.match.interface_literals, null)
             match_ipv4_address_access_lists = [for ipv4_address_access_list in try(entry.match.ipv4_address_access_lists, []) : {
-              id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_access_lists["${domain_path}:${ipv4_address_access_list}"].id
-                if contains(keys(local.map_access_lists), "${domain_path}:${ipv4_address_access_list}")
-              })[0]
-              type = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_access_lists["${domain_path}:${ipv4_address_access_list}"].type
-                if contains(keys(local.map_access_lists), "${domain_path}:${ipv4_address_access_list}")
-              })[0]
+              id   = local.resolved_access_lists[domain.name][ipv4_address_access_list].id
+              type = local.resolved_access_lists[domain.name][ipv4_address_access_list].type
             }]
             match_ipv4_address_prefix_lists = [for ipv4_address_prefix_list in try(entry.match.ipv4_address_prefix_lists, []) : {
-              id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_ipv4_prefix_lists["${domain_path}:${ipv4_address_prefix_list}"].id
-                if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${ipv4_address_prefix_list}")
-              })[0]
-              type = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_ipv4_prefix_lists["${domain_path}:${ipv4_address_prefix_list}"].type
-                if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${ipv4_address_prefix_list}")
-              })[0]
+              id   = local.resolved_ipv4_prefix_lists[domain.name][ipv4_address_prefix_list].id
+              type = local.resolved_ipv4_prefix_lists[domain.name][ipv4_address_prefix_list].type
             }]
             match_ipv4_next_hop_access_lists = [for ipv4_next_hop_access_list in try(entry.match.ipv4_next_hop_access_lists, []) : {
-              id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_access_lists["${domain_path}:${ipv4_next_hop_access_list}"].id
-                if contains(keys(local.map_access_lists), "${domain_path}:${ipv4_next_hop_access_list}")
-              })[0]
-              type = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_access_lists["${domain_path}:${ipv4_next_hop_access_list}"].type
-                if contains(keys(local.map_access_lists), "${domain_path}:${ipv4_next_hop_access_list}")
-              })[0]
+              id   = local.resolved_access_lists[domain.name][ipv4_next_hop_access_list].id
+              type = local.resolved_access_lists[domain.name][ipv4_next_hop_access_list].type
             }]
             match_ipv4_next_hop_prefix_lists = [for ipv4_next_hop_prefix_list in try(entry.match.ipv4_next_hop_prefix_lists, []) : {
-              id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_ipv4_prefix_lists["${domain_path}:${ipv4_next_hop_prefix_list}"].id
-                if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${ipv4_next_hop_prefix_list}")
-              })[0]
-              type = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_ipv4_prefix_lists["${domain_path}:${ipv4_next_hop_prefix_list}"].type
-                if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${ipv4_next_hop_prefix_list}")
-              })[0]
+              id   = local.resolved_ipv4_prefix_lists[domain.name][ipv4_next_hop_prefix_list].id
+              type = local.resolved_ipv4_prefix_lists[domain.name][ipv4_next_hop_prefix_list].type
             }]
             match_ipv4_route_source_access_lists = [for ipv4_route_source_access_list in try(entry.match.ipv4_route_source_access_lists, []) : {
-              id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_access_lists["${domain_path}:${ipv4_route_source_access_list}"].id
-                if contains(keys(local.map_access_lists), "${domain_path}:${ipv4_route_source_access_list}")
-              })[0]
-              type = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_access_lists["${domain_path}:${ipv4_route_source_access_list}"].type
-                if contains(keys(local.map_access_lists), "${domain_path}:${ipv4_route_source_access_list}")
-              })[0]
+              id   = local.resolved_access_lists[domain.name][ipv4_route_source_access_list].id
+              type = local.resolved_access_lists[domain.name][ipv4_route_source_access_list].type
             }]
             match_ipv4_route_source_prefix_lists = [for ipv4_route_source_prefix_list in try(entry.match.ipv4_route_source_prefix_lists, []) : {
-              id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_ipv4_prefix_lists["${domain_path}:${ipv4_route_source_prefix_list}"].id
-                if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${ipv4_route_source_prefix_list}")
-              })[0]
-              type = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_ipv4_prefix_lists["${domain_path}:${ipv4_route_source_prefix_list}"].type
-                if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${ipv4_route_source_prefix_list}")
-              })[0]
+              id   = local.resolved_ipv4_prefix_lists[domain.name][ipv4_route_source_prefix_list].id
+              type = local.resolved_ipv4_prefix_lists[domain.name][ipv4_route_source_prefix_list].type
             }]
-            match_ipv6_address_extended_access_list_id = try(entry.match.ipv6_address_extended_access_list, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_extended_access_lists["${domain_path}:${entry.match.ipv6_address_extended_access_list}"].id
-              if contains(keys(local.map_extended_access_lists), "${domain_path}:${entry.match.ipv6_address_extended_access_list}")
-            })[0] : null
-            match_ipv6_address_prefix_list_id = try(entry.match.ipv6_address_prefix_list, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_ipv6_prefix_lists["${domain_path}:${entry.match.ipv6_address_prefix_list}"].id
-              if contains(keys(local.map_ipv6_prefix_lists), "${domain_path}:${entry.match.ipv6_address_prefix_list}")
-            })[0] : null
-            match_ipv6_next_hop_extended_access_list_id = try(entry.match.ipv6_next_hop_extended_access_list, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_extended_access_lists["${domain_path}:${entry.match.ipv6_next_hop_extended_access_list}"].id
-              if contains(keys(local.map_extended_access_lists), "${domain_path}:${entry.match.ipv6_next_hop_extended_access_list}")
-            })[0] : null
-            match_ipv6_next_hop_prefix_list_id = try(entry.match.ipv6_next_hop_prefix_list, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_ipv6_prefix_lists["${domain_path}:${entry.match.ipv6_next_hop_prefix_list}"].id
-              if contains(keys(local.map_ipv6_prefix_lists), "${domain_path}:${entry.match.ipv6_next_hop_prefix_list}")
-            })[0] : null
-            match_ipv6_route_source_extended_access_list_id = try(entry.match.ipv6_route_source_extended_access_list, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_extended_access_lists["${domain_path}:${entry.match.ipv6_route_source_extended_access_list}"].id
-              if contains(keys(local.map_extended_access_lists), "${domain_path}:${entry.match.ipv6_route_source_extended_access_list}")
-            })[0] : null
-            match_ipv6_route_source_prefix_list_id = try(entry.match.ipv6_route_source_prefix_list, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_ipv6_prefix_lists["${domain_path}:${entry.match.ipv6_route_source_prefix_list}"].id
-              if contains(keys(local.map_ipv6_prefix_lists), "${domain_path}:${entry.match.ipv6_route_source_prefix_list}")
-            })[0] : null
+            match_ipv6_address_extended_access_list_id      = try(entry.match.ipv6_address_extended_access_list, "") != "" ? local.resolved_extended_access_lists[domain.name][entry.match.ipv6_address_extended_access_list].id : null
+            match_ipv6_address_prefix_list_id               = try(entry.match.ipv6_address_prefix_list, "") != "" ? local.resolved_ipv6_prefix_lists[domain.name][entry.match.ipv6_address_prefix_list].id : null
+            match_ipv6_next_hop_extended_access_list_id     = try(entry.match.ipv6_next_hop_extended_access_list, "") != "" ? local.resolved_extended_access_lists[domain.name][entry.match.ipv6_next_hop_extended_access_list].id : null
+            match_ipv6_next_hop_prefix_list_id              = try(entry.match.ipv6_next_hop_prefix_list, "") != "" ? local.resolved_ipv6_prefix_lists[domain.name][entry.match.ipv6_next_hop_prefix_list].id : null
+            match_ipv6_route_source_extended_access_list_id = try(entry.match.ipv6_route_source_extended_access_list, "") != "" ? local.resolved_extended_access_lists[domain.name][entry.match.ipv6_route_source_extended_access_list].id : null
+            match_ipv6_route_source_prefix_list_id          = try(entry.match.ipv6_route_source_prefix_list, "") != "" ? local.resolved_ipv6_prefix_lists[domain.name][entry.match.ipv6_route_source_prefix_list].id : null
             match_bgp_as_paths = [for as_path in try(entry.match.bgp_as_paths, []) : {
-              id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_as_paths["${domain_path}:${as_path}"].id
-                if contains(keys(local.map_as_paths), "${domain_path}:${as_path}")
-              })[0]
+              id = local.resolved_as_paths[domain.name][as_path].id
             }]
-            match_bgp_community_lists = [for item in [
-              for community_list in try(entry.match.bgp_community_lists, []) : {
-                id = one([
-                  for domain_path in local.related_domains[domain.name] :
-                  local.map_community_lists["${domain_path}:${community_list}"].id
-                  if contains(keys(local.map_community_lists), "${domain_path}:${community_list}")
-                ])
-              }
-            ] : item if item.id != null]
-            match_bgp_extended_community_lists = [for item in [
-              for extended_community_list in try(entry.match.bgp_community_lists, []) : {
-                id = one([
-                  for domain_path in local.related_domains[domain.name] :
-                  local.map_extended_community_lists["${domain_path}:${extended_community_list}"].id
-                  if contains(keys(local.map_extended_community_lists), "${domain_path}:${extended_community_list}")
-                ])
-              }
-            ] : item if item.id != null]
-            match_bgp_policy_lists = [for bgp_policy_list in try(entry.match.bgp_policy_lists, []) : {
-              id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_policy_lists["${domain_path}:${bgp_policy_list}"].id
-                if contains(keys(local.map_policy_lists), "${domain_path}:${bgp_policy_list}")
-              })[0]
-            }]
-            _validate_bgp_community_lists = [
+            match_bgp_community_lists = [
               for community_list in try(entry.match.bgp_community_lists, []) :
-              anytrue([
-                for domain_path in local.related_domains[domain.name] :
-                contains(keys(local.map_community_lists), "${domain_path}:${community_list}") ||
-                contains(keys(local.map_extended_community_lists), "${domain_path}:${community_list}")
-              ]) ? true : tobool("ERROR: BGP community list '${community_list}' in route map '${route_map.name}' (domain: ${domain.name}) not found in map_community_lists or map_extended_community_lists")
+              { id = local.resolved_community_lists[domain.name][community_list].id }
+              if lookup(local.resolved_community_lists[domain.name], community_list, null) != null
             ]
+            match_bgp_extended_community_lists = [
+              for extended_community_list in try(entry.match.bgp_community_lists, []) :
+              { id = local.resolved_extended_community_lists[domain.name][extended_community_list].id }
+              if lookup(local.resolved_extended_community_lists[domain.name], extended_community_list, null) != null
+            ]
+            match_bgp_policy_lists = [for bgp_policy_list in try(entry.match.bgp_policy_lists, []) : {
+              id = local.resolved_policy_lists[domain.name][bgp_policy_list].id
+            }]
             match_route_metrics                                    = try(entry.match.route_metrics, null)
             match_tags                                             = try(entry.match.tags, null)
             match_route_type_external_1                            = try(entry.match.route_type_external_1, null)
@@ -2347,18 +2262,10 @@ locals {
             set_bgp_origin                                         = try(entry.set.bgp_origin, null)
             set_bgp_ipv4_next_hop                                  = try(entry.set.bgp_ipv4_next_hop, null)
             set_bgp_ipv4_next_hop_specific_ips                     = try(entry.set.bgp_ipv4_next_hop_specific_ips, null)
-            set_bgp_ipv4_prefix_list_id = try(entry.set.bgp_ipv4_prefix_list, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_ipv4_prefix_lists["${domain_path}:${entry.set.bgp_ipv4_prefix_list}"].id
-              if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${entry.set.bgp_ipv4_prefix_list}")
-            })[0] : null
-            set_bgp_ipv6_next_hop              = try(entry.set.bgp_ipv6_next_hop, null)
-            set_bgp_ipv6_next_hop_specific_ips = try(entry.set.bgp_ipv6_next_hop_specific_ips, null)
-            set_bgp_ipv6_prefix_list_id = try(entry.set.bgp_ipv6_prefix_list, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_ipv6_prefix_lists["${domain_path}:${entry.set.bgp_ipv6_prefix_list}"].id
-              if contains(keys(local.map_ipv6_prefix_lists), "${domain_path}:${entry.set.bgp_ipv6_prefix_list}")
-            })[0] : null
+            set_bgp_ipv4_prefix_list_id                            = try(entry.set.bgp_ipv4_prefix_list, "") != "" ? local.resolved_ipv4_prefix_lists[domain.name][entry.set.bgp_ipv4_prefix_list].id : null
+            set_bgp_ipv6_next_hop                                  = try(entry.set.bgp_ipv6_next_hop, null)
+            set_bgp_ipv6_next_hop_specific_ips                     = try(entry.set.bgp_ipv6_next_hop_specific_ips, null)
+            set_bgp_ipv6_prefix_list_id                            = try(entry.set.bgp_ipv6_prefix_list, "") != "" ? local.resolved_ipv6_prefix_lists[domain.name][entry.set.bgp_ipv6_prefix_list].id : null
           }]
         } if !contains(try(keys(local.data_route_map), {}), "${domain.name}:${route_map.name}")
       ]
@@ -2409,30 +2316,8 @@ locals {
               value = literal
             }]
             objects = [for object_item in try(entry.objects, []) : {
-              id = try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${object_item}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")
-                })[0],
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_group_objects["${domain_path}:${object_item}"].id
-                  if contains(keys(local.map_network_group_objects), "${domain_path}:${object_item}")
-                })[0],
-              )
-              type = try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${object_item}"].type
-                  if contains(keys(local.map_network_objects), "${domain_path}:${object_item}")
-                })[0],
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_group_objects["${domain_path}:${object_item}"].type
-                  if contains(keys(local.map_network_group_objects), "${domain_path}:${object_item}")
-                })[0],
-              )
+              id   = local.resolved_network_objects_and_groups[domain.name][object_item].id
+              type = local.resolved_network_objects_and_groups[domain.name][object_item].type
             }]
           }]
           description = try(standard_access_list.description, local.defaults.fmc.domains.objects.standard_access_lists.description, null)
@@ -2490,27 +2375,10 @@ locals {
               type  = strcontains(destination_network_literal, "/") ? "Network" : "Host"
             }]
             destination_network_objects = [for destination_network_object in try(entry.destination_network_objects, []) : {
-              id = try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${destination_network_object}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${destination_network_object}")
-                })[0],
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_group_objects["${domain_path}:${destination_network_object}"].id
-                  if contains(keys(local.map_network_group_objects), "${domain_path}:${destination_network_object}")
-                })[0],
-              )
+              id = local.resolved_network_objects_and_groups[domain.name][destination_network_object].id
             }]
             destination_port_objects = [for destination_port_object in try(entry.destination_port_objects, []) : {
-              id = try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_services["${domain_path}:${destination_port_object}"].id
-                  if contains(keys(local.map_services), "${domain_path}:${destination_port_object}")
-                })[0],
-              )
+              id = local.resolved_services[domain.name][destination_port_object].id
             }]
             destination_port_literals = [for destination_port_literal in try(entry.destination_port_literals, []) : {
               protocol  = local.help_protocol_mapping[destination_port_literal.protocol]
@@ -2525,40 +2393,17 @@ locals {
               type  = strcontains(source_network_literal, "/") ? "Network" : "Host"
             }]
             source_network_objects = [for source_network_object in try(entry.source_network_objects, []) : {
-              id = try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${source_network_object}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${source_network_object}")
-                })[0],
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_group_objects["${domain_path}:${source_network_object}"].id
-                  if contains(keys(local.map_network_group_objects), "${domain_path}:${source_network_object}")
-                })[0],
-              )
+              id = local.resolved_network_objects_and_groups[domain.name][source_network_object].id
             }]
             source_port_objects = [for source_port_object in try(entry.source_port_objects, []) : {
-              id = try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_services["${domain_path}:${source_port_object}"].id
-                  if contains(keys(local.map_services), "${domain_path}:${source_port_object}")
-                })[0],
-              )
+              id = local.resolved_services[domain.name][source_port_object].id
             }]
             source_port_literals = [for source_port_literal in try(entry.source_port_literals, []) : {
               protocol = local.help_protocol_mapping[source_port_literal.protocol]
               port     = try(source_port_literal.port, null)
             }]
             source_sgt_objects = [for source_sgt_object in try(entry.source_sgt_objects, []) : {
-              id = try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_sgts["${domain_path}:${source_sgt_object}"].id
-                  if contains(keys(local.map_sgts), "${domain_path}:${source_sgt_object}")
-                })[0],
-              )
+              id = local.resolved_sgts[domain.name][source_sgt_object].id
             }]
           }]
         } if !contains(try(keys(local.data_extended_access_list), {}), "${domain.name}:${extended_access_list.name}")
@@ -2739,10 +2584,10 @@ locals {
         domain = domain.name
         name   = geolocation.name
         continents = [for continent in try(geolocation.continents, []) : {
-          id = data.fmc_continents.continents["Global"].items[continent].id
+          id = local.map_continents["Global:${continent}"].id
         }]
         countries = [for country in try(geolocation.countries, []) : {
-          id = data.fmc_countries.countries["Global"].items[country].id
+          id = local.map_countries["Global:${country}"].id
         }]
       } if !contains(try(keys(local.data_geolocations[domain.name].items), []), geolocation.name)
     ] if length(try(domain.objects.geolocations, [])) > 0
@@ -2808,16 +2653,8 @@ locals {
           rules = [for rule in service_access.rules : {
             action = rule.action
             geolocation_sources = [for geolocation_source in try(rule.geolocation_sources, []) : {
-              id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_geolocation_sources["${domain_path}:${geolocation_source}"].id
-                if contains(keys(local.map_geolocation_sources), "${domain_path}:${geolocation_source}")
-              })[0],
-              type = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_geolocation_sources["${domain_path}:${geolocation_source}"].type
-                if contains(keys(local.map_geolocation_sources), "${domain_path}:${geolocation_source}")
-              })[0],
+              id   = local.resolved_geolocations[domain.name][geolocation_source].id,
+              type = local.resolved_geolocations[domain.name][geolocation_source].type,
             }]
           }]
         } if !contains(try(keys(local.data_service_access), {}), "${domain.name}:${service_access.name}")
@@ -3309,15 +3146,11 @@ locals {
           validation_usage_ssl_server   = try(certificate_enrollment.validation_usage_ssl_server, null)
           skip_ca_flag_check            = try(certificate_enrollment.skip_ca_flag_check, null)
           # EST
-          est_enrollment_url = try(certificate_enrollment.est.enrollment_url, null)
-          est_username       = try(certificate_enrollment.est.username, null)
-          est_password       = try(certificate_enrollment.est.password, null)
-          est_fingerprint    = try(certificate_enrollment.est.fingerprint, null)
-          est_source_interface_id = try(certificate_enrollment.est.source_interface, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${certificate_enrollment.est.source_interface}"].id
-            if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${certificate_enrollment.est.source_interface}")
-          })[0] : null
+          est_enrollment_url                       = try(certificate_enrollment.est.enrollment_url, null)
+          est_username                             = try(certificate_enrollment.est.username, null)
+          est_password                             = try(certificate_enrollment.est.password, null)
+          est_fingerprint                          = try(certificate_enrollment.est.fingerprint, null)
+          est_source_interface_id                  = try(certificate_enrollment.est.source_interface, "") != "" ? local.resolved_security_zones_and_interface_groups[domain.name][certificate_enrollment.est.source_interface].id : null
           est_source_interface_name                = try(certificate_enrollment.est.source_interface, null)
           est_ignore_server_certificate_validation = try(certificate_enrollment.est.ignore_server_certificate_validation, null)
           # SCEP
@@ -3436,32 +3269,21 @@ locals {
           validation_usage_ssl_server   = try(certificate_enrollment.validation_usage_ssl_server, null)
           skip_ca_flag_check            = try(certificate_enrollment.skip_ca_flag_check, null)
           # ACME
-          acme_enrollment_url          = try(certificate_enrollment.acme.enrollment_url, null)
-          acme_authentication_protocol = try(certificate_enrollment.acme.authentication_protocol, local.defaults.fmc.domains.objects.certificate_enrollments.acme.authentication_protocol, null)
-          acme_authentication_interface_id = try(certificate_enrollment.acme.authentication_interface, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${certificate_enrollment.acme.authentication_interface}"].id
-            if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${certificate_enrollment.acme.authentication_interface}")
-          })[0] : null
+          acme_enrollment_url                = try(certificate_enrollment.acme.enrollment_url, null)
+          acme_authentication_protocol       = try(certificate_enrollment.acme.authentication_protocol, local.defaults.fmc.domains.objects.certificate_enrollments.acme.authentication_protocol, null)
+          acme_authentication_interface_id   = try(certificate_enrollment.acme.authentication_interface, "") != "" ? local.resolved_security_zones_and_interface_groups[domain.name][certificate_enrollment.acme.authentication_interface].id : null
           acme_authentication_interface_name = try(certificate_enrollment.acme.authentication_interface, null)
-          acme_source_interface_id = try(certificate_enrollment.acme.source_interface, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${certificate_enrollment.acme.source_interface}"].id
-            if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${certificate_enrollment.acme.source_interface}")
-          })[0] : null
-          acme_source_interface_name = try(certificate_enrollment.acme.source_interface, null)
-          acme_ca_only_certificate_id = try(certificate_enrollment.acme.ca_only_certificate, null) != null ? try(
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => fmc_certificate_enrollment.certificate_enrollment["${domain_path}:${certificate_enrollment.acme.ca_only_certificate}"].id
-              if contains(keys(fmc_certificate_enrollment.certificate_enrollment), "${domain_path}:${certificate_enrollment.acme.ca_only_certificate}")
-            })[0],
-            values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => data.fmc_certificate_enrollment.certificate_enrollment["${domain_path}:${certificate_enrollment.acme.ca_only_certificate}"].id
-              if contains(keys(data.fmc_certificate_enrollment.certificate_enrollment), "${domain_path}:${certificate_enrollment.acme.ca_only_certificate}")
-            })[0],
-          ) : null
+          acme_source_interface_id           = try(certificate_enrollment.acme.source_interface, "") != "" ? local.resolved_security_zones_and_interface_groups[domain.name][certificate_enrollment.acme.source_interface].id : null
+          acme_source_interface_name         = try(certificate_enrollment.acme.source_interface, null)
+          acme_ca_only_certificate_id = try(certificate_enrollment.acme.ca_only_certificate, null) != null ? concat(
+            [for domain_path in local.related_domains[domain.name] :
+              fmc_certificate_enrollment.certificate_enrollment["${domain_path}:${certificate_enrollment.acme.ca_only_certificate}"].id
+            if contains(keys(fmc_certificate_enrollment.certificate_enrollment), "${domain_path}:${certificate_enrollment.acme.ca_only_certificate}")],
+            [for domain_path in local.related_domains[domain.name] :
+              data.fmc_certificate_enrollment.certificate_enrollment["${domain_path}:${certificate_enrollment.acme.ca_only_certificate}"].id
+            if contains(keys(data.fmc_certificate_enrollment.certificate_enrollment), "${domain_path}:${certificate_enrollment.acme.ca_only_certificate}")],
+            [null],
+          )[0] : null
           acme_auto_enrollment                  = try(certificate_enrollment.acme.auto_enrollment, null)
           acme_auto_enrollment_lifetime         = try(certificate_enrollment.acme.auto_enrollment_lifetime, null)
           acme_auto_enrollment_key_regeneration = try(certificate_enrollment.acme.auto_enrollment_key_regeneration, null)
@@ -3690,30 +3512,18 @@ locals {
           domain = domain.name
           name   = radius_server_group.name
           radius_servers = [for radius_server in radius_server_group.radius_servers : {
-            hostname            = radius_server.hostname
-            key                 = radius_server.key
-            accounting_port     = try(radius_server.accounting_port, local.defaults.fmc.domains.objects.radius_server_groups.radius_servers.accounting_port, null)
-            authentication_port = try(radius_server.authentication_port, local.defaults.fmc.domains.objects.radius_server_groups.radius_servers.authentication_port, null)
-            interface_id = try(radius_server.interface, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_security_zones_and_interface_groups["${domain_path}:${radius_server.interface}"].id
-              if contains(keys(local.map_security_zones_and_interface_groups), "${domain_path}:${radius_server.interface}")
-            })[0] : null
-            message_authenticator = try(radius_server.message_authenticator, local.defaults.fmc.domains.objects.radius_server_groups.radius_servers.message_authenticator, null)
-            redirect_access_list_id = try(radius_server.redirect_access_list, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_extended_access_lists["${domain_path}:${radius_server.redirect_access_list}"].id
-              if contains(keys(local.map_extended_access_lists), "${domain_path}:${radius_server.redirect_access_list}")
-            })[0] : null
+            hostname                        = radius_server.hostname
+            key                             = radius_server.key
+            accounting_port                 = try(radius_server.accounting_port, local.defaults.fmc.domains.objects.radius_server_groups.radius_servers.accounting_port, null)
+            authentication_port             = try(radius_server.authentication_port, local.defaults.fmc.domains.objects.radius_server_groups.radius_servers.authentication_port, null)
+            interface_id                    = try(radius_server.interface, "") != "" ? local.resolved_security_zones_and_interface_groups[domain.name][radius_server.interface].id : null
+            message_authenticator           = try(radius_server.message_authenticator, local.defaults.fmc.domains.objects.radius_server_groups.radius_servers.message_authenticator, null)
+            redirect_access_list_id         = try(radius_server.redirect_access_list, "") != "" ? local.resolved_extended_access_lists[domain.name][radius_server.redirect_access_list].id : null
             timeout                         = try(radius_server.timeout, local.defaults.fmc.domains.objects.radius_server_groups.radius_servers.timeout, null)
             use_routing_to_select_interface = try(radius_server.interface, null) != null ? false : try(radius_server.use_routing_to_select_interface, local.defaults.fmc.domains.objects.radius_server_groups.radius_servers.use_routing_to_select_interface, null)
             }
           ]
-          ad_realm_id = try(radius_server_group.ad_realm, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_realm_ad_ldap["${domain_path}:${radius_server_group.ad_realm}"].id
-            if contains(keys(local.map_realm_ad_ldap), "${domain_path}:${radius_server_group.ad_realm}")
-          })[0] : null
+          ad_realm_id                          = try(radius_server_group.ad_realm, "") != "" ? local.resolved_ad_ldap_realms[domain.name][radius_server_group.ad_realm].id : null
           authorize_only                       = try(radius_server_group.authorize_only, local.defaults.fmc.domains.objects.radius_server_groups.authorize_only, null)
           description                          = try(radius_server_group.description, local.defaults.fmc.domains.objects.radius_server_groups.description, null)
           dynamic_authorization                = try(radius_server_group.dynamic_authorization_port, null) != null ? true : false
@@ -3771,19 +3581,11 @@ locals {
     for item in flatten([
       for domain in local.domains : [
         for single_sign_on_server in try(domain.objects.single_sign_on_servers, {}) : {
-          domain  = domain.name
-          name    = single_sign_on_server.name
-          sso_url = single_sign_on_server.sso_url
-          identity_provider_certificate_id = values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_certificate_enrollments["${domain_path}:${single_sign_on_server.identity_provider_certificate}"].id
-            if contains(keys(local.map_certificate_enrollments), "${domain_path}:${single_sign_on_server.identity_provider_certificate}")
-          })[0]
-          identity_provider_certificate_name = values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_certificate_enrollments["${domain_path}:${single_sign_on_server.identity_provider_certificate}"].name
-            if contains(keys(local.map_certificate_enrollments), "${domain_path}:${single_sign_on_server.identity_provider_certificate}")
-          })[0]
+          domain                                                   = domain.name
+          name                                                     = single_sign_on_server.name
+          sso_url                                                  = single_sign_on_server.sso_url
+          identity_provider_certificate_id                         = local.resolved_certificate_enrollments[domain.name][single_sign_on_server.identity_provider_certificate].id
+          identity_provider_certificate_name                       = local.resolved_certificate_enrollments[domain.name][single_sign_on_server.identity_provider_certificate].name
           identity_provider_entity_id_url                          = single_sign_on_server.identity_provider_entity_id_url
           base_url                                                 = try(single_sign_on_server.base_url, null)
           identity_provider_accessible_only_on_internal_network    = try(single_sign_on_server.identity_provider_accessible_only_on_internal_network, local.defaults.fmc.domains.objects.single_sign_on_servers.identity_provider_accessible_only_on_internal_network, null)
@@ -3791,11 +3593,7 @@ locals {
           request_identity_provider_reauthentication_at_each_login = try(single_sign_on_server.request_identity_provider_reauthentication_at_each_login, local.defaults.fmc.domains.objects.single_sign_on_servers.request_identity_provider_reauthentication_at_each_login, null)
           request_signature_type                                   = try(single_sign_on_server.request_signature_type, local.defaults.fmc.domains.objects.single_sign_on_servers.request_signature_type, null)
           request_timeout                                          = try(single_sign_on_server.request_timeout, local.defaults.fmc.domains.objects.single_sign_on_servers.request_timeout, null)
-          service_provider_certificate_id = try(single_sign_on_server.service_provider_certificate_id, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_certificate_enrollments["${domain_path}:${single_sign_on_server.service_provider_certificate}"].id
-            if contains(keys(local.map_certificate_enrollments), "${domain_path}:${single_sign_on_server.service_provider_certificate}")
-          })[0] : null
+          service_provider_certificate_id                          = try(single_sign_on_server.service_provider_certificate, "") != "" ? local.resolved_certificate_enrollments[domain.name][single_sign_on_server.service_provider_certificate].id : null
         } if !contains(try(keys(local.data_single_sign_on_server), {}), "${domain.name}:${single_sign_on_server.name}")
       ]
     ]) : "${item.domain}:${item.name}" => item
@@ -4151,120 +3949,52 @@ locals {
           protocol_ssl         = try(group_policy.general.protocol_ssl, local.defaults.fmc.domains.objects.group_policies.general.protocol_ssl, null)
           protocol_ipsec_ikev2 = try(group_policy.general.protocol_ipsec_ikev2, local.defaults.fmc.domains.objects.group_policies.general.protocol_ipsec_ikev2, null)
           ipv4_address_pools = [for ipv4_address_pool in try(group_policy.general.ipv4_address_pools, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_ipv4_address_pools["${domain_path}:${ipv4_address_pool}"].id
-              if contains(keys(local.map_ipv4_address_pools), "${domain_path}:${ipv4_address_pool}")
-            })[0]
+            id = local.resolved_ipv4_address_pools[domain.name][ipv4_address_pool].id
           }]
-          banner = try(group_policy.general.banner, null)
-          primary_dns_server_host_id = try(group_policy.general.primary_dns_server, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_hosts["${domain_path}:${group_policy.general.primary_dns_server}"].id
-            if contains(keys(local.map_hosts), "${domain_path}:${group_policy.general.primary_dns_server}")
-          })[0] : null
-          secondary_dns_server_host_id = try(group_policy.general.secondary_dns_server, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_hosts["${domain_path}:${group_policy.general.secondary_dns_server}"].id
-            if contains(keys(local.map_hosts), "${domain_path}:${group_policy.general.secondary_dns_server}")
-          })[0] : null
-          primary_wins_server_host_id = try(group_policy.general.primary_wins_server, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_hosts["${domain_path}:${group_policy.general.primary_wins_server}"].id
-            if contains(keys(local.map_hosts), "${domain_path}:${group_policy.general.primary_wins_server}")
-          })[0] : null
-          secondary_wins_server_host_id = try(group_policy.general.secondary_wins_server, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_hosts["${domain_path}:${group_policy.general.secondary_wins_server}"].id
-            if contains(keys(local.map_hosts), "${domain_path}:${group_policy.general.secondary_wins_server}")
-          })[0] : null
-          default_domain = try(group_policy.general.default_domain, null)
-          ipv4_dhcp_network_scope_network_object_id = try(group_policy.general.ipv4_dhcp_network_scope, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_network_objects["${domain_path}:${group_policy.general.ipv4_dhcp_network_scope}"].id
-            if contains(keys(local.map_network_objects), "${domain_path}:${group_policy.general.ipv4_dhcp_network_scope}")
-          })[0] : null
-          ipv4_split_tunnel_policy = try(group_policy.general.ipv4_split_tunnel_policy, local.defaults.fmc.domains.objects.group_policies.general.ipv4_split_tunnel_policy, null)
-          ipv6_split_tunnel_policy = try(group_policy.general.ipv6_split_tunnel_policy, local.defaults.fmc.domains.objects.group_policies.general.ipv6_split_tunnel_policy, null)
-          split_tunnel_access_list_id = try(group_policy.general.split_tunnel_access_list, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_access_lists["${domain_path}:${group_policy.general.split_tunnel_access_list}"].id
-            if contains(keys(local.map_access_lists), "${domain_path}:${group_policy.general.split_tunnel_access_list}")
-          })[0] : null
-          split_tunnel_access_list_type = try(group_policy.general.split_tunnel_access_list, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_access_lists["${domain_path}:${group_policy.general.split_tunnel_access_list}"].type
-            if contains(keys(local.map_access_lists), "${domain_path}:${group_policy.general.split_tunnel_access_list}")
-          })[0] : null
-          dns_request_split_tunnel_policy  = try(group_policy.general.dns_request_split_tunnel_policy, local.defaults.fmc.domains.objects.group_policies.general.dns_request_split_tunnel_policy, null)
-          dns_request_split_tunnel_domains = try(join(",", group_policy.general.dns_request_split_tunnel_domains), null)
+          banner                                    = try(group_policy.general.banner, null)
+          primary_dns_server_host_id                = try(group_policy.general.primary_dns_server, "") != "" ? local.resolved_hosts[domain.name][group_policy.general.primary_dns_server].id : null
+          secondary_dns_server_host_id              = try(group_policy.general.secondary_dns_server, "") != "" ? local.resolved_hosts[domain.name][group_policy.general.secondary_dns_server].id : null
+          primary_wins_server_host_id               = try(group_policy.general.primary_wins_server, "") != "" ? local.resolved_hosts[domain.name][group_policy.general.primary_wins_server].id : null
+          secondary_wins_server_host_id             = try(group_policy.general.secondary_wins_server, "") != "" ? local.resolved_hosts[domain.name][group_policy.general.secondary_wins_server].id : null
+          default_domain                            = try(group_policy.general.default_domain, null)
+          ipv4_dhcp_network_scope_network_object_id = try(group_policy.general.ipv4_dhcp_network_scope, "") != "" ? local.resolved_network_objects[domain.name][group_policy.general.ipv4_dhcp_network_scope].id : null
+          ipv4_split_tunnel_policy                  = try(group_policy.general.ipv4_split_tunnel_policy, local.defaults.fmc.domains.objects.group_policies.general.ipv4_split_tunnel_policy, null)
+          ipv6_split_tunnel_policy                  = try(group_policy.general.ipv6_split_tunnel_policy, local.defaults.fmc.domains.objects.group_policies.general.ipv6_split_tunnel_policy, null)
+          split_tunnel_access_list_id               = try(group_policy.general.split_tunnel_access_list, "") != "" ? local.resolved_access_lists[domain.name][group_policy.general.split_tunnel_access_list].id : null
+          split_tunnel_access_list_type             = try(group_policy.general.split_tunnel_access_list, "") != "" ? local.resolved_access_lists[domain.name][group_policy.general.split_tunnel_access_list].type : null
+          dns_request_split_tunnel_policy           = try(group_policy.general.dns_request_split_tunnel_policy, local.defaults.fmc.domains.objects.group_policies.general.dns_request_split_tunnel_policy, null)
+          dns_request_split_tunnel_domains          = try(join(",", group_policy.general.dns_request_split_tunnel_domains), null)
           # Secure Client
-          secure_client_profile_id = try(group_policy.secure_client.profile, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_secure_client_profiles["${domain_path}:${group_policy.secure_client.profile}"].id
-            if contains(keys(local.map_secure_client_profiles), "${domain_path}:${group_policy.secure_client.profile}")
-          })[0] : null
-          secure_client_management_profile_id = try(group_policy.secure_client.management_profile, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_secure_client_profiles["${domain_path}:${group_policy.secure_client.management_profile}"].id
-            if contains(keys(local.map_secure_client_profiles), "${domain_path}:${group_policy.secure_client.management_profile}")
-          })[0] : null
+          secure_client_profile_id            = try(group_policy.secure_client.profile, "") != "" ? local.resolved_secure_client_profiles[domain.name][group_policy.secure_client.profile].id : null
+          secure_client_management_profile_id = try(group_policy.secure_client.management_profile, "") != "" ? local.resolved_secure_client_profiles[domain.name][group_policy.secure_client.management_profile].id : null
           secure_client_modules = [for module in try(group_policy.secure_client.modules, []) : {
-            profile_id = try(module.profile_name, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_secure_client_profiles["${domain_path}:${module.profile_name}"].id
-              if contains(keys(local.map_secure_client_profiles), "${domain_path}:${module.profile_name}")
-            })[0] : null
-            type = try(module.profile_name, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_secure_client_profiles["${domain_path}:${module.profile_name}"].file_type
-              if contains(keys(local.map_secure_client_profiles), "${domain_path}:${module.profile_name}")
-            })[0] : try(module.type, null)
+            profile_id      = try(module.profile_name, "") != "" ? local.resolved_secure_client_profiles[domain.name][module.profile_name].id : null
+            type            = try(module.profile_name, "") != "" ? local.resolved_secure_client_profiles[domain.name][module.profile_name].file_type : try(module.type, null)
             download_module = try(module.download_module, null)
           }]
-          ssl_compression                      = try(group_policy.secure_client.ssl_compression, local.defaults.fmc.domains.objects.group_policies.secure_client.ssl_compression, null)
-          dtls_compression                     = try(group_policy.secure_client.dtls_compression, local.defaults.fmc.domains.objects.group_policies.secure_client.dtls_compression, null)
-          mtu_size                             = try(group_policy.secure_client.mtu_size, local.defaults.fmc.domains.objects.group_policies.secure_client.mtu_size, null)
-          ignore_df_bit                        = try(group_policy.secure_client.ignore_df_bit, local.defaults.fmc.domains.objects.group_policies.secure_client.ignore_df_bit, null)
-          keep_alive_messages                  = try(group_policy.secure_client.keep_alive_messages_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.keep_alive_messages_interval, null) != null ? true : null
-          keep_alive_messages_interval         = try(group_policy.secure_client.keep_alive_messages_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.keep_alive_messages_interval, null)
-          gateway_dead_peer_detection          = try(group_policy.secure_client.gateway_dead_peer_detection_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.gateway_dead_peer_detection_interval, null) != null ? true : null
-          gateway_dead_peer_detection_interval = try(group_policy.secure_client.gateway_dead_peer_detection_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.gateway_dead_peer_detection_interval, null)
-          client_dead_peer_detection           = try(group_policy.secure_client.client_dead_peer_detection_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.client_dead_peer_detection_interval, null) != null ? true : null
-          client_dead_peer_detection_interval  = try(group_policy.secure_client.client_dead_peer_detection_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.client_dead_peer_detection_interval, null)
-          client_bypass_protocol               = try(group_policy.secure_client.client_bypass_protocol, local.defaults.fmc.domains.objects.group_policies.secure_client.client_bypass_protocol, null)
-          ssl_rekey                            = try(group_policy.secure_client.ssl_rekey_method, group_policy.secure_client.ssl_rekey_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.ssl_rekey_method, local.defaults.fmc.domains.objects.group_policies.secure_client.ssl_rekey_interval, null) != null ? true : null
-          ssl_rekey_method                     = try(group_policy.secure_client.ssl_rekey_method, local.defaults.fmc.domains.objects.group_policies.secure_client.ssl_rekey_method, null)
-          ssl_rekey_interval                   = try(group_policy.secure_client.ssl_rekey_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.ssl_rekey_interval, null)
-          client_firewall_private_network_rules_access_list_id = try(group_policy.secure_client.client_firewall_private_network_rules_access_list, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_extended_access_lists["${domain_path}:${group_policy.secure_client.client_firewall_private_network_rules_access_list}"].id
-            if contains(keys(local.map_extended_access_lists), "${domain_path}:${group_policy.secure_client.client_firewall_private_network_rules_access_list}")
-          })[0] : null
-          client_firewall_public_network_rules_access_list_id = try(group_policy.secure_client.client_firewall_public_network_rules_access_list, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_extended_access_lists["${domain_path}:${group_policy.secure_client.client_firewall_public_network_rules_access_list}"].id
-            if contains(keys(local.map_extended_access_lists), "${domain_path}:${group_policy.secure_client.client_firewall_public_network_rules_access_list}")
-          })[0] : null
+          ssl_compression                                      = try(group_policy.secure_client.ssl_compression, local.defaults.fmc.domains.objects.group_policies.secure_client.ssl_compression, null)
+          dtls_compression                                     = try(group_policy.secure_client.dtls_compression, local.defaults.fmc.domains.objects.group_policies.secure_client.dtls_compression, null)
+          mtu_size                                             = try(group_policy.secure_client.mtu_size, local.defaults.fmc.domains.objects.group_policies.secure_client.mtu_size, null)
+          ignore_df_bit                                        = try(group_policy.secure_client.ignore_df_bit, local.defaults.fmc.domains.objects.group_policies.secure_client.ignore_df_bit, null)
+          keep_alive_messages                                  = try(group_policy.secure_client.keep_alive_messages_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.keep_alive_messages_interval, null) != null ? true : null
+          keep_alive_messages_interval                         = try(group_policy.secure_client.keep_alive_messages_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.keep_alive_messages_interval, null)
+          gateway_dead_peer_detection                          = try(group_policy.secure_client.gateway_dead_peer_detection_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.gateway_dead_peer_detection_interval, null) != null ? true : null
+          gateway_dead_peer_detection_interval                 = try(group_policy.secure_client.gateway_dead_peer_detection_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.gateway_dead_peer_detection_interval, null)
+          client_dead_peer_detection                           = try(group_policy.secure_client.client_dead_peer_detection_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.client_dead_peer_detection_interval, null) != null ? true : null
+          client_dead_peer_detection_interval                  = try(group_policy.secure_client.client_dead_peer_detection_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.client_dead_peer_detection_interval, null)
+          client_bypass_protocol                               = try(group_policy.secure_client.client_bypass_protocol, local.defaults.fmc.domains.objects.group_policies.secure_client.client_bypass_protocol, null)
+          ssl_rekey                                            = try(group_policy.secure_client.ssl_rekey_method, group_policy.secure_client.ssl_rekey_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.ssl_rekey_method, local.defaults.fmc.domains.objects.group_policies.secure_client.ssl_rekey_interval, null) != null ? true : null
+          ssl_rekey_method                                     = try(group_policy.secure_client.ssl_rekey_method, local.defaults.fmc.domains.objects.group_policies.secure_client.ssl_rekey_method, null)
+          ssl_rekey_interval                                   = try(group_policy.secure_client.ssl_rekey_interval, local.defaults.fmc.domains.objects.group_policies.secure_client.ssl_rekey_interval, null)
+          client_firewall_private_network_rules_access_list_id = try(group_policy.secure_client.client_firewall_private_network_rules_access_list, "") != "" ? local.resolved_extended_access_lists[domain.name][group_policy.secure_client.client_firewall_private_network_rules_access_list].id : null
+          client_firewall_public_network_rules_access_list_id  = try(group_policy.secure_client.client_firewall_public_network_rules_access_list, "") != "" ? local.resolved_extended_access_lists[domain.name][group_policy.secure_client.client_firewall_public_network_rules_access_list].id : null
           secure_client_custom_attributes = [for custom_attribute in try(group_policy.secure_client.custom_attributes, []) : {
-            id = values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_secure_client_custom_attributes["${domain_path}:${custom_attribute}"].id
-              if contains(keys(local.map_secure_client_custom_attributes), "${domain_path}:${custom_attribute}")
-            })[0]
+            id = local.resolved_secure_client_custom_attributes[domain.name][custom_attribute].id
           }]
           # Advanced
-          traffic_filter_access_list_id = try(group_policy.advanced.traffic_filter_access_list, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_extended_access_lists["${domain_path}:${group_policy.advanced.traffic_filter_access_list}"].id
-            if contains(keys(local.map_extended_access_lists), "${domain_path}:${group_policy.advanced.traffic_filter_access_list}")
-          })[0] : null
-          restrict_vpn_to_vlan = try(group_policy.advanced.restrict_vpn_to_vlan, null)
-          access_hours_time_range_id = try(group_policy.advanced.access_hours_time_range, null) != null ? values({
-            for domain_path in local.related_domains[domain.name] :
-            domain_path => local.map_time_ranges["${domain_path}:${group_policy.advanced.access_hours_time_range}"].id
-            if contains(keys(local.map_time_ranges), "${domain_path}:${group_policy.advanced.access_hours_time_range}")
-          })[0] : null
+          traffic_filter_access_list_id          = try(group_policy.advanced.traffic_filter_access_list, "") != "" ? local.resolved_extended_access_lists[domain.name][group_policy.advanced.traffic_filter_access_list].id : null
+          restrict_vpn_to_vlan                   = try(group_policy.advanced.restrict_vpn_to_vlan, null)
+          access_hours_time_range_id             = try(group_policy.advanced.access_hours_time_range, "") != "" ? local.resolved_time_ranges[domain.name][group_policy.advanced.access_hours_time_range].id : null
           simultaneous_logins_per_user           = try(group_policy.advanced.simultaneous_logins_per_user, local.defaults.fmc.domains.objects.group_policies.advanced.simultaneous_logins_per_user, null)
           maximum_connection_time                = try(group_policy.advanced.maximum_connection_time, local.defaults.fmc.domains.objects.group_policies.advanced.maximum_connection_time, null)
           maximum_connection_time_alert_interval = try(group_policy.advanced.maximum_connection_time_alert_interval, local.defaults.fmc.domains.objects.group_policies.advanced.maximum_connection_time_alert_interval, null)
@@ -4290,6 +4020,7 @@ resource "fmc_group_policy" "group_policy" {
   domain      = each.value.domain
   name        = each.value.name
   description = each.value.description
+
   # General
   protocol_ssl                              = each.value.protocol_ssl
   protocol_ipsec_ikev2                      = each.value.protocol_ipsec_ikev2
@@ -4307,6 +4038,7 @@ resource "fmc_group_policy" "group_policy" {
   split_tunnel_access_list_type             = each.value.split_tunnel_access_list_type
   dns_request_split_tunnel_policy           = each.value.dns_request_split_tunnel_policy
   dns_request_split_tunnel_domains          = each.value.dns_request_split_tunnel_domains
+
   # Secure Client
   secure_client_profile_id                             = each.value.secure_client_profile_id
   secure_client_management_profile_id                  = each.value.secure_client_management_profile_id
@@ -4328,6 +4060,7 @@ resource "fmc_group_policy" "group_policy" {
   client_firewall_private_network_rules_access_list_id = each.value.client_firewall_private_network_rules_access_list_id
   client_firewall_public_network_rules_access_list_id  = each.value.client_firewall_public_network_rules_access_list_id
   secure_client_custom_attributes                      = each.value.secure_client_custom_attributes
+
   # Advanced
   traffic_filter_access_list_id          = each.value.traffic_filter_access_list_id
   restrict_vpn_to_vlan                   = each.value.restrict_vpn_to_vlan

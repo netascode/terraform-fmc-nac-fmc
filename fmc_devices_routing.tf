@@ -85,31 +85,15 @@ locals {
               domain      = domain.name
               vrf_name    = vrf.name
 
-              hop_type = bfd.hop_type
-              bfd_template_id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_bfd_templates["${domain_path}:${bfd.bfd_template}"].id
-                if contains(keys(local.map_bfd_templates), "${domain_path}:${bfd.bfd_template}")
-              })[0],
+              hop_type               = bfd.hop_type
+              bfd_template_id        = local.resolved_bfd_templates[domain.name][bfd.bfd_template].id
               interface_logical_name = bfd.hop_type == "SINGLE_HOP" ? bfd.interface_logical_name : null
               interface_id           = bfd.hop_type == "SINGLE_HOP" ? local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${bfd.interface_logical_name}"].id : null
               slow_timer             = try(bfd.slow_timer, null)
 
-              destination_host_object_id = bfd.hop_type == "MULTI_HOP" ? try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${bfd.destination_host_object}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${bfd.destination_host_object}")
-                })[0],
-              ) : null
-              source_host_object_id = bfd.hop_type == "MULTI_HOP" ? try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${bfd.source_host_object}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${bfd.source_host_object}")
-                })[0],
-              ) : null
-              internal_id = bfd.hop_type == "SINGLE_HOP" ? bfd.interface_logical_name : "${bfd.source_host_object}:${bfd.destination_host_object}"
+              destination_host_object_id = bfd.hop_type == "MULTI_HOP" ? local.resolved_network_objects[domain.name][bfd.destination_host_object].id : null
+              source_host_object_id      = bfd.hop_type == "MULTI_HOP" ? local.resolved_network_objects[domain.name][bfd.source_host_object].id : null
+              internal_id                = bfd.hop_type == "SINGLE_HOP" ? bfd.interface_logical_name : "${bfd.source_host_object}:${bfd.destination_host_object}"
             }
           ] if vrf.name == "Global"
         ]
@@ -151,29 +135,12 @@ locals {
               interface_logical_name = ipv4_static_route.interface_logical_name
               interface_id           = lower(ipv4_static_route.interface_logical_name) == "null0" ? null : local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${ipv4_static_route.interface_logical_name}"].id
               destination_networks = [for destination_network in ipv4_static_route.selected_networks : {
-                id = try(
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_objects["${domain_path}:${destination_network}"].id
-                    if contains(keys(local.map_network_objects), "${domain_path}:${destination_network}")
-                  })[0],
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_group_objects["${domain_path}:${destination_network}"].id
-                    if contains(keys(local.map_network_group_objects), "${domain_path}:${destination_network}")
-                  })[0],
-                )
+                id = local.resolved_network_objects_and_groups[domain.name][destination_network].id
               }]
-              metric               = try(ipv4_static_route.metric, local.defaults.fmc.domains.devices.devices.vrfs.ipv4_static_routes.metric, null)
-              is_tunneled          = try(ipv4_static_route.is_tunneled, local.defaults.fmc.domains.devices.devices.vrfs.ipv4_static_routes.is_tunneled, null)
-              gateway_host_literal = try(ipv4_static_route.gateway.literal, null)
-              gateway_host_object_id = try(ipv4_static_route.gateway.object, "") != "" ? try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${ipv4_static_route.gateway.object}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${ipv4_static_route.gateway.object}")
-                })[0],
-              ) : null
+              metric                 = try(ipv4_static_route.metric, local.defaults.fmc.domains.devices.devices.vrfs.ipv4_static_routes.metric, null)
+              is_tunneled            = try(ipv4_static_route.is_tunneled, local.defaults.fmc.domains.devices.devices.vrfs.ipv4_static_routes.is_tunneled, null)
+              gateway_host_literal   = try(ipv4_static_route.gateway.literal, null)
+              gateway_host_object_id = try(ipv4_static_route.gateway.object, "") != "" ? local.resolved_network_objects[domain.name][ipv4_static_route.gateway.object].id : null
             }
           ]
         ]
@@ -216,29 +183,12 @@ locals {
               interface_logical_name = ipv6_static_route.interface_logical_name
               interface_id           = lower(ipv6_static_route.interface_logical_name) == "null0" ? null : local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${ipv6_static_route.interface_logical_name}"].id
               destination_networks = [for destination_network in ipv6_static_route.selected_networks : {
-                id = try(
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_objects["${domain_path}:${destination_network}"].id
-                    if contains(keys(local.map_network_objects), "${domain_path}:${destination_network}")
-                  })[0],
-                  values({
-                    for domain_path in local.related_domains[domain.name] :
-                    domain_path => local.map_network_group_objects["${domain_path}:${destination_network}"].id
-                    if contains(keys(local.map_network_group_objects), "${domain_path}:${destination_network}")
-                  })[0],
-                )
+                id = local.resolved_network_objects_and_groups[domain.name][destination_network].id
               }]
-              metric               = try(ipv6_static_route.metric, local.defaults.fmc.domains.devices.devices.vrfs.ipv6_static_routes.metric, null)
-              is_tunneled          = try(ipv6_static_route.is_tunneled, local.defaults.fmc.domains.devices.devices.vrfs.ipv6_static_routes.is_tunneled, null)
-              gateway_host_literal = try(ipv6_static_route.gateway.literal, null)
-              gateway_host_object_id = try(ipv6_static_route.gateway.object, "") != "" ? try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${ipv6_static_route.gateway.object}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${ipv6_static_route.gateway.object}")
-                })[0],
-              ) : null
+              metric                 = try(ipv6_static_route.metric, local.defaults.fmc.domains.devices.devices.vrfs.ipv6_static_routes.metric, null)
+              is_tunneled            = try(ipv6_static_route.is_tunneled, local.defaults.fmc.domains.devices.devices.vrfs.ipv6_static_routes.is_tunneled, null)
+              gateway_host_literal   = try(ipv6_static_route.gateway.literal, null)
+              gateway_host_object_id = try(ipv6_static_route.gateway.object, "") != "" ? local.resolved_network_objects[domain.name][ipv6_static_route.gateway.object].id : null
             }
           ]
         ]
@@ -376,28 +326,12 @@ locals {
             vrf_id      = vrf.name == "Global" ? null : local.map_vrfs["${domain.name}:${device.name}:${vrf.name}"].id
 
             ipv4_aggregate_addresses = [for ipv4_aggregate_address in try(vrf.bgp.ipv4_aggregate_addresses, {}) : {
-              advertise_map_id = try(ipv4_aggregate_address.advertise_map, null) != null ? values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_route_maps["${domain_path}:${ipv4_aggregate_address.advertise_map}"].id
-                if contains(keys(local.map_route_maps), "${domain_path}:${ipv4_aggregate_address.advertise_map}")
-              })[0] : null,
-              attribute_map_id = try(ipv4_aggregate_address.attribute_map, null) != null ? values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_route_maps["${domain_path}:${ipv4_aggregate_address.attribute_map}"].id
-                if contains(keys(local.map_route_maps), "${domain_path}:${ipv4_aggregate_address.attribute_map}")
-              })[0] : null,
-              filter      = try(ipv4_aggregate_address.filter, null)
-              generate_as = try(ipv4_aggregate_address.generate_as, null)
-              network_id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_network_objects["${domain_path}:${ipv4_aggregate_address.network}"].id
-                if contains(keys(local.map_network_objects), "${domain_path}:${ipv4_aggregate_address.network}")
-              })[0],
-              suppress_map_id = try(ipv4_aggregate_address.suppress_map, null) != null ? values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_route_maps["${domain_path}:${ipv4_aggregate_address.suppress_map}"].id
-                if contains(keys(local.map_route_maps), "${domain_path}:${ipv4_aggregate_address.suppress_map}")
-              })[0] : null
+              advertise_map_id = try(ipv4_aggregate_address.advertise_map, "") != "" ? local.resolved_route_maps[domain.name][ipv4_aggregate_address.advertise_map].id : null
+              attribute_map_id = try(ipv4_aggregate_address.attribute_map, "") != "" ? local.resolved_route_maps[domain.name][ipv4_aggregate_address.attribute_map].id : null
+              filter           = try(ipv4_aggregate_address.filter, null)
+              generate_as      = try(ipv4_aggregate_address.generate_as, null)
+              network_id       = local.resolved_network_objects[domain.name][ipv4_aggregate_address.network].id
+              suppress_map_id  = try(ipv4_aggregate_address.suppress_map, "") != "" ? local.resolved_route_maps[domain.name][ipv4_aggregate_address.suppress_map].id : null
             }]
             ipv4_auto_summary                 = try(vrf.bgp.ipv4_auto_summary, local.defaults.fmc.domains.devices.devices.vrfs.bgp.ipv4_auto_summary, null)
             ipv4_redistribute_ibgp_into_igp   = try(vrf.bgp.ipv4_redistribute_ibgp_into_igp, local.defaults.fmc.domains.devices.devices.vrfs.bgp.ipv4_redistribute_ibgp_into_igp, null)
@@ -405,24 +339,16 @@ locals {
             ipv4_default_information_orginate = try(vrf.bgp.ipv4_default_information_orginate, local.defaults.fmc.domains.devices.devices.vrfs.bgp.ipv4_default_information_orginate, null)
             ipv4_external_distance            = try(vrf.bgp.ipv4_external_distance, local.defaults.fmc.domains.devices.devices.vrfs.bgp.ipv4_external_distance, null)
             ipv4_filterings = [for ipv4_filter in try(vrf.bgp.ipv4_filterings, {}) : {
-              access_list_id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_standard_access_lists["${domain_path}:${ipv4_filter.access_list}"].id
-                if contains(keys(local.map_standard_access_lists), "${domain_path}:${ipv4_filter.access_list}")
-              })[0],
-              direction  = ipv4_filter.direction
-              process_id = try(ipv4_filter.process_id, null)
-              protocol   = try(ipv4_filter.protocol, null)
+              access_list_id = local.resolved_standard_access_lists[domain.name][ipv4_filter.access_list].id
+              direction      = ipv4_filter.direction
+              process_id     = try(ipv4_filter.process_id, null)
+              protocol       = try(ipv4_filter.protocol, null)
             }]
             ipv4_number_of_ebgp_paths = try(vrf.bgp.ipv4_number_of_ebgp_paths, local.defaults.fmc.domains.devices.devices.vrfs.bgp.ipv4_number_of_ebgp_paths, null)
             ipv4_number_of_ibgp_paths = try(vrf.bgp.ipv4_number_of_ibgp_paths, local.defaults.fmc.domains.devices.devices.vrfs.bgp.ipv4_number_of_ibgp_paths, null)
             ipv4_internal_distance    = try(vrf.bgp.ipv4_internal_distance, local.defaults.fmc.domains.devices.devices.vrfs.bgp.ipv4_internal_distance, null)
-            ipv4_learned_route_map_id = try(vrf.bgp.ipv4_learned_route_map, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_route_maps["${domain_path}:${vrf.bgp.ipv4_learned_route_map}"].id
-              if contains(keys(local.map_route_maps), "${domain_path}:${vrf.bgp.ipv4_learned_route_map}")
-            })[0] : null
-            ipv4_local_distance = try(vrf.bgp.ipv4_local_distance, local.defaults.fmc.domains.devices.devices.vrfs.bgp.ipv4_local_distance, null)
+            ipv4_learned_route_map_id = try(vrf.bgp.ipv4_learned_route_map, "") != "" ? local.resolved_route_maps[domain.name][vrf.bgp.ipv4_learned_route_map].id : null
+            ipv4_local_distance       = try(vrf.bgp.ipv4_local_distance, local.defaults.fmc.domains.devices.devices.vrfs.bgp.ipv4_local_distance, null)
             ipv4_neighbors = [for ipv4_neighbor in try(vrf.bgp.ipv4_neighbors, {}) : {
               enable_address                  = try(ipv4_neighbor.enable_address, null)
               address                         = try(ipv4_neighbor.address, null)
@@ -435,43 +361,27 @@ locals {
               description                     = try(ipv4_neighbor.description, null)
               disable_connection_verification = try(ipv4_neighbor.disable_connection_verification, null)
               filter_access_lists = [for filter_access_list in try(ipv4_neighbor.filter_access_lists, {}) : {
-                access_list_id = values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_standard_access_lists["${domain_path}:${filter_access_list.access_list}"].id
-                  if contains(keys(local.map_standard_access_lists), "${domain_path}:${filter_access_list.access_list}")
-                })[0],
+                access_list_id   = local.resolved_standard_access_lists[domain.name][filter_access_list.access_list].id
                 update_direction = filter_access_list.update_direction
               }]
               filter_as_paths = [for filter_as_path in try(ipv4_neighbor.filter_as_paths, {}) : {
-                as_path_id = values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_as_paths["${domain_path}:${filter_as_path.as_path}"].id
-                  if contains(keys(local.map_as_paths), "${domain_path}:${filter_as_path.as_path}")
-                })[0],
+                as_path_id       = local.resolved_as_paths[domain.name][filter_as_path.as_path].id
                 as_path_name     = filter_as_path.as_path,
                 update_direction = filter_as_path.update_direction
               }]
               filter_maximum_prefixes = try(ipv4_neighbor.filter_maximum_prefixes, null)
               filter_prefix_lists = [for filter_prefix_list in try(ipv4_neighbor.filter_prefix_lists, {}) : {
-                prefix_list_id = values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_ipv4_prefix_lists["${domain_path}:${filter_prefix_list.prefix_list}"].id
-                  if contains(keys(local.map_ipv4_prefix_lists), "${domain_path}:${filter_prefix_list.prefix_list}")
-                })[0],
+                prefix_list_id   = local.resolved_ipv4_prefix_lists[domain.name][filter_prefix_list.prefix_list].id
                 update_direction = filter_prefix_list.update_direction
               }]
               filter_restart_interval = try(ipv4_neighbor.filter_restart_interval, null)
               filter_route_maps = [for filter_route_map in try(ipv4_neighbor.filter_route_maps, {}) : {
-                route_map_id = values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_route_maps["${domain_path}:${filter_route_map.route_map}"].id
-                  if contains(keys(local.map_route_maps), "${domain_path}:${filter_route_map.route_map}")
-                })[0],
+                route_map_id     = local.resolved_route_maps[domain.name][filter_route_map.route_map].id
                 update_direction = filter_route_map.update_direction
               }]
               filter_threshold_value               = try(ipv4_neighbor.filter_threshold_value, null)
               filter_warning_only                  = try(ipv4_neighbor.filter_warning_only, null)
-              routes_generate_default_route_map_id = try(local.map_route_maps[ipv4_neighbor.routes_generate_default_route_map].id, null)
+              routes_generate_default_route_map_id = try(ipv4_neighbor.routes_generate_default_route_map, "") != "" ? local.resolved_route_maps[domain.name][ipv4_neighbor.routes_generate_default_route_map].id : null
               hold_time                            = try(ipv4_neighbor.hold_time, null)
               keepalive_interval                   = try(ipv4_neighbor.keepalive_interval, null)
               max_hop_count                        = try(ipv4_neighbor.max_hop_count, null)
@@ -479,17 +389,9 @@ locals {
               next_hop_self                        = try(ipv4_neighbor.next_hop_self, null)
               remote_as                            = try(ipv4_neighbor.remote_as, null)
               routes_advertise_maps = [for routes_advertise_map in try(ipv4_neighbor.routes_advertise_maps, {}) : {
-                advertise_map_id = values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_route_maps["${domain_path}:${routes_advertise_map.advertise_map}"].id
-                  if contains(keys(local.map_route_maps), "${domain_path}:${routes_advertise_map.advertise_map}")
-                })[0],
-                exist_nonexist_map_id = values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_route_maps["${domain_path}:${routes_advertise_map.exist_nonexist_map}"].id
-                  if contains(keys(local.map_route_maps), "${domain_path}:${routes_advertise_map.exist_nonexist_map}")
-                })[0],
-                use_exist_map = routes_advertise_map.use_exist_map
+                advertise_map_id      = local.resolved_route_maps[domain.name][routes_advertise_map.advertise_map].id
+                exist_nonexist_map_id = local.resolved_route_maps[domain.name][routes_advertise_map.exist_nonexist_map].id
+                use_exist_map         = routes_advertise_map.use_exist_map
               }]
               routes_advertisement_interval = try(ipv4_neighbor.routes_advertisement_interval, null)
               routes_remove_private_as      = try(ipv4_neighbor.routes_remove_private_as, null)
@@ -502,23 +404,8 @@ locals {
               update_source_interface_id    = try(local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${ipv4_neighbor.update_source_interface}"].id, null)
             }]
             ipv4_networks = [for ipv4_network in try(vrf.bgp.ipv4_networks, {}) : {
-              network_id = try(
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_objects["${domain_path}:${ipv4_network.network}"].id
-                  if contains(keys(local.map_network_objects), "${domain_path}:${ipv4_network.network}")
-                })[0],
-                values({
-                  for domain_path in local.related_domains[domain.name] :
-                  domain_path => local.map_network_group_objects["${domain_path}:${ipv4_network.network}"].id
-                  if contains(keys(local.map_network_group_objects), "${domain_path}:${ipv4_network.network}")
-                })[0],
-              )
-              route_map_id = try(ipv4_network.route_map, null) != null ? values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_route_maps["${domain_path}:${ipv4_network.route_map}"].id
-                if contains(keys(local.map_route_maps), "${domain_path}:${ipv4_network.route_map}")
-              })[0] : null
+              network_id   = local.resolved_network_objects_and_groups[domain.name][ipv4_network.network].id
+              route_map_id = try(ipv4_network.route_map, "") != "" ? local.resolved_route_maps[domain.name][ipv4_network.route_map].id : null
             }]
             ipv4_redistributions = [for ipv4_redistribution in try(vrf.bgp.ipv4_redistributions, {}) : {
               match_external1      = try(ipv4_redistribution.match_external1, null)
@@ -528,25 +415,13 @@ locals {
               match_nssa_external2 = try(ipv4_redistribution.match_nssa_external2, null)
               metric               = try(ipv4_redistribution.metric, null)
               process_id           = try(ipv4_redistribution.process_id, null)
-              route_map_id = try(ipv4_redistribution.route_map, null) != null ? values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_route_maps["${domain_path}:${ipv4_redistribution.route_map}"].id
-                if contains(keys(local.map_route_maps), "${domain_path}:${ipv4_redistribution.route_map}")
-              })[0] : null
-              source_protocol = try(ipv4_redistribution.source_protocol, null)
+              route_map_id         = try(ipv4_redistribution.route_map, "") != "" ? local.resolved_route_maps[domain.name][ipv4_redistribution.route_map].id : null
+              source_protocol      = try(ipv4_redistribution.source_protocol, null)
             }]
             ipv4_route_injections = [for ipv4_route_injection in try(vrf.bgp.ipv4_route_injections, {}) : {
-              exist_route_map_id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_route_maps["${domain_path}:${ipv4_route_injection.exist_route_map}"].id
-                if contains(keys(local.map_route_maps), "${domain_path}:${ipv4_route_injection.exist_route_map}")
-              })[0]
-              inject_route_map_id = values({
-                for domain_path in local.related_domains[domain.name] :
-                domain_path => local.map_route_maps["${domain_path}:${ipv4_route_injection.inject_route_map}"].id
-                if contains(keys(local.map_route_maps), "${domain_path}:${ipv4_route_injection.inject_route_map}")
-              })[0]
-              inherit_attributes = try(ipv4_route_injection.inherit_attributes, null)
+              exist_route_map_id  = local.resolved_route_maps[domain.name][ipv4_route_injection.exist_route_map].id
+              inject_route_map_id = local.resolved_route_maps[domain.name][ipv4_route_injection.inject_route_map].id
+              inherit_attributes  = try(ipv4_route_injection.inherit_attributes, null)
             }]
             ipv4_synchronization = try(vrf.bgp.ipv4_synchronization, local.defaults.fmc.domains.devices.devices.vrfs.bgp.ipv4_synchronization, null)
           } if contains(keys(vrf), "bgp")
@@ -581,9 +456,7 @@ resource "fmc_device_bgp" "device_bgp" {
   ipv4_synchronization              = each.value.ipv4_synchronization
 
   depends_on = [
-
     # fmc_device_ha_pair.module,
-
     # fmc_device_cluster.module,
     fmc_device_bgp_general_settings.device_bgp_general_settings,
   ]

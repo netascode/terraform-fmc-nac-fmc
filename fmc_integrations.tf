@@ -25,19 +25,11 @@ locals {
           directory_username = realm_ad_ldap.directory_username
           directory_password = realm_ad_ldap.directory_password
           directory_servers = [for server in realm_ad_ldap.directory_servers : {
-            hostname            = server.hostname
-            port                = server.port
-            encryption_protocol = server.encryption_protocol
-            ca_certificate_id = try(server.ca_certificate, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_trusted_certificate_authorities["${domain_path}:${server.ca_certificate}"].id
-              if contains(keys(local.map_trusted_certificate_authorities), "${domain_path}:${server.ca_certificate}")
-            })[0] : null
-            interface_group_id = try(server.interface_group, null) != null ? values({
-              for domain_path in local.related_domains[domain.name] :
-              domain_path => local.map_interface_groups["${domain_path}:${server.interface_group}"].id
-              if contains(keys(local.map_interface_groups), "${domain_path}:${server.interface_group}")
-            })[0] : null
+            hostname                        = server.hostname
+            port                            = server.port
+            encryption_protocol             = server.encryption_protocol
+            ca_certificate_id               = try(server.ca_certificate, null) != null ? local.resolved_trusted_certificate_authorities[domain.name][server.ca_certificate].id : null
+            interface_group_id              = try(server.interface_group, null) != null ? local.resolved_interface_groups[domain.name][server.interface_group].id : null
             use_routing_to_select_interface = try(server.use_routing_to_select_interface, local.defaults.fmc.domains.integrations.ad_ldap_realms.directory_servers.use_routing_to_select_interface, null)
           }]
           ad_join_username                        = try(realm_ad_ldap.ad_join_username, null)
@@ -57,7 +49,7 @@ locals {
           timeout_terminal_server_agent_users     = try(realm_ad_ldap.timeout_terminal_server_agent_users, local.defaults.fmc.domains.integrations.ad_ldap_realms.timeout_terminal_server_agent_users, null)
           update_hour                             = try(realm_ad_ldap.update_hour, local.defaults.fmc.domains.integrations.ad_ldap_realms.update_hour, null)
           update_interval                         = try(realm_ad_ldap.update_interval, local.defaults.fmc.domains.integrations.ad_ldap_realms.update_interval, null)
-        } if !contains(try(keys(local.data_realm_ad_ldap), []), "${domain.name}:${realm_ad_ldap.name}")
+        } if try(local.data_realm_ad_ldap["${domain.name}:${realm_ad_ldap.name}"], null) == null
       ]
     ]) : "${item.domain}:${item.name}" => item
   }
@@ -122,7 +114,7 @@ locals {
           domain      = domain.name
           name        = realm_local.name
           description = try(realm_local.description, null)
-        } if !contains(try(keys(local.data_realm_local), []), "${domain.name}:${realm_local.name}")
+        } if try(local.data_realm_local["${domain.name}:${realm_local.name}"], null) == null
       ]
     ]) : "${item.domain}:${item.name}" => item
   }

@@ -3,7 +3,6 @@
 # for which we do not have corresponding resource definitions.
 ##########################################################
 
-
 ##########################################################
 ###    VARIABLE SETS
 ##########################################################
@@ -271,4 +270,14 @@ data "fmc_continents" "continents" {
 
   items  = each.value.items
   domain = each.key
+}
+
+##########################################################
+###    DOMAINS
+##########################################################
+data "fmc_domains" "domains" {
+  items = merge(
+    { for domain in local.domains : domain.name => {} },
+    { for domain in local.data_existing : domain.name => {} }
+  )
 }
