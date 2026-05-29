@@ -1,4 +1,4 @@
-## Unreleased
+## 0.1.3
 
 - (BREAKING CHANGE): Add support for cross-domain reference for network groups. This will re-create all the network groups created in FMC sub-domains.
 - Add support for sharing objects information between nac-fmc instances
