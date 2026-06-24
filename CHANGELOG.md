@@ -1,3 +1,8 @@
+## Unreleased
+
+- (Fix) `terraform import` command fails
+- (Fix) Applying chassis, logical devices and logical device configuration in a single run could fail
+
 ## 0.1.3
 
 - (BREAKING CHANGE): Add support for cross-domain reference for network groups. This will re-create all the network groups created in FMC sub-domains.

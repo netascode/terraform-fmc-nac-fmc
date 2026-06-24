@@ -14,25 +14,36 @@ resource "fmc_smart_license" "smart_license" {
 ###    POLICY ASSIGNMENT
 ##########################################################
 locals {
-  resource_policy_assignment_acp = { for item in flatten([
-    for acp_policy_key, acp_policy_value in local.map_access_control_policies : {
-      policy_domain           = acp_policy_value.domain
-      policy_id               = acp_policy_value.id
-      policy_name             = acp_policy_value.name
-      policy_type             = acp_policy_value.type
-      after_destroy_policy_id = try(local.map_access_control_policies["Global:${local.fmc.system.policy_assignment.after_destroy_access_control_policy}"].id, null)
+  # Static set of access control policy definitions keyed by "domain:name", derived
+  # from configuration (not resource attributes) so that the for_each keys below are
+  # known at plan time. Apply-time values (id/type) are looked up from the map.
+  policy_defs_acp = merge(
+    { for k, v in local.resource_access_control_policy : "${v.domain}:${v.name}" => { domain = v.domain, name = v.name } },
+    { for k, v in local.data_access_control_policy : "${v.domain}:${v.name}" => { domain = v.domain, name = v.name } },
+    { for k, v in local.map_access_control_policies_external : "${v.domain}:${v.name}" => { domain = v.domain, name = v.name } },
+  )
 
-      targets = flatten([
-        for domain in local.domains : [
-          for device in try(domain.devices.devices, []) : {
-            id   = local.map_devices["${domain.name}:${device.name}"].id
-            type = local.map_devices["${domain.name}:${device.name}"].type
-            name = device.name
-          } if try(device.access_control_policy, null) == acp_policy_value.name && contains(try(keys(local.data_device), []), "${domain.name}:${device.name}")
-        ]
-      ])
-    }
-    ]) : "${item.policy_domain}:${item.policy_name}" => item if length(item.targets) > 0
+  resource_policy_assignment_acp = {
+    for item in [
+      for policy_key, policy_def in local.policy_defs_acp : {
+        key                     = policy_key
+        policy_domain           = policy_def.domain
+        policy_id               = local.map_access_control_policies[policy_key].id
+        policy_name             = policy_def.name
+        policy_type             = local.map_access_control_policies[policy_key].type
+        after_destroy_policy_id = try(local.map_access_control_policies["Global:${local.fmc.system.policy_assignment.after_destroy_access_control_policy}"].id, null)
+
+        targets = flatten([
+          for domain in local.domains : [
+            for device in try(domain.devices.devices, []) : {
+              id   = local.map_devices["${domain.name}:${device.name}"].id
+              type = local.map_devices["${domain.name}:${device.name}"].type
+              name = device.name
+            } if try(device.access_control_policy, null) == policy_def.name && contains(try(keys(local.data_device), []), "${domain.name}:${device.name}")
+          ]
+        ])
+      }
+    ] : item.key => item if length(item.targets) > 0
   }
 }
 
@@ -51,13 +62,20 @@ resource "fmc_policy_assignment" "access_control_policy" {
 }
 
 locals {
+  policy_defs_health = merge(
+    { for k, v in local.resource_health_policy : "${v.domain}:${v.name}" => { domain = v.domain, name = v.name } },
+    { for k, v in local.data_health_policy : "${v.domain}:${v.name}" => { domain = v.domain, name = v.name } },
+    { for k, v in local.map_health_policies_external : "${v.domain}:${v.name}" => { domain = v.domain, name = v.name } },
+  )
+
   resource_policy_assignments_health_policy = {
-    for item in flatten([
-      for health_policy_key, health_policy_value in local.map_health_policies : {
-        policy_domain           = health_policy_value.domain
-        policy_id               = health_policy_value.id
-        policy_name             = health_policy_value.name
-        policy_type             = health_policy_value.type
+    for item in [
+      for policy_key, policy_def in local.policy_defs_health : {
+        key                     = policy_key
+        policy_domain           = policy_def.domain
+        policy_id               = local.map_health_policies[policy_key].id
+        policy_name             = policy_def.name
+        policy_type             = local.map_health_policies[policy_key].type
         after_destroy_policy_id = try(local.map_health_policies["Global:${local.fmc.system.policy_assignment.after_destroy_health_policy}"].id, null)
 
         targets = flatten([
@@ -66,11 +84,11 @@ locals {
               id   = local.map_devices["${domain.name}:${device.name}"].id
               type = local.map_devices["${domain.name}:${device.name}"].type
               name = device.name
-            } if try(device.health_policy, null) == health_policy_value.name && !contains(try(keys(local.resource_device), []), "${domain.name}:${device.name}")
+            } if try(device.health_policy, null) == policy_def.name && !contains(try(keys(local.resource_device), []), "${domain.name}:${device.name}")
           ]
         ])
       }
-    ]) : "${item.policy_domain}:${item.policy_name}" => item if length(item.targets) > 0
+    ] : item.key => item if length(item.targets) > 0
   }
 }
 
@@ -89,13 +107,20 @@ resource "fmc_policy_assignment" "health_policy" {
 }
 
 locals {
+  policy_defs_ftd_nat = merge(
+    { for k, v in local.resource_ftd_nat_policy : "${v.domain}:${v.name}" => { domain = v.domain, name = v.name } },
+    { for k, v in local.data_ftd_nat_policy : "${v.domain}:${v.name}" => { domain = v.domain, name = v.name } },
+    { for k, v in local.map_ftd_nat_policies_external : "${v.domain}:${v.name}" => { domain = v.domain, name = v.name } },
+  )
+
   resource_policy_assignments_ftd_nat_policy = {
-    for item in flatten([
-      for ftd_nat_policy_key, ftd_nat_policy_value in local.map_ftd_nat_policies : {
-        policy_domain           = ftd_nat_policy_value.domain
-        policy_id               = ftd_nat_policy_value.id
-        policy_name             = ftd_nat_policy_value.name
-        policy_type             = ftd_nat_policy_value.type
+    for item in [
+      for policy_key, policy_def in local.policy_defs_ftd_nat : {
+        key                     = policy_key
+        policy_domain           = policy_def.domain
+        policy_id               = local.map_ftd_nat_policies[policy_key].id
+        policy_name             = policy_def.name
+        policy_type             = local.map_ftd_nat_policies[policy_key].type
         after_destroy_policy_id = null
 
         targets = flatten([
@@ -104,11 +129,11 @@ locals {
               id   = local.map_devices["${domain.name}:${device.name}"].id
               type = local.map_devices["${domain.name}:${device.name}"].type
               name = device.name
-            } if try(device.nat_policy, null) == ftd_nat_policy_value.name && !contains(try(keys(local.resource_device), []), "${domain.name}:${device.name}")
+            } if try(device.nat_policy, null) == policy_def.name && !contains(try(keys(local.resource_device), []), "${domain.name}:${device.name}")
           ]
         ])
       }
-    ]) : "${item.policy_domain}:${item.policy_name}" => item if length(item.targets) > 0
+    ] : item.key => item if length(item.targets) > 0
   }
 }
 
@@ -179,13 +204,20 @@ resource "fmc_policy_assignment" "ftd_platform_settings" {
 }
 
 locals {
+  policy_defs_vpn_ra = merge(
+    { for k, v in local.resource_vpn_ra : "${v.domain}:${v.name}" => { domain = v.domain, name = v.name } },
+    { for k, v in local.data_vpn_ra : "${v.domain}:${v.name}" => { domain = v.domain, name = v.name } },
+    { for k, v in local.map_vpn_ra_external : "${v.domain}:${v.name}" => { domain = v.domain, name = v.name } },
+  )
+
   resource_policy_assignments_vpn_ra = {
-    for item in flatten([
-      for vpn_ra_key, vpn_ra_value in local.map_vpn_ra : {
-        policy_domain           = vpn_ra_value.domain
-        policy_id               = vpn_ra_value.id
-        policy_name             = vpn_ra_value.name
-        policy_type             = vpn_ra_value.type
+    for item in [
+      for policy_key, policy_def in local.policy_defs_vpn_ra : {
+        key                     = policy_key
+        policy_domain           = policy_def.domain
+        policy_id               = local.map_vpn_ra[policy_key].id
+        policy_name             = policy_def.name
+        policy_type             = local.map_vpn_ra[policy_key].type
         after_destroy_policy_id = null
 
         targets = flatten([
@@ -194,11 +226,11 @@ locals {
               id   = local.map_devices["${domain.name}:${device.name}"].id
               type = local.map_devices["${domain.name}:${device.name}"].type
               name = device.name
-            } if try(device.remote_access_vpn, null) == vpn_ra_value.name
+            } if try(device.remote_access_vpn, null) == policy_def.name
           ]
         ])
       }
-    ]) : "${item.policy_domain}:${item.policy_name}" => item if length(item.targets) > 0
+    ] : item.key => item if length(item.targets) > 0
   }
 }
 

@@ -13,6 +13,22 @@ locals {
     ]) : "${item.domain}:${item.name}" => item
   }
 
+  # Static set of chassis logical device keys ("<domain>:<logical_device.name>"), derived
+  # only from configuration. Used to filter devices without referencing
+  # local.resource_chassis_logical_device, whose values contain apply-time-unknown IDs.
+  chassis_logical_device_keys = {
+    for item in flatten([
+      for domain in local.domains : [
+        for chassis in try(domain.devices.chassis, []) : [
+          for logical_device in try(chassis.logical_devices, []) : {
+            domain = domain.name
+            name   = logical_device.name
+          }
+        ]
+      ]
+    ]) : "${item.domain}:${item.name}" => true
+  }
+
   resource_device = {
     for item in flatten([
       for domain in local.domains : [
@@ -34,7 +50,7 @@ locals {
           prohibit_packet_transfer = try(device.prohibit_packet_transfer, local.defaults.fmc.domains.devices.devices.prohibit_packet_transfer, null)
           snort_engine             = try(device.snort_engine, local.defaults.fmc.domains.devices.devices.snort_engine, null)
         } if try(local.data_device["${domain.name}:${device.name}"], null) == null &&
-        try(local.resource_chassis_logical_device["${domain.name}:${device.name}"], null) == null &&
+        try(local.chassis_logical_device_keys["${domain.name}:${device.name}"], null) == null &&
         try(local.map_devices_external["${domain.name}:${device.name}"], null) == null
       ]
     ]) : "${item.domain}:${item.name}" => item
