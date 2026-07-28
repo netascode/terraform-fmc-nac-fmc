@@ -1594,3 +1594,219 @@ locals {
     local.map_certificate_maps_external,
   )
 }
+
+######
+### map_sinkholes
+######
+locals {
+  map_sinkholes_internal = merge(
+
+    # Sinkholes - bulk mode outputs
+    local.sinkholes_bulk ? merge([
+      for domain, sinkholes in fmc_sinkholes.sinkholes : {
+        for sinkhole_name, sinkhole_values in sinkholes.items : "${domain}:${sinkhole_name}" => { id = sinkhole_values.id, type = sinkhole_values.type }
+      }
+    ]...) : {},
+
+    # Sinkholes - individual mode outputs
+    !local.sinkholes_bulk ? { for key, resource in fmc_sinkhole.sinkhole : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # Sinkholes - data sources
+    merge([
+      for domain, sinkholes in data.fmc_sinkholes.sinkholes : {
+        for sinkhole_name, sinkhole_values in sinkholes.items : "${domain}:${sinkhole_name}" => { id = sinkhole_values.id, type = sinkhole_values.type }
+      }
+    ]...),
+  )
+
+  # External objects
+  map_sinkholes_external = {
+    for key, value in try(local.data.objects.sinkholes, {}) : key => value
+  }
+
+  # Internal + External for reference in other objects
+  map_sinkholes = merge(
+    local.map_sinkholes_internal,
+    local.map_sinkholes_external,
+  )
+}
+
+######
+### map_cipher_suite_lists
+######
+locals {
+  map_cipher_suite_lists_internal = merge(
+
+    # Cipher Suite Lists - bulk mode outputs
+    local.cipher_suite_lists_bulk ? merge([
+      for domain, cipher_suite_lists in fmc_cipher_suite_lists.cipher_suite_lists : {
+        for cipher_suite_list_name, cipher_suite_list_values in cipher_suite_lists.items : "${domain}:${cipher_suite_list_name}" => { id = cipher_suite_list_values.id, type = cipher_suite_list_values.type }
+      }
+    ]...) : {},
+
+    # Cipher Suite Lists - individual mode outputs
+    !local.cipher_suite_lists_bulk ? { for key, resource in fmc_cipher_suite_list.cipher_suite_list : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # Cipher Suite Lists - data sources
+    merge([
+      for domain, cipher_suite_lists in data.fmc_cipher_suite_lists.cipher_suite_lists : {
+        for cipher_suite_list_name, cipher_suite_list_values in cipher_suite_lists.items : "${domain}:${cipher_suite_list_name}" => { id = cipher_suite_list_values.id, type = cipher_suite_list_values.type }
+      }
+    ]...),
+  )
+
+  # External objects
+  map_cipher_suite_lists_external = {
+    for key, value in try(local.data.objects.cipher_suite_lists, {}) : key => value
+  }
+
+  # Internal + External for reference in other objects
+  map_cipher_suite_lists = merge(
+    local.map_cipher_suite_lists_internal,
+    local.map_cipher_suite_lists_external,
+  )
+}
+
+######
+### map_distinguished_names
+######
+locals {
+  map_distinguished_names_internal = merge(
+
+    # Distinguished Names - bulk mode outputs
+    local.distinguished_names_bulk ? merge([
+      for domain, distinguished_names in fmc_distinguished_names.distinguished_names : {
+        for distinguished_name_name, distinguished_name_values in distinguished_names.items : "${domain}:${distinguished_name_name}" => { id = distinguished_name_values.id, type = distinguished_name_values.type }
+      }
+    ]...) : {},
+
+    # Distinguished Names - individual mode outputs
+    !local.distinguished_names_bulk ? { for key, resource in fmc_distinguished_name.distinguished_name : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # Distinguished Names - data sources
+    merge([
+      for domain, distinguished_names in data.fmc_distinguished_names.distinguished_names : {
+        for distinguished_name_name, distinguished_name_values in distinguished_names.items : "${domain}:${distinguished_name_name}" => { id = distinguished_name_values.id, type = distinguished_name_values.type }
+      }
+    ]...),
+  )
+
+  # External objects
+  map_distinguished_names_external = {
+    for key, value in try(local.data.objects.distinguished_names, {}) : key => value
+  }
+
+  # Internal + External for reference in other objects
+  map_distinguished_names = merge(
+    local.map_distinguished_names_internal,
+    local.map_distinguished_names_external,
+  )
+}
+
+######
+### map_sla_monitors
+######
+locals {
+  map_sla_monitors_internal = merge(
+
+    # SLA Monitors - bulk mode outputs
+    local.sla_monitors_bulk ? merge([
+      for domain, sla_monitors in fmc_sla_monitors.sla_monitors : {
+        for sla_monitor_name, sla_monitor_values in sla_monitors.items : "${domain}:${sla_monitor_name}" => { id = sla_monitor_values.id, type = sla_monitor_values.type }
+      }
+    ]...) : {},
+
+    # SLA Monitors - individual mode outputs
+    !local.sla_monitors_bulk ? { for key, resource in fmc_sla_monitor.sla_monitor : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # SLA Monitors - data sources
+    merge([
+      for domain, sla_monitors in data.fmc_sla_monitors.sla_monitors : {
+        for sla_monitor_name, sla_monitor_values in sla_monitors.items : "${domain}:${sla_monitor_name}" => { id = sla_monitor_values.id, type = sla_monitor_values.type }
+      }
+    ]...),
+  )
+
+  # External objects
+  map_sla_monitors_external = {
+    for key, value in try(local.data.objects.sla_monitors, {}) : key => value
+  }
+
+  # Internal + External for reference in other objects
+  map_sla_monitors = merge(
+    local.map_sla_monitors_internal,
+    local.map_sla_monitors_external,
+  )
+}
+
+######
+### map_key_chains
+######
+locals {
+  map_key_chains_internal = merge(
+
+    # Key Chains - bulk mode outputs
+    local.key_chains_bulk ? merge([
+      for domain, key_chains in fmc_key_chains.key_chains : {
+        for key_chain_name, key_chain_values in key_chains.items : "${domain}:${key_chain_name}" => { id = key_chain_values.id, type = key_chain_values.type }
+      }
+    ]...) : {},
+
+    # Key Chains - individual mode outputs
+    !local.key_chains_bulk ? { for key, resource in fmc_key_chain.key_chain : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # Key Chains - data sources
+    merge([
+      for domain, key_chains in data.fmc_key_chains.key_chains : {
+        for key_chain_name, key_chain_values in key_chains.items : "${domain}:${key_chain_name}" => { id = key_chain_values.id, type = key_chain_values.type }
+      }
+    ]...),
+  )
+
+  # External objects
+  map_key_chains_external = {
+    for key, value in try(local.data.objects.key_chains, {}) : key => value
+  }
+
+  # Internal + External for reference in other objects
+  map_key_chains = merge(
+    local.map_key_chains_internal,
+    local.map_key_chains_external,
+  )
+}
+
+######
+### map_mac_address_pools
+######
+locals {
+  map_mac_address_pools_internal = merge(
+
+    # MAC Address Pools - bulk mode outputs
+    local.mac_address_pools_bulk ? merge([
+      for domain, mac_address_pools in fmc_mac_address_pools.mac_address_pools : {
+        for mac_address_pool_name, mac_address_pool_values in mac_address_pools.items : "${domain}:${mac_address_pool_name}" => { id = mac_address_pool_values.id, type = mac_address_pool_values.type }
+      }
+    ]...) : {},
+
+    # MAC Address Pools - individual mode outputs
+    !local.mac_address_pools_bulk ? { for key, resource in fmc_mac_address_pool.mac_address_pool : "${resource.domain}:${resource.name}" => { id = resource.id, type = resource.type } } : {},
+
+    # MAC Address Pools - data sources
+    merge([
+      for domain, mac_address_pools in data.fmc_mac_address_pools.mac_address_pools : {
+        for mac_address_pool_name, mac_address_pool_values in mac_address_pools.items : "${domain}:${mac_address_pool_name}" => { id = mac_address_pool_values.id, type = mac_address_pool_values.type }
+      }
+    ]...),
+  )
+
+  # External objects
+  map_mac_address_pools_external = {
+    for key, value in try(local.data.objects.mac_address_pools, {}) : key => value
+  }
+
+  # Internal + External for reference in other objects
+  map_mac_address_pools = merge(
+    local.map_mac_address_pools_internal,
+    local.map_mac_address_pools_external,
+  )
+}

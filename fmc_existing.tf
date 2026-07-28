@@ -126,6 +126,26 @@ data "fmc_applications" "applications" {
   domain = each.key
 }
 
+##########################################################
+###    URL CATEGORIES
+##########################################################
+locals {
+  data_url_categories = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for url_category in try(domain.objects.url_categories, {}) : url_category.name => {}
+      }
+    } if length(try(domain.objects.url_categories, [])) > 0
+  }
+}
+
+data "fmc_url_categories" "url_categories" {
+  for_each = local.data_url_categories
+
+  items  = each.value.items
+  domain = each.key
+}
+
 locals {
   data_application_business_relevances = {
     for domain in local.data_existing : domain.name => {
