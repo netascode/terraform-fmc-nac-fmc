@@ -1,5 +1,6 @@
 ## Unreleased
 
+- (Enh) Add support for creating Sinkholes, Cipher Suite Lists, Distinguished Names, SLA Monitors, Key Chains, MAC Address Pools
 - (Fix) `terraform import` command fails
 - (Fix) Applying chassis, logical devices and logical device configuration in a single run could fail
 
@@ -10,7 +11,7 @@
 - Add support for geolocation in Access Control Policy Rules
 - Add support for PAT Options in FTD NAT rules
 - Add support for network objects overrides
-- Set of minor fixes 
+- Set of minor fixes
 
 ## 0.1.2
 

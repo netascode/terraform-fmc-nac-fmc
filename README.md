@@ -69,7 +69,7 @@ module "fmc" {
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.8.0 |
-| <a name="requirement_fmc"></a> [fmc](#requirement\_fmc) | >= 2.3.0, < 3.0.0 |
+| <a name="requirement_fmc"></a> [fmc](#requirement\_fmc) | >= 2.5.0, < 3.0.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.3.0, < 3.0.0 |
 | <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 2.0.0, < 3.0.0 |
 ## Inputs
@@ -108,6 +108,8 @@ module "fmc" {
 | [fmc_chassis_logical_device.chassis_logical_device](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/chassis_logical_device) | resource |
 | [fmc_chassis_physical_interface.chassis_physical_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/chassis_physical_interface) | resource |
 | [fmc_chassis_subinterface.chassis_subinterface](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/chassis_subinterface) | resource |
+| [fmc_cipher_suite_list.cipher_suite_list](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/cipher_suite_list) | resource |
+| [fmc_cipher_suite_lists.cipher_suite_lists](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/cipher_suite_lists) | resource |
 | [fmc_device.device](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device) | resource |
 | [fmc_device_bfd.device_bfd](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_bfd) | resource |
 | [fmc_device_bgp.device_bgp](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_bgp) | resource |
@@ -126,6 +128,8 @@ module "fmc" {
 | [fmc_device_subinterface.device_subinterface](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_subinterface) | resource |
 | [fmc_device_virtual_tunnel_interface.device_virtual_tunnel_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_virtual_tunnel_interface) | resource |
 | [fmc_device_vrf.device_vrf](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_vrf) | resource |
+| [fmc_distinguished_name.distinguished_name](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/distinguished_name) | resource |
+| [fmc_distinguished_names.distinguished_names](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/distinguished_names) | resource |
 | [fmc_dns_server_group.dns_server_group](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/dns_server_group) | resource |
 | [fmc_dns_server_groups.dns_server_groups](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/dns_server_groups) | resource |
 | [fmc_dynamic_objects.dynamic_objects](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/dynamic_objects) | resource |
@@ -188,6 +192,10 @@ module "fmc" {
 | [fmc_ipv6_address_pools.ipv6_address_pools](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/ipv6_address_pools) | resource |
 | [fmc_ipv6_prefix_list.ipv6_prefix_list](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/ipv6_prefix_list) | resource |
 | [fmc_ipv6_prefix_lists.ipv6_prefix_lists](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/ipv6_prefix_lists) | resource |
+| [fmc_key_chain.key_chain](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/key_chain) | resource |
+| [fmc_key_chains.key_chains](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/key_chains) | resource |
+| [fmc_mac_address_pool.mac_address_pool](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/mac_address_pool) | resource |
+| [fmc_mac_address_pools.mac_address_pools](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/mac_address_pools) | resource |
 | [fmc_network.network](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network) | resource |
 | [fmc_network_analysis_policy.network_analysis_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_analysis_policy) | resource |
 | [fmc_network_group_overrides.network_group_overrides](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/network_group_overrides) | resource |
@@ -229,6 +237,10 @@ module "fmc" {
 | [fmc_sgt.sgt](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/sgt) | resource |
 | [fmc_sgts.sgts](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/sgts) | resource |
 | [fmc_single_sign_on_server.single_sign_on_server](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/single_sign_on_server) | resource |
+| [fmc_sinkhole.sinkhole](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/sinkhole) | resource |
+| [fmc_sinkholes.sinkholes](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/sinkholes) | resource |
+| [fmc_sla_monitor.sla_monitor](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/sla_monitor) | resource |
+| [fmc_sla_monitors.sla_monitors](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/sla_monitors) | resource |
 | [fmc_smart_license.smart_license](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/smart_license) | resource |
 | [fmc_standard_access_list.standard_access_list](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/standard_access_list) | resource |
 | [fmc_standard_community_list.standard_community_list](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/standard_community_list) | resource |
@@ -279,6 +291,7 @@ module "fmc" {
 | [fmc_chassis_etherchannel_interface.chassis_etherchannel_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/chassis_etherchannel_interface) | data source |
 | [fmc_chassis_physical_interface.chassis_physical_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/chassis_physical_interface) | data source |
 | [fmc_chassis_subinterface.chassis_subinterface](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/chassis_subinterface) | data source |
+| [fmc_cipher_suite_lists.cipher_suite_lists](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/cipher_suite_lists) | data source |
 | [fmc_continents.continents](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/continents) | data source |
 | [fmc_countries.countries](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/countries) | data source |
 | [fmc_device.device](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/device) | data source |
@@ -291,6 +304,7 @@ module "fmc" {
 | [fmc_device_subinterface.device_subinterface](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/device_subinterface) | data source |
 | [fmc_device_virtual_tunnel_interface.device_virtual_tunnel_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/device_virtual_tunnel_interface) | data source |
 | [fmc_device_vrf.device_vrf](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/device_vrf) | data source |
+| [fmc_distinguished_names.distinguished_names](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/distinguished_names) | data source |
 | [fmc_dns_server_groups.dns_server_groups](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/dns_server_groups) | data source |
 | [fmc_domains.domains](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/domains) | data source |
 | [fmc_dynamic_objects.dynamic_objects](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/dynamic_objects) | data source |
@@ -324,6 +338,8 @@ module "fmc" {
 | [fmc_ipv6_address_pools.ipv6_address_pools](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/ipv6_address_pools) | data source |
 | [fmc_ipv6_prefix_lists.ipv6_prefix_lists](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/ipv6_prefix_lists) | data source |
 | [fmc_ise_sgts.ise_sgts](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/ise_sgts) | data source |
+| [fmc_key_chains.key_chains](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/key_chains) | data source |
+| [fmc_mac_address_pools.mac_address_pools](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/mac_address_pools) | data source |
 | [fmc_network_analysis_policy.network_analysis_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/network_analysis_policy) | data source |
 | [fmc_network_groups.network_groups](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/network_groups) | data source |
 | [fmc_networks.networks](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/networks) | data source |
@@ -347,6 +363,8 @@ module "fmc" {
 | [fmc_service_access.service_access](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/service_access) | data source |
 | [fmc_sgts.sgts](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/sgts) | data source |
 | [fmc_single_sign_on_server.single_sign_on_server](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/single_sign_on_server) | data source |
+| [fmc_sinkholes.sinkholes](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/sinkholes) | data source |
+| [fmc_sla_monitors.sla_monitors](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/sla_monitors) | data source |
 | [fmc_snmp_alerts.snmp_alerts](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/snmp_alerts) | data source |
 | [fmc_standard_access_list.standard_access_list](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/standard_access_list) | data source |
 | [fmc_standard_community_lists.standard_community_lists](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/standard_community_lists) | data source |
@@ -354,6 +372,7 @@ module "fmc" {
 | [fmc_time_ranges.time_ranges](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/time_ranges) | data source |
 | [fmc_trusted_certificate_authority.trusted_certificate_authority](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/trusted_certificate_authority) | data source |
 | [fmc_tunnel_zones.tunnel_zones](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/tunnel_zones) | data source |
+| [fmc_url_categories.url_categories](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/url_categories) | data source |
 | [fmc_url_groups.url_groups](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/url_groups) | data source |
 | [fmc_urls.urls](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/urls) | data source |
 | [fmc_variable_set.variable_set](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/variable_set) | data source |
