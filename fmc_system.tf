@@ -32,6 +32,7 @@ locals {
         policy_name             = policy_def.name
         policy_type             = local.map_access_control_policies[policy_key].type
         after_destroy_policy_id = try(local.map_access_control_policies["Global:${local.fmc.system.policy_assignment.after_destroy_access_control_policy}"].id, null)
+        # after_destroy_policy_domain = "Global"
 
         targets = flatten([
           for domain in local.domains : [
@@ -50,10 +51,12 @@ locals {
 resource "fmc_policy_assignment" "access_control_policy" {
   for_each = local.resource_policy_assignment_acp
 
+  domain                  = each.value.policy_domain
   policy_id               = each.value.policy_id
   policy_type             = each.value.policy_type
   after_destroy_policy_id = each.value.after_destroy_policy_id
-  targets                 = each.value.targets
+  # after_destroy_policy_domain = each.value.after_destroy_policy_domain
+  targets = each.value.targets
 
   depends_on = [
     fmc_device_ha_pair.device_ha_pair,
@@ -77,6 +80,7 @@ locals {
         policy_name             = policy_def.name
         policy_type             = local.map_health_policies[policy_key].type
         after_destroy_policy_id = try(local.map_health_policies["Global:${local.fmc.system.policy_assignment.after_destroy_health_policy}"].id, null)
+        # after_destroy_policy_domain = "Global"
 
         targets = flatten([
           for domain in local.domains : [
@@ -95,10 +99,12 @@ locals {
 resource "fmc_policy_assignment" "health_policy" {
   for_each = local.resource_policy_assignments_health_policy
 
+  domain                  = each.value.policy_domain
   policy_id               = each.value.policy_id
   policy_type             = each.value.policy_type
   after_destroy_policy_id = each.value.after_destroy_policy_id
-  targets                 = each.value.targets
+  # after_destroy_policy_domain = each.value.after_destroy_policy_domain
+  targets = each.value.targets
 
   depends_on = [
     fmc_device_ha_pair.device_ha_pair,
@@ -140,6 +146,7 @@ locals {
 resource "fmc_policy_assignment" "ftd_nat_policy" {
   for_each = local.resource_policy_assignments_ftd_nat_policy
 
+  domain                  = each.value.policy_domain
   policy_id               = each.value.policy_id
   policy_type             = each.value.policy_type
   after_destroy_policy_id = each.value.after_destroy_policy_id
@@ -177,6 +184,7 @@ locals {
 resource "fmc_policy_assignment" "ftd_platform_settings" {
   for_each = local.resource_policy_assignments_ftd_platform_settings
 
+  domain                  = each.value.policy_domain
   policy_id               = each.value.policy_id
   policy_type             = each.value.policy_type
   after_destroy_policy_id = each.value.after_destroy_policy_id
@@ -237,6 +245,7 @@ locals {
 resource "fmc_policy_assignment" "vpn_ra" {
   for_each = local.resource_policy_assignments_vpn_ra
 
+  domain                  = each.value.policy_domain
   policy_id               = each.value.policy_id
   policy_type             = each.value.policy_type
   after_destroy_policy_id = each.value.after_destroy_policy_id
