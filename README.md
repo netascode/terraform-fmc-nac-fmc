@@ -69,7 +69,7 @@ module "fmc" {
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.8.0 |
-| <a name="requirement_fmc"></a> [fmc](#requirement\_fmc) | >= 2.5.0, < 3.0.0 |
+| <a name="requirement_fmc"></a> [fmc](#requirement\_fmc) | >= 2.6.0, < 2.7.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.3.0, < 3.0.0 |
 | <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 2.0.0, < 3.0.0 |
 ## Inputs
