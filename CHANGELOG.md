@@ -3,6 +3,7 @@
 - (Enh) Add support for creating Sinkholes, Cipher Suite Lists, Distinguished Names, SLA Monitors, Key Chains, MAC Address Pools
 - (Fix) `terraform import` command fails
 - (Fix) Applying chassis, logical devices and logical device configuration in a single run could fail
+- (Fix) Unable to assign non-Global policies to the devices
 
 ## 0.1.3
 
