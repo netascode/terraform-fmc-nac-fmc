@@ -44,6 +44,7 @@ locals {
           health_policy_id = try(device.health_policy, "") != "" ? local.resolved_health_policies[domain.name][device.health_policy].id : null
           nat_policy_id    = try(device.nat_policy, "") != "" ? local.resolved_ftd_nat_policies[domain.name][device.nat_policy].id : null
 
+          deploy_on_destroy        = try(device.deploy_on_destroy, local.defaults.fmc.domains.devices.devices.deploy_on_destroy, null)
           nat_id                   = try(device.nat_id, null)
           object_group_search      = try(device.object_group_search, local.defaults.fmc.domains.devices.devices.object_group_search, null)
           performance_tier         = try(device.performance_tier, local.defaults.fmc.domains.devices.devices.performance_tier, null)
@@ -76,6 +77,7 @@ resource "fmc_device" "device" {
   # device_group_id  = each.value.device_group_id
   health_policy_id         = each.value.health_policy_id
   nat_policy_id            = each.value.nat_policy_id
+  deploy_on_destroy        = each.value.deploy_on_destroy
   nat_id                   = each.value.nat_id
   object_group_search      = each.value.object_group_search
   performance_tier         = each.value.performance_tier
