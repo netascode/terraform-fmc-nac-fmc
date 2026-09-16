@@ -461,3 +461,244 @@ resource "fmc_device_bgp" "device_bgp" {
     fmc_device_bgp_general_settings.device_bgp_general_settings,
   ]
 }
+
+##########################################################
+###    DEVICE OSPF
+##########################################################
+locals {
+  resource_device_ospf = {
+    for item in flatten([
+      for domain in local.domains : [
+        for device in try(domain.devices.devices, []) : [
+          for vrf in try(device.vrfs, []) : [
+            for ospf in try(vrf.ospfs, []) : {
+              domain      = domain.name
+              device_name = device.name
+              device_id   = local.map_devices["${domain.name}:${device.name}"].id
+              vrf_name    = vrf.name
+              vrf_id      = vrf.name == "Global" ? null : local.map_vrfs["${domain.name}:${device.name}:${vrf.name}"].id
+              process_id  = ospf.process_id
+
+              router_id                          = try(ospf.router_id, null)
+              rfc_1583_compatible                = try(ospf.rfc_1583_compatible, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.rfc_1583_compatible, null)
+              log_adjacency_changes              = try(ospf.log_adjacency_changes, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.log_adjacency_changes, null)
+              ignore_lsa_mospf                   = try(ospf.ignore_lsa_mospf, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.ignore_lsa_mospf, null)
+              administrative_distance_inter_area = try(ospf.administrative_distance_inter_area, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.administrative_distance_inter_area, null)
+              administrative_distance_intra_area = try(ospf.administrative_distance_intra_area, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.administrative_distance_intra_area, null)
+              administrative_distance_external   = try(ospf.administrative_distance_external, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.administrative_distance_external, null)
+              timer_lsa_group                    = try(ospf.timer_lsa_group, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.timer_lsa_group, null)
+
+              default_route_always_advertise = try(ospf.default_route_always_advertise, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.default_route_always_advertise, null)
+              default_route_metric           = try(ospf.default_route_metric, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.default_route_metric, null)
+              default_route_metric_type      = try(ospf.default_route_metric_type, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.default_route_metric_type, null)
+              default_route_route_map_id     = try(ospf.default_route_route_map, "") != "" ? local.resolved_route_maps[domain.name][ospf.default_route_route_map].id : null
+
+              non_stop_forwarding                  = try(ospf.non_stop_forwarding, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.non_stop_forwarding, null)
+              non_stop_forwarding_mechanism        = try(ospf.non_stop_forwarding_mechanism, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.non_stop_forwarding_mechanism, null)
+              non_stop_forwarding_helper_mode      = try(ospf.non_stop_forwarding_helper_mode, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.non_stop_forwarding_helper_mode, null)
+              non_stop_forwarding_capability       = try(ospf.non_stop_forwarding_capability, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.non_stop_forwarding_capability, null)
+              non_stop_forwarding_strict_mode      = try(ospf.non_stop_forwarding_strict_mode, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.non_stop_forwarding_strict_mode, null)
+              non_stop_forwarding_restart_interval = try(ospf.non_stop_forwarding_restart_interval, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.non_stop_forwarding_restart_interval, null)
+
+              areas = [for area in try(ospf.areas, []) : {
+                id                        = tostring(area.id)
+                type                      = area.type
+                no_summary                = try(area.no_summary, null)
+                no_redistribution         = try(area.no_redistribution, null)
+                default_route_metric_type = try(area.default_route_metric_type, null)
+                default_route_metric      = try(area.default_route_metric, null)
+                authentication            = try(area.authentication, null)
+                default_cost              = try(area.default_cost, null)
+                networks = [for network in area.networks : {
+                  id   = local.resolved_network_objects_and_groups[domain.name][network].id
+                  name = network
+                }]
+                ranges = [for range in try(area.ranges, []) : {
+                  network_object_id = local.resolved_network_objects_and_groups[domain.name][range.network].id
+                  advertise         = try(range.advertise, null)
+                }]
+                virtual_links = [for virtual_link in try(area.virtual_links, []) : {
+                  peer_router_host_id = local.resolved_hosts[domain.name][virtual_link.peer_router_host].id
+                  hello_interval      = try(virtual_link.hello_interval, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.areas.virtual_links.hello_interval, null)
+                  transmit_delay      = try(virtual_link.transmit_delay, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.areas.virtual_links.transmit_delay, null)
+                  retransmit_interval = try(virtual_link.retransmit_interval, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.areas.virtual_links.retransmit_interval, null)
+                  dead_interval       = try(virtual_link.dead_interval, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.areas.virtual_links.dead_interval, null)
+
+                  authentication_password = try(virtual_link.authentication_password, null)
+                  authentication_md5s = [for md5 in try(virtual_link.authentication_md5s, []) : {
+                    id  = md5.id
+                    key = md5.key
+                  }]
+                  authentication_area_password = try(virtual_link.authentication_area_password, null)
+                  authentication_area_md5s = [for md5 in try(virtual_link.authentication_area_md5s, []) : {
+                    id  = md5.id
+                    key = md5.key
+                  }]
+                  authentication_key_chain_id = try(virtual_link.authentication_key_chain, "") != "" ? local.resolved_key_chains[domain.name][virtual_link.authentication_key_chain].id : null
+                }]
+                inter_area_filters = [for inter_area_filter in try(area.inter_area_filters, []) : {
+                  prefix_list_id   = local.resolved_ipv4_prefix_lists[domain.name][inter_area_filter.prefix_list].id
+                  prefix_list_name = inter_area_filter.prefix_list
+                  filter_direction = inter_area_filter.filter_direction
+                }]
+              }]
+
+              redistributions = [for redistribution in try(ospf.redistributions, []) : {
+                redistribute_protocol = redistribution.source_protocol
+                as_number             = try(redistribution.as_number, null)
+                process_id            = try(redistribution.process_id, null)
+                match_external_1      = try(redistribution.match_external1, null)
+                match_external_2      = try(redistribution.match_external2, null)
+                match_internal        = try(redistribution.match_internal, null)
+                match_nssa_external_1 = try(redistribution.match_nssa_external1, null)
+                match_nssa_external_2 = try(redistribution.match_nssa_external2, null)
+                subnets               = try(redistribution.subnets, null)
+                metric                = try(redistribution.metric, null)
+                metric_type           = try(redistribution.metric_type, local.defaults.fmc.domains.devices.devices.vrfs.ospfs.redistributions.metric_type, null)
+                tag                   = try(redistribution.tag, null)
+                route_map_id          = try(redistribution.route_map, "") != "" ? local.resolved_route_maps[domain.name][redistribution.route_map].id : null
+              }]
+
+              filter_rules = [for filter_rule in try(ospf.filter_rules, []) : {
+                access_list_id     = local.resolved_standard_access_lists[domain.name][filter_rule.access_list].id
+                traffic_direction  = filter_rule.traffic_direction
+                routing_process    = try(filter_rule.routing_process, null)
+                routing_process_id = try(filter_rule.routing_process_id, null)
+                interface_id       = try(local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${filter_rule.interface_logical_name}"].id, null)
+              }]
+
+              summary_addresses = [for summary_address in try(ospf.summary_addresses, []) : {
+                networks = [for network in summary_address.networks : {
+                  id = local.resolved_network_objects_and_groups[domain.name][network].id
+                }]
+                tag       = try(summary_address.tag, null)
+                advertise = try(summary_address.advertise, null)
+              }]
+
+              neighbors = [for neighbor in try(ospf.neighbors, []) : {
+                interface_id     = local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${neighbor.interface_logical_name}"].id
+                neighbor_host_id = local.resolved_hosts[domain.name][neighbor.neighbor_host].id
+              }]
+            }
+          ]
+        ]
+      ]
+    ]) : "${item.domain}:${item.device_name}:${item.vrf_name}:${item.process_id}" => item
+  }
+}
+
+resource "fmc_device_ospf" "device_ospf" {
+  for_each = local.resource_device_ospf
+
+  domain     = each.value.domain
+  device_id  = each.value.device_id
+  vrf_id     = each.value.vrf_id
+  process_id = each.value.process_id
+
+  router_id                          = each.value.router_id
+  rfc_1583_compatible                = each.value.rfc_1583_compatible
+  log_adjacency_changes              = each.value.log_adjacency_changes
+  ignore_lsa_mospf                   = each.value.ignore_lsa_mospf
+  administrative_distance_inter_area = each.value.administrative_distance_inter_area
+  administrative_distance_intra_area = each.value.administrative_distance_intra_area
+  administrative_distance_external   = each.value.administrative_distance_external
+  timer_lsa_group                    = each.value.timer_lsa_group
+
+  default_route_always_advertise = each.value.default_route_always_advertise
+  default_route_metric           = each.value.default_route_metric
+  default_route_metric_type      = each.value.default_route_metric_type
+  default_route_route_map_id     = each.value.default_route_route_map_id
+
+  non_stop_forwarding                  = each.value.non_stop_forwarding
+  non_stop_forwarding_mechanism        = each.value.non_stop_forwarding_mechanism
+  non_stop_forwarding_helper_mode      = each.value.non_stop_forwarding_helper_mode
+  non_stop_forwarding_capability       = each.value.non_stop_forwarding_capability
+  non_stop_forwarding_strict_mode      = each.value.non_stop_forwarding_strict_mode
+  non_stop_forwarding_restart_interval = each.value.non_stop_forwarding_restart_interval
+
+  areas             = each.value.areas
+  redistributions   = each.value.redistributions
+  filter_rules      = each.value.filter_rules
+  summary_addresses = each.value.summary_addresses
+  neighbors         = each.value.neighbors
+
+  depends_on = [
+    fmc_device_ospf_interface.device_ospf_interface
+  ]
+
+}
+
+##########################################################
+###    DEVICE OSPF INTERFACES
+##########################################################
+locals {
+  resource_device_ospf_interface = {
+    for item in flatten([
+      for domain in local.domains : [
+        for device in try(domain.devices.devices, []) : [
+          for vrf in try(device.vrfs, []) : [
+            for ospf_interface in try(vrf.ospf_interfaces, []) : {
+              domain                 = domain.name
+              device_name            = device.name
+              device_id              = local.map_devices["${domain.name}:${device.name}"].id
+              vrf_name               = vrf.name
+              vrf_id                 = vrf.name == "Global" ? null : local.map_vrfs["${domain.name}:${device.name}:${vrf.name}"].id
+              interface_logical_name = ospf_interface.interface_logical_name
+              interface_id           = local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${ospf_interface.interface_logical_name}"].id
+
+              default_cost         = try(ospf_interface.default_cost, local.defaults.fmc.domains.devices.devices.vrfs.ospf_interfaces.default_cost, null)
+              priority             = try(ospf_interface.priority, local.defaults.fmc.domains.devices.devices.vrfs.ospf_interfaces.priority, null)
+              mtu_missmatch_ignore = try(ospf_interface.mtu_missmatch_ignore, local.defaults.fmc.domains.devices.devices.vrfs.ospf_interfaces.mtu_missmatch_ignore, null)
+              hello_interval       = try(ospf_interface.hello_interval, local.defaults.fmc.domains.devices.devices.vrfs.ospf_interfaces.hello_interval, null)
+              hello_multiplier     = try(ospf_interface.hello_multiplier, local.defaults.fmc.domains.devices.devices.vrfs.ospf_interfaces.hello_multiplier, null)
+              transmit_delay       = try(ospf_interface.transmit_delay, local.defaults.fmc.domains.devices.devices.vrfs.ospf_interfaces.transmit_delay, null)
+              retransmit_interval  = try(ospf_interface.retransmit_interval, local.defaults.fmc.domains.devices.devices.vrfs.ospf_interfaces.retransmit_interval, null)
+              dead_interval        = try(ospf_interface.dead_interval, local.defaults.fmc.domains.devices.devices.vrfs.ospf_interfaces.dead_interval, null)
+              point_to_point       = try(ospf_interface.point_to_point, local.defaults.fmc.domains.devices.devices.vrfs.ospf_interfaces.point_to_point, null)
+              bfd                  = try(ospf_interface.bfd, local.defaults.fmc.domains.devices.devices.vrfs.ospf_interfaces.bfd, null)
+
+              authentication_password = try(ospf_interface.authentication_password, null)
+              authentication_md5s = [for md5 in try(ospf_interface.authentication_md5s, []) : {
+                id  = md5.id
+                key = md5.key
+              }]
+              authentication_area_password = try(ospf_interface.authentication_area_password, null)
+              authentication_area_md5s = [for md5 in try(ospf_interface.authentication_area_md5s, []) : {
+                id  = md5.id
+                key = md5.key
+              }]
+              authentication_key_chain_id = try(ospf_interface.authentication_key_chain, "") != "" ? local.resolved_key_chains[domain.name][ospf_interface.authentication_key_chain].id : null
+            }
+          ]
+        ]
+      ]
+    ]) : "${item.domain}:${item.device_name}:${item.vrf_name}:${item.interface_logical_name}" => item
+  }
+}
+
+resource "fmc_device_ospf_interface" "device_ospf_interface" {
+  for_each = local.resource_device_ospf_interface
+
+  domain       = each.value.domain
+  device_id    = each.value.device_id
+  vrf_id       = each.value.vrf_id
+  interface_id = each.value.interface_id
+
+  default_cost         = each.value.default_cost
+  priority             = each.value.priority
+  mtu_missmatch_ignore = each.value.mtu_missmatch_ignore
+  hello_interval       = each.value.hello_interval
+  hello_multiplier     = each.value.hello_multiplier
+  transmit_delay       = each.value.transmit_delay
+  retransmit_interval  = each.value.retransmit_interval
+  dead_interval        = each.value.dead_interval
+  point_to_point       = each.value.point_to_point
+  bfd                  = each.value.bfd
+
+  authentication_password      = each.value.authentication_password
+  authentication_md5s          = each.value.authentication_md5s
+  authentication_area_password = each.value.authentication_area_password
+  authentication_area_md5s     = each.value.authentication_area_md5s
+  authentication_key_chain_id  = each.value.authentication_key_chain_id
+
+}

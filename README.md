@@ -124,6 +124,8 @@ module "fmc" {
 | [fmc_device_ipv4_static_route.device_ipv4_static_route](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_ipv4_static_route) | resource |
 | [fmc_device_ipv6_static_route.device_ipv6_static_route](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_ipv6_static_route) | resource |
 | [fmc_device_loopback_interface.device_loopback_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_loopback_interface) | resource |
+| [fmc_device_ospf.device_ospf](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_ospf) | resource |
+| [fmc_device_ospf_interface.device_ospf_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_ospf_interface) | resource |
 | [fmc_device_physical_interface.device_physical_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_physical_interface) | resource |
 | [fmc_device_subinterface.device_subinterface](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_subinterface) | resource |
 | [fmc_device_virtual_tunnel_interface.device_virtual_tunnel_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_virtual_tunnel_interface) | resource |
