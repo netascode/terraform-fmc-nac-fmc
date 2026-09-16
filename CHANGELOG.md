@@ -1,7 +1,7 @@
 ## Unreleased
 
 - (Enh) Add support for creating Sinkholes, Cipher Suite Lists, Distinguished Names, SLA Monitors, Key Chains, MAC Address Pools
-- (Enh) Add support for OSPF (`fmc_device_ospf`) on devices and VRFs
+- (Enh) Add support for OSPF
 - (Enh) Add `deploy_on_destroy` for devices
 - (Fix) `terraform import` command fails
 - (Fix) Applying chassis, logical devices and logical device configuration in a single run could fail
