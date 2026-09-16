@@ -300,6 +300,15 @@ defaults:
             idle_timeout: 30
             idle_timeout_alert_interval: 1
             simultaneous_logins_per_user: 3
+        sla_monitors:
+          timeout: 5000
+          frequency: 60
+          threshold: 5000
+          data_size: 28
+          tos: 0
+          number_of_packets: 1
+        mac_address_pools:
+          overridable: false
       vpns:
         site_to_site:
           ikev1: false
