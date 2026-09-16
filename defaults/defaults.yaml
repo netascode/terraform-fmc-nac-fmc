@@ -45,6 +45,28 @@ defaults:
               ipv4_redistribute_ibgp_into_igp: false
               ipv4_suppress_inactive_routes: true
               ipv4_synchronization: false
+            ospfs:
+              rfc_1583_compatible: false
+              ignore_lsa_mospf: false
+              administrative_distance_inter_area: 110
+              administrative_distance_intra_area: 110
+              administrative_distance_external: 110
+              timer_lsa_group: 240
+              areas:
+                virtual_links:
+                  hello_interval: 10
+                  transmit_delay: 1
+                  retransmit_interval: 5
+                  dead_interval: 40
+              redistributions:
+                metric_type: TYPE_2
+            ospf_interfaces:
+              default_cost: 10
+              priority: 1
+              hello_interval: 10
+              transmit_delay: 1
+              retransmit_interval: 5
+              dead_interval: 40
             physical_interfaces:
               enabled: true
               mode: "NONE"

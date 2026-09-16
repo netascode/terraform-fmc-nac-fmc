@@ -487,6 +487,17 @@ locals {
     ]...)
   }
 
+  resolved_key_chains = {
+    for domain_name, domain_paths in local.related_domains :
+    domain_name => merge([
+      for dp in reverse(domain_paths) : {
+        for key, obj in local.map_key_chains :
+        substr(key, length(dp) + 1, -1) => obj
+        if startswith(key, "${dp}:")
+      }
+    ]...)
+  }
+
   resolved_trusted_certificate_authorities = {
     for domain_name, domain_paths in local.related_domains :
     domain_name => merge([
