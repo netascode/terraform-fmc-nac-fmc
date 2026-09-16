@@ -4071,3 +4071,394 @@ resource "fmc_group_policy" "group_policy" {
   idle_timeout                           = each.value.idle_timeout
   idle_timeout_alert_interval            = each.value.idle_timeout_alert_interval
 }
+
+##########################################################
+###    SINKHOLES
+##########################################################
+locals {
+  data_sinkholes = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for sinkhole in try(domain.objects.sinkholes, []) : sinkhole.name => {}
+      }
+    } if length(try(domain.objects.sinkholes, [])) > 0
+  }
+
+  sinkholes_bulk = try(local.fmc.nac_configuration.sinkholes_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_sinkholes = {
+    for domain in local.domains : domain.name => [
+      for sinkhole in try(domain.objects.sinkholes, []) : {
+        domain              = domain.name
+        name                = sinkhole.name
+        ipv4_address        = sinkhole.ipv4_address
+        ipv6_address        = lower(sinkhole.ipv6_address)
+        action              = try(sinkhole.action, local.defaults.fmc.domains.objects.sinkholes.action, null)
+        log_connection_type = try(sinkhole.log_connection_type, local.defaults.fmc.domains.objects.sinkholes.log_connection_type, null)
+      } if !contains(try(keys(local.data_sinkholes[domain.name].items), []), sinkhole.name)
+    ] if length(try(domain.objects.sinkholes, [])) > 0
+  }
+
+  resource_sinkhole = !local.sinkholes_bulk ? {
+    for item in flatten([
+      for domain, sinkholes in local.resource_sinkholes : [
+        for sinkhole in sinkholes : {
+          key  = "${domain}:${sinkhole.name}"
+          item = sinkhole
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_sinkholes" "sinkholes" {
+  for_each = local.data_sinkholes
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_sinkholes" "sinkholes" {
+  for_each = local.sinkholes_bulk ? local.resource_sinkholes : {}
+
+  domain = each.key
+  items  = { for sinkhole in each.value : sinkhole.name => sinkhole }
+}
+
+resource "fmc_sinkhole" "sinkhole" {
+  for_each = !local.sinkholes_bulk ? local.resource_sinkhole : {}
+
+  domain              = each.value.item.domain
+  name                = each.value.item.name
+  ipv4_address        = each.value.item.ipv4_address
+  ipv6_address        = each.value.item.ipv6_address
+  action              = each.value.item.action
+  log_connection_type = each.value.item.log_connection_type
+}
+
+##########################################################
+###    CIPHER SUITE LISTS
+##########################################################
+locals {
+  data_cipher_suite_lists = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for cipher_suite_list in try(domain.objects.cipher_suite_lists, []) : cipher_suite_list.name => {}
+      }
+    } if length(try(domain.objects.cipher_suite_lists, [])) > 0
+  }
+
+  cipher_suite_lists_bulk = try(local.fmc.nac_configuration.cipher_suite_lists_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_cipher_suite_lists = {
+    for domain in local.domains : domain.name => [
+      for cipher_suite_list in try(domain.objects.cipher_suite_lists, []) : {
+        domain = domain.name
+        name   = cipher_suite_list.name
+        cipher_suites = [for cipher_suite in cipher_suite_list.cipher_suites : {
+          name = cipher_suite
+        }]
+      } if !contains(try(keys(local.data_cipher_suite_lists[domain.name].items), []), cipher_suite_list.name)
+    ] if length(try(domain.objects.cipher_suite_lists, [])) > 0
+  }
+
+  resource_cipher_suite_list = !local.cipher_suite_lists_bulk ? {
+    for item in flatten([
+      for domain, cipher_suite_lists in local.resource_cipher_suite_lists : [
+        for cipher_suite_list in cipher_suite_lists : {
+          key  = "${domain}:${cipher_suite_list.name}"
+          item = cipher_suite_list
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_cipher_suite_lists" "cipher_suite_lists" {
+  for_each = local.data_cipher_suite_lists
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_cipher_suite_lists" "cipher_suite_lists" {
+  for_each = local.cipher_suite_lists_bulk ? local.resource_cipher_suite_lists : {}
+
+  domain = each.key
+  items  = { for cipher_suite_list in each.value : cipher_suite_list.name => cipher_suite_list }
+}
+
+resource "fmc_cipher_suite_list" "cipher_suite_list" {
+  for_each = !local.cipher_suite_lists_bulk ? local.resource_cipher_suite_list : {}
+
+  domain        = each.value.item.domain
+  name          = each.value.item.name
+  cipher_suites = each.value.item.cipher_suites
+}
+
+##########################################################
+###    DISTINGUISHED NAMES
+##########################################################
+locals {
+  data_distinguished_names = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for distinguished_name in try(domain.objects.distinguished_names, []) : distinguished_name.name => {}
+      }
+    } if length(try(domain.objects.distinguished_names, [])) > 0
+  }
+
+  distinguished_names_bulk = try(local.fmc.nac_configuration.distinguished_names_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_distinguished_names = {
+    for domain in local.domains : domain.name => [
+      for distinguished_name in try(domain.objects.distinguished_names, []) : {
+        domain             = domain.name
+        name               = distinguished_name.name
+        distinguished_name = distinguished_name.distinguished_name
+      } if !contains(try(keys(local.data_distinguished_names[domain.name].items), []), distinguished_name.name)
+    ] if length(try(domain.objects.distinguished_names, [])) > 0
+  }
+
+  resource_distinguished_name = !local.distinguished_names_bulk ? {
+    for item in flatten([
+      for domain, distinguished_names in local.resource_distinguished_names : [
+        for distinguished_name in distinguished_names : {
+          key  = "${domain}:${distinguished_name.name}"
+          item = distinguished_name
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_distinguished_names" "distinguished_names" {
+  for_each = local.data_distinguished_names
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_distinguished_names" "distinguished_names" {
+  for_each = local.distinguished_names_bulk ? local.resource_distinguished_names : {}
+
+  domain = each.key
+  items  = { for distinguished_name in each.value : distinguished_name.name => distinguished_name }
+}
+
+resource "fmc_distinguished_name" "distinguished_name" {
+  for_each = !local.distinguished_names_bulk ? local.resource_distinguished_name : {}
+
+  domain             = each.value.item.domain
+  name               = each.value.item.name
+  distinguished_name = each.value.item.distinguished_name
+}
+
+##########################################################
+###    SLA MONITORS
+##########################################################
+locals {
+  data_sla_monitors = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for sla_monitor in try(domain.objects.sla_monitors, []) : sla_monitor.name => {}
+      }
+    } if length(try(domain.objects.sla_monitors, [])) > 0
+  }
+
+  sla_monitors_bulk = try(local.fmc.nac_configuration.sla_monitors_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_sla_monitors = {
+    for domain in local.domains : domain.name => [
+      for sla_monitor in try(domain.objects.sla_monitors, []) : {
+        domain            = domain.name
+        name              = sla_monitor.name
+        description       = try(sla_monitor.description, null)
+        sla_monitor_id    = sla_monitor.sla_monitor_id
+        monitor_address   = sla_monitor.monitor_address
+        timeout           = try(sla_monitor.timeout, local.defaults.fmc.domains.objects.sla_monitors.timeout, null)
+        frequency         = try(sla_monitor.frequency, local.defaults.fmc.domains.objects.sla_monitors.frequency, null)
+        threshold         = try(sla_monitor.threshold, local.defaults.fmc.domains.objects.sla_monitors.threshold, null)
+        data_size         = try(sla_monitor.data_size, local.defaults.fmc.domains.objects.sla_monitors.data_size, null)
+        tos               = try(sla_monitor.tos, local.defaults.fmc.domains.objects.sla_monitors.tos, null)
+        number_of_packets = try(sla_monitor.number_of_packets, local.defaults.fmc.domains.objects.sla_monitors.number_of_packets, null)
+        selected_interfaces = [for selected_interface in try(sla_monitor.selected_interfaces, []) : {
+          id = local.resolved_security_zones_and_interface_groups[domain.name][selected_interface].id
+        }]
+      } if !contains(try(keys(local.data_sla_monitors[domain.name].items), []), sla_monitor.name)
+    ] if length(try(domain.objects.sla_monitors, [])) > 0
+  }
+
+  resource_sla_monitor = !local.sla_monitors_bulk ? {
+    for item in flatten([
+      for domain, sla_monitors in local.resource_sla_monitors : [
+        for sla_monitor in sla_monitors : {
+          key  = "${domain}:${sla_monitor.name}"
+          item = sla_monitor
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_sla_monitors" "sla_monitors" {
+  for_each = local.data_sla_monitors
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_sla_monitors" "sla_monitors" {
+  for_each = local.sla_monitors_bulk ? local.resource_sla_monitors : {}
+
+  domain = each.key
+  items  = { for sla_monitor in each.value : sla_monitor.name => sla_monitor }
+}
+
+resource "fmc_sla_monitor" "sla_monitor" {
+  for_each = !local.sla_monitors_bulk ? local.resource_sla_monitor : {}
+
+  domain              = each.value.item.domain
+  name                = each.value.item.name
+  description         = each.value.item.description
+  sla_monitor_id      = each.value.item.sla_monitor_id
+  monitor_address     = each.value.item.monitor_address
+  timeout             = each.value.item.timeout
+  frequency           = each.value.item.frequency
+  threshold           = each.value.item.threshold
+  data_size           = each.value.item.data_size
+  tos                 = each.value.item.tos
+  number_of_packets   = each.value.item.number_of_packets
+  selected_interfaces = each.value.item.selected_interfaces
+}
+
+##########################################################
+###    KEY CHAINS
+##########################################################
+locals {
+  data_key_chains = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for key_chain in try(domain.objects.key_chains, []) : key_chain.name => {}
+      }
+    } if length(try(domain.objects.key_chains, [])) > 0
+  }
+
+  key_chains_bulk = try(local.fmc.nac_configuration.key_chains_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_key_chains = {
+    for domain in local.domains : domain.name => [
+      for key_chain in try(domain.objects.key_chains, []) : {
+        domain      = domain.name
+        name        = key_chain.name
+        description = try(key_chain.description, null)
+        keys = [for key in key_chain.keys : {
+          id                       = key.id
+          key                      = key.key
+          accept_lifetime_start    = try(key.accept_lifetime_start, null)
+          accept_lifetime_end_type = try(key.accept_lifetime_end_type, null)
+          accept_lifetime_end      = try(key.accept_lifetime_end, null)
+          send_lifetime_start      = try(key.send_lifetime_start, null)
+          send_lifetime_end_type   = try(key.send_lifetime_end_type, null)
+          send_lifetime_end        = try(key.send_lifetime_end, null)
+        }]
+      } if !contains(try(keys(local.data_key_chains[domain.name].items), []), key_chain.name)
+    ] if length(try(domain.objects.key_chains, [])) > 0
+  }
+
+  resource_key_chain = !local.key_chains_bulk ? {
+    for item in flatten([
+      for domain, key_chains in local.resource_key_chains : [
+        for key_chain in key_chains : {
+          key  = "${domain}:${key_chain.name}"
+          item = key_chain
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_key_chains" "key_chains" {
+  for_each = local.data_key_chains
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_key_chains" "key_chains" {
+  for_each = local.key_chains_bulk ? local.resource_key_chains : {}
+
+  domain = each.key
+  items  = { for key_chain in each.value : key_chain.name => key_chain }
+}
+
+resource "fmc_key_chain" "key_chain" {
+  for_each = !local.key_chains_bulk ? local.resource_key_chain : {}
+
+  domain      = each.value.item.domain
+  name        = each.value.item.name
+  description = each.value.item.description
+  keys        = each.value.item.keys
+}
+
+##########################################################
+###    MAC ADDRESS POOLS
+##########################################################
+locals {
+  data_mac_address_pools = {
+    for domain in local.data_existing : domain.name => {
+      items = {
+        for mac_address_pool in try(domain.objects.mac_address_pools, []) : mac_address_pool.name => {}
+      }
+    } if length(try(domain.objects.mac_address_pools, [])) > 0
+  }
+
+  mac_address_pools_bulk = try(local.fmc.nac_configuration.mac_address_pools_bulk, local.fmc.nac_configuration.bulk, local.defaults.fmc.nac_configuration.bulk)
+
+  resource_mac_address_pools = {
+    for domain in local.domains : domain.name => [
+      for mac_address_pool in try(domain.objects.mac_address_pools, []) : {
+        domain            = domain.name
+        name              = mac_address_pool.name
+        description       = try(mac_address_pool.description, null)
+        mac_address_range = mac_address_pool.mac_address_range
+        overridable       = try(mac_address_pool.overridable, local.defaults.fmc.domains.objects.mac_address_pools.overridable, null)
+      } if !contains(try(keys(local.data_mac_address_pools[domain.name].items), []), mac_address_pool.name)
+    ] if length(try(domain.objects.mac_address_pools, [])) > 0
+  }
+
+  resource_mac_address_pool = !local.mac_address_pools_bulk ? {
+    for item in flatten([
+      for domain, mac_address_pools in local.resource_mac_address_pools : [
+        for mac_address_pool in mac_address_pools : {
+          key  = "${domain}:${mac_address_pool.name}"
+          item = mac_address_pool
+        }
+      ]
+    ]) : item.key => item
+  } : {}
+}
+
+data "fmc_mac_address_pools" "mac_address_pools" {
+  for_each = local.data_mac_address_pools
+
+  items  = each.value.items
+  domain = each.key
+}
+
+resource "fmc_mac_address_pools" "mac_address_pools" {
+  for_each = local.mac_address_pools_bulk ? local.resource_mac_address_pools : {}
+
+  domain = each.key
+  items  = { for mac_address_pool in each.value : mac_address_pool.name => mac_address_pool }
+}
+
+resource "fmc_mac_address_pool" "mac_address_pool" {
+  for_each = !local.mac_address_pools_bulk ? local.resource_mac_address_pool : {}
+
+  domain            = each.value.item.domain
+  name              = each.value.item.name
+  description       = each.value.item.description
+  mac_address_range = each.value.item.mac_address_range
+  overridable       = each.value.item.overridable
+}

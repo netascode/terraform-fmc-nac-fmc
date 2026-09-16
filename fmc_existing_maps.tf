@@ -139,6 +139,30 @@ locals {
 }
 
 ######
+### map_url_categories
+######
+locals {
+  map_url_categories_internal = merge(
+
+    # URL Categories - data sources
+    merge([
+      for domain, url_categories in data.fmc_url_categories.url_categories : {
+        for url_category_name, url_category_values in url_categories.items : "${domain}:${url_category_name}" => { id = url_category_values.id, type = url_category_values.type }
+      }
+    ]...),
+  )
+
+  map_url_categories_external = {
+    for key, value in try(local.data.objects.url_categories, {}) : key => value
+  }
+
+  map_url_categories = merge(
+    local.map_url_categories_internal,
+    local.map_url_categories_external,
+  )
+}
+
+######
 ### map_application_business_relevances
 ######
 locals {

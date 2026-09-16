@@ -39,11 +39,15 @@ locals {
           licenses         = device.licenses
           registration_key = device.registration_key
 
-          access_control_policy_id = try(device.access_control_policy, "") != "" ? local.resolved_access_control_policies[domain.name][device.access_control_policy].id : null
+          access_control_policy_id     = try(device.access_control_policy, "") != "" ? local.resolved_access_control_policies[domain.name][device.access_control_policy].id : null
+          access_control_policy_domain = try(device.access_control_policy, "") != "" ? local.resolved_access_control_policies[domain.name][device.access_control_policy].domain : null
           # device_group_id = ...
-          health_policy_id = try(device.health_policy, "") != "" ? local.resolved_health_policies[domain.name][device.health_policy].id : null
-          nat_policy_id    = try(device.nat_policy, "") != "" ? local.resolved_ftd_nat_policies[domain.name][device.nat_policy].id : null
+          health_policy_id     = try(device.health_policy, "") != "" ? local.resolved_health_policies[domain.name][device.health_policy].id : null
+          health_policy_domain = try(device.health_policy, "") != "" ? local.resolved_health_policies[domain.name][device.health_policy].domain : null
+          nat_policy_id        = try(device.nat_policy, "") != "" ? local.resolved_ftd_nat_policies[domain.name][device.nat_policy].id : null
+          nat_policy_domain    = try(device.nat_policy, "") != "" ? local.resolved_ftd_nat_policies[domain.name][device.nat_policy].domain : null
 
+          deploy_on_destroy        = try(device.deploy_on_destroy, local.defaults.fmc.domains.devices.devices.deploy_on_destroy, null)
           nat_id                   = try(device.nat_id, null)
           object_group_search      = try(device.object_group_search, local.defaults.fmc.domains.devices.devices.object_group_search, null)
           performance_tier         = try(device.performance_tier, local.defaults.fmc.domains.devices.devices.performance_tier, null)
@@ -67,15 +71,19 @@ data "fmc_device" "device" {
 resource "fmc_device" "device" {
   for_each = local.resource_device
 
-  domain                   = each.value.domain
-  name                     = each.value.name
-  host                     = each.value.host
-  registration_key         = each.value.registration_key
-  access_control_policy_id = each.value.access_control_policy_id
-  licenses                 = each.value.licenses
+  domain                       = each.value.domain
+  name                         = each.value.name
+  host                         = each.value.host
+  registration_key             = each.value.registration_key
+  access_control_policy_id     = each.value.access_control_policy_id
+  access_control_policy_domain = each.value.access_control_policy_domain
+  licenses                     = each.value.licenses
   # device_group_id  = each.value.device_group_id
   health_policy_id         = each.value.health_policy_id
+  health_policy_domain     = each.value.health_policy_domain
   nat_policy_id            = each.value.nat_policy_id
+  nat_policy_domain        = each.value.nat_policy_domain
+  deploy_on_destroy        = each.value.deploy_on_destroy
   nat_id                   = each.value.nat_id
   object_group_search      = each.value.object_group_search
   performance_tier         = each.value.performance_tier

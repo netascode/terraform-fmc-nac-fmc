@@ -1,5 +1,7 @@
 ## Unreleased
 
+- (Enh) Add support for creating Sinkholes, Cipher Suite Lists, Distinguished Names, SLA Monitors, Key Chains, MAC Address Pools
+- (Enh) Add `deploy_on_destroy` for devices
 - (Fix) `terraform import` command fails
 - (Fix) Applying chassis, logical devices and logical device configuration in a single run could fail
 - (Fix) Unable to assign non-Global policies to the devices
@@ -11,7 +13,7 @@
 - Add support for geolocation in Access Control Policy Rules
 - Add support for PAT Options in FTD NAT rules
 - Add support for network objects overrides
-- Set of minor fixes 
+- Set of minor fixes
 
 ## 0.1.2
 
@@ -24,7 +26,6 @@
 - Add missing objects for full BGP support
 - Add support for chassis management
 - Add support for Site to site VPNs
-
 
 ## 0.1.0
 
