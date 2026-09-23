@@ -399,15 +399,158 @@ locals {
 }
 
 ######
-### map_device_to_container
+### map_primary_device_to_container
 ######
 locals {
-  map_device_to_container = merge(
+  # Keyed by PRIMARY member device id only.
+  map_primary_device_to_container = merge(
     { for key, ha_pair in data.fmc_device_ha_pair.device_ha_pair : ha_pair.primary_device_id => { id = ha_pair.id } },
     { for key, ha_pair in fmc_device_ha_pair.device_ha_pair : ha_pair.primary_device_id => { id = ha_pair.id } }
   )
 }
 
+######
+### map_ha_pairs
+######
+locals {
+  map_ha_pairs = merge(
+    {
+      for item in flatten([
+        for ha_pair_key, ha_pair_value in local.resource_device_ha_pair : {
+          name   = ha_pair_value.name
+          domain = ha_pair_value.domain
+          id     = fmc_device_ha_pair.device_ha_pair[ha_pair_key].id
+          type   = fmc_device_ha_pair.device_ha_pair[ha_pair_key].type
+        }
+      ]) : "${item.domain}:${item.name}" => item
+    },
+    {
+      for item in flatten([
+        for ha_pair_key, ha_pair_value in local.data_device_ha_pair : {
+          name   = ha_pair_value.name
+          domain = ha_pair_value.domain
+          id     = data.fmc_device_ha_pair.device_ha_pair[ha_pair_key].id
+          type   = data.fmc_device_ha_pair.device_ha_pair[ha_pair_key].type
+        }
+      ]) : "${item.domain}:${item.name}" => item
+    },
+  )
+}
+
+######
+### map_member_device_to_container
+######
+locals {
+  # HA pairs declared in the data model, keyed by ANY member device name (primary and
+  # secondary).
+  map_member_device_to_container = {
+    for item in flatten([
+      for domain in local.domains : [
+        for ha_pair in try(domain.devices.ha_pairs, []) : [
+          for member_name in [ha_pair.primary_device, ha_pair.secondary_device] : {
+            key         = "${domain.name}:${member_name}"
+            ha_pair_key = "${domain.name}:${ha_pair.name}"
+          }
+        ]
+      ]
+      ]) : item.key => {
+      id   = local.map_ha_pairs[item.ha_pair_key].id
+      type = local.map_ha_pairs[item.ha_pair_key].type
+      name = local.map_ha_pairs[item.ha_pair_key].name
+    }
+  }
+}
+
+######
+### ha_pair_secondary_devices
+######
+locals {
+  # Devices that are the secondary member of an HA pair declared in the data model.
+  #
+  # Only the primary member's policy values are taken into account, for all five policy
+  # types. The access control policy, FTD NAT policy, FTD platform settings and RA VPN are
+  # assigned to the HA pair rather than to the member device, so without this two members
+  # naming different policies produce two policy assignments that both target the same pair
+  # and overwrite each other on every apply. The health policy is assigned to the primary
+  # member device itself and replicated to the standby by FMC, so the secondary's value is
+  # redundant there too.
+  ha_pair_secondary_devices = flatten([
+    for domain in local.domains : [
+      for ha_pair in try(domain.devices.ha_pairs, []) : "${domain.name}:${ha_pair.secondary_device}"
+    ]
+  ])
+}
+
+######
+### map_existing_ha_pair_members
+######
+locals {
+  # Devices read through a data source, keyed by their id. Data sources are read during
+  # plan, so these ids are known and can safely be matched against HA pair members.
+  map_data_device_keys = {
+    for key, device in data.fmc_device.device : device.id => key
+  }
+
+  # HA pairs declared under `existing`, keyed by the data model key of each member device.
+  #
+  # The `existing` model carries only the pair name, so the members are resolved through
+  # the data source. Only ids that come from data sources are matched here - the id of a
+  # device that is being created is unknown at plan time, and using it as a lookup key
+  # would make this map unknown, which in turn breaks the policy assignment for_each.
+  # A device being created cannot be a member of an already existing HA pair anyway.
+  map_existing_ha_pair_members = {
+    for item in flatten([
+      for key, ha_pair in data.fmc_device_ha_pair.device_ha_pair : [
+        for member_id in [ha_pair.primary_device_id, ha_pair.secondary_device_id] : {
+          key       = lookup(local.map_data_device_keys, member_id, "")
+          container = { id = ha_pair.id, type = ha_pair.type, name = ha_pair.name }
+        }
+      ]
+    ]) : item.key => item.container if item.key != ""
+  }
+
+  # Same, extended to every device of the data model, so that it can be indexed
+  # unconditionally. A device that is not a member of an existing HA pair yields an empty
+  # container, which is what a device without a parent container looks like anyway.
+  map_device_to_existing_ha_pair = {
+    for item in flatten([
+      for domain in local.domains : [
+        for device in try(domain.devices.devices, []) : {
+          key       = "${domain.name}:${device.name}"
+          container = lookup(local.map_existing_ha_pair_members, "${domain.name}:${device.name}", { id = "", type = "", name = "" })
+        }
+      ]
+    ]) : item.key => item.container
+  }
+}
+
+######
+### map_policy_assignment_targets
+######
+locals {
+  # FMC keeps a policy assignment of an HA pair member against the parent DeviceHAPair
+  # container, not against the member device itself.
+  map_policy_assignment_targets = {
+    for item in flatten([
+      for domain in local.domains : [
+        for device in try(domain.devices.devices, []) : {
+          key = "${domain.name}:${device.name}"
+          target = (
+            contains(keys(local.map_member_device_to_container), "${domain.name}:${device.name}")
+            ? local.map_member_device_to_container["${domain.name}:${device.name}"]
+            : local.map_device_to_existing_ha_pair["${domain.name}:${device.name}"].type == "DeviceHAPair"
+            ? local.map_device_to_existing_ha_pair["${domain.name}:${device.name}"]
+            : {
+              id   = local.map_devices["${domain.name}:${device.name}"].id
+              type = local.map_devices["${domain.name}:${device.name}"].type
+              name = device.name
+            }
+          )
+        }
+      ]
+    ]) : item.key => item.target
+  }
+}
 ######
 ### map_loopback_interfaces
 ######

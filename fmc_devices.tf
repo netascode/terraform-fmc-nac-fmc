@@ -214,7 +214,7 @@ locals {
               for physical_interface in try(vrf.physical_interfaces, []) : {
                 domain               = domain.name
                 device_name          = device.name
-                ha_pair_id           = local.map_device_to_container[local.map_devices["${domain.name}:${device.name}"].id].id
+                ha_pair_id           = local.map_primary_device_to_container[local.map_devices["${domain.name}:${device.name}"].id].id
                 logical_name         = local.map_interfaces_by_names["${domain.name}:${device.name}:${physical_interface.name}"].logical_name # To build TF dependency on the interface
                 monitor_interface    = physical_interface.monitor_interface
                 ipv4_standby_address = try(physical_interface.ipv4_standby_address, null)
@@ -228,7 +228,7 @@ locals {
               for subinterface in try(vrf.sub_interfaces, []) : {
                 domain               = domain.name
                 device_name          = device.name
-                ha_pair_id           = local.map_device_to_container[local.map_devices["${domain.name}:${device.name}"].id].id
+                ha_pair_id           = local.map_primary_device_to_container[local.map_devices["${domain.name}:${device.name}"].id].id
                 logical_name         = local.map_interfaces_by_names["${domain.name}:${device.name}:${subinterface.name}"].logical_name # To build TF dependency on the interface
                 monitor_interface    = subinterface.monitor_interface
                 ipv4_standby_address = try(subinterface.ipv4_standby_address, null)
@@ -242,7 +242,7 @@ locals {
               for etherchannel_interface in try(vrf.etherchannel_interfaces, []) : {
                 domain               = domain.name
                 device_name          = device.name
-                ha_pair_id           = local.map_device_to_container[local.map_devices["${domain.name}:${device.name}"].id].id
+                ha_pair_id           = local.map_primary_device_to_container[local.map_devices["${domain.name}:${device.name}"].id].id
                 logical_name         = local.map_interfaces_by_names["${domain.name}:${device.name}:${etherchannel_interface.name}"].logical_name # To build TF dependency on the interface
                 monitor_interface    = etherchannel_interface.monitor_interface
                 ipv4_standby_address = try(etherchannel_interface.ipv4_standby_address, null)
@@ -284,7 +284,7 @@ locals {
               for physical_interface in try(vrf.physical_interfaces, []) : {
                 domain              = domain.name
                 device_name         = device.name
-                ha_pair_id          = local.map_device_to_container[local.map_devices["${domain.name}:${device.name}"].id].id
+                ha_pair_id          = local.map_primary_device_to_container[local.map_devices["${domain.name}:${device.name}"].id].id
                 name                = physical_interface.name
                 interface_name      = physical_interface.name
                 interface_id        = local.map_interfaces_by_names["${domain.name}:${device.name}:${physical_interface.name}"].id
@@ -297,7 +297,7 @@ locals {
               for subinterface in try(vrf.sub_interfaces, []) : {
                 domain              = domain.name
                 device_name         = device.name
-                ha_pair_id          = local.map_device_to_container[local.map_devices["${domain.name}:${device.name}"].id].id
+                ha_pair_id          = local.map_primary_device_to_container[local.map_devices["${domain.name}:${device.name}"].id].id
                 name                = subinterface.name
                 interface_name      = split(".", subinterface.name)[length(split(".", subinterface.name)) - 2]
                 interface_id        = local.map_interfaces_by_names["${domain.name}:${device.name}:${subinterface.name}"].id
@@ -310,7 +310,7 @@ locals {
               for etherchannel_interface in try(vrf.etherchannel_interfaces, []) : {
                 domain              = domain.name
                 device_name         = device.name
-                ha_pair_id          = local.map_device_to_container[local.map_devices["${domain.name}:${device.name}"].id].id
+                ha_pair_id          = local.map_primary_device_to_container[local.map_devices["${domain.name}:${device.name}"].id].id
                 name                = etherchannel_interface.name
                 interface_name      = etherchannel_interface.name
                 interface_id        = local.map_interfaces_by_names["${domain.name}:${device.name}:${etherchannel_interface.name}"].id

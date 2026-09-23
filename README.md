@@ -69,7 +69,7 @@ module "fmc" {
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.8.0 |
-| <a name="requirement_fmc"></a> [fmc](#requirement\_fmc) | >= 2.6.0, < 2.7.0 |
+| <a name="requirement_fmc"></a> [fmc](#requirement\_fmc) | >= 2.6.1, < 2.7.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.3.0, < 3.0.0 |
 | <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 2.0.0, < 3.0.0 |
 ## Inputs
@@ -277,6 +277,7 @@ module "fmc" {
 | [local_sensitive_file.defaults](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
 | [local_sensitive_file.objects](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
 | [terraform_data.validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
+| [terraform_data.validation_policy_assignment](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [fmc_access_control_policy.access_control_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/access_control_policy) | data source |
 | [fmc_application_business_relevances.application_business_relevances](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/application_business_relevances) | data source |
 | [fmc_application_categories.application_categories](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/data-sources/application_categories) | data source |

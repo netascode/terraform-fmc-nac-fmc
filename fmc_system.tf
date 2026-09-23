@@ -36,11 +36,9 @@ locals {
 
         targets = flatten([
           for domain in local.domains : [
-            for device in try(domain.devices.devices, []) : {
-              id   = local.map_devices["${domain.name}:${device.name}"].id
-              type = local.map_devices["${domain.name}:${device.name}"].type
-              name = device.name
-            } if try(device.access_control_policy, null) == policy_def.name && contains(try(keys(local.data_device), []), "${domain.name}:${device.name}")
+            for device in try(domain.devices.devices, []) :
+            local.map_policy_assignment_targets["${domain.name}:${device.name}"]
+            if try(device.access_control_policy, null) == policy_def.name && contains(try(keys(local.data_device), []), "${domain.name}:${device.name}") && !contains(local.ha_pair_secondary_devices, "${domain.name}:${device.name}")
           ]
         ])
       }
@@ -88,7 +86,7 @@ locals {
               id   = local.map_devices["${domain.name}:${device.name}"].id
               type = local.map_devices["${domain.name}:${device.name}"].type
               name = device.name
-            } if try(device.health_policy, null) == policy_def.name && !contains(try(keys(local.resource_device), []), "${domain.name}:${device.name}")
+            } if try(device.health_policy, null) == policy_def.name && !contains(try(keys(local.resource_device), []), "${domain.name}:${device.name}") && !contains(local.ha_pair_secondary_devices, "${domain.name}:${device.name}")
           ]
         ])
       }
@@ -131,11 +129,9 @@ locals {
 
         targets = flatten([
           for domain in local.domains : [
-            for device in try(domain.devices.devices, []) : {
-              id   = local.map_devices["${domain.name}:${device.name}"].id
-              type = local.map_devices["${domain.name}:${device.name}"].type
-              name = device.name
-            } if try(device.nat_policy, null) == policy_def.name && !contains(try(keys(local.resource_device), []), "${domain.name}:${device.name}")
+            for device in try(domain.devices.devices, []) :
+            local.map_policy_assignment_targets["${domain.name}:${device.name}"]
+            if try(device.nat_policy, null) == policy_def.name && !contains(try(keys(local.resource_device), []), "${domain.name}:${device.name}") && !contains(local.ha_pair_secondary_devices, "${domain.name}:${device.name}")
           ]
         ])
       }
@@ -164,16 +160,14 @@ locals {
       for ftd_platform_settings_key, ftd_platform_settings_value in local.map_ftd_platform_settings : {
         policy_domain           = ftd_platform_settings_value.domain
         policy_id               = ftd_platform_settings_value.id
-        policy_name             = ftd_platform_settings_key
+        policy_name             = ftd_platform_settings_value.name
         policy_type             = ftd_platform_settings_value.type
         after_destroy_policy_id = null
         targets = flatten([
           for domain in local.domains : [
-            for device in try(domain.devices.devices, []) : {
-              id   = local.map_devices["${domain.name}:${device.name}"].id
-              type = local.map_devices["${domain.name}:${device.name}"].type
-              name = device.name
-            } if try(device.platform_settings, null) == ftd_platform_settings_value.name
+            for device in try(domain.devices.devices, []) :
+            local.map_policy_assignment_targets["${domain.name}:${device.name}"]
+            if try(device.platform_settings, null) == ftd_platform_settings_value.name && !contains(local.ha_pair_secondary_devices, "${domain.name}:${device.name}")
           ]
         ])
       }
@@ -230,11 +224,9 @@ locals {
 
         targets = flatten([
           for domain in local.domains : [
-            for device in try(domain.devices.devices, []) : {
-              id   = local.map_devices["${domain.name}:${device.name}"].id
-              type = local.map_devices["${domain.name}:${device.name}"].type
-              name = device.name
-            } if try(device.remote_access_vpn, null) == policy_def.name
+            for device in try(domain.devices.devices, []) :
+            local.map_policy_assignment_targets["${domain.name}:${device.name}"]
+            if try(device.remote_access_vpn, null) == policy_def.name && !contains(local.ha_pair_secondary_devices, "${domain.name}:${device.name}")
           ]
         ])
       }
@@ -308,4 +300,70 @@ resource "fmc_device_deploy" "chassis_deploy" {
     fmc_chassis_etherchannel_interface.chassis_etherchannel_interface,
     fmc_chassis_subinterface.chassis_subinterface,
   ]
+}
+
+##########################################################
+###    POLICY ASSIGNMENT VALIDATION
+##########################################################
+locals {
+  # Policy names known to the module for each device attribute, gathered from the same
+  # definitions the assignments above iterate over, so `fmc`, `existing` and externally
+  # supplied (`data`) policies all count as known.
+  known_policy_names = {
+    access_control_policy = [for policy in values(local.policy_defs_acp) : policy.name]
+    health_policy         = [for policy in values(local.policy_defs_health) : policy.name]
+    nat_policy            = [for policy in values(local.policy_defs_ftd_nat) : policy.name]
+    platform_settings     = [for policy in values(local.map_ftd_platform_settings) : policy.name]
+    remote_access_vpn     = [for policy in values(local.policy_defs_vpn_ra) : policy.name]
+  }
+
+  # Policy assignments are built by iterating the known policies and matching devices by
+  # policy name. A device referencing a name that no policy carries therefore matches
+  # nothing and would be silently dropped, so collect those references and fail on them.
+  dangling_policy_references = concat(
+    flatten([
+      for domain in local.domains : [
+        for device in try(domain.devices.devices, []) :
+        "${domain.name}/${device.name}: access_control_policy: ${device.access_control_policy}"
+        if try(device.access_control_policy, null) != null && !contains(local.known_policy_names.access_control_policy, try(device.access_control_policy, ""))
+      ]
+    ]),
+    flatten([
+      for domain in local.domains : [
+        for device in try(domain.devices.devices, []) :
+        "${domain.name}/${device.name}: health_policy: ${device.health_policy}"
+        if try(device.health_policy, null) != null && !contains(local.known_policy_names.health_policy, try(device.health_policy, ""))
+      ]
+    ]),
+    flatten([
+      for domain in local.domains : [
+        for device in try(domain.devices.devices, []) :
+        "${domain.name}/${device.name}: nat_policy: ${device.nat_policy}"
+        if try(device.nat_policy, null) != null && !contains(local.known_policy_names.nat_policy, try(device.nat_policy, ""))
+      ]
+    ]),
+    flatten([
+      for domain in local.domains : [
+        for device in try(domain.devices.devices, []) :
+        "${domain.name}/${device.name}: platform_settings: ${device.platform_settings}"
+        if try(device.platform_settings, null) != null && !contains(local.known_policy_names.platform_settings, try(device.platform_settings, ""))
+      ]
+    ]),
+    flatten([
+      for domain in local.domains : [
+        for device in try(domain.devices.devices, []) :
+        "${domain.name}/${device.name}: remote_access_vpn: ${device.remote_access_vpn}"
+        if try(device.remote_access_vpn, null) != null && !contains(local.known_policy_names.remote_access_vpn, try(device.remote_access_vpn, ""))
+      ]
+    ]),
+  )
+}
+
+resource "terraform_data" "validation_policy_assignment" {
+  lifecycle {
+    precondition {
+      condition     = length(local.dangling_policy_references) == 0
+      error_message = "The following devices reference policies that are not defined under `fmc`, `existing` or `data`:\n  ${join("\n  ", local.dangling_policy_references)}"
+    }
+  }
 }
