@@ -10,7 +10,7 @@ locals {
     { for key, data in data.fmc_device.device : "${data.domain}:${data.name}" => { id = data.id, type = data.type } },
 
     # Chassis logical device - individual mode outputs
-    { for key, resource in fmc_chassis_logical_device.chassis_logical_device : "${resource.domain}:${resource.name}" => { id = resource.device_id, type = resource.type } },
+    { for key, resource in fmc_chassis_logical_device.chassis_logical_device : "${resource.domain}:${resource.name}" => { id = resource.device_id, type = resource.device_type } },
   )
 
   # External objects
@@ -530,26 +530,48 @@ locals {
 locals {
   # FMC keeps a policy assignment of an HA pair member against the parent DeviceHAPair
   # container, not against the member device itself.
-  map_policy_assignment_targets = {
-    for item in flatten([
-      for domain in local.domains : [
-        for device in try(domain.devices.devices, []) : {
-          key = "${domain.name}:${device.name}"
-          target = (
-            contains(keys(local.map_member_device_to_container), "${domain.name}:${device.name}")
-            ? local.map_member_device_to_container["${domain.name}:${device.name}"]
-            : local.map_device_to_existing_ha_pair["${domain.name}:${device.name}"].type == "DeviceHAPair"
-            ? local.map_device_to_existing_ha_pair["${domain.name}:${device.name}"]
-            : {
-              id   = local.map_devices["${domain.name}:${device.name}"].id
-              type = local.map_devices["${domain.name}:${device.name}"].type
-              name = device.name
+  map_policy_assignment_targets = merge(
+    {
+      for item in flatten([
+        for domain in local.domains : [
+          for chassis in try(domain.devices.chassis, []) : [
+            for logical_device in try(chassis.logical_devices, []) : {
+              key = "${domain.name}:${logical_device.name}"
+              target = (
+                contains(keys(local.map_member_device_to_container), "${domain.name}:${logical_device.name}")
+                ? local.map_member_device_to_container["${domain.name}:${logical_device.name}"]
+                : {
+                  id   = local.map_devices["${domain.name}:${logical_device.name}"].id
+                  type = local.map_devices["${domain.name}:${logical_device.name}"].type
+                  name = logical_device.name
+                }
+              )
             }
-          )
-        }
-      ]
-    ]) : item.key => item.target
-  }
+          ]
+        ]
+      ]) : item.key => item.target
+    },
+    {
+      for item in flatten([
+        for domain in local.domains : [
+          for device in try(domain.devices.devices, []) : {
+            key = "${domain.name}:${device.name}"
+            target = (
+              contains(keys(local.map_member_device_to_container), "${domain.name}:${device.name}")
+              ? local.map_member_device_to_container["${domain.name}:${device.name}"]
+              : local.map_device_to_existing_ha_pair["${domain.name}:${device.name}"].type == "DeviceHAPair"
+              ? local.map_device_to_existing_ha_pair["${domain.name}:${device.name}"]
+              : {
+                id   = local.map_devices["${domain.name}:${device.name}"].id
+                type = local.map_devices["${domain.name}:${device.name}"].type
+                name = device.name
+              }
+            )
+          }
+        ]
+      ]) : item.key => item.target
+    },
+  )
 }
 ######
 ### map_loopback_interfaces

@@ -1196,7 +1196,8 @@ locals {
           host             = device.host
           registration_key = device.registration_key
           # device_group_id = ...
-          nat_id = try(device.nat_id, null)
+          nat_id            = try(device.nat_id, null)
+          deploy_on_destroy = try(device.deploy_on_destroy, null)
         } if try(local.data_chassis["${domain.name}:${device.name}"], null) == null
       ]
     ]) : "${item.domain}:${item.name}" => item
@@ -1218,7 +1219,8 @@ resource "fmc_chassis" "chassis" {
   host             = each.value.host
   registration_key = each.value.registration_key
   # device_group_id  = each.value.device_group_id
-  nat_id = each.value.nat_id
+  nat_id            = each.value.nat_id
+  deploy_on_destroy = each.value.deploy_on_destroy
 }
 
 ##########################################################

@@ -69,7 +69,7 @@ module "fmc" {
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.8.0 |
-| <a name="requirement_fmc"></a> [fmc](#requirement\_fmc) | >= 2.6.1, < 2.7.0 |
+| <a name="requirement_fmc"></a> [fmc](#requirement\_fmc) | >= 2.7.0, < 2.8.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.3.0, < 3.0.0 |
 | <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 2.0.0, < 3.0.0 |
 ## Inputs
@@ -117,6 +117,7 @@ module "fmc" {
 | [fmc_device_cluster.device_cluster](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_cluster) | resource |
 | [fmc_device_deploy.chassis_deploy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_deploy) | resource |
 | [fmc_device_deploy.device_deploy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_deploy) | resource |
+| [fmc_device_eigrp.device_eigrp](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_eigrp) | resource |
 | [fmc_device_etherchannel_interface.device_etherchannel_interface](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_etherchannel_interface) | resource |
 | [fmc_device_ha_pair.device_ha_pair](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_ha_pair) | resource |
 | [fmc_device_ha_pair_failover_interface_mac_address.device_ha_pair_failover_interface_mac_address](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/device_ha_pair_failover_interface_mac_address) | resource |
