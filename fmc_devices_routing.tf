@@ -702,3 +702,147 @@ resource "fmc_device_ospf_interface" "device_ospf_interface" {
   authentication_key_chain_id  = each.value.authentication_key_chain_id
 
 }
+
+##########################################################
+###    DEVICE EIGRP
+##########################################################
+locals {
+  resource_device_eigrp = {
+    for item in flatten([
+      for domain in local.domains : [
+        for device in try(domain.devices.devices, []) : [
+          for vrf in try(device.vrfs, []) : {
+            domain      = domain.name
+            device_name = device.name
+            device_id   = local.map_devices["${domain.name}:${device.name}"].id
+            vrf_name    = vrf.name
+            as_number   = tostring(vrf.eigrp.as_number)
+
+            networks = [for network in vrf.eigrp.networks : {
+              id = local.resolved_network_objects_and_groups[domain.name][network].id
+            }]
+            auto_summary           = try(vrf.eigrp.auto_summary, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.auto_summary, null)
+            passive_interfaces_all = try(vrf.eigrp.passive_interfaces_all, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.passive_interfaces_all, null)
+            passive_interfaces = length(try(vrf.eigrp.passive_interfaces, [])) > 0 ? [for passive_interface in vrf.eigrp.passive_interfaces : {
+              id = local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${passive_interface}"].id
+            }] : null
+
+            router_id                                       = try(vrf.eigrp.router_id, null)
+            default_information_in_standard_access_list_id  = try(vrf.eigrp.default_information_in_standard_access_list, "") != "" ? local.resolved_standard_access_lists[domain.name][vrf.eigrp.default_information_in_standard_access_list].id : null
+            default_information_out_standard_access_list_id = try(vrf.eigrp.default_information_out_standard_access_list, "") != "" ? local.resolved_standard_access_lists[domain.name][vrf.eigrp.default_information_out_standard_access_list].id : null
+            administrative_distance_internal                = try(vrf.eigrp.administrative_distance_internal, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.administrative_distance_internal, null)
+            administrative_distance_external                = try(vrf.eigrp.administrative_distance_external, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.administrative_distance_external, null)
+            log_neighbor_changes                            = try(vrf.eigrp.log_neighbor_changes, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.log_neighbor_changes, null)
+            log_neighbor_warnings                           = try(vrf.eigrp.log_neighbor_warnings, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.log_neighbor_warnings, null)
+            log_neighbor_warnings_interval                  = try(vrf.eigrp.log_neighbor_warnings_interval, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.log_neighbor_warnings_interval, null)
+
+            stub_receive_only            = try(vrf.eigrp.stub_receive_only, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.stub_receive_only, null)
+            stub_advertise_connected     = try(vrf.eigrp.stub_advertise_connected, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.stub_advertise_connected, null)
+            stub_advertise_redistributed = try(vrf.eigrp.stub_advertise_redistributed, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.stub_advertise_redistributed, null)
+            stub_advertise_static        = try(vrf.eigrp.stub_advertise_static, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.stub_advertise_static, null)
+            stub_advertise_summary       = try(vrf.eigrp.stub_advertise_summary, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.stub_advertise_summary, null)
+
+            default_metric_bandwidth   = try(vrf.eigrp.default_metric_bandwidth, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.default_metric_bandwidth, null)
+            default_metric_delay_time  = try(vrf.eigrp.default_metric_delay_time, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.default_metric_delay_time, null)
+            default_metric_reliability = try(vrf.eigrp.default_metric_reliability, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.default_metric_reliability, null)
+            default_metric_loading     = try(vrf.eigrp.default_metric_loading, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.default_metric_loading, null)
+            default_metric_mtu         = try(vrf.eigrp.default_metric_mtu, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.default_metric_mtu, null)
+
+            cluster_ipv4_pool_id = try(vrf.eigrp.cluster_ipv4_pool, "") != "" ? local.resolved_ipv4_address_pools[domain.name][vrf.eigrp.cluster_ipv4_pool].id : null
+
+            neighbors = [for neighbor in try(vrf.eigrp.neighbors, []) : {
+              interface_id = local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${neighbor.interface_logical_name}"].id
+              host_id      = local.resolved_hosts[domain.name][neighbor.neighbor_host].id
+            }]
+
+            filter_rules = [for filter_rule in try(vrf.eigrp.filter_rules, []) : {
+              filter_direction        = filter_rule.filter_direction
+              standard_access_list_id = local.resolved_standard_access_lists[domain.name][filter_rule.standard_access_list].id
+              interface_id            = try(local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${filter_rule.interface_logical_name}"].id, null)
+              routing_process         = try(filter_rule.routing_process, null)
+              routing_process_id      = try(tostring(filter_rule.routing_process_id), null)
+            }]
+
+            redistributions = [for redistribution in try(vrf.eigrp.redistributions, []) : {
+              redistribute_protocol = redistribution.source_protocol
+              process_id            = try(tostring(redistribution.process_id), null)
+              route_map_id          = try(redistribution.route_map, "") != "" ? local.resolved_route_maps[domain.name][redistribution.route_map].id : null
+              match_internal        = try(redistribution.match_internal, null)
+              match_external_1      = try(redistribution.match_external1, null)
+              match_external_2      = try(redistribution.match_external2, null)
+              match_nssa_external_1 = try(redistribution.match_nssa_external1, null)
+              match_nssa_external_2 = try(redistribution.match_nssa_external2, null)
+              metric_bandwidth      = try(redistribution.metric_bandwidth, null)
+              metric_delay          = try(redistribution.metric_delay, null)
+              metric_reliability    = try(redistribution.metric_reliability, null)
+              metric_loading        = try(redistribution.metric_loading, null)
+              metric_mtu            = try(redistribution.metric_mtu, null)
+            }]
+
+            summary_addresses = [for summary_address in try(vrf.eigrp.summary_addresses, []) : {
+              interface_id            = local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${summary_address.interface_logical_name}"].id
+              network_id              = local.resolved_network_objects_and_groups[domain.name][summary_address.network].id
+              administrative_distance = try(summary_address.administrative_distance, null)
+            }]
+
+            interfaces = [for interface in try(vrf.eigrp.interfaces, []) : {
+              interface_id            = local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${interface.interface_logical_name}"].id
+              interface_type          = local.map_interfaces_by_names["${domain.name}:${device.name}:${local.map_interfaces_by_logical_names["${domain.name}:${device.name}:${interface.interface_logical_name}"].name}"].type
+              hello_interval          = try(interface.hello_interval, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.interfaces.hello_interval, null)
+              hold_time               = try(interface.hold_time, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.interfaces.hold_time, null)
+              split_horizon           = try(interface.split_horizon, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.interfaces.split_horizon, null)
+              delay_time              = try(interface.delay_time, local.defaults.fmc.domains.devices.devices.vrfs.eigrp.interfaces.delay_time, null)
+              md5_authentication      = try(interface.md5_authentication, null)
+              authentication_key_type = try(interface.authentication_key_type, null)
+              authentication_key_id   = try(interface.authentication_key_id, null)
+              authentication_key      = try(interface.authentication_key, null)
+            }]
+          } if try(vrf.eigrp, null) != null
+        ]
+      ]
+    ]) : "${item.domain}:${item.device_name}:${item.vrf_name}" => item
+  }
+}
+
+resource "fmc_device_eigrp" "device_eigrp" {
+  for_each = local.resource_device_eigrp
+
+  domain    = each.value.domain
+  device_id = each.value.device_id
+  as_number = each.value.as_number
+
+  networks               = each.value.networks
+  auto_summary           = each.value.auto_summary
+  passive_interfaces_all = each.value.passive_interfaces_all
+  passive_interfaces     = each.value.passive_interfaces
+
+  router_id                                       = each.value.router_id
+  default_information_in_standard_access_list_id  = each.value.default_information_in_standard_access_list_id
+  default_information_out_standard_access_list_id = each.value.default_information_out_standard_access_list_id
+  administrative_distance_internal                = each.value.administrative_distance_internal
+  administrative_distance_external                = each.value.administrative_distance_external
+  log_neighbor_changes                            = each.value.log_neighbor_changes
+  log_neighbor_warnings                           = each.value.log_neighbor_warnings
+  log_neighbor_warnings_interval                  = each.value.log_neighbor_warnings_interval
+
+  stub_receive_only            = each.value.stub_receive_only
+  stub_advertise_connected     = each.value.stub_advertise_connected
+  stub_advertise_redistributed = each.value.stub_advertise_redistributed
+  stub_advertise_static        = each.value.stub_advertise_static
+  stub_advertise_summary       = each.value.stub_advertise_summary
+
+  default_metric_bandwidth   = each.value.default_metric_bandwidth
+  default_metric_delay_time  = each.value.default_metric_delay_time
+  default_metric_reliability = each.value.default_metric_reliability
+  default_metric_loading     = each.value.default_metric_loading
+  default_metric_mtu         = each.value.default_metric_mtu
+
+  cluster_ipv4_pool_id = each.value.cluster_ipv4_pool_id
+
+  neighbors         = each.value.neighbors
+  filter_rules      = each.value.filter_rules
+  redistributions   = each.value.redistributions
+  summary_addresses = each.value.summary_addresses
+  interfaces        = each.value.interfaces
+
+}
