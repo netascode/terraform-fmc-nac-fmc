@@ -23,6 +23,19 @@ locals {
     { for k, v in local.map_access_control_policies_external : "${v.domain}:${v.name}" => { domain = v.domain, name = v.name } },
   )
 
+  # Access control policy set under `devices`, keyed by "domain:name". For a chassis logical
+  # device it takes precedence over the bootstrap value set under `chassis.logical_devices`.
+  device_access_control_policies = {
+    for item in flatten([
+      for domain in local.domains : [
+        for device in try(domain.devices.devices, []) : {
+          key    = "${domain.name}:${device.name}"
+          policy = device.access_control_policy
+        } if try(device.access_control_policy, null) != null
+      ]
+    ]) : item.key => item.policy
+  }
+
   resource_policy_assignment_acp = {
     for item in [
       for policy_key, policy_def in local.policy_defs_acp : {
@@ -34,13 +47,31 @@ locals {
         after_destroy_policy_id     = try(local.map_access_control_policies["Global:${local.fmc.system.policy_assignment.after_destroy_access_control_policy}"].id, null)
         after_destroy_policy_domain = "Global"
 
-        targets = flatten([
-          for domain in local.domains : [
-            for device in try(domain.devices.devices, []) :
-            local.map_policy_assignment_targets["${domain.name}:${device.name}"]
-            if try(device.access_control_policy, null) == policy_def.name && contains(try(keys(local.data_device), []), "${domain.name}:${device.name}") && !contains(local.ha_pair_secondary_devices, "${domain.name}:${device.name}")
-          ]
-        ])
+        # Devices created by this module get their access control policy during
+        # registration, so only `existing` devices are targeted here. Chassis logical
+        # devices are targeted too, since their access control policy is bootstrap-only
+        # and would otherwise never be updated after creation.
+        targets = concat(
+          flatten([
+            for domain in local.domains : [
+              for device in try(domain.devices.devices, []) :
+              local.map_policy_assignment_targets["${domain.name}:${device.name}"]
+              if try(device.access_control_policy, null) == policy_def.name &&
+              contains(try(keys(local.data_device), []), "${domain.name}:${device.name}") &&
+              !contains(local.ha_pair_secondary_devices, "${domain.name}:${device.name}")
+            ]
+          ]),
+          flatten([
+            for domain in local.domains : [
+              for chassis in try(domain.devices.chassis, []) : [
+                for logical_device in try(chassis.logical_devices, []) :
+                local.map_policy_assignment_targets["${domain.name}:${logical_device.name}"]
+                if lookup(local.device_access_control_policies, "${domain.name}:${logical_device.name}", try(logical_device.access_control_policy, null)) == policy_def.name &&
+                !contains(local.ha_pair_secondary_devices, "${domain.name}:${logical_device.name}")
+              ]
+            ]
+          ]),
+        )
       }
     ] : item.key => item if length(item.targets) > 0
   }
@@ -69,6 +100,19 @@ locals {
     { for k, v in local.map_health_policies_external : "${v.domain}:${v.name}" => { domain = v.domain, name = v.name } },
   )
 
+  # Health policy set under `devices`, keyed by "domain:name". For a chassis logical device
+  # it takes precedence over a value set under `chassis.logical_devices`.
+  device_health_policies = {
+    for item in flatten([
+      for domain in local.domains : [
+        for device in try(domain.devices.devices, []) : {
+          key    = "${domain.name}:${device.name}"
+          policy = device.health_policy
+        } if try(device.health_policy, null) != null
+      ]
+    ]) : item.key => item.policy
+  }
+
   resource_policy_assignments_health_policy = {
     for item in [
       for policy_key, policy_def in local.policy_defs_health : {
@@ -80,15 +124,37 @@ locals {
         after_destroy_policy_id     = try(local.map_health_policies["Global:${local.fmc.system.policy_assignment.after_destroy_health_policy}"].id, null)
         after_destroy_policy_domain = "Global"
 
-        targets = flatten([
-          for domain in local.domains : [
-            for device in try(domain.devices.devices, []) : {
-              id   = local.map_devices["${domain.name}:${device.name}"].id
-              type = local.map_devices["${domain.name}:${device.name}"].type
-              name = device.name
-            } if try(device.health_policy, null) == policy_def.name && !contains(try(keys(local.resource_device), []), "${domain.name}:${device.name}") && !contains(local.ha_pair_secondary_devices, "${domain.name}:${device.name}")
-          ]
-        ])
+        # Devices created by this module get their health policy during registration, so
+        # only `existing` devices are targeted here. Chassis logical devices are targeted
+        # too, since they cannot get a health policy during creation. The health policy is
+        # assigned to the member device itself, not to its HA pair.
+        targets = concat(
+          flatten([
+            for domain in local.domains : [
+              for device in try(domain.devices.devices, []) : {
+                id   = local.map_devices["${domain.name}:${device.name}"].id
+                type = local.map_devices["${domain.name}:${device.name}"].type
+                name = device.name
+              }
+              if try(device.health_policy, null) == policy_def.name &&
+              contains(try(keys(local.data_device), []), "${domain.name}:${device.name}") &&
+              !contains(local.ha_pair_secondary_devices, "${domain.name}:${device.name}")
+            ]
+          ]),
+          flatten([
+            for domain in local.domains : [
+              for chassis in try(domain.devices.chassis, []) : [
+                for logical_device in try(chassis.logical_devices, []) : {
+                  id   = local.map_devices["${domain.name}:${logical_device.name}"].id
+                  type = local.map_devices["${domain.name}:${logical_device.name}"].type
+                  name = logical_device.name
+                }
+                if lookup(local.device_health_policies, "${domain.name}:${logical_device.name}", try(logical_device.health_policy, null)) == policy_def.name &&
+                !contains(local.ha_pair_secondary_devices, "${domain.name}:${logical_device.name}")
+              ]
+            ]
+          ]),
+        )
       }
     ] : item.key => item if length(item.targets) > 0
   }
@@ -117,6 +183,19 @@ locals {
     { for k, v in local.map_ftd_nat_policies_external : "${v.domain}:${v.name}" => { domain = v.domain, name = v.name } },
   )
 
+  # FTD NAT policy set under `devices`, keyed by "domain:name". For a chassis logical device
+  # it takes precedence over a value set under `chassis.logical_devices`.
+  device_ftd_nat_policies = {
+    for item in flatten([
+      for domain in local.domains : [
+        for device in try(domain.devices.devices, []) : {
+          key    = "${domain.name}:${device.name}"
+          policy = device.nat_policy
+        } if try(device.nat_policy, null) != null
+      ]
+    ]) : item.key => item.policy
+  }
+
   resource_policy_assignments_ftd_nat_policy = {
     for item in [
       for policy_key, policy_def in local.policy_defs_ftd_nat : {
@@ -127,13 +206,30 @@ locals {
         policy_type             = local.map_ftd_nat_policies[policy_key].type
         after_destroy_policy_id = null
 
-        targets = flatten([
-          for domain in local.domains : [
-            for device in try(domain.devices.devices, []) :
-            local.map_policy_assignment_targets["${domain.name}:${device.name}"]
-            if try(device.nat_policy, null) == policy_def.name && !contains(try(keys(local.resource_device), []), "${domain.name}:${device.name}") && !contains(local.ha_pair_secondary_devices, "${domain.name}:${device.name}")
-          ]
-        ])
+        # Devices created by this module get their FTD NAT policy during registration, so
+        # only `existing` devices are targeted here. Chassis logical devices are targeted
+        # too, since they cannot get an FTD NAT policy during creation.
+        targets = concat(
+          flatten([
+            for domain in local.domains : [
+              for device in try(domain.devices.devices, []) :
+              local.map_policy_assignment_targets["${domain.name}:${device.name}"]
+              if try(device.nat_policy, null) == policy_def.name &&
+              contains(try(keys(local.data_device), []), "${domain.name}:${device.name}") &&
+              !contains(local.ha_pair_secondary_devices, "${domain.name}:${device.name}")
+            ]
+          ]),
+          flatten([
+            for domain in local.domains : [
+              for chassis in try(domain.devices.chassis, []) : [
+                for logical_device in try(chassis.logical_devices, []) :
+                local.map_policy_assignment_targets["${domain.name}:${logical_device.name}"]
+                if lookup(local.device_ftd_nat_policies, "${domain.name}:${logical_device.name}", try(logical_device.nat_policy, null)) == policy_def.name &&
+                !contains(local.ha_pair_secondary_devices, "${domain.name}:${logical_device.name}")
+              ]
+            ]
+          ]),
+        )
       }
     ] : item.key => item if length(item.targets) > 0
   }
@@ -155,6 +251,19 @@ resource "fmc_policy_assignment" "ftd_nat_policy" {
 }
 
 locals {
+  # FTD platform settings set under `devices`, keyed by "domain:name". For a chassis logical
+  # device it takes precedence over the bootstrap value set under `chassis.logical_devices`.
+  device_ftd_platform_settings = {
+    for item in flatten([
+      for domain in local.domains : [
+        for device in try(domain.devices.devices, []) : {
+          key    = "${domain.name}:${device.name}"
+          policy = device.platform_settings
+        } if try(device.platform_settings, null) != null
+      ]
+    ]) : item.key => item.policy
+  }
+
   resource_policy_assignments_ftd_platform_settings = {
     for item in flatten([
       for ftd_platform_settings_key, ftd_platform_settings_value in local.map_ftd_platform_settings : {
@@ -163,13 +272,30 @@ locals {
         policy_name             = ftd_platform_settings_value.name
         policy_type             = ftd_platform_settings_value.type
         after_destroy_policy_id = null
-        targets = flatten([
-          for domain in local.domains : [
-            for device in try(domain.devices.devices, []) :
-            local.map_policy_assignment_targets["${domain.name}:${device.name}"]
-            if try(device.platform_settings, null) == ftd_platform_settings_value.name && !contains(local.ha_pair_secondary_devices, "${domain.name}:${device.name}")
-          ]
-        ])
+
+        # Chassis logical devices are targeted by the second list only, so that a logical
+        # device also listed under `devices` does not appear twice in the targets.
+        targets = concat(
+          flatten([
+            for domain in local.domains : [
+              for device in try(domain.devices.devices, []) :
+              local.map_policy_assignment_targets["${domain.name}:${device.name}"]
+              if try(device.platform_settings, null) == ftd_platform_settings_value.name &&
+              !contains(keys(local.chassis_logical_device_keys), "${domain.name}:${device.name}") &&
+              !contains(local.ha_pair_secondary_devices, "${domain.name}:${device.name}")
+            ]
+          ]),
+          flatten([
+            for domain in local.domains : [
+              for chassis in try(domain.devices.chassis, []) : [
+                for logical_device in try(chassis.logical_devices, []) :
+                local.map_policy_assignment_targets["${domain.name}:${logical_device.name}"]
+                if lookup(local.device_ftd_platform_settings, "${domain.name}:${logical_device.name}", try(logical_device.platform_settings, null)) == ftd_platform_settings_value.name &&
+                !contains(local.ha_pair_secondary_devices, "${domain.name}:${logical_device.name}")
+              ]
+            ]
+          ]),
+        )
       }
     ]) : "${item.policy_domain}:${item.policy_name}" => item if length(item.targets) > 0
   }
@@ -212,6 +338,19 @@ locals {
     { for k, v in local.map_vpn_ra_external : "${v.domain}:${v.name}" => { domain = v.domain, name = v.name } },
   )
 
+  # RA VPN set under `devices`, keyed by "domain:name". For a chassis logical device it
+  # takes precedence over a value set under `chassis.logical_devices`.
+  device_vpn_ra = {
+    for item in flatten([
+      for domain in local.domains : [
+        for device in try(domain.devices.devices, []) : {
+          key    = "${domain.name}:${device.name}"
+          policy = device.remote_access_vpn
+        } if try(device.remote_access_vpn, null) != null
+      ]
+    ]) : item.key => item.policy
+  }
+
   resource_policy_assignments_vpn_ra = {
     for item in [
       for policy_key, policy_def in local.policy_defs_vpn_ra : {
@@ -222,13 +361,29 @@ locals {
         policy_type             = local.map_vpn_ra[policy_key].type
         after_destroy_policy_id = null
 
-        targets = flatten([
-          for domain in local.domains : [
-            for device in try(domain.devices.devices, []) :
-            local.map_policy_assignment_targets["${domain.name}:${device.name}"]
-            if try(device.remote_access_vpn, null) == policy_def.name && !contains(local.ha_pair_secondary_devices, "${domain.name}:${device.name}")
-          ]
-        ])
+        # Chassis logical devices are targeted by the second list only, so that a logical
+        # device also listed under `devices` does not appear twice in the targets.
+        targets = concat(
+          flatten([
+            for domain in local.domains : [
+              for device in try(domain.devices.devices, []) :
+              local.map_policy_assignment_targets["${domain.name}:${device.name}"]
+              if try(device.remote_access_vpn, null) == policy_def.name &&
+              !contains(keys(local.chassis_logical_device_keys), "${domain.name}:${device.name}") &&
+              !contains(local.ha_pair_secondary_devices, "${domain.name}:${device.name}")
+            ]
+          ]),
+          flatten([
+            for domain in local.domains : [
+              for chassis in try(domain.devices.chassis, []) : [
+                for logical_device in try(chassis.logical_devices, []) :
+                local.map_policy_assignment_targets["${domain.name}:${logical_device.name}"]
+                if lookup(local.device_vpn_ra, "${domain.name}:${logical_device.name}", try(logical_device.remote_access_vpn, null)) == policy_def.name &&
+                !contains(local.ha_pair_secondary_devices, "${domain.name}:${logical_device.name}")
+              ]
+            ]
+          ]),
+        )
       }
     ] : item.key => item if length(item.targets) > 0
   }

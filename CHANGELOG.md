@@ -1,13 +1,14 @@
 ## Unreleased
 
 - (Enh) Add support for creating Sinkholes, Cipher Suite Lists, Distinguished Names, SLA Monitors, Key Chains, MAC Address Pools
-- (Enh) Add support for OSPF
-- (Enh) Add `deploy_on_destroy` for devices
+- (Enh) Add support for OSPF and EIGRP
+- (Enh) Add `deploy_on_destroy` for devices and chassis
 - (Enh) Fail the plan when a device references a policy that is not defined
 - (Fix) `terraform import` command fails
 - (Fix) Applying chassis, logical devices and logical device configuration in a single run could fail
 - (Fix) Unable to assign non-Global policies to the devices
-- (Fix) Incorrect policy assignment of policies to HA Pairs could cause configuration permament configuration drift
+- (Fix) Incorrect policy assignment of policies to HA Pairs could cause permament configuration drift
+- (Fix) Incorrect policy assignment to logical devices could cause permament configuration drift
 
 ## 0.1.3
 

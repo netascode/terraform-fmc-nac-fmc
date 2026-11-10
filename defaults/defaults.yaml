@@ -60,6 +60,11 @@ defaults:
                   dead_interval: 40
               redistributions:
                 metric_type: TYPE_2
+            eigrp:
+              auto_summary: false
+              interfaces:
+                hello_interval: 5
+                hold_time: 15
             ospf_interfaces:
               default_cost: 10
               priority: 1
