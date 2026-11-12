@@ -2,6 +2,7 @@
 
 - (Enh) Add support for creating Sinkholes, Cipher Suite Lists, Distinguished Names, SLA Monitors, Key Chains, MAC Address Pools
 - (Enh) Add support for OSPF and EIGRP
+- (Enh) Add support for Access Control Policy logging settings
 - (Enh) Add `deploy_on_destroy` for devices and chassis
 - (Enh) Fail the plan when a device references a policy that is not defined
 - (Fix) `terraform import` command fails

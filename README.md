@@ -69,7 +69,7 @@ module "fmc" {
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.8.0 |
-| <a name="requirement_fmc"></a> [fmc](#requirement\_fmc) | >= 2.7.0, < 2.8.0 |
+| <a name="requirement_fmc"></a> [fmc](#requirement\_fmc) | >= 2.8.0, < 2.9.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.3.0, < 3.0.0 |
 | <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 2.0.0, < 3.0.0 |
 ## Inputs
@@ -93,6 +93,7 @@ module "fmc" {
 | Name | Type |
 | ---- | ---- |
 | [fmc_access_control_policy.access_control_policy](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/access_control_policy) | resource |
+| [fmc_access_control_policy_logging.access_control_policy_logging](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/access_control_policy_logging) | resource |
 | [fmc_application_filter.application_filter](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/application_filter) | resource |
 | [fmc_application_filters.application_filters](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/application_filters) | resource |
 | [fmc_as_path.as_path](https://registry.terraform.io/providers/CiscoDevNet/fmc/latest/docs/resources/as_path) | resource |

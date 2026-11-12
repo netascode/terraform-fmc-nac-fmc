@@ -209,6 +209,50 @@ resource "fmc_access_control_policy" "access_control_policy" {
 }
 
 ##########################################################
+###    ACCESS CONTROL POLICY LOGGING
+##########################################################
+locals {
+  resource_access_control_policy_logging = {
+    for item in flatten([
+      for domain in local.domains : [
+        for access_control_policy in try(domain.policies.access_control_policies, []) : {
+          domain                     = domain.name
+          access_control_policy_name = access_control_policy.name
+          access_control_policy_id   = local.map_access_control_policies["${domain.name}:${access_control_policy.name}"].id
+
+          syslog_alert_id                         = try(access_control_policy.logging.syslog_alert, "") != "" ? local.resolved_syslog_alerts[domain.name][access_control_policy.logging.syslog_alert].id : null
+          syslog_use_platform_settings            = try(access_control_policy.logging.syslog_use_platform_settings, local.defaults.fmc.domains.policies.access_control_policies.logging.syslog_use_platform_settings, null)
+          syslog_platform_settings_severity       = try(access_control_policy.logging.syslog_platform_settings_severity, local.defaults.fmc.domains.policies.access_control_policies.logging.syslog_platform_settings_severity, null)
+          ips_events_send_syslog                  = try(access_control_policy.logging.ips_events_send_syslog, local.defaults.fmc.domains.policies.access_control_policies.logging.ips_events_send_syslog, null)
+          ips_events_syslog_severity              = try(access_control_policy.logging.ips_events_syslog_severity, local.defaults.fmc.domains.policies.access_control_policies.logging.ips_events_syslog_severity, null)
+          ips_events_syslog_alert_id              = try(access_control_policy.logging.ips_events_syslog_alert, "") != "" ? local.resolved_syslog_alerts[domain.name][access_control_policy.logging.ips_events_syslog_alert].id : null
+          file_and_malware_events_send_syslog     = try(access_control_policy.logging.file_and_malware_events_send_syslog, local.defaults.fmc.domains.policies.access_control_policies.logging.file_and_malware_events_send_syslog, null)
+          file_and_malware_events_syslog_severity = try(access_control_policy.logging.file_and_malware_events_syslog_severity, local.defaults.fmc.domains.policies.access_control_policies.logging.file_and_malware_events_syslog_severity, null)
+          file_and_malware_events_syslog_alert_id = try(access_control_policy.logging.file_and_malware_events_syslog_alert, "") != "" ? local.resolved_syslog_alerts[domain.name][access_control_policy.logging.file_and_malware_events_syslog_alert].id : null
+        } if try(access_control_policy.logging, null) != null
+      ]
+    ]) : "${item.domain}:${item.access_control_policy_name}" => item
+  }
+}
+
+resource "fmc_access_control_policy_logging" "access_control_policy_logging" {
+  for_each = local.resource_access_control_policy_logging
+
+  domain                   = each.value.domain
+  access_control_policy_id = each.value.access_control_policy_id
+
+  syslog_alert_id                         = each.value.syslog_alert_id
+  syslog_use_platform_settings            = each.value.syslog_use_platform_settings
+  syslog_platform_settings_severity       = each.value.syslog_platform_settings_severity
+  ips_events_send_syslog                  = each.value.ips_events_send_syslog
+  ips_events_syslog_severity              = each.value.ips_events_syslog_severity
+  ips_events_syslog_alert_id              = each.value.ips_events_syslog_alert_id
+  file_and_malware_events_send_syslog     = each.value.file_and_malware_events_send_syslog
+  file_and_malware_events_syslog_severity = each.value.file_and_malware_events_syslog_severity
+  file_and_malware_events_syslog_alert_id = each.value.file_and_malware_events_syslog_alert_id
+}
+
+##########################################################
 ###    FTD NAT Policy
 ##########################################################
 locals {
