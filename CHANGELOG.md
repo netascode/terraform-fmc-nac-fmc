@@ -1,4 +1,4 @@
-## Unreleased
+## 0.2.0
 
 - (Enh) Add support for creating Sinkholes, Cipher Suite Lists, Distinguished Names, SLA Monitors, Key Chains, MAC Address Pools
 - (Enh) Add support for OSPF and EIGRP
